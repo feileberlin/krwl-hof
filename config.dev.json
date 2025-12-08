@@ -125,7 +125,24 @@
     },
     "default_zoom": 13,
     "tile_provider": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-    "attribution": "&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"
+    "attribution": "&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors",
+    "predefined_locations": [
+      {
+        "name": "Main Station",
+        "lat": 50.3125,
+        "lon": 11.9189
+      },
+      {
+        "name": "Mayor's Office",
+        "lat": 50.3177,
+        "lon": 11.9156
+      },
+      {
+        "name": "City Center",
+        "lat": 50.3167,
+        "lon": 11.9167
+      }
+    ]
   },
   "editor": {
     "require_approval": true,

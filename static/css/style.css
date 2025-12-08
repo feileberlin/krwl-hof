@@ -62,11 +62,12 @@ header h1 {
     pointer-events: auto;
 }
 
-#event-count {
+/* Interactive filter sentence on map overlay */
+#filter-sentence {
     position: absolute;
     top: 0;
     left: 0;
-    max-width: 320px;
+    max-width: 600px;
     font-size: 0.95rem;
     font-weight: 500;
     color: #4CAF50;
@@ -75,8 +76,61 @@ header h1 {
     backdrop-filter: blur(10px);
     border-radius: 8px;
     border: 2px solid #4CAF50;
-    line-height: 1.4;
+    line-height: 1.8;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    align-items: center;
+}
+
+.filter-part {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.inline-filter {
+    appearance: none;
+    background: transparent;
+    border: none;
+    border-bottom: 2px dashed #4CAF50;
+    color: #4CAF50;
+    font-size: 0.95rem;
+    font-weight: 500;
+    font-family: inherit;
+    padding: 0.2rem 1.5rem 0.2rem 0.2rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8"><path fill="%234CAF50" d="M1.41 0L6 4.59L10.59 0L12 1.41l-6 6l-6-6z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 0.2rem center;
+    background-size: 10px;
+}
+
+.inline-filter:hover {
+    background-color: rgba(76, 175, 80, 0.1);
+    border-bottom-style: solid;
+}
+
+.inline-filter:focus {
+    outline: none;
+    background-color: rgba(76, 175, 80, 0.2);
+    border-bottom-style: solid;
+}
+
+/* Count filter - not actually selectable, just displays count */
+.count-filter {
+    border: none;
+    background-image: none;
+    padding-right: 0.2rem;
+    cursor: default;
+    pointer-events: none;
+}
+
+.count-filter:hover {
+    background-color: transparent;
+    border-bottom-style: none;
 }
 
 #imprint-link {
@@ -116,6 +170,7 @@ header h1 {
     display: none;
 }
 
+/* Event list sidebar - simplified without filter controls */
 #event-list {
     position: fixed;
     right: 0;
@@ -134,95 +189,9 @@ header h1 {
     font-size: 1.2rem;
     margin-bottom: 1rem;
     color: #fff;
+    border-bottom: 2px solid rgba(76, 175, 80, 0.3);
+    padding-bottom: 0.5rem;
 }
-
-#filters-section {
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid rgba(76, 175, 80, 0.3);
-}
-
-#filters-section h3 {
-    font-size: 1rem;
-    margin-bottom: 1rem;
-    color: #4CAF50;
-}
-
-.filter-group {
-    margin-bottom: 1rem;
-}
-
-.filter-group label {
-    display: block;
-    font-size: 0.85rem;
-    color: #ccc;
-    margin-bottom: 0.3rem;
-    font-weight: 500;
-}
-
-.filter-group input[type="range"] {
-    width: 65%;
-    margin-right: 0.5rem;
-    vertical-align: middle;
-}
-
-.filter-group select {
-    width: 100%;
-    padding: 0.5rem;
-    background: rgba(45, 45, 45, 0.9);
-    color: #fff;
-    border: 1px solid #4CAF50;
-    border-radius: 5px;
-    font-size: 0.85rem;
-    cursor: pointer;
-}
-
-.filter-group select:hover {
-    background: rgba(55, 55, 55, 0.9);
-}
-
-.filter-group input[type="number"] {
-    width: calc(50% - 0.25rem);
-    padding: 0.5rem;
-    background: rgba(45, 45, 45, 0.9);
-    color: #fff;
-    border: 1px solid #4CAF50;
-    border-radius: 5px;
-    font-size: 0.85rem;
-    margin-bottom: 0.5rem;
-}
-
-.filter-group input[type="number"]:first-of-type {
-    margin-right: 0.5rem;
-}
-
-#custom-location-inputs {
-    margin-top: 0.5rem;
-}
-
-#custom-location-inputs.hidden {
-    display: none;
-}
-
-#apply-custom-location {
-    width: 100%;
-    padding: 0.5rem;
-    background: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.85rem;
-    transition: background 0.2s;
-}
-
-#apply-custom-location:hover {
-    background: #45a049;
-}
-
-#reset-filters {
-    width: 100%;
-    padding: 0.5rem;
     background: rgba(255, 87, 34, 0.2);
     color: #FF5722;
     border: 1px solid #FF5722;
@@ -233,20 +202,8 @@ header h1 {
     transition: background 0.2s;
 }
 
-#reset-filters:hover {
+.reset-btn:hover {
     background: rgba(255, 87, 34, 0.3);
-}
-
-#distance-value {
-    color: #4CAF50;
-    font-weight: bold;
-    font-size: 0.9rem;
-}
-
-.location-override label {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
 }
 
 .location-override input[type="checkbox"] {
