@@ -414,14 +414,32 @@ class EventsApp {
                 },
                 (error) => {
                     console.error('Location error:', error);
-                    statusEl.textContent = '⚠️ Location unavailable';
+                    statusEl.textContent = '⚠️ Location unavailable - using default location';
                     
-                    // Still display events, but without distance filtering
+                    // Use config default location as fallback
+                    const defaultCenter = this.config.map.default_center;
+                    this.userLocation = {
+                        lat: defaultCenter.lat,
+                        lon: defaultCenter.lon
+                    };
+                    
+                    // Center map on default location
+                    this.map.setView([this.userLocation.lat, this.userLocation.lon], 13);
+                    
+                    // Still display events with fallback location
                     this.displayEvents();
                 }
             );
         } else {
-            statusEl.textContent = '⚠️ Geolocation not supported';
+            statusEl.textContent = '⚠️ Geolocation not supported - using default location';
+            
+            // Use config default location as fallback
+            const defaultCenter = this.config.map.default_center;
+            this.userLocation = {
+                lat: defaultCenter.lat,
+                lon: defaultCenter.lon
+            };
+            
             this.displayEvents();
         }
     }
@@ -491,6 +509,30 @@ class EventsApp {
         });
     }
     
+    fitMapToMarkers() {
+        if (this.markers.length === 0) {
+            return;
+        }
+        
+        // Create bounds from all marker positions
+        const bounds = L.latLngBounds();
+        
+        this.markers.forEach(marker => {
+            bounds.extend(marker.getLatLng());
+        });
+        
+        // Add user location to bounds if available
+        if (this.userLocation) {
+            bounds.extend([this.userLocation.lat, this.userLocation.lon]);
+        }
+        
+        // Fit the map to show all markers with some padding
+        this.map.fitBounds(bounds, {
+            padding: [50, 50],
+            maxZoom: 15
+        });
+    }
+    
     displayEvents() {
         const filteredEvents = this.filterEvents();
         const container = document.getElementById('events-container');
@@ -519,6 +561,9 @@ class EventsApp {
             this.displayEventCard(event, container);
             this.addEventMarker(event);
         });
+        
+        // Fit map to show all markers
+        this.fitMapToMarkers();
     }
     
     displayEventCard(event, container) {
