@@ -11,6 +11,13 @@ on:
       - main
   workflow_dispatch:
 
+# KISS Policy: We encourage simplicity but don't block merges
+# The goal is to guide developers towards better code, not prevent progress
+env:
+  CREATE_ISSUES_FOR_VIOLATIONS: 'true'   # Create GitHub issues for violations to track fixes
+  LABEL_PRS_WITH_COMPLEXITY: 'true'       # Add informative labels to PRs
+  PROVIDE_FIX_SUGGESTIONS: 'true'         # Include specific fix suggestions in comments
+
 permissions:
   contents: read
   issues: write
@@ -168,11 +175,156 @@ with open('kiss_results.json', 'r') as f:
             echo "💡 Consider refactoring before promoting to main"
           fi
       
-      - name: Warn on complexity increase
-        if: steps.kiss_check.outputs.exit_code != '0'
+      - name: Evaluate KISS compliance policy
+        if: always()
+        id: policy
         run: |
-          echo "::warning::KISS compliance violations found. The codebase is becoming more complex."
-          echo "::warning::Review the uploaded report and consider simplifying before promoting to production."
+          # Determine if we should fail based on configuration
+          SHOULD_FAIL="false"
+          FAIL_ON_VIOLATIONS="${{ env.FAIL_ON_VIOLATIONS }}"
+          FAIL_ON_WARNINGS="${{ env.FAIL_ON_WARNINGS }}"
+          MAX_VIOLATIONS="${{ env.MAX_VIOLATIONS_ALLOWED }}"
           
-          # Don't fail the build, just warn
-          exit 0
+          # Override with workflow dispatch input if provided
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ] && [ -n "${{ github.event.inputs.fail_on_violations }}" ]; then
+            FAIL_ON_VIOLATIONS="${{ github.event.inputs.fail_on_violations }}"
+          fi
+          
+          # Read results
+          if [ -f kiss_results.json ]; then
+            VIOLATIONS=$(python3 -c "import json; print(json.load(open('kiss_results.json'))['summary']['total_violations'])")
+            WARNINGS=$(python3 -c "import json; print(json.load(open('kiss_results.json'))['summary']['total_warnings'])")
+            
+            echo "violations=$VIOLATIONS" >> $GITHUB_OUTPUT
+            echo "warnings=$WARNINGS" >> $GITHUB_OUTPUT
+            
+            # Check if we should fail
+            if [ "$FAIL_ON_VIOLATIONS" == "true" ] && [ "$VIOLATIONS" -gt "$MAX_VIOLATIONS" ]; then
+              SHOULD_FAIL="true"
+              echo "policy_reason=Violations ($VIOLATIONS) exceed threshold ($MAX_VIOLATIONS)" >> $GITHUB_OUTPUT
+            elif [ "$FAIL_ON_WARNINGS" == "true" ] && [ "$WARNINGS" -gt "0" ]; then
+              SHOULD_FAIL="true"
+              echo "policy_reason=Warnings found ($WARNINGS) and FAIL_ON_WARNINGS is enabled" >> $GITHUB_OUTPUT
+            fi
+          fi
+          
+          echo "should_fail=$SHOULD_FAIL" >> $GITHUB_OUTPUT
+          
+          # Log the policy decision
+          if [ "$SHOULD_FAIL" == "true" ]; then
+            echo "🚫 KISS policy: PR will be BLOCKED due to complexity violations"
+          else
+            echo "✅ KISS policy: PR will be ALLOWED (violations only generate warnings)"
+          fi
+      
+      - name: Add blocking label to PR
+        if: github.event_name == 'pull_request' && steps.policy.outputs.should_fail == 'true'
+        uses: actions/github-script@v6
+        continue-on-error: true
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // Add 'needs-simplification' label
+            try {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: ['needs-simplification', 'complexity-warning']
+              });
+              console.log('Added complexity labels to PR');
+            } catch (error) {
+              console.log('Could not add labels (they may not exist yet):', error.message);
+            }
+      
+      - name: Post policy decision to PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const shouldFail = '${{ steps.policy.outputs.should_fail }}' === 'true';
+            const violations = '${{ steps.policy.outputs.violations }}';
+            const warnings = '${{ steps.policy.outputs.warnings }}';
+            
+            let statusEmoji = shouldFail ? '🚫' : '✅';
+            let statusText = shouldFail ? 'BLOCKED' : 'ALLOWED';
+            
+            let policyBody = `## ${statusEmoji} KISS Compliance Policy: ${statusText}\n\n`;
+            
+            if (shouldFail) {
+              policyBody += '### ⛔ This PR is BLOCKED\n\n';
+              policyBody += `**Reason:** ${{ steps.policy.outputs.policy_reason }}\n\n`;
+              policyBody += '**Required Actions:**\n';
+              policyBody += '1. Review the KISS compliance violations below\n';
+              policyBody += '2. Simplify the complex code\n';
+              policyBody += '3. Run `python3 check_kiss.py` locally to verify\n';
+              policyBody += '4. Push your fixes\n\n';
+              policyBody += '---\n\n';
+            } else {
+              policyBody += '### ℹ️ Current Policy: Warning Only\n\n';
+              policyBody += `- **Violations Found:** ${violations}\n`;
+              policyBody += `- **Warnings Found:** ${warnings}\n\n`;
+              policyBody += 'The PR can be merged, but consider simplifying before promoting to production.\n\n';
+              policyBody += '**To enable blocking mode:**\n';
+              policyBody += 'Set `FAIL_ON_VIOLATIONS: true` in `.github/workflows/kiss-compliance.yml`\n\n';
+              policyBody += '---\n\n';
+            }
+            
+            // Find existing KISS comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number
+            });
+            
+            const existingComment = comments.find(comment => 
+              comment.body.includes('KISS Compliance Policy')
+            );
+            
+            if (existingComment) {
+              // Update existing comment
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body: policyBody + existingComment.body.split('---\n\n')[1] || ''
+              });
+            } else {
+              // This will be combined with the detailed report comment
+              console.log('Policy decision recorded');
+            }
+      
+      - name: Fail build if policy requires it
+        if: steps.policy.outputs.should_fail == 'true'
+        run: |
+          echo "=========================================="
+          echo "❌ KISS COMPLIANCE CHECK FAILED"
+          echo "=========================================="
+          echo ""
+          echo "Reason: ${{ steps.policy.outputs.policy_reason }}"
+          echo ""
+          echo "This PR violates KISS principles and cannot be merged."
+          echo ""
+          echo "To fix:"
+          echo "1. Review the KISS compliance report above"
+          echo "2. Simplify complex code (break up large files/functions)"
+          echo "3. Run 'python3 check_kiss.py' locally to verify"
+          echo "4. Push your changes"
+          echo ""
+          echo "To disable this check (not recommended):"
+          echo "Set FAIL_ON_VIOLATIONS: false in .github/workflows/kiss-compliance.yml"
+          echo "=========================================="
+          
+          exit 1
+      
+      - name: Success message
+        if: steps.policy.outputs.should_fail != 'true'
+        run: |
+          if [ "${{ steps.kiss_check.outputs.exit_code }}" != "0" ]; then
+            echo "⚠️  KISS violations found, but policy allows merge with warnings"
+            echo "💡 Consider simplifying before promoting to production"
+          else
+            echo "✅ No KISS violations - codebase remains simple!"
+          fi
