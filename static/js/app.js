@@ -272,7 +272,7 @@ class EventsApp {
             this.config.map.predefined_locations.forEach(loc => {
                 const option = document.createElement('option');
                 option.value = JSON.stringify({ lat: loc.lat, lon: loc.lon });
-                option.textContent = loc.name;
+                option.textContent = `from ${loc.name}`;
                 locationSelector.appendChild(option);
             });
         }
@@ -494,85 +494,34 @@ class EventsApp {
     }
     
     updateFilterDescription(count) {
-        const countEl = document.getElementById('event-count');
+        // Update the count filter display
+        const countFilterEl = document.getElementById('event-count-filter');
         
-        // Category description - include in the count
-        let eventTypeText = 'events';
-        if (this.filters.category !== 'all') {
-            const categoryNames = {
-                'on-stage': 'on stage events',
-                'pub-games': 'pub games events',
-                'festivals': 'festivals'
-            };
-            eventTypeText = categoryNames[this.filters.category] || this.filters.category + ' events';
-        }
-        
-        // Build event count with type
-        const eventText = `${count} ${eventTypeText}`;
-        
-        // Time description
-        let timeText = '';
-        switch (this.filters.timeFilter) {
-            case 'sunrise':
-                timeText = 'till sunrise';
-                break;
-            case 'sunday':
-                timeText = 'till sunday night';
-                break;
-            case 'full-moon':
-                timeText = 'till next full moon';
-                break;
-            case '6h':
-                timeText = 'in the next 6 hours';
-                break;
-            case '12h':
-                timeText = 'in the next 12 hours';
-                break;
-            case '24h':
-                timeText = 'in the next 24 hours';
-                break;
-            case '48h':
-                timeText = 'in the next 48 hours';
-                break;
-            case 'all':
-                timeText = 'all upcoming';
-                break;
-        }
-        
-        // Distance description - match selector options
-        const distance = this.filters.maxDistance;
-        let distanceText = '';
-        if (distance === 1.25) {
-            distanceText = 'within 15 minutes by foot';
-        } else if (distance === 2.5) {
-            distanceText = 'within 10 minutes by bike';
-        } else if (distance === 20) {
-            distanceText = 'within 1 hour by public transport';
+        // Build count text based on selected category
+        let countText = '';
+        if (this.filters.category === 'all') {
+            countText = `${count} events`;
         } else {
-            // Fallback for other values
-            distanceText = `within ${distance} km`;
-        }
-        
-        // Location description
-        let locationText = 'from your current location';
-        if (this.filters.useCustomLocation && this.filters.customLat && this.filters.customLon) {
-            // Check if it's a predefined location
-            const locationSelector = document.getElementById('location-selector');
-            const selectedOption = locationSelector.options[locationSelector.selectedIndex];
-            if (selectedOption && selectedOption.value !== 'geolocation') {
-                locationText = `from ${selectedOption.textContent}`;
+            // Get the text from the selected category option
+            const categoryFilter = document.getElementById('category-filter');
+            const selectedOption = categoryFilter.options[categoryFilter.selectedIndex];
+            const categoryText = selectedOption.textContent;
+            
+            // For specific categories, show count with type
+            if (categoryText === 'events') {
+                countText = `${count} events`;
+            } else if (categoryText === 'festivals') {
+                countText = `${count} festivals`;
             } else {
-                locationText = 'from custom location';
+                countText = `${count} ${categoryText} events`;
             }
-        } else if (!this.userLocation) {
-            locationText = 'from default location';
         }
         
-        // Construct the full sentence
-        const description = `${eventText} ${timeText} ${distanceText} ${locationText}`;
+        // Update the count display
+        countFilterEl.options[0].text = countText;
+        countFilterEl.value = 'count';
         
-        countEl.textContent = description;
-        this.log('Filter description:', description);
+        this.log('Filter count updated:', countText);
     }
     
     displayEventCard(event, container) {
@@ -690,32 +639,6 @@ class EventsApp {
                 this.filters.customLon = location.lon;
                 this.map.setView([location.lat, location.lon], 13);
             }
-            this.displayEvents();
-        });
-        
-        // Reset filters button
-        const resetFilters = document.getElementById('reset-filters');
-        resetFilters.addEventListener('click', () => {
-            // Reset all filters to defaults
-            this.filters.maxDistance = 1.25;
-            this.filters.timeFilter = 'sunrise';
-            this.filters.category = 'all';
-            this.filters.useCustomLocation = false;
-            this.filters.customLat = null;
-            this.filters.customLon = null;
-            
-            // Reset UI elements
-            document.getElementById('distance-filter').value = 1.25;
-            document.getElementById('time-filter').value = 'sunrise';
-            document.getElementById('category-filter').value = 'all';
-            document.getElementById('use-custom-location').checked = false;
-            document.getElementById('custom-location-inputs').classList.add('hidden');
-            
-            // Reset map view
-            if (this.userLocation) {
-                this.map.setView([this.userLocation.lat, this.userLocation.lon], 13);
-            }
-            
             this.displayEvents();
         });
         

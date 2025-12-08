@@ -18,8 +18,44 @@
         
         <div id="map">
             <div id="map-overlay">
-                <!-- Just the info sentence on the map -->
-                <div id="event-count">0 events</div>
+                <!-- Interactive filter sentence on the map -->
+                <div id="filter-sentence">
+                    <span class="filter-part">
+                        <select id="event-count-filter" class="inline-filter count-filter">
+                            <option value="count">0 events</option>
+                        </select>
+                        <select id="category-filter" class="inline-filter">
+                            <option value="all">events</option>
+                            <option value="on-stage">on stage</option>
+                            <option value="pub-games">pub games</option>
+                            <option value="festivals">festivals</option>
+                        </select>
+                    </span>
+                    <span class="filter-part">
+                        <select id="time-filter" class="inline-filter">
+                            <option value="sunrise">till sunrise</option>
+                            <option value="sunday">till sunday night</option>
+                            <option value="full-moon">till next full moon</option>
+                            <option value="6h">6 hours</option>
+                            <option value="12h">12 hours</option>
+                            <option value="24h">24 hours</option>
+                            <option value="48h">48 hours</option>
+                            <option value="all">all upcoming</option>
+                        </select>
+                    </span>
+                    <span class="filter-part">
+                        <select id="distance-filter" class="inline-filter">
+                            <option value="1.25" selected>within 15 minutes by foot</option>
+                            <option value="2.5">within 10 minutes by bike</option>
+                            <option value="20">within 1 hour by public transport</option>
+                        </select>
+                    </span>
+                    <span class="filter-part">
+                        <select id="location-selector" class="inline-filter">
+                            <option value="geolocation">from your current location</option>
+                        </select>
+                    </span>
+                </div>
                 
                 <a href="imprint.html" id="imprint-link">
                     <img id="site-logo" src="logo.png" alt="Site Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
@@ -29,51 +65,6 @@
         </div>
         
         <div id="event-list">
-            <!-- Filter controls in sidebar with events -->
-            <div id="filters-section">
-                <div class="filter-row">
-                    <label>Time:</label>
-                    <select id="time-filter">
-                        <option value="sunrise">till sunrise</option>
-                        <option value="sunday">till sunday night</option>
-                        <option value="full-moon">till next full moon</option>
-                        <option value="6h">6 hours</option>
-                        <option value="12h">12 hours</option>
-                        <option value="24h">24 hours</option>
-                        <option value="48h">48 hours</option>
-                        <option value="all">all upcoming</option>
-                    </select>
-                </div>
-                
-                <div class="filter-row">
-                    <label>Distance:</label>
-                    <select id="distance-filter">
-                        <option value="1.25" selected>15 minutes by foot</option>
-                        <option value="2.5">10 minutes by bike</option>
-                        <option value="20">1 hour by public transport</option>
-                    </select>
-                </div>
-                
-                <div class="filter-row">
-                    <label>Type:</label>
-                    <select id="category-filter">
-                        <option value="all">events</option>
-                        <option value="on-stage">on stage</option>
-                        <option value="pub-games">pub games</option>
-                        <option value="festivals">festivals</option>
-                    </select>
-                </div>
-                
-                <div class="filter-row">
-                    <label>Location:</label>
-                    <select id="location-selector">
-                        <option value="geolocation">Your Location (GPS)</option>
-                    </select>
-                </div>
-                
-                <button id="reset-filters" class="reset-btn">↻ Reset Filters</button>
-            </div>
-            
             <h2>Events</h2>
             <div id="events-container">
                 <p>Loading events...</p>

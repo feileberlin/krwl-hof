@@ -62,12 +62,12 @@ header h1 {
     pointer-events: auto;
 }
 
-/* Event count info on map overlay - KISS design */
-#event-count {
+/* Interactive filter sentence on map overlay */
+#filter-sentence {
     position: absolute;
     top: 0;
     left: 0;
-    max-width: 380px;
+    max-width: 600px;
     font-size: 0.95rem;
     font-weight: 500;
     color: #4CAF50;
@@ -76,8 +76,61 @@ header h1 {
     backdrop-filter: blur(10px);
     border-radius: 8px;
     border: 2px solid #4CAF50;
-    line-height: 1.4;
+    line-height: 1.8;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    align-items: center;
+}
+
+.filter-part {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.inline-filter {
+    appearance: none;
+    background: transparent;
+    border: none;
+    border-bottom: 2px dashed #4CAF50;
+    color: #4CAF50;
+    font-size: 0.95rem;
+    font-weight: 500;
+    font-family: inherit;
+    padding: 0.2rem 1.5rem 0.2rem 0.2rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8"><path fill="%234CAF50" d="M1.41 0L6 4.59L10.59 0L12 1.41l-6 6l-6-6z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 0.2rem center;
+    background-size: 10px;
+}
+
+.inline-filter:hover {
+    background-color: rgba(76, 175, 80, 0.1);
+    border-bottom-style: solid;
+}
+
+.inline-filter:focus {
+    outline: none;
+    background-color: rgba(76, 175, 80, 0.2);
+    border-bottom-style: solid;
+}
+
+/* Count filter - not actually selectable, just displays count */
+.count-filter {
+    border: none;
+    background-image: none;
+    padding-right: 0.2rem;
+    cursor: default;
+    pointer-events: none;
+}
+
+.count-filter:hover {
+    background-color: transparent;
+    border-bottom-style: none;
 }
 
 #imprint-link {
@@ -117,7 +170,7 @@ header h1 {
     display: none;
 }
 
-/* Event list sidebar with filters */
+/* Event list sidebar - simplified without filter controls */
 #event-list {
     position: fixed;
     right: 0;
@@ -136,48 +189,9 @@ header h1 {
     font-size: 1.2rem;
     margin-bottom: 1rem;
     color: #fff;
-}
-
-/* Filter section in sidebar */
-#filters-section {
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
     border-bottom: 2px solid rgba(76, 175, 80, 0.3);
+    padding-bottom: 0.5rem;
 }
-
-.filter-row {
-    margin-bottom: 0.8rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-}
-
-.filter-row label {
-    font-size: 0.8rem;
-    color: #888;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.filter-row select {
-    padding: 0.5rem 0.7rem;
-    background: rgba(45, 45, 45, 0.9);
-    color: #fff;
-    border: 1px solid #4CAF50;
-    border-radius: 5px;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-.filter-row select:hover {
-    background: rgba(55, 55, 55, 0.9);
-}
-
-.reset-btn {
-    width: 100%;
-    padding: 0.6rem;
     background: rgba(255, 87, 34, 0.2);
     color: #FF5722;
     border: 1px solid #FF5722;
