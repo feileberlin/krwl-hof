@@ -18,8 +18,9 @@ TABLE OF CONTENTS
 3. QUICK START GUIDE
    3.1 Installation
    3.2 Running the Python TUI
-   3.3 Development Mode with Example Data
-   3.4 Basic Workflow
+   3.3 Using CLI Mode
+   3.4 Development Mode with Example Data
+   3.5 Basic Workflow
 
 4. PYTHON TUI REFERENCE
    4.1 Main Menu Options
@@ -28,6 +29,12 @@ TABLE OF CONTENTS
    4.4 Viewing Published Events
    4.5 Generating Static Site
    4.6 Settings and Development Mode
+   4.7 Documentation Viewer
+
+5. CLI REFERENCE
+   5.1 CLI Commands
+   5.2 Command Examples
+   5.3 Help and Version
 
 5. CONFIGURATION
    5.1 config.json Structure
@@ -289,10 +296,45 @@ The TUI will display a menu with the following options:
 3. View Published Events
 4. Generate Static Site
 5. Settings
-6. Exit
+6. View Documentation
+7. Exit
 
 
-3.3 DEVELOPMENT MODE WITH EXAMPLE DATA
+3.3 USING CLI MODE
+------------------
+The script can also be used as a command-line tool for scripting and automation:
+
+# Display help
+$ python3 main.py --help
+
+# List all published events
+$ python3 main.py list
+
+# List pending events
+$ python3 main.py list-pending
+
+# Scrape new events
+$ python3 main.py scrape
+
+# Generate static site
+$ python3 main.py generate
+
+# Load example data
+$ python3 main.py load-examples
+
+# Publish a specific event by ID
+$ python3 main.py publish pending_1
+
+# Reject a specific event by ID
+$ python3 main.py reject pending_2
+
+# Show version
+$ python3 main.py --version
+
+See section 5 (CLI REFERENCE) for complete documentation.
+
+
+3.4 DEVELOPMENT MODE WITH EXAMPLE DATA
 --------------------------------------
 For testing and development, you can load pre-made example data:
 
@@ -324,7 +366,7 @@ Example pending events include:
 - Bike Repair Workshop
 
 
-3.4 BASIC WORKFLOW
+3.5 BASIC WORKFLOW
 ------------------
                                     
     ┌─────────────────┐
@@ -496,8 +538,154 @@ The Settings menu provides:
    Return to main menu.
 
 
+4.7 DOCUMENTATION VIEWER
+------------------------
+Access comprehensive documentation from within the TUI:
+
+Main Menu → View Documentation (option 6)
+
+The documentation viewer provides:
+
+1. View Table of Contents
+   Browse all documentation sections
+
+2. Search Documentation
+   Search for specific terms across the entire README
+   - Shows line numbers and context
+   - Displays up to 20 matches
+
+3. View Full Documentation
+   Read the complete documentation with pagination
+   - Use 'n' for next page
+   - Use 'p' for previous page
+   - Use 'q' to quit viewer
+
+4. Quick Start Guide
+   View just the Quick Start section for rapid onboarding
+
+5. Back to Main Menu
+   Return to the main TUI menu
+
+The documentation viewer allows editors to access help without leaving the
+TUI, making it easy to reference configuration options, workflows, and
+troubleshooting guides during event management tasks.
+
+
 ================================================================================
-5. CONFIGURATION
+5. CLI REFERENCE
+================================================================================
+
+5.1 CLI COMMANDS
+----------------
+The main.py script supports both interactive TUI mode and command-line mode:
+
+Interactive Mode (Default):
+    $ python3 main.py
+    Launches the full interactive TUI
+
+Command-Line Mode:
+    $ python3 main.py COMMAND [ARGS] [OPTIONS]
+    Execute specific commands without entering the TUI
+
+Available Commands:
+
+scrape
+    Scrape events from all configured sources
+    Example: $ python3 main.py scrape
+
+list
+    List all published events
+    Example: $ python3 main.py list
+
+list-pending
+    List all pending events awaiting review
+    Example: $ python3 main.py list-pending
+
+publish EVENT_ID
+    Approve and publish a specific pending event
+    Example: $ python3 main.py publish pending_1
+
+reject EVENT_ID
+    Reject and delete a specific pending event
+    Example: $ python3 main.py reject pending_2
+
+review
+    Launch interactive review mode for pending events
+    Example: $ python3 main.py review
+
+generate
+    Generate static site files for deployment
+    Example: $ python3 main.py generate
+
+load-examples
+    Load example data for testing/development
+    Example: $ python3 main.py load-examples
+
+clear-data
+    Clear all event data (requires confirmation)
+    Example: $ python3 main.py clear-data
+
+
+5.2 COMMAND EXAMPLES
+--------------------
+Basic Workflow via CLI:
+
+    # 1. Load example data
+    $ python3 main.py load-examples
+    
+    # 2. List events
+    $ python3 main.py list
+    
+    # 3. Check pending events
+    $ python3 main.py list-pending
+    
+    # 4. Publish a pending event
+    $ python3 main.py publish pending_1
+    
+    # 5. Generate the static site
+    $ python3 main.py generate
+
+Automation Scripts:
+
+    # Daily scraping cron job
+    0 8 * * * cd /path/to/krwl-hof/src && python3 main.py scrape
+    
+    # Auto-generate site after changes
+    $ python3 main.py scrape && python3 main.py generate
+    
+    # Batch processing
+    for event_id in pending_1 pending_2 pending_3; do
+        python3 main.py publish $event_id
+    done
+
+
+5.3 HELP AND VERSION
+--------------------
+Get Help:
+    $ python3 main.py --help
+    $ python3 main.py -h
+    
+    Displays complete usage information, all commands, options,
+    and examples.
+
+Check Version:
+    $ python3 main.py --version
+    $ python3 main.py -v
+    
+    Shows the application version number.
+
+Invalid Commands:
+    $ python3 main.py invalid-command
+    
+    Error: Unknown command 'invalid-command'
+    Use --help to see available commands
+    
+    The script provides helpful error messages and suggests using
+    --help for correct syntax.
+
+
+================================================================================
+6. CONFIGURATION
 ================================================================================
 
 5.1 config.json STRUCTURE
