@@ -51,6 +51,9 @@ class EventsApp {
             if (this.debug) {
                 document.title += ' [DEBUG MODE]';
             }
+            
+            // Fetch next full moon date based on map center location
+            await this.fetchNextFullMoon();
         } catch (error) {
             console.error('Error loading config:', error);
             // Use defaults
@@ -66,6 +69,68 @@ class EventsApp {
                 }
             };
         }
+    }
+    
+    async fetchNextFullMoon() {
+        try {
+            const lat = this.config.map?.default_center?.lat || 50.3167;
+            const lon = this.config.map?.default_center?.lon || 11.9167;
+            
+            // Use astronomy API to get lunar phase data
+            // Using wttr.in which is free and doesn't require API key
+            const url = `https://wttr.in/${lat},${lon}?format=j1`;
+            
+            const response = await fetch(url);
+            if (response.ok) {
+                const data = await response.json();
+                if (data.weather && data.weather[0]?.astronomy) {
+                    const astronomy = data.weather[0].astronomy[0];
+                    const moonPhase = astronomy.moon_phase || '';
+                    const moonIllumination = parseInt(astronomy.moon_illumination) || 50;
+                    
+                    // Calculate next full moon
+                    this.nextFullMoonDate = this.calculateNextFullMoonFromData(moonPhase, moonIllumination);
+                    this.log('Next full moon date:', this.nextFullMoonDate, 'Moon phase:', moonPhase, 'Illumination:', moonIllumination + '%');
+                }
+            } else {
+                this.log('Weather API unavailable, using approximation');
+                this.nextFullMoonDate = null;
+            }
+        } catch (error) {
+            this.log('Error fetching moon data:', error);
+            this.nextFullMoonDate = null;
+        }
+    }
+    
+    calculateNextFullMoonFromData(phase, illumination) {
+        // Lunar cycle is ~29.53 days
+        const lunarCycle = 29.53;
+        const now = new Date();
+        let daysToFullMoon;
+        
+        // Determine days to full moon based on phase and illumination
+        if (phase.includes('Full Moon') || illumination >= 95) {
+            // Already at or very close to full moon
+            daysToFullMoon = lunarCycle; // Next one is a full cycle away
+        } else if (phase.includes('Waxing')) {
+            // Moon is growing towards full
+            daysToFullMoon = ((100 - illumination) / 100) * (lunarCycle / 2);
+        } else if (phase.includes('Waning') || phase.includes('Last Quarter')) {
+            // Moon is shrinking, next full moon is ~3/4 cycle away
+            daysToFullMoon = (illumination / 100) * (lunarCycle / 2) + (lunarCycle / 2);
+        } else if (phase.includes('New Moon') || illumination < 5) {
+            // New moon, full moon is ~2 weeks away
+            daysToFullMoon = lunarCycle / 2;
+        } else {
+            // Default approximation
+            daysToFullMoon = 15;
+        }
+        
+        const fullMoonDate = new Date(now);
+        fullMoonDate.setDate(fullMoonDate.getDate() + Math.ceil(daysToFullMoon));
+        fullMoonDate.setHours(23, 59, 59, 999);
+        
+        return fullMoonDate;
     }
     
     initMap() {
@@ -265,12 +330,16 @@ class EventsApp {
                 return sunday;
                 
             case 'full-moon':
-                // Approximate: ~29.5 days lunar cycle
-                // This is simplified - for production use a proper lunar calendar library
-                const nextFullMoon = new Date(now);
-                nextFullMoon.setDate(nextFullMoon.getDate() + 29);
-                nextFullMoon.setHours(23, 59, 59, 999);
-                return nextFullMoon;
+                // Use fetched full moon date or fallback to approximation
+                if (this.nextFullMoonDate) {
+                    return this.nextFullMoonDate;
+                } else {
+                    // Fallback: approximate ~29.5 days lunar cycle
+                    const nextFullMoon = new Date(now);
+                    nextFullMoon.setDate(nextFullMoon.getDate() + 15);
+                    nextFullMoon.setHours(23, 59, 59, 999);
+                    return nextFullMoon;
+                }
                 
             case '6h':
                 return new Date(now.getTime() + 6 * 60 * 60 * 1000);
@@ -427,8 +496,19 @@ class EventsApp {
     updateFilterDescription(count) {
         const countEl = document.getElementById('event-count');
         
-        // Build descriptive sentence
-        const eventText = `${count} event${count !== 1 ? 's' : ''}`;
+        // Category description - include in the count
+        let eventTypeText = 'events';
+        if (this.filters.category !== 'all') {
+            const categoryNames = {
+                'on-stage': 'on stage events',
+                'pub-games': 'pub games events',
+                'festivals': 'festivals'
+            };
+            eventTypeText = categoryNames[this.filters.category] || this.filters.category + ' events';
+        }
+        
+        // Build event count with type
+        const eventText = `${count} ${eventTypeText}`;
         
         // Time description
         let timeText = '';
@@ -488,20 +568,8 @@ class EventsApp {
             locationText = 'from default location';
         }
         
-        // Category description
-        let categoryText = '';
-        if (this.filters.category !== 'all') {
-            const categoryNames = {
-                'on-stage': 'on stage',
-                'pub-games': 'pub games',
-                'festivals': 'festivals'
-            };
-            const categoryName = categoryNames[this.filters.category] || this.filters.category;
-            categoryText = ` ${categoryName}`;
-        }
-        
         // Construct the full sentence
-        const description = `${eventText}${categoryText} ${timeText} ${distanceText} ${locationText}`;
+        const description = `${eventText} ${timeText} ${distanceText} ${locationText}`;
         
         countEl.textContent = description;
         this.log('Filter description:', description);
