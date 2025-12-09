@@ -12,7 +12,9 @@ jobs:
   validate-and-build-docs:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read   # For cloning/fetching repo content
+      issues: write    # If creating or editing issues
+      pull-requests: write # If modifying PRs
     
     steps:
       - name: Checkout code
