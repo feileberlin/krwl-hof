@@ -34,6 +34,9 @@ class EventsApp {
         // Array of Leaflet marker objects currently displayed on map
         this.markers = [];
         
+        // Special marker for imprint/project location
+        this.imprintMarker = null;
+        
         // Configuration object loaded from config.json
         this.config = null;
         
@@ -135,68 +138,15 @@ class EventsApp {
             };
         }
     }
-        
-        // Initialize UI from config
-        this.initUI();
-        
-        // Initialize map
-        this.initMap();
-        
-        // Get user location
-        this.getUserLocation();
-        
-        // Load events
-        await this.loadEvents();
-        
-        // Setup event listeners
-        this.setupEventListeners();
-    }
-    
-    initUI() {
-        // Set page title from config
-        if (this.config.app && this.config.app.name) {
-            document.title = this.config.app.name + (this.debug ? ' [DEBUG MODE]' : '');
-        }
-        
-        // Set logo and imprint link from config
-        const ui = this.config.ui || {};
-        const imprintLink = document.getElementById('imprint-link');
-        const siteLogo = document.getElementById('site-logo');
-        const imprintText = document.getElementById('imprint-text');
-        
-        if (imprintLink && ui.imprint_url) {
-            imprintLink.href = ui.imprint_url;
-        }
-        
-        if (imprintText && ui.imprint_text) {
-            imprintText.textContent = ui.imprint_text;
-        }
-        
-        if (siteLogo && ui.logo) {
-            siteLogo.src = ui.logo;
-            siteLogo.style.display = 'block';
-            if (imprintText) {
-                imprintText.style.display = 'none';
-            }
-            // Handle logo load error
-            siteLogo.onerror = () => {
-                siteLogo.style.display = 'none';
-                if (imprintText) {
-                    imprintText.style.display = 'inline';
-                }
-            };
-        }
-    }
     
     /**
      * Load application configuration from config.json
-     * Fetches app settings, UI preferences, map configuration
-     * Falls back to defaults if config file is missing
+     * Config contains functional settings only, not translated content
      * @async
      */
     async loadConfig() {
         try {
-            // Fetch configuration file
+            // Fetch configuration file (language-independent)
             const response = await fetch('config.json');
             this.config = await response.json();
             
@@ -212,12 +162,23 @@ class EventsApp {
             this.config = {
                 debug: false,
                 app: {
-                    name: 'KRWL HOF Community Events'
+                    name: 'KRWL HOF Community Events',
+                    language: 'auto'
                 },
                 ui: {
                     logo: '',
-                    imprint_url: 'imprint.html',
-                    imprint_text: 'Imprint'
+                    imprint_url: '#'
+                },
+                imprint: {
+                    enabled: true,
+                    location: {
+                        lat: 50.3167,
+                        lon: 11.9167,
+                        marker: 'marker-city-center.svg'
+                    },
+                    contact: {},
+                    responsible: {},
+                    technical: {}
                 },
                 map: {
                     default_center: { lat: 50.3167, lon: 11.9167 },
@@ -707,7 +668,6 @@ class EventsApp {
         // Announce to screen readers
         this.announceToScreenReader(`${filteredEvents.length} events displayed on map. Use arrow keys to navigate between events.`);
     }
-    }
     
     announceToScreenReader(message) {
         // Create or update ARIA live region for screen reader announcements
@@ -1149,6 +1109,134 @@ class EventsApp {
                 document.getElementById('event-detail').classList.add('hidden');
             }
         });
+        
+        // Imprint link handler - show project location on map if configured
+        const imprintLink = document.getElementById('imprint-link');
+        if (imprintLink && this.config.ui && this.config.ui.imprint_location) {
+            imprintLink.addEventListener('click', (e) => {
+                // Only handle if URL is '#' (indicating map marker mode)
+                if (this.config.ui.imprint_url === '#') {
+                    e.preventDefault();
+                    this.showImprintLocation();
+                }
+            });
+        }
+    }
+    
+    /**
+     * Show the project/imprint location on the map with a marker
+     * Uses config for functional data (coordinates, URLs) and content for translated text
+     */
+    showImprintLocation() {
+        const imprintConfig = this.config.imprint;
+        if (!imprintConfig || !imprintConfig.enabled || !imprintConfig.location) return;
+        
+        const loc = imprintConfig.location;
+        const content = window.i18n.content.imprint;  // Get translated content
+        
+        // Pan to imprint location
+        this.map.setView([loc.lat, loc.lon], 16);
+        
+        // Create custom icon for imprint location
+        const iconUrl = loc.marker || 'markers/marker-city-center.svg';
+        const imprintIcon = L.icon({
+            iconUrl: iconUrl,
+            iconSize: [32, 48],
+            iconAnchor: [16, 48],
+            popupAnchor: [0, -48]
+        });
+        
+        // Remove any existing imprint marker
+        if (this.imprintMarker) {
+            this.map.removeLayer(this.imprintMarker);
+        }
+        
+        // Create marker
+        this.imprintMarker = L.marker([loc.lat, loc.lon], {
+            icon: imprintIcon,
+            zIndexOffset: 1000  // Keep on top
+        }).addTo(this.map);
+        
+        // Build imprint popup content using translated content + functional config
+        let popupContent = `<div class="imprint-popup">`;
+        
+        // Header (translated)
+        popupContent += `<h3>${content.title}</h3>`;
+        
+        // Operator information (translated labels + data)
+        popupContent += `<div class="imprint-section">`;
+        popupContent += `<p><strong>${content.operator.name}</strong></p>`;
+        popupContent += `<p><em>${content.operator.type}</em></p>`;
+        
+        // Address (from content - allows translation of state/country names)
+        const addr = content.address;
+        popupContent += `<p>${addr.postal_code} ${addr.city}</p>`;
+        popupContent += `<p>${addr.state}, ${addr.country}</p>`;
+        popupContent += `</div>`;
+        
+        // Contact information (functional URLs from config, labels from content)
+        const contact = imprintConfig.contact;
+        popupContent += `<div class="imprint-section">`;
+        if (contact.email) {
+            popupContent += `<p>📧 <a href="mailto:${contact.email}">${contact.email}</a></p>`;
+        }
+        if (contact.website) {
+            popupContent += `<p>🌐 <a href="${contact.website}" target="_blank" rel="noopener">${content.contact.website}</a></p>`;
+        }
+        if (contact.github) {
+            popupContent += `<p>💻 <a href="${contact.github}" target="_blank" rel="noopener">${content.contact.github}</a></p>`;
+        }
+        popupContent += `</div>`;
+        
+        // Responsible person (functional data from config, labels from content)
+        const resp = imprintConfig.responsible;
+        if (resp.name) {
+            popupContent += `<div class="imprint-section">`;
+            popupContent += `<p><strong>${content.responsible.label}:</strong></p>`;
+            popupContent += `<p>${resp.name} - ${content.responsible.role}</p>`;
+            if (resp.email) {
+                popupContent += `<p>📧 <a href="mailto:${resp.email}">${resp.email}</a></p>`;
+            }
+            popupContent += `</div>`;
+        }
+        
+        // Technical information (functional data from config, labels from content)
+        const tech = imprintConfig.technical;
+        popupContent += `<div class="imprint-section">`;
+        popupContent += `<p><strong>${content.technical.label}:</strong></p>`;
+        if (tech.hosting) popupContent += `<p>${content.technical.hosting}: ${tech.hosting}</p>`;
+        if (tech.domain) popupContent += `<p>${content.technical.domain}: ${tech.domain}</p>`;
+        if (tech.open_source && tech.repository) {
+            popupContent += `<p><a href="${tech.repository}" target="_blank" rel="noopener">${content.technical.open_source}</a></p>`;
+        }
+        popupContent += `</div>`;
+        
+        // Legal information (all from translated content)
+        popupContent += `<div class="imprint-section imprint-legal">`;
+        if (content.legal.disclaimer) {
+            popupContent += `<p><small>${content.legal.disclaimer}</small></p>`;
+        }
+        if (content.legal.copyright) {
+            popupContent += `<p><small>${content.legal.copyright}</small></p>`;
+        }
+        popupContent += `</div>`;
+        
+        // Coordinates
+        popupContent += `<div class="imprint-section">`;
+        popupContent += `<p><small>📍 ${loc.lat.toFixed(4)}, ${loc.lon.toFixed(4)}</small></p>`;
+        popupContent += `</div>`;
+        
+        popupContent += `</div>`;
+        
+        // Bind and open popup with larger size for imprint data
+        this.imprintMarker.bindPopup(popupContent, {
+            maxWidth: 400,
+            maxHeight: 500,
+            className: 'imprint-popup-container'
+        }).openPopup();
+        
+        // Announce to screen reader
+        this.announceToScreenReader(`Showing imprint and legal information for: ${content.title}`);
     }
     
     navigateToNextMarker() {

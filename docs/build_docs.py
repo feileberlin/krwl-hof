@@ -322,13 +322,20 @@ Events are loaded from `static/events.json`:
    cd krwl-hof
    ```
 
-2. **Serve the static files**
+2. **Download dependencies** (Leaflet map library)
+   ```bash
+   ./download-libs.sh
+   ```
+   
+   This downloads Leaflet.js locally for better performance and offline PWA support.
+
+3. **Serve the static files**
    ```bash
    cd static
    python3 -m http.server 8000
    ```
 
-3. **Open in browser**
+4. **Open in browser**
    ```
    http://localhost:8000
    ```
@@ -363,7 +370,9 @@ The application provides context to screen reader users:
 
 ## 🧪 Testing
 
-### Running Documentation Tests
+### Running Tests
+
+**Documentation validation:**
 ```bash
 python3 docs/build_docs.py --validate
 ```
@@ -373,6 +382,39 @@ This validates:
 - Config has all required sections
 - Documentation matches code features
 - All links in docs are valid
+
+**Scraper tests:**
+```bash
+python3 test_scraper.py --verbose
+```
+
+This tests:
+- Manual event creation
+- Event deduplication logic
+- Source type handling (RSS, API, HTML)
+- Data validation
+- Error handling
+
+**Filter tests:**
+```bash
+python3 test_filters.py --verbose
+```
+
+This tests:
+- Time filtering (sunrise, sunday, full moon, hours)
+- Distance filtering (15 min foot, 10 min bike, 1 hr transport)
+- Event type filtering
+- Location filtering
+
+**Feature verification:**
+```bash
+python3 verify_features.py --verbose
+```
+
+This verifies:
+- All declared features are implemented
+- Feature registry matches codebase
+- No undeclared features exist
 
 ### Manual Testing Checklist
 - [ ] Map loads and displays correctly
@@ -450,6 +492,25 @@ krwl-hof/
 - Run `python3 docs/build_docs.py` before committing
 - Update config.json for new configurable features
 - Add JSDoc comments for new functions
+
+### Managing Dependencies
+The project uses a custom library manager for CDN replacements:
+
+```bash
+# Download/update libraries
+python3 manage_libs.py download
+
+# Verify installations
+python3 manage_libs.py verify
+
+# List managed libraries
+python3 manage_libs.py list
+
+# Update a specific library
+python3 manage_libs.py update leaflet 1.9.5
+```
+
+See `static/lib/README.md` for more details.
 
 ## 📄 License
 

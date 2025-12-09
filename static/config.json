@@ -1,14 +1,40 @@
 {
   "app": {
     "name": "KRWL HOF Community Events",
-    "description": "Community events scraper and viewer with geolocation filtering"
+    "description": "Community events scraper and viewer with geolocation filtering",
+    "language": "auto",
+    "language_comment": "Set to 'en' for English, 'de' for German, or 'auto' for browser detection. Loads content.json or content.de.json accordingly."
   },
   "ui": {
     "logo": "logo.svg",
-    "imprint_url": "imprint.html",
-    "imprint_text": "Imprint",
+    "imprint_url": "#",
+    "imprint_url_comment": "Set to '#' to show project location on map, or URL for separate page",
     "theme_color": "#4CAF50",
     "background_color": "#1a1a1a"
+  },
+  "imprint": {
+    "enabled": true,
+    "location": {
+      "lat": 50.3167,
+      "lon": 11.9167,
+      "marker": "marker-city-center.svg"
+    },
+    "contact": {
+      "email": "",
+      "website": "https://krwl.in",
+      "github": "https://github.com/feileberlin/krwl-hof"
+    },
+    "responsible": {
+      "name": "",
+      "email": ""
+    },
+    "technical": {
+      "hosting": "GitHub Pages",
+      "domain": "krwl.in",
+      "technology": "HTML5, JavaScript, Leaflet.js",
+      "open_source": true,
+      "repository": "https://github.com/feileberlin/krwl-hof"
+    }
   },
   "scraping": {
     "sources": [
