@@ -729,32 +729,66 @@ class EventsApp {
     }
     
     updateFilterDescription(count) {
-        // Update the count filter display
-        const countFilterEl = document.getElementById('event-count-filter');
+        // Get the category filter element
+        const categoryFilter = document.getElementById('category-filter');
+        
+        // First, restore all options to their original text
+        for (let i = 0; i < categoryFilter.options.length; i++) {
+            const option = categoryFilter.options[i];
+            // Store original text on first run
+            if (!option.dataset.originalText) {
+                option.dataset.originalText = option.textContent;
+            }
+            // Restore to original text
+            option.textContent = option.dataset.originalText;
+        }
+        
+        // Now update the selected option with the count
+        const selectedOption = categoryFilter.options[categoryFilter.selectedIndex];
+        const categoryText = selectedOption.dataset.originalText;
+        
+        // Helper function to get singular or plural form
+        const getCountText = (count) => {
+            if (window.i18n) {
+                // Use translation system with proper singular/plural
+                if (count === 0) {
+                    return window.i18n.t('filters.event_count.none');
+                } else if (count === 1) {
+                    return window.i18n.t('filters.event_count.singular', { count: count });
+                } else {
+                    return window.i18n.t('filters.event_count.plural', { count: count });
+                }
+            } else {
+                // Fallback without i18n
+                if (count === 0) return 'No events';
+                return count === 1 ? `${count} event` : `${count} events`;
+            }
+        };
         
         // Build count text based on selected category
         let countText = '';
         if (this.filters.category === 'all') {
-            countText = `${count} events`;
+            // For "all" category, just show count
+            countText = getCountText(count);
         } else {
-            // Get the text from the selected category option
-            const categoryFilter = document.getElementById('category-filter');
-            const selectedOption = categoryFilter.options[categoryFilter.selectedIndex];
-            const categoryText = selectedOption.textContent;
-            
             // For specific categories, show count with type
-            if (categoryText === 'events') {
-                countText = `${count} events`;
+            if (categoryText === 'events' || categoryText === 'veranstaltungen') {
+                // Don't double-show "events" - just use the count text
+                countText = getCountText(count);
             } else if (categoryText === 'festivals') {
-                countText = `${count} festivals`;
+                // Festivals is already plural, handle singular case
+                countText = count === 1 ? `${count} festival` : `${count} ${categoryText}`;
             } else {
-                countText = `${count} ${categoryText} events`;
+                // For other categories: "X category events" or "1 category event"
+                const eventWord = count === 1 ? 
+                    (window.i18n && window.i18n.getLocale() === 'de' ? 'veranstaltung' : 'event') :
+                    (window.i18n && window.i18n.getLocale() === 'de' ? 'veranstaltungen' : 'events');
+                countText = `${count} ${categoryText} ${eventWord}`;
             }
         }
         
-        // Update the count display
-        countFilterEl.options[0].text = countText;
-        countFilterEl.value = 'count';
+        // Update the category filter to show the count
+        selectedOption.textContent = countText;
         
         this.log('Filter count updated:', countText);
     }
@@ -794,7 +828,10 @@ class EventsApp {
             const catOptions = categoryFilter.options;
             for (let i = 0; i < catOptions.length; i++) {
                 const value = catOptions[i].value;
-                catOptions[i].textContent = t(`filters.categories.${value}`);
+                const translatedText = t(`filters.categories.${value}`);
+                catOptions[i].textContent = translatedText;
+                // Update the stored original text for the new language
+                catOptions[i].dataset.originalText = translatedText;
             }
         }
         
