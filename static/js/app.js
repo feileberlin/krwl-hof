@@ -1,33 +1,143 @@
-// KRWL HOF Community Events App
+/**
+ * KRWL HOF Community Events Application
+ * 
+ * A fullscreen, mobile-first interactive map application for discovering community events.
+ * Uses vanilla JavaScript with Leaflet.js for mapping.
+ * 
+ * Key Features:
+ * - Fullscreen map with no separate event list
+ * - Pure Leaflet.js conventions (standard markers, tooltips, popups)
+ * - Natural language filter sentence overlay
+ * - Full keyboard navigation and accessibility
+ * - PWA support with offline capability
+ * - All configuration from JSON files
+ * 
+ * @author KRWL HOF Community
+ * @version 1.0.0
+ */
+
 class EventsApp {
+    /**
+     * Initialize the EventsApp
+     * Sets up default configuration and starts the application
+     */
     constructor() {
+        // Leaflet map instance
         this.map = null;
+        
+        // User's current geolocation {lat, lon}
         this.userLocation = null;
+        
+        // Array of all event objects loaded from events.json
         this.events = [];
+        
+        // Array of Leaflet marker objects currently displayed on map
         this.markers = [];
+        
+        // Configuration object loaded from config.json
         this.config = null;
+        
+        // Debug mode flag (enables console logging)
         this.debug = false;
+        
+        // Current filter settings
         this.filters = {
-            maxDistance: 1.25,  // Default: 15 minutes by foot
-            timeFilter: 'sunrise',
-            category: 'all',
-            useCustomLocation: false,
-            customLat: null,
-            customLon: null
+            maxDistance: 1.25,        // Distance in km (15 min walk)
+            timeFilter: 'sunrise',     // Time range filter
+            category: 'all',           // Event category filter
+            useCustomLocation: false,  // Use predefined location instead of geolocation
+            customLat: null,           // Custom location latitude
+            customLon: null            // Custom location longitude
         };
         
+        // Current marker index for keyboard navigation
+        this.currentMarkerIndex = -1;
+        
+        // Start the application
         this.init();
     }
     
+    /**
+     * Debug logging function
+     * Only logs when debug mode is enabled
+     * @param {...any} args - Arguments to log
+     */
     log(...args) {
         if (this.debug) {
             console.log('[KRWL Debug]', ...args);
         }
     }
     
+    /**
+     * Initialize the application
+     * Loads config, sets up UI, initializes map, gets location, loads events
+     * @async
+     */
     async init() {
-        // Load configuration
+        // Load configuration from config.json
         await this.loadConfig();
+        
+        // Initialize UI elements from config (logo, title, etc.)
+        this.initUI();
+        
+        // Initialize Leaflet map with configured tile provider
+        this.initMap();
+        
+        // Get user's geolocation or use default location
+        this.getUserLocation();
+        
+        // Load event data from events.json
+        await this.loadEvents();
+        
+        // Setup all event listeners (filters, keyboard nav, etc.)
+        this.setupEventListeners();
+    }
+    
+    /**
+     * Initialize UI elements from configuration
+     * Sets page title, logo, imprint link based on config.json
+     */
+    initUI() {
+        // Set page title from config (append [DEBUG MODE] if debug enabled)
+        if (this.config.app && this.config.app.name) {
+            document.title = this.config.app.name + (this.debug ? ' [DEBUG MODE]' : '');
+        }
+        
+        // Set logo and imprint link from config
+        const ui = this.config.ui || {};
+        const imprintLink = document.getElementById('imprint-link');
+        const siteLogo = document.getElementById('site-logo');
+        const imprintText = document.getElementById('imprint-text');
+        
+        // Update imprint URL if configured
+        if (imprintLink && ui.imprint_url) {
+            imprintLink.href = ui.imprint_url;
+        }
+        
+        // Update imprint text if configured
+        if (imprintText && ui.imprint_text) {
+            imprintText.textContent = ui.imprint_text;
+        }
+        
+        // Load logo if configured
+        if (siteLogo && ui.logo) {
+            siteLogo.src = ui.logo;
+            siteLogo.style.display = 'block';
+            if (imprintText) {
+                imprintText.style.display = 'none';
+            }
+            // Handle logo load error - fallback to text
+            siteLogo.onerror = () => {
+                siteLogo.style.display = 'none';
+                if (imprintText) {
+                    imprintText.style.display = 'inline';
+                }
+            };
+        }
+    }
+        
+        // Initialize UI from config
+        this.initUI();
         
         // Initialize map
         this.initMap();
@@ -42,26 +152,77 @@ class EventsApp {
         this.setupEventListeners();
     }
     
+    initUI() {
+        // Set page title from config
+        if (this.config.app && this.config.app.name) {
+            document.title = this.config.app.name + (this.debug ? ' [DEBUG MODE]' : '');
+        }
+        
+        // Set logo and imprint link from config
+        const ui = this.config.ui || {};
+        const imprintLink = document.getElementById('imprint-link');
+        const siteLogo = document.getElementById('site-logo');
+        const imprintText = document.getElementById('imprint-text');
+        
+        if (imprintLink && ui.imprint_url) {
+            imprintLink.href = ui.imprint_url;
+        }
+        
+        if (imprintText && ui.imprint_text) {
+            imprintText.textContent = ui.imprint_text;
+        }
+        
+        if (siteLogo && ui.logo) {
+            siteLogo.src = ui.logo;
+            siteLogo.style.display = 'block';
+            if (imprintText) {
+                imprintText.style.display = 'none';
+            }
+            // Handle logo load error
+            siteLogo.onerror = () => {
+                siteLogo.style.display = 'none';
+                if (imprintText) {
+                    imprintText.style.display = 'inline';
+                }
+            };
+        }
+    }
+    
+    /**
+     * Load application configuration from config.json
+     * Fetches app settings, UI preferences, map configuration
+     * Falls back to defaults if config file is missing
+     * @async
+     */
     async loadConfig() {
         try {
+            // Fetch configuration file
             const response = await fetch('config.json');
             this.config = await response.json();
+            
+            // Enable debug mode if configured
             this.debug = this.config.debug || false;
             this.log('Config loaded:', this.config);
-            if (this.debug) {
-                document.title += ' [DEBUG MODE]';
-            }
             
-            // Fetch next full moon date based on map center location
+            // Fetch next full moon date for "till next full moon" filter
             await this.fetchNextFullMoon();
         } catch (error) {
+            // If config fails to load, use safe defaults
             console.error('Error loading config:', error);
-            // Use defaults
             this.config = {
                 debug: false,
+                app: {
+                    name: 'KRWL HOF Community Events'
+                },
+                ui: {
+                    logo: '',
+                    imprint_url: 'imprint.html',
+                    imprint_text: 'Imprint'
+                },
                 map: {
-                    default_center: { lat: 52.52, lon: 13.405 },
-                    default_zoom: 13
+                    default_center: { lat: 50.3167, lon: 11.9167 },
+                    default_zoom: 13,
+                    tile_provider: 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png'
                 },
                 filtering: {
                     max_distance_km: 5.0,
@@ -71,28 +232,38 @@ class EventsApp {
         }
     }
     
+    /**
+     * Fetch next full moon date from astronomy API
+     * Uses wttr.in free API to get moon phase and illumination
+     * Calculates next full moon date based on current moon phase
+     * @async
+     */
     async fetchNextFullMoon() {
         try {
+            // Get coordinates from config for accurate moon phase
             const lat = this.config.map?.default_center?.lat || 50.3167;
             const lon = this.config.map?.default_center?.lon || 11.9167;
             
-            // Use astronomy API to get lunar phase data
-            // Using wttr.in which is free and doesn't require API key
+            // Using wttr.in weather API (includes astronomy data)
+            // format=j1 returns JSON with detailed astronomy information
             const url = `https://wttr.in/${lat},${lon}?format=j1`;
             
             const response = await fetch(url);
             if (response.ok) {
                 const data = await response.json();
+                
+                // Extract moon phase and illumination from astronomy data
                 if (data.weather && data.weather[0]?.astronomy) {
                     const astronomy = data.weather[0].astronomy[0];
-                    const moonPhase = astronomy.moon_phase || '';
-                    const moonIllumination = parseInt(astronomy.moon_illumination) || 50;
+                    const moonPhase = astronomy.moon_phase || '';           // e.g., "Waxing Gibbous"
+                    const moonIllumination = parseInt(astronomy.moon_illumination) || 50;  // 0-100%
                     
-                    // Calculate next full moon
+                    // Calculate next full moon based on current phase
                     this.nextFullMoonDate = this.calculateNextFullMoonFromData(moonPhase, moonIllumination);
                     this.log('Next full moon date:', this.nextFullMoonDate, 'Moon phase:', moonPhase, 'Illumination:', moonIllumination + '%');
                 }
             } else {
+                // API unavailable, will use approximation in filter
                 this.log('Weather API unavailable, using approximation');
                 this.nextFullMoonDate = null;
             }
@@ -133,29 +304,71 @@ class EventsApp {
         return fullMoonDate;
     }
     
+    /**
+     * Initialize Leaflet Map
+     * Creates a minimal, clean map interface with no UI controls
+     * - NO zoom controls (+/- buttons) for cleaner look
+     * - NO attribution box (moved to config if needed)
+     * - Uses tile provider from config.json
+     * - Centers on configured default location
+     * 
+     * Map Philosophy:
+     * - Fullscreen, immersive experience
+     * - No distractions from traditional map UI
+     * - All controls overlay on map (filter sentence, logo)
+     * - Events are the primary focus
+     */
     initMap() {
         const center = this.config.map.default_center;
         
-        // Initialize map with minimal UI - no zoom controls, no attribution box
+        // Initialize Leaflet map with MINIMAL UI
+        // zoomControl: false    → No +/- zoom buttons (cleaner interface)
+        // attributionControl: false → No "Leaflet | © OpenStreetMap" box
         this.map = L.map('map', {
             zoomControl: false,        // Remove zoom +/- buttons
-            attributionControl: false  // Remove attribution box
+            attributionControl: false  // Remove attribution box at bottom-right
         }).setView([center.lat, center.lon], this.config.map.default_zoom);
         
-        // Use dark/night mode tile layer with minimal details
-        // CartoDB Dark Matter: Clean, minimal, night mode style
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            maxZoom: 19,
-            subdomains: 'abcd'
+        // Load map tiles from configured provider
+        // Default: CartoDB Dark No Labels (minimal - only major roads, no POIs/labels)
+        // This keeps the focus on our event markers from JSON
+        // Alternative options in config:
+        //   - dark_nolabels: Minimal, no labels or POIs
+        //   - dark_all: More detail with labels
+        //   - light_nolabels: Light theme, minimal
+        const tileProvider = this.config.map.tile_provider || 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png';
+        const attribution = this.config.map.attribution || '';
+        
+        // Add tile layer to map
+        L.tileLayer(tileProvider, {
+            maxZoom: 19,           // Maximum zoom level
+            attribution: attribution,  // Attribution text (if any)
+            subdomains: 'abcd'     // Load balance across tile servers
         }).addTo(this.map);
+        
+        this.log('Map initialized:', {
+            center: center,
+            zoom: this.config.map.default_zoom,
+            tileProvider: tileProvider,
+            style: 'minimal (no labels/POIs - focus on event markers)'
+        });
     }
     
+    /**
+     * Get User's Geolocation
+     * Attempts to get user's current position using browser geolocation API
+     * Falls back to configured default location if:
+     * - User denies permission
+     * - Geolocation not available
+     * - Geolocation fails/times out
+     * 
+     * Once location is obtained:
+     * - Centers map on user location
+     * - Adds blue marker showing "You are here"
+     * - Triggers event display (filters by distance from this location)
+     */
     getUserLocation() {
-        const statusEl = document.getElementById('location-status');
-        
         if ('geolocation' in navigator) {
-            statusEl.textContent = 'Getting your location...';
-            
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     this.userLocation = {
@@ -166,22 +379,16 @@ class EventsApp {
                     // Center map on user location
                     this.map.setView([this.userLocation.lat, this.userLocation.lon], 13);
                     
-                    // Add user marker
-                    L.marker([this.userLocation.lat, this.userLocation.lon], {
-                        icon: L.divIcon({
-                            className: 'user-marker',
-                            html: '<div style="background: #2196F3; border: 3px solid white; border-radius: 50%; width: 20px; height: 20px;"></div>'
-                        })
-                    }).addTo(this.map).bindPopup('You are here');
-                    
-                    statusEl.textContent = '📍 Location found';
+                    // Add user marker with standard Leaflet convention
+                    L.marker([this.userLocation.lat, this.userLocation.lon])
+                        .addTo(this.map)
+                        .bindPopup('You are here');
                     
                     // Update events display
                     this.displayEvents();
                 },
                 (error) => {
                     console.error('Location error:', error);
-                    statusEl.textContent = '⚠️ Location unavailable - using default location';
                     
                     // Use config default location as fallback
                     const defaultCenter = this.config.map.default_center;
@@ -199,8 +406,6 @@ class EventsApp {
                 }
             );
         } else {
-            statusEl.textContent = '⚠️ Geolocation not supported - using default location';
-            
             // Use config default location as fallback
             const defaultCenter = this.config.map.default_center;
             this.userLocation = {
@@ -471,34 +676,52 @@ class EventsApp {
     
     displayEvents() {
         const filteredEvents = this.filterEvents();
-        const container = document.getElementById('events-container');
         
         // Update count with descriptive sentence
         this.updateFilterDescription(filteredEvents.length);
-        
-        // Clear existing content
-        container.innerHTML = '';
         
         // Clear existing markers
         this.markers.forEach(marker => marker.remove());
         this.markers = [];
         
+        // Reset marker navigation index when markers change
+        this.currentMarkerIndex = -1;
+        
         if (filteredEvents.length === 0) {
-            container.innerHTML = '<p>No events match the current filters.</p>';
+            this.log('No events to display');
+            this.announceToScreenReader('No events match the current filters');
             return;
         }
         
         // Sort by distance
         filteredEvents.sort((a, b) => (a.distance || 0) - (b.distance || 0));
         
-        // Display events
+        // Display events as map markers only
         filteredEvents.forEach(event => {
-            this.displayEventCard(event, container);
             this.addEventMarker(event);
         });
         
         // Fit map to show all markers
         this.fitMapToMarkers();
+        
+        // Announce to screen readers
+        this.announceToScreenReader(`${filteredEvents.length} events displayed on map. Use arrow keys to navigate between events.`);
+    }
+    }
+    
+    announceToScreenReader(message) {
+        // Create or update ARIA live region for screen reader announcements
+        let liveRegion = document.getElementById('aria-live-region');
+        if (!liveRegion) {
+            liveRegion = document.createElement('div');
+            liveRegion.id = 'aria-live-region';
+            liveRegion.className = 'sr-only';
+            liveRegion.setAttribute('role', 'status');
+            liveRegion.setAttribute('aria-live', 'polite');
+            liveRegion.setAttribute('aria-atomic', 'true');
+            document.body.appendChild(liveRegion);
+        }
+        liveRegion.textContent = message;
     }
     
     updateFilterDescription(count) {
@@ -532,48 +755,289 @@ class EventsApp {
         this.log('Filter count updated:', countText);
     }
     
-    displayEventCard(event, container) {
-        const card = document.createElement('div');
-        card.className = 'event-card';
+    formatTime(dateString) {
+        const date = new Date(dateString);
+        const now = new Date();
+        const tomorrow = new Date(now);
+        tomorrow.setDate(tomorrow.getDate() + 1);
         
-        const title = document.createElement('h3');
-        title.textContent = event.title;
+        const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         
-        const location = document.createElement('p');
-        location.textContent = `📍 ${event.location.name}`;
-        
-        const time = document.createElement('p');
-        const eventDate = new Date(event.start_time);
-        time.textContent = `🕐 ${eventDate.toLocaleString()}`;
-        
-        card.appendChild(title);
-        card.appendChild(location);
-        card.appendChild(time);
-        
-        if (event.distance !== undefined) {
-            const distance = document.createElement('p');
-            distance.className = 'distance';
-            distance.textContent = `📏 ${event.distance.toFixed(1)} km away`;
-            card.appendChild(distance);
+        // Check if today
+        if (date.toDateString() === now.toDateString()) {
+            return `Today ${timeStr}`;
         }
-        
-        card.addEventListener('click', () => this.showEventDetail(event));
-        
-        container.appendChild(card);
+        // Check if tomorrow
+        else if (date.toDateString() === tomorrow.toDateString()) {
+            return `Tomorrow ${timeStr}`;
+        }
+        // Otherwise show date
+        else {
+            return date.toLocaleString([], { 
+                month: 'short', 
+                day: 'numeric', 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+        }
     }
     
     addEventMarker(event) {
         if (!event.location) return;
         
-        const marker = L.marker([event.location.lat, event.location.lon], {
-            icon: L.divIcon({
-                className: 'event-marker',
-                html: '<div style="background: #4CAF50; border: 3px solid white; border-radius: 50%; width: 20px; height: 20px;"></div>'
-            })
-        }).addTo(this.map);
+        const eventDate = new Date(event.start_time);
+        const previewTime = this.formatTime(event.start_time);
         
-        marker.bindPopup(`<strong>${event.title}</strong><br>${event.location.name}`);
-        marker.on('click', () => this.showEventDetail(event));
+        // Standard Leaflet marker (pure Leaflet convention)
+        const marker = L.marker([event.location.lat, event.location.lon])
+            .addTo(this.map);
+        
+        // Make marker keyboard accessible after element is created
+        // Use setTimeout to ensure DOM element is available
+        setTimeout(() => {
+            const markerElement = marker.getElement();
+            if (markerElement) {
+                markerElement.setAttribute('tabindex', '0');
+                markerElement.setAttribute('role', 'button');
+                markerElement.setAttribute('aria-label', `${event.title} at ${event.location.name}, ${previewTime}. Press Enter to view details.`);
+                
+                // Add keyboard event listeners
+                markerElement.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        marker.openPopup();
+                    }
+                });
+                
+                this.log(`Keyboard accessibility added to marker: ${event.title}`);
+            } else {
+                console.warn(`Marker element not available for: ${event.title}`);
+            }
+        }, 0);
+        
+        // Use Leaflet's bindTooltip for time preview (permanent tooltip above marker)
+        marker.bindTooltip(previewTime, {
+            permanent: true,
+            direction: 'top',
+            offset: [0, -10],
+            className: 'event-time-tooltip'
+        });
+        
+        // Create rich popup with all event details (pure Leaflet convention)
+        // Add line index for staggered typewriter animation
+        let lineIndex = 0;
+        const eventId = `event-${event.id || Math.random().toString(36).substr(2, 9)}`;
+        const popupContent = `
+            <div class="event-popup" data-event-id="${eventId}">
+                <!-- Burger Menu Button (Terminal Style) -->
+                <button class="burger-menu" aria-label="Event actions menu" aria-expanded="false" aria-controls="${eventId}-menu" title="Actions">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                
+                <!-- Dropdown Menu with Terminal-Style Actions -->
+                <div class="burger-menu-dropdown" id="${eventId}-menu" role="menu">
+                    <!-- Bookmark/Highlight -->
+                    <button class="menu-item bookmark-event" role="menuitem" data-event-id="${eventId}" title="Save to bookmarks">
+                        <span class="menu-icon">⭐</span> <span class="menu-text">bookmark</span>
+                    </button>
+                    
+                    <!-- Copy Event Details (Terminal Style) -->
+                    <button class="menu-item copy-details" role="menuitem" title="Copy to clipboard">
+                        <span class="menu-icon">📋</span> <span class="menu-text">copy_data</span>
+                    </button>
+                    
+                    <!-- Share Event -->
+                    <button class="menu-item share-event" role="menuitem" data-title="${event.title.replace(/"/g, '&quot;')}" data-location="${event.location.name.replace(/"/g, '&quot;')}" title="Share event">
+                        <span class="menu-icon">📤</span> <span class="menu-text">share</span>
+                    </button>
+                    
+                    ${event.url ? `<a href="${event.url}" target="_blank" rel="noopener noreferrer" class="menu-item" role="menuitem" title="View full details">
+                        <span class="menu-icon">🔗</span> <span class="menu-text">access_url</span>
+                    </a>` : ''}
+                    
+                    <!-- Navigation to Event -->
+                    <button class="menu-item navigate-event" role="menuitem" data-lat="${event.location.lat}" data-lon="${event.location.lon}" title="Get directions">
+                        <span class="menu-icon">🧭</span> <span class="menu-text">navigate</span>
+                    </button>
+                    
+                    <!-- Add to Calendar -->
+                    <button class="menu-item add-calendar" role="menuitem" title="Add to calendar" data-event='${JSON.stringify({title: event.title, start: event.start_time, location: event.location.name, description: event.description || ''}).replace(/'/g, "&apos;")}'>
+                        <span class="menu-icon">📅</span> <span class="menu-text">add_to_cal</span>
+                    </button>
+                    
+                    <!-- Visit Counter (Placeholder for future) -->
+                    <div class="menu-item menu-info" role="menuitem" title="View count (coming soon)">
+                        <span class="menu-icon">👁️</span> <span class="menu-text">views: <span class="visit-count">--</span></span>
+                    </div>
+                    
+                    <!-- Close Popup -->
+                    <button class="menu-item close-popup" role="menuitem" title="Close popup">
+                        <span class="menu-icon">✕</span> <span class="menu-text">exit</span>
+                    </button>
+                </div>
+                
+                <h3>${event.title}</h3>
+                <div class="event-popup-info">
+                    <p style="--line-index: ${lineIndex++};"><span class="icon">🕐</span> ${eventDate.toLocaleString([], { 
+                        weekday: 'short',
+                        month: 'short', 
+                        day: 'numeric',
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                    })}</p>
+                    <p style="--line-index: ${lineIndex++};"><span class="icon">📍</span> ${event.location.name}</p>
+                    ${event.distance !== undefined ? 
+                        `<p style="--line-index: ${lineIndex++};"><span class="icon">📏</span> ${event.distance.toFixed(1)} km away</p>` : 
+                        ''}
+                </div>
+                ${event.description ? 
+                    `<div class="event-popup-description">${event.description}</div>` : 
+                    ''}
+            </div>
+        `;
+        
+        marker.bindPopup(popupContent, {
+            maxWidth: 300,
+            minWidth: 200,
+            className: 'event-popup-container',
+            closeButton: false  // Hide default close button, use our burger menu
+        });
+        
+        // Store event data for menu actions
+        marker.eventFullData = event;
+        
+        // Add typewriter animation and burger menu functionality when popup opens
+        marker.on('popupopen', (e) => {
+            const popupWrapper = e.popup.getElement().querySelector('.leaflet-popup-content-wrapper');
+            if (popupWrapper) {
+                // Add typing class to trigger animation
+                setTimeout(() => {
+                    popupWrapper.classList.add('typing');
+                }, 10);
+                
+                // Remove typing class after animation completes
+                setTimeout(() => {
+                    popupWrapper.classList.remove('typing');
+                }, 2000);
+                
+                // Setup burger menu functionality
+                const burgerBtn = popupWrapper.querySelector('.burger-menu');
+                const dropdown = popupWrapper.querySelector('.burger-menu-dropdown');
+                const closeBtn = popupWrapper.querySelector('.close-popup');
+                const shareBtn = popupWrapper.querySelector('.share-event');
+                const bookmarkBtn = popupWrapper.querySelector('.bookmark-event');
+                const copyBtn = popupWrapper.querySelector('.copy-details');
+                const navigateBtn = popupWrapper.querySelector('.navigate-event');
+                const calendarBtn = popupWrapper.querySelector('.add-calendar');
+                
+                if (burgerBtn && dropdown) {
+                    // Toggle burger menu
+                    burgerBtn.addEventListener('click', (event) => {
+                        event.stopPropagation();
+                        const isExpanded = burgerBtn.getAttribute('aria-expanded') === 'true';
+                        burgerBtn.setAttribute('aria-expanded', !isExpanded);
+                        burgerBtn.classList.toggle('active');
+                        dropdown.classList.toggle('show');
+                    });
+                    
+                    // Close popup button
+                    if (closeBtn) {
+                        closeBtn.addEventListener('click', () => {
+                            e.target.closePopup();
+                        });
+                    }
+                    
+                    // Bookmark/Highlight event
+                    if (bookmarkBtn) {
+                        // Check if already bookmarked
+                        const bookmarkedEvents = JSON.parse(localStorage.getItem('bookmarkedEvents') || '[]');
+                        const eventId = bookmarkBtn.dataset.eventId;
+                        
+                        if (bookmarkedEvents.includes(eventId)) {
+                            bookmarkBtn.classList.add('bookmarked');
+                            bookmarkBtn.querySelector('.menu-text').textContent = 'unbookmark';
+                        }
+                        
+                        bookmarkBtn.addEventListener('click', () => {
+                            this.toggleBookmark(eventId, bookmarkBtn, marker);
+                        });
+                    }
+                    
+                    // Copy event details to clipboard
+                    if (copyBtn) {
+                        copyBtn.addEventListener('click', () => {
+                            const eventData = marker.eventFullData;
+                            const text = `EVENT: ${eventData.title}\nTIME: ${new Date(eventData.start_time).toLocaleString()}\nLOCATION: ${eventData.location.name}\nDESCRIPTION: ${eventData.description || 'N/A'}\n${eventData.url ? 'URL: ' + eventData.url : ''}`;
+                            
+                            navigator.clipboard.writeText(text).then(() => {
+                                copyBtn.querySelector('.menu-text').textContent = 'copied!';
+                                setTimeout(() => {
+                                    copyBtn.querySelector('.menu-text').textContent = 'copy_data';
+                                }, 2000);
+                            }).catch(err => {
+                                console.error('Copy failed:', err);
+                            });
+                        });
+                    }
+                    
+                    // Share button
+                    if (shareBtn) {
+                        shareBtn.addEventListener('click', () => {
+                            const title = shareBtn.dataset.title;
+                            const location = shareBtn.dataset.location;
+                            const text = `Check out: ${title} at ${location}`;
+                            
+                            if (navigator.share) {
+                                navigator.share({
+                                    title: title,
+                                    text: text,
+                                    url: window.location.href
+                                }).catch(err => console.log('Share cancelled'));
+                            } else {
+                                navigator.clipboard.writeText(text).then(() => {
+                                    shareBtn.querySelector('.menu-text').textContent = 'shared!';
+                                    setTimeout(() => {
+                                        shareBtn.querySelector('.menu-text').textContent = 'share';
+                                    }, 2000);
+                                }).catch(err => console.error('Share failed:', err));
+                            }
+                        });
+                    }
+                    
+                    // Navigate to event location
+                    if (navigateBtn) {
+                        navigateBtn.addEventListener('click', () => {
+                            const lat = navigateBtn.dataset.lat;
+                            const lon = navigateBtn.dataset.lon;
+                            // Open in Google Maps
+                            window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}`, '_blank');
+                        });
+                    }
+                    
+                    // Add to calendar
+                    if (calendarBtn) {
+                        calendarBtn.addEventListener('click', () => {
+                            const eventData = JSON.parse(calendarBtn.dataset.event.replace(/&apos;/g, "'"));
+                            this.addToCalendar(eventData);
+                        });
+                    }
+                    
+                    // Close dropdown when clicking outside
+                    document.addEventListener('click', (event) => {
+                        if (!burgerBtn.contains(event.target) && !dropdown.contains(event.target)) {
+                            dropdown.classList.remove('show');
+                            burgerBtn.classList.remove('active');
+                            burgerBtn.setAttribute('aria-expanded', 'false');
+                        }
+                    });
+                }
+            }
+        });
+        
+        // Store event data with marker for keyboard navigation
+        marker.eventData = event;
         
         this.markers.push(marker);
     }
@@ -660,6 +1124,158 @@ class EventsApp {
                 document.getElementById('event-detail').classList.add('hidden');
             }
         });
+        
+        // Keyboard navigation for cycling through event markers
+        this.currentMarkerIndex = -1;
+        document.addEventListener('keydown', (e) => {
+            // Only handle arrow keys when not focused on an input/select
+            if (document.activeElement.tagName === 'SELECT' || 
+                document.activeElement.tagName === 'INPUT' ||
+                document.activeElement.tagName === 'TEXTAREA') {
+                return;
+            }
+            
+            if (this.markers.length === 0) return;
+            
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                e.preventDefault();
+                this.navigateToNextMarker();
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                this.navigateToPreviousMarker();
+            } else if (e.key === 'Escape') {
+                // Close any open popups
+                this.map.closePopup();
+                document.getElementById('event-detail').classList.add('hidden');
+            }
+        });
+    }
+    
+    navigateToNextMarker() {
+        if (this.markers.length === 0) return;
+        
+        this.currentMarkerIndex = (this.currentMarkerIndex + 1) % this.markers.length;
+        this.focusMarker(this.currentMarkerIndex);
+    }
+    
+    navigateToPreviousMarker() {
+        if (this.markers.length === 0) return;
+        
+        this.currentMarkerIndex = this.currentMarkerIndex <= 0 
+            ? this.markers.length - 1 
+            : this.currentMarkerIndex - 1;
+        this.focusMarker(this.currentMarkerIndex);
+    }
+    
+    focusMarker(index) {
+        const marker = this.markers[index];
+        if (!marker) return;
+        
+        // Pan to marker
+        this.map.panTo(marker.getLatLng());
+        
+        // Focus the marker element
+        const markerElement = marker.getElement();
+        if (markerElement) {
+            markerElement.focus();
+        }
+        
+        // Open popup
+        marker.openPopup();
+        
+        // Announce to screen reader
+        if (marker.eventData) {
+            this.announceToScreenReader(
+                `Event ${index + 1} of ${this.markers.length}: ${marker.eventData.title} at ${marker.eventData.location.name}`
+            );
+        }
+    }
+    
+    /**
+     * Toggle bookmark for an event
+     * Saves bookmarked events to localStorage
+     * Highlights bookmarked events on map with different style
+     * @param {string} eventId - Unique event identifier
+     * @param {HTMLElement} button - Bookmark button element
+     * @param {L.Marker} marker - Leaflet marker to highlight
+     */
+    toggleBookmark(eventId, button, marker) {
+        const bookmarkedEvents = JSON.parse(localStorage.getItem('bookmarkedEvents') || '[]');
+        const index = bookmarkedEvents.indexOf(eventId);
+        
+        if (index > -1) {
+            // Remove bookmark
+            bookmarkedEvents.splice(index, 1);
+            button.classList.remove('bookmarked');
+            button.querySelector('.menu-text').textContent = 'bookmark';
+            
+            // Remove highlight from marker
+            const markerElement = marker.getElement();
+            if (markerElement) {
+                markerElement.classList.remove('bookmarked-marker');
+            }
+            
+            this.announceToScreenReader('Bookmark removed');
+        } else {
+            // Add bookmark
+            bookmarkedEvents.push(eventId);
+            button.classList.add('bookmarked');
+            button.querySelector('.menu-text').textContent = 'unbookmark';
+            
+            // Highlight marker
+            const markerElement = marker.getElement();
+            if (markerElement) {
+                markerElement.classList.add('bookmarked-marker');
+            }
+            
+            this.announceToScreenReader('Event bookmarked');
+        }
+        
+        // Save to localStorage
+        localStorage.setItem('bookmarkedEvents', JSON.stringify(bookmarkedEvents));
+        this.log('Bookmarked events:', bookmarkedEvents);
+    }
+    
+    /**
+     * Add event to calendar
+     * Generates iCalendar (.ics) file for download
+     * @param {Object} eventData - Event information
+     */
+    addToCalendar(eventData) {
+        // Create iCalendar format
+        const startDate = new Date(eventData.start);
+        const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // Default 2 hours
+        
+        // Format dates for iCal (YYYYMMDDTHHmmss)
+        const formatDate = (date) => {
+            return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+        };
+        
+        const icsContent = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//KRWL HOF//Community Events//EN
+BEGIN:VEVENT
+UID:${Date.now()}@krwl-hof.events
+DTSTAMP:${formatDate(new Date())}
+DTSTART:${formatDate(startDate)}
+DTEND:${formatDate(endDate)}
+SUMMARY:${eventData.title}
+LOCATION:${eventData.location}
+DESCRIPTION:${eventData.description.replace(/\n/g, '\\n')}
+END:VEVENT
+END:VCALENDAR`;
+        
+        // Create download link
+        const blob = new Blob([icsContent], { type: 'text/calendar' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `event-${eventData.title.replace(/[^a-z0-9]/gi, '-')}.ics`;
+        a.click();
+        URL.revokeObjectURL(url);
+        
+        this.announceToScreenReader('Event added to calendar');
+        this.log('Calendar file generated for:', eventData.title);
     }
 }
 
