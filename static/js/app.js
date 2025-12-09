@@ -817,12 +817,35 @@ class EventsApp {
             option.textContent = option.dataset.originalText;
         }
         
-        // Now update the selected option with the count
+        // Calculate counts for each category based on current filters (excluding category filter)
+        const categoryCounts = this.calculateCategoryCounts();
+        
+        // Update each option with its count
+        for (let i = 0; i < categoryFilter.options.length; i++) {
+            const option = categoryFilter.options[i];
+            const categoryValue = option.value;
+            const categoryText = option.dataset.originalText;
+            const categoryCount = categoryCounts[categoryValue] || 0;
+            
+            // Format the option text with count
+            let displayText = '';
+            if (categoryValue === 'all') {
+                // For "all" category, just show the original text with count in parentheses
+                displayText = `${categoryText} (${categoryCount})`;
+            } else {
+                // For other categories, show "category (count)"
+                displayText = `${categoryText} (${categoryCount})`;
+            }
+            
+            option.textContent = displayText;
+        }
+        
+        // Get the selected option to announce to screen reader
         const selectedOption = categoryFilter.options[categoryFilter.selectedIndex];
         const categoryValue = selectedOption.value;
-        const categoryText = selectedOption.dataset.originalText;
+        const categoryCount = categoryCounts[categoryValue] || 0;
         
-        // Helper function to get singular or plural form
+        // Helper function to get singular or plural form for screen reader announcement
         const getCountText = (count) => {
             if (!window.i18n) {
                 // Fallback without i18n
@@ -840,46 +863,64 @@ class EventsApp {
             }
         };
         
-        // Helper to get event word (singular/plural)
-        const getEventWord = (count) => {
-            if (!window.i18n) {
-                return count === 1 ? 'event' : 'events';
-            }
-            return count === 1 ? 
-                window.i18n.t('filters.event_word.singular') : 
-                window.i18n.t('filters.event_word.plural');
-        };
+        this.log('Filter counts updated:', categoryCounts);
+    }
+    
+    /**
+     * Calculate event counts for each category based on current filters (excluding category filter)
+     * @returns {Object} Map of category names to event counts
+     */
+    calculateCategoryCounts() {
+        const maxEventTime = this.getMaxEventTime();
+        const maxDistance = this.filters.maxDistance;
         
-        // Build count text based on selected category
-        let countText = '';
-        if (categoryValue === 'all') {
-            // For "all" category, just show count
-            countText = getCountText(count);
-        } else {
-            // Get the base category text for comparison
-            const baseCategory = window.i18n ? window.i18n.t(`filters.categories.${categoryValue}`) : categoryText;
-            
-            // Check if this is the main "events" category by comparing with translated value
-            const allCategoryText = window.i18n ? window.i18n.t('filters.categories.all') : 'events';
-            
-            if (categoryText === allCategoryText) {
-                // Don't double-show "events" - just use the count text
-                countText = getCountText(count);
-            } else if (categoryValue === 'festivals') {
-                // Festivals has special singular form
-                const singularForm = window.i18n ? window.i18n.t('filters.categories_singular.festivals') : 'festival';
-                countText = count === 1 ? `${count} ${singularForm}` : `${count} ${categoryText}`;
-            } else {
-                // For other categories: "X category events" or "1 category event"
-                const eventWord = getEventWord(count);
-                countText = `${count} ${categoryText} ${eventWord}`;
-            }
+        // Determine which location to use for distance calculation
+        let referenceLocation = this.userLocation;
+        if (this.filters.useCustomLocation && this.filters.customLat && this.filters.customLon) {
+            referenceLocation = {
+                lat: this.filters.customLat,
+                lon: this.filters.customLon
+            };
         }
         
-        // Update the category filter to show the count
-        selectedOption.textContent = countText;
+        // Initialize counts for all categories
+        const categoryCounts = { all: 0 };
         
-        this.log('Filter count updated:', countText);
+        // Filter events by time and distance only (not by category)
+        this.events.forEach(event => {
+            // Filter by time
+            const eventTime = new Date(event.start_time);
+            if (eventTime > maxEventTime) {
+                return; // Skip this event
+            }
+            
+            // Filter by distance if location is available
+            if (referenceLocation && event.location) {
+                const distance = this.calculateDistance(
+                    referenceLocation.lat,
+                    referenceLocation.lon,
+                    event.location.lat,
+                    event.location.lon
+                );
+                
+                if (distance > maxDistance) {
+                    return; // Skip this event
+                }
+            }
+            
+            // Event passed time and distance filters, count it
+            categoryCounts.all++;
+            
+            // Count for specific category
+            if (event.category) {
+                if (!categoryCounts[event.category]) {
+                    categoryCounts[event.category] = 0;
+                }
+                categoryCounts[event.category]++;
+            }
+        });
+        
+        return categoryCounts;
     }
     
     /**
