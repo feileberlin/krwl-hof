@@ -1,30 +1,30 @@
 #!/bin/bash
 # Download third-party libraries for local hosting
 # This ensures the app works offline and improves performance
+# 
+# This is a simple wrapper around the Python library manager
+# For advanced features, use: python3 manage_libs.py --help
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-LIB_DIR="$SCRIPT_DIR/static/lib"
 
 echo "📦 Downloading third-party libraries..."
-
-# Create directories
-mkdir -p "$LIB_DIR/leaflet/images"
-
-# Download Leaflet 1.9.4
-echo "📍 Downloading Leaflet 1.9.4..."
-curl -sL https://unpkg.com/leaflet@1.9.4/dist/leaflet.css -o "$LIB_DIR/leaflet/leaflet.css"
-curl -sL https://unpkg.com/leaflet@1.9.4/dist/leaflet.js -o "$LIB_DIR/leaflet/leaflet.js"
-
-# Download Leaflet marker images
-echo "🖼️  Downloading Leaflet marker images..."
-curl -sL https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png -o "$LIB_DIR/leaflet/images/marker-icon.png"
-curl -sL https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png -o "$LIB_DIR/leaflet/images/marker-icon-2x.png"
-curl -sL https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png -o "$LIB_DIR/leaflet/images/marker-shadow.png"
-
-echo "✅ All libraries downloaded successfully!"
 echo ""
-echo "Files downloaded:"
-ls -lh "$LIB_DIR/leaflet/"
-ls -lh "$LIB_DIR/leaflet/images/"
+
+# Check if Python is available
+if ! command -v python3 &> /dev/null; then
+    echo "❌ Error: python3 is required but not found"
+    echo "   Please install Python 3.7 or later"
+    exit 1
+fi
+
+# Use the Python library manager
+cd "$SCRIPT_DIR"
+python3 manage_libs.py download
+
+echo ""
+echo "✅ Library download complete!"
+echo ""
+echo "💡 Tip: Use 'python3 manage_libs.py list' to see installed libraries"
+echo "💡 Tip: Use 'python3 manage_libs.py verify' to verify installations"

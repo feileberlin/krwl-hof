@@ -458,6 +458,25 @@ krwl-hof/
 - Update config.json for new configurable features
 - Add JSDoc comments for new functions
 
+### Managing Dependencies
+The project uses a custom library manager for CDN replacements:
+
+```bash
+# Download/update libraries
+python3 manage_libs.py download
+
+# Verify installations
+python3 manage_libs.py verify
+
+# List managed libraries
+python3 manage_libs.py list
+
+# Update a specific library
+python3 manage_libs.py update leaflet 1.9.5
+```
+
+See `static/lib/README.md` for more details.
+
 ## 📄 License
 
 See LICENSE file for details.
