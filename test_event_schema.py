@@ -216,6 +216,21 @@ class EventSchemaTester:
                 }
                 self.recovery_hints.append(hint)
     
+    def parse_iso_datetime(self, datetime_str: str) -> datetime:
+        """Parse ISO 8601 datetime string, handling timezone suffixes"""
+        if not datetime_str:
+            return None
+        # Handle 'Z' timezone suffix (UTC)
+        normalized = datetime_str.replace("Z", "+00:00")
+        try:
+            dt = datetime.fromisoformat(normalized)
+            # Remove timezone info for consistent comparison
+            if dt.tzinfo:
+                dt = dt.replace(tzinfo=None)
+            return dt
+        except ValueError:
+            return None
+    
     def validate_event_field(self, event, field, schema_props, parent_field=None):
         """Validate a single field against schema"""
         full_field = f"{parent_field}.{field}" if parent_field else field
@@ -467,8 +482,12 @@ class EventSchemaTester:
         
         uncovered = optional_fields - covered_fields
         
+        # Allow 1 uncovered optional field since some fields like 'category' may be 
+        # intentionally omitted to show that the application works without them.
+        # This provides flexibility while still ensuring most optional fields are demonstrated.
+        max_allowed_uncovered = 1
         self.assert_test(
-            len(uncovered) <= 1,  # Allow 1 uncovered optional field
+            len(uncovered) <= max_allowed_uncovered,
             f"Example events demonstrate optional fields",
             f"Uncovered fields: {uncovered}" if uncovered else ""
         )
@@ -499,13 +518,13 @@ class EventSchemaTester:
         # Test: Events should have parseable start_time
         parseable_count = 0
         for event in events:
-            try:
-                start_time = event.get("start_time", "")
-                if start_time:
-                    datetime.fromisoformat(start_time.replace("Z", "+00:00"))
+            start_time = event.get("start_time", "")
+            if start_time:
+                parsed = self.parse_iso_datetime(start_time)
+                if parsed:
                     parseable_count += 1
-            except ValueError:
-                self.log(f"Event '{event.get('id')}' has unparseable start_time: {start_time}")
+                else:
+                    self.log(f"Event '{event.get('id')}' has unparseable start_time: {start_time}")
         
         self.assert_test(
             parseable_count == len(events),
@@ -524,15 +543,9 @@ class EventSchemaTester:
             max_time = now + delta
             filtered = []
             for event in events:
-                try:
-                    start = datetime.fromisoformat(event.get("start_time", "").replace("Z", "+00:00"))
-                    # Remove timezone info for comparison if present
-                    if start.tzinfo:
-                        start = start.replace(tzinfo=None)
-                    if start <= max_time:
-                        filtered.append(event)
-                except ValueError:
-                    continue
+                start = self.parse_iso_datetime(event.get("start_time", ""))
+                if start and start <= max_time:
+                    filtered.append(event)
             
             self.log(f"Filter '{filter_name}': {len(filtered)} events within range")
         
