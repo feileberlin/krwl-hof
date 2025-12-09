@@ -515,8 +515,12 @@ class EventsApp {
         this.markers.forEach(marker => marker.remove());
         this.markers = [];
         
+        // Reset marker navigation index when markers change
+        this.currentMarkerIndex = -1;
+        
         if (filteredEvents.length === 0) {
             this.log('No events to display');
+            this.announceToScreenReader('No events match the current filters');
             return;
         }
         
@@ -530,6 +534,25 @@ class EventsApp {
         
         // Fit map to show all markers
         this.fitMapToMarkers();
+        
+        // Announce to screen readers
+        this.announceToScreenReader(`${filteredEvents.length} events displayed on map. Use arrow keys to navigate between events.`);
+    }
+    }
+    
+    announceToScreenReader(message) {
+        // Create or update ARIA live region for screen reader announcements
+        let liveRegion = document.getElementById('aria-live-region');
+        if (!liveRegion) {
+            liveRegion = document.createElement('div');
+            liveRegion.id = 'aria-live-region';
+            liveRegion.className = 'sr-only';
+            liveRegion.setAttribute('role', 'status');
+            liveRegion.setAttribute('aria-live', 'polite');
+            liveRegion.setAttribute('aria-atomic', 'true');
+            document.body.appendChild(liveRegion);
+        }
+        liveRegion.textContent = message;
     }
     
     updateFilterDescription(count) {
@@ -600,6 +623,29 @@ class EventsApp {
         const marker = L.marker([event.location.lat, event.location.lon])
             .addTo(this.map);
         
+        // Make marker keyboard accessible after element is created
+        // Use setTimeout to ensure DOM element is available
+        setTimeout(() => {
+            const markerElement = marker.getElement();
+            if (markerElement) {
+                markerElement.setAttribute('tabindex', '0');
+                markerElement.setAttribute('role', 'button');
+                markerElement.setAttribute('aria-label', `${event.title} at ${event.location.name}, ${previewTime}. Press Enter to view details.`);
+                
+                // Add keyboard event listeners
+                markerElement.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        marker.openPopup();
+                    }
+                });
+                
+                this.log(`Keyboard accessibility added to marker: ${event.title}`);
+            } else {
+                console.warn(`Marker element not available for: ${event.title}`);
+            }
+        }, 0);
+        
         // Use Leaflet's bindTooltip for time preview (permanent tooltip above marker)
         marker.bindTooltip(previewTime, {
             permanent: true,
@@ -629,7 +675,7 @@ class EventsApp {
                     `<div class="event-popup-description">${event.description}</div>` : 
                     ''}
                 ${event.url ? 
-                    `<a href="${event.url}" target="_blank" class="event-popup-link">More Info →</a>` : 
+                    `<a href="${event.url}" target="_blank" rel="noopener noreferrer" class="event-popup-link">More Info →</a>` : 
                     ''}
             </div>
         `;
@@ -639,6 +685,9 @@ class EventsApp {
             minWidth: 200,
             className: 'event-popup-container'
         });
+        
+        // Store event data with marker for keyboard navigation
+        marker.eventData = event;
         
         this.markers.push(marker);
     }
@@ -725,6 +774,71 @@ class EventsApp {
                 document.getElementById('event-detail').classList.add('hidden');
             }
         });
+        
+        // Keyboard navigation for cycling through event markers
+        this.currentMarkerIndex = -1;
+        document.addEventListener('keydown', (e) => {
+            // Only handle arrow keys when not focused on an input/select
+            if (document.activeElement.tagName === 'SELECT' || 
+                document.activeElement.tagName === 'INPUT' ||
+                document.activeElement.tagName === 'TEXTAREA') {
+                return;
+            }
+            
+            if (this.markers.length === 0) return;
+            
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                e.preventDefault();
+                this.navigateToNextMarker();
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                this.navigateToPreviousMarker();
+            } else if (e.key === 'Escape') {
+                // Close any open popups
+                this.map.closePopup();
+                document.getElementById('event-detail').classList.add('hidden');
+            }
+        });
+    }
+    
+    navigateToNextMarker() {
+        if (this.markers.length === 0) return;
+        
+        this.currentMarkerIndex = (this.currentMarkerIndex + 1) % this.markers.length;
+        this.focusMarker(this.currentMarkerIndex);
+    }
+    
+    navigateToPreviousMarker() {
+        if (this.markers.length === 0) return;
+        
+        this.currentMarkerIndex = this.currentMarkerIndex <= 0 
+            ? this.markers.length - 1 
+            : this.currentMarkerIndex - 1;
+        this.focusMarker(this.currentMarkerIndex);
+    }
+    
+    focusMarker(index) {
+        const marker = this.markers[index];
+        if (!marker) return;
+        
+        // Pan to marker
+        this.map.panTo(marker.getLatLng());
+        
+        // Focus the marker element
+        const markerElement = marker.getElement();
+        if (markerElement) {
+            markerElement.focus();
+        }
+        
+        // Open popup
+        marker.openPopup();
+        
+        // Announce to screen reader
+        if (marker.eventData) {
+            this.announceToScreenReader(
+                `Event ${index + 1} of ${this.markers.length}: ${marker.eventData.title} at ${marker.eventData.location.name}`
+            );
+        }
     }
 }
 

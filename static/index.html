@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Interactive fullscreen map showing community events near you with geolocation filtering">
     <title>KRWL HOF - Community Events</title>
     
     <!-- Favicon -->
@@ -24,16 +25,32 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
-    <div id="app">
-        <div id="map">
-            <div id="map-overlay">
-                <!-- Interactive filter sentence on the map -->
-                <div id="filter-sentence">
+    <!-- Skip to main content for keyboard navigation -->
+    <a href="#map" class="skip-link">Skip to map</a>
+    
+    <!-- Screen reader description of the interface -->
+    <div class="sr-only" role="alert" aria-live="polite">
+        <p>Welcome to KRWL HOF Community Events. This is a fullscreen interactive map interface.</p>
+        <p>Event filters are located at the top of the map. Click on map markers to view event details.</p>
+        <p>All events are shown as markers on the map with time labels. No separate navigation is needed.</p>
+        <p>Keyboard navigation: Use Arrow keys to cycle through events, Enter or Space to open details, Escape to close.</p>
+    </div>
+    
+    <div id="app" role="application" aria-label="Community Events Map Application">
+        <!-- Main interactive map region -->
+        <main id="map" role="main" aria-label="Interactive events map showing community events near your location">
+            <!-- Accessible map overlay with controls -->
+            <div id="map-overlay" aria-label="Map controls and filters">
+                <!-- Interactive filter controls -->
+                <nav id="filter-sentence" role="navigation" aria-label="Event filters">
+                    <h1 class="sr-only">Filter Events</h1>
                     <span class="filter-part">
-                        <select id="event-count-filter" class="inline-filter count-filter">
+                        <select id="event-count-filter" class="inline-filter count-filter" 
+                                aria-label="Event count display" disabled>
                             <option value="count">0 events</option>
                         </select>
-                        <select id="category-filter" class="inline-filter">
+                        <select id="category-filter" class="inline-filter"
+                                aria-label="Filter by event category">
                             <option value="all">events</option>
                             <option value="on-stage">on stage</option>
                             <option value="pub-games">pub games</option>
@@ -41,7 +58,8 @@
                         </select>
                     </span>
                     <span class="filter-part">
-                        <select id="time-filter" class="inline-filter">
+                        <select id="time-filter" class="inline-filter"
+                                aria-label="Filter by time range">
                             <option value="sunrise">till sunrise</option>
                             <option value="sunday">till sunday night</option>
                             <option value="full-moon">till next full moon</option>
@@ -53,29 +71,35 @@
                         </select>
                     </span>
                     <span class="filter-part">
-                        <select id="distance-filter" class="inline-filter">
+                        <select id="distance-filter" class="inline-filter"
+                                aria-label="Filter by distance from location">
                             <option value="1.25" selected>within 15 minutes by foot</option>
                             <option value="2.5">within 10 minutes by bike</option>
                             <option value="20">within 1 hour by public transport</option>
                         </select>
                     </span>
                     <span class="filter-part">
-                        <select id="location-selector" class="inline-filter">
+                        <select id="location-selector" class="inline-filter"
+                                aria-label="Select reference location">
                             <option value="geolocation">from your current location</option>
                         </select>
                     </span>
-                </div>
+                </nav>
                 
-                <a href="#" id="imprint-link">
-                    <img id="site-logo" src="" alt="Site Logo" style="display: none;">
-                    <span id="imprint-text">Imprint</span>
-                </a>
+                <!-- Footer navigation (positioned on map) -->
+                <footer role="contentinfo">
+                    <a href="#" id="imprint-link" aria-label="View imprint and legal information">
+                        <img id="site-logo" src="" alt="KRWL HOF Logo" style="display: none;">
+                        <span id="imprint-text">Imprint</span>
+                    </a>
+                </footer>
             </div>
-        </div>
+        </main>
         
-        <div id="event-detail" class="hidden">
+        <!-- Event detail modal dialog -->
+        <div id="event-detail" class="hidden" role="dialog" aria-modal="true" aria-labelledby="detail-title">
             <div class="detail-content">
-                <button id="close-detail">&times;</button>
+                <button id="close-detail" aria-label="Close event details">&times;</button>
                 <h2 id="detail-title"></h2>
                 <p id="detail-description"></p>
                 <div id="detail-info">
@@ -83,7 +107,7 @@
                     <p><strong>Time:</strong> <span id="detail-time"></span></p>
                     <p><strong>Distance:</strong> <span id="detail-distance"></span></p>
                 </div>
-                <a id="detail-link" href="#" target="_blank">More Info</a>
+                <a id="detail-link" href="#" target="_blank" rel="noopener noreferrer">More Info</a>
             </div>
         </div>
     </div>

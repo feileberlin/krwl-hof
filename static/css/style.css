@@ -4,6 +4,36 @@
     box-sizing: border-box;
 }
 
+/* Screen reader only content */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* Skip to main content link for keyboard navigation */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: #4CAF50;
+    color: white;
+    padding: 8px 16px;
+    text-decoration: none;
+    z-index: 10000;
+    font-weight: 600;
+}
+
+.skip-link:focus {
+    top: 0;
+}
+
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     background: #1a1a1a;
@@ -117,9 +147,15 @@ body {
 }
 
 .inline-filter:focus {
-    outline: none;
+    outline: 2px solid #4CAF50;
+    outline-offset: 2px;
     background-color: rgba(76, 175, 80, 0.2);
     border-bottom-style: solid;
+}
+
+.inline-filter:focus-visible {
+    outline: 2px solid #4CAF50;
+    outline-offset: 2px;
 }
 
 /* Count filter - not actually selectable, just displays count */
@@ -171,6 +207,16 @@ body {
 #imprint-link:hover {
     background: rgba(76, 175, 80, 0.2);
     color: #fff;
+}
+
+#imprint-link:focus {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+}
+
+#imprint-link:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
 }
 
 #site-logo {
@@ -254,6 +300,16 @@ body {
     color: #4CAF50;
 }
 
+#close-detail:focus {
+    outline: 2px solid #4CAF50;
+    outline-offset: 2px;
+}
+
+#close-detail:focus-visible {
+    outline: 2px solid #4CAF50;
+    outline-offset: 2px;
+}
+
 .detail-content h2 {
     margin-bottom: 1rem;
     color: #4CAF50;
@@ -300,6 +356,18 @@ body {
 
 .leaflet-tooltip.event-time-tooltip:before {
     border-top-color: rgba(76, 175, 80, 0.95);
+}
+
+/* Keyboard focus styles for markers */
+.leaflet-marker-icon:focus {
+    outline: 3px solid #4CAF50;
+    outline-offset: 4px;
+    z-index: 1000 !important;
+}
+
+.leaflet-marker-icon:focus-visible {
+    outline: 3px solid #4CAF50;
+    outline-offset: 4px;
 }
 
 /* Enhanced Leaflet popup styling */
