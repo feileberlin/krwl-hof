@@ -64,13 +64,29 @@
                             let html = '<ul class="event-list">';
                             events.forEach(event => {
                                 const date = new Date(event.start_time);
+                                const eventText = `${event.title} at ${event.location.name} on ${date.toLocaleDateString()}`;
                                 html += `
                                     <li class="event-item">
                                         <h3>${event.title}</h3>
                                         <p class="event-time">📅 ${date.toLocaleDateString()} at ${date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</p>
                                         <p class="event-location">📍 ${event.location.name}</p>
                                         ${event.description ? `<p class="event-description">${event.description}</p>` : ''}
-                                        ${event.url ? `<p class="event-link"><a href="${event.url}" target="_blank" rel="noopener">→ More Info</a></p>` : ''}
+                                        
+                                        <!-- Context actions as inline buttons -->
+                                        <div class="event-actions">
+                                            ${event.url ? `<a href="${event.url}" target="_blank" rel="noopener" class="action-btn" title="View details">
+                                                <span>🔗</span> view
+                                            </a>` : ''}
+                                            <a href="https://www.google.com/maps/dir/?api=1&destination=${event.location.lat},${event.location.lon}" target="_blank" rel="noopener" class="action-btn" title="Get directions">
+                                                <span>🧭</span> navigate
+                                            </a>
+                                            <button onclick="navigator.clipboard.writeText('${eventText.replace(/'/g, "\\'")}').then(() => this.textContent='✓ copied!').catch(() => this.textContent='✗ failed')" class="action-btn" title="Copy event details">
+                                                <span>📋</span> copy
+                                            </button>
+                                            <button onclick="if(navigator.share){navigator.share({title:'${event.title.replace(/'/g, "\\'")}',text:'${eventText.replace(/'/g, "\\'")}'}).catch(()=>{})}else{alert('Share not supported')}" class="action-btn" title="Share event">
+                                                <span>📤</span> share
+                                            </button>
+                                        </div>
                                     </li>
                                 `;
                             });

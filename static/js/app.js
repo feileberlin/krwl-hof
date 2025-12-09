@@ -826,8 +826,58 @@ class EventsApp {
         // Create rich popup with all event details (pure Leaflet convention)
         // Add line index for staggered typewriter animation
         let lineIndex = 0;
+        const eventId = `event-${event.id || Math.random().toString(36).substr(2, 9)}`;
         const popupContent = `
-            <div class="event-popup">
+            <div class="event-popup" data-event-id="${eventId}">
+                <!-- Burger Menu Button (Terminal Style) -->
+                <button class="burger-menu" aria-label="Event actions menu" aria-expanded="false" aria-controls="${eventId}-menu" title="Actions">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                
+                <!-- Dropdown Menu with Terminal-Style Actions -->
+                <div class="burger-menu-dropdown" id="${eventId}-menu" role="menu">
+                    <!-- Bookmark/Highlight -->
+                    <button class="menu-item bookmark-event" role="menuitem" data-event-id="${eventId}" title="Save to bookmarks">
+                        <span class="menu-icon">⭐</span> <span class="menu-text">bookmark</span>
+                    </button>
+                    
+                    <!-- Copy Event Details (Terminal Style) -->
+                    <button class="menu-item copy-details" role="menuitem" title="Copy to clipboard">
+                        <span class="menu-icon">📋</span> <span class="menu-text">copy_data</span>
+                    </button>
+                    
+                    <!-- Share Event -->
+                    <button class="menu-item share-event" role="menuitem" data-title="${event.title.replace(/"/g, '&quot;')}" data-location="${event.location.name.replace(/"/g, '&quot;')}" title="Share event">
+                        <span class="menu-icon">📤</span> <span class="menu-text">share</span>
+                    </button>
+                    
+                    ${event.url ? `<a href="${event.url}" target="_blank" rel="noopener noreferrer" class="menu-item" role="menuitem" title="View full details">
+                        <span class="menu-icon">🔗</span> <span class="menu-text">access_url</span>
+                    </a>` : ''}
+                    
+                    <!-- Navigation to Event -->
+                    <button class="menu-item navigate-event" role="menuitem" data-lat="${event.location.lat}" data-lon="${event.location.lon}" title="Get directions">
+                        <span class="menu-icon">🧭</span> <span class="menu-text">navigate</span>
+                    </button>
+                    
+                    <!-- Add to Calendar -->
+                    <button class="menu-item add-calendar" role="menuitem" title="Add to calendar" data-event='${JSON.stringify({title: event.title, start: event.start_time, location: event.location.name, description: event.description || ''}).replace(/'/g, "&apos;")}'>
+                        <span class="menu-icon">📅</span> <span class="menu-text">add_to_cal</span>
+                    </button>
+                    
+                    <!-- Visit Counter (Placeholder for future) -->
+                    <div class="menu-item menu-info" role="menuitem" title="View count (coming soon)">
+                        <span class="menu-icon">👁️</span> <span class="menu-text">views: <span class="visit-count">--</span></span>
+                    </div>
+                    
+                    <!-- Close Popup -->
+                    <button class="menu-item close-popup" role="menuitem" title="Close popup">
+                        <span class="menu-icon">✕</span> <span class="menu-text">exit</span>
+                    </button>
+                </div>
+                
                 <h3>${event.title}</h3>
                 <div class="event-popup-info">
                     <p style="--line-index: ${lineIndex++};"><span class="icon">🕐</span> ${eventDate.toLocaleString([], { 
@@ -845,19 +895,20 @@ class EventsApp {
                 ${event.description ? 
                     `<div class="event-popup-description">${event.description}</div>` : 
                     ''}
-                ${event.url ? 
-                    `<a href="${event.url}" target="_blank" rel="noopener noreferrer" class="event-popup-link">access data</a>` : 
-                    ''}
             </div>
         `;
         
         marker.bindPopup(popupContent, {
             maxWidth: 300,
             minWidth: 200,
-            className: 'event-popup-container'
+            className: 'event-popup-container',
+            closeButton: false  // Hide default close button, use our burger menu
         });
         
-        // Add typewriter animation when popup opens
+        // Store event data for menu actions
+        marker.eventFullData = event;
+        
+        // Add typewriter animation and burger menu functionality when popup opens
         marker.on('popupopen', (e) => {
             const popupWrapper = e.popup.getElement().querySelector('.leaflet-popup-content-wrapper');
             if (popupWrapper) {
@@ -870,6 +921,118 @@ class EventsApp {
                 setTimeout(() => {
                     popupWrapper.classList.remove('typing');
                 }, 2000);
+                
+                // Setup burger menu functionality
+                const burgerBtn = popupWrapper.querySelector('.burger-menu');
+                const dropdown = popupWrapper.querySelector('.burger-menu-dropdown');
+                const closeBtn = popupWrapper.querySelector('.close-popup');
+                const shareBtn = popupWrapper.querySelector('.share-event');
+                const bookmarkBtn = popupWrapper.querySelector('.bookmark-event');
+                const copyBtn = popupWrapper.querySelector('.copy-details');
+                const navigateBtn = popupWrapper.querySelector('.navigate-event');
+                const calendarBtn = popupWrapper.querySelector('.add-calendar');
+                
+                if (burgerBtn && dropdown) {
+                    // Toggle burger menu
+                    burgerBtn.addEventListener('click', (event) => {
+                        event.stopPropagation();
+                        const isExpanded = burgerBtn.getAttribute('aria-expanded') === 'true';
+                        burgerBtn.setAttribute('aria-expanded', !isExpanded);
+                        burgerBtn.classList.toggle('active');
+                        dropdown.classList.toggle('show');
+                    });
+                    
+                    // Close popup button
+                    if (closeBtn) {
+                        closeBtn.addEventListener('click', () => {
+                            e.target.closePopup();
+                        });
+                    }
+                    
+                    // Bookmark/Highlight event
+                    if (bookmarkBtn) {
+                        // Check if already bookmarked
+                        const bookmarkedEvents = JSON.parse(localStorage.getItem('bookmarkedEvents') || '[]');
+                        const eventId = bookmarkBtn.dataset.eventId;
+                        
+                        if (bookmarkedEvents.includes(eventId)) {
+                            bookmarkBtn.classList.add('bookmarked');
+                            bookmarkBtn.querySelector('.menu-text').textContent = 'unbookmark';
+                        }
+                        
+                        bookmarkBtn.addEventListener('click', () => {
+                            this.toggleBookmark(eventId, bookmarkBtn, marker);
+                        });
+                    }
+                    
+                    // Copy event details to clipboard
+                    if (copyBtn) {
+                        copyBtn.addEventListener('click', () => {
+                            const eventData = marker.eventFullData;
+                            const text = `EVENT: ${eventData.title}\nTIME: ${new Date(eventData.start_time).toLocaleString()}\nLOCATION: ${eventData.location.name}\nDESCRIPTION: ${eventData.description || 'N/A'}\n${eventData.url ? 'URL: ' + eventData.url : ''}`;
+                            
+                            navigator.clipboard.writeText(text).then(() => {
+                                copyBtn.querySelector('.menu-text').textContent = 'copied!';
+                                setTimeout(() => {
+                                    copyBtn.querySelector('.menu-text').textContent = 'copy_data';
+                                }, 2000);
+                            }).catch(err => {
+                                console.error('Copy failed:', err);
+                            });
+                        });
+                    }
+                    
+                    // Share button
+                    if (shareBtn) {
+                        shareBtn.addEventListener('click', () => {
+                            const title = shareBtn.dataset.title;
+                            const location = shareBtn.dataset.location;
+                            const text = `Check out: ${title} at ${location}`;
+                            
+                            if (navigator.share) {
+                                navigator.share({
+                                    title: title,
+                                    text: text,
+                                    url: window.location.href
+                                }).catch(err => console.log('Share cancelled'));
+                            } else {
+                                navigator.clipboard.writeText(text).then(() => {
+                                    shareBtn.querySelector('.menu-text').textContent = 'shared!';
+                                    setTimeout(() => {
+                                        shareBtn.querySelector('.menu-text').textContent = 'share';
+                                    }, 2000);
+                                }).catch(err => console.error('Share failed:', err));
+                            }
+                        });
+                    }
+                    
+                    // Navigate to event location
+                    if (navigateBtn) {
+                        navigateBtn.addEventListener('click', () => {
+                            const lat = navigateBtn.dataset.lat;
+                            const lon = navigateBtn.dataset.lon;
+                            // Open in Google Maps
+                            window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}`, '_blank');
+                        });
+                    }
+                    
+                    // Add to calendar
+                    if (calendarBtn) {
+                        calendarBtn.addEventListener('click', () => {
+                            const eventData = JSON.parse(calendarBtn.dataset.event.replace(/&apos;/g, "'"));
+                            this.addToCalendar(eventData);
+                        });
+                    }
+                    
+                    // Close dropdown when clicking outside
+                    document.addEventListener('click', (event) => {
+                        if (!burgerBtn.contains(event.target) && !dropdown.contains(event.target)) {
+                            dropdown.classList.remove('show');
+                            burgerBtn.classList.remove('active');
+                            burgerBtn.setAttribute('aria-expanded', 'false');
+                        }
+                    });
+                }
             }
         });
         
@@ -1026,6 +1189,93 @@ class EventsApp {
                 `Event ${index + 1} of ${this.markers.length}: ${marker.eventData.title} at ${marker.eventData.location.name}`
             );
         }
+    }
+    
+    /**
+     * Toggle bookmark for an event
+     * Saves bookmarked events to localStorage
+     * Highlights bookmarked events on map with different style
+     * @param {string} eventId - Unique event identifier
+     * @param {HTMLElement} button - Bookmark button element
+     * @param {L.Marker} marker - Leaflet marker to highlight
+     */
+    toggleBookmark(eventId, button, marker) {
+        const bookmarkedEvents = JSON.parse(localStorage.getItem('bookmarkedEvents') || '[]');
+        const index = bookmarkedEvents.indexOf(eventId);
+        
+        if (index > -1) {
+            // Remove bookmark
+            bookmarkedEvents.splice(index, 1);
+            button.classList.remove('bookmarked');
+            button.querySelector('.menu-text').textContent = 'bookmark';
+            
+            // Remove highlight from marker
+            const markerElement = marker.getElement();
+            if (markerElement) {
+                markerElement.classList.remove('bookmarked-marker');
+            }
+            
+            this.announceToScreenReader('Bookmark removed');
+        } else {
+            // Add bookmark
+            bookmarkedEvents.push(eventId);
+            button.classList.add('bookmarked');
+            button.querySelector('.menu-text').textContent = 'unbookmark';
+            
+            // Highlight marker
+            const markerElement = marker.getElement();
+            if (markerElement) {
+                markerElement.classList.add('bookmarked-marker');
+            }
+            
+            this.announceToScreenReader('Event bookmarked');
+        }
+        
+        // Save to localStorage
+        localStorage.setItem('bookmarkedEvents', JSON.stringify(bookmarkedEvents));
+        this.log('Bookmarked events:', bookmarkedEvents);
+    }
+    
+    /**
+     * Add event to calendar
+     * Generates iCalendar (.ics) file for download
+     * @param {Object} eventData - Event information
+     */
+    addToCalendar(eventData) {
+        // Create iCalendar format
+        const startDate = new Date(eventData.start);
+        const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // Default 2 hours
+        
+        // Format dates for iCal (YYYYMMDDTHHmmss)
+        const formatDate = (date) => {
+            return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+        };
+        
+        const icsContent = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//KRWL HOF//Community Events//EN
+BEGIN:VEVENT
+UID:${Date.now()}@krwl-hof.events
+DTSTAMP:${formatDate(new Date())}
+DTSTART:${formatDate(startDate)}
+DTEND:${formatDate(endDate)}
+SUMMARY:${eventData.title}
+LOCATION:${eventData.location}
+DESCRIPTION:${eventData.description.replace(/\n/g, '\\n')}
+END:VEVENT
+END:VCALENDAR`;
+        
+        // Create download link
+        const blob = new Blob([icsContent], { type: 'text/calendar' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `event-${eventData.title.replace(/[^a-z0-9]/gi, '-')}.ics`;
+        a.click();
+        URL.revokeObjectURL(url);
+        
+        this.announceToScreenReader('Event added to calendar');
+        this.log('Calendar file generated for:', eventData.title);
     }
 }
 
