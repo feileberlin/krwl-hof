@@ -484,9 +484,19 @@ class EventsApp {
         // Populate category filter dropdown
         const categoryFilter = document.getElementById('category-filter');
         
-        // Clear existing options except the first one (the "all" option)
-        while (categoryFilter.options.length > 1) {
-            categoryFilter.remove(1);
+        // Clear existing dynamically-added options, keeping only the "all" option
+        // Verify first option is the "all" option before clearing
+        if (categoryFilter.options.length > 0 && categoryFilter.options[0].value === 'all') {
+            while (categoryFilter.options.length > 1) {
+                categoryFilter.remove(1);
+            }
+        } else {
+            // If first option isn't "all", clear everything and recreate
+            categoryFilter.innerHTML = '';
+            const allOption = document.createElement('option');
+            allOption.value = 'all';
+            allOption.textContent = window.i18n ? window.i18n.t('filters.categories.all') : 'events';
+            categoryFilter.appendChild(allOption);
         }
         
         // Update the "all" option text with translation
