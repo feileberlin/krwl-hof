@@ -455,6 +455,9 @@ class EventsApp {
             
             // Populate location selector with predefined locations
             this.populateLocationSelector();
+            
+            // Sort time filter options by minutes from now
+            this.sortTimeFilters();
         } catch (error) {
             console.error('Error loading events:', error);
             this.events = [];
@@ -464,13 +467,100 @@ class EventsApp {
     populateLocationSelector() {
         const locationSelector = document.getElementById('location-selector');
         if (this.config.map?.predefined_locations) {
-            this.config.map.predefined_locations.forEach(loc => {
+            // Limit to maximum 2 predefined locations
+            const locationsToAdd = this.config.map.predefined_locations.slice(0, 2);
+            
+            locationsToAdd.forEach(loc => {
                 const option = document.createElement('option');
-                option.value = JSON.stringify({ lat: loc.lat, lon: loc.lon });
-                option.textContent = `from ${loc.name}`;
+                option.value = JSON.stringify({ lat: loc.lat, lon: loc.lon, name: loc.name });
+                
+                // Use translation if available, otherwise use config name
+                const t = window.i18n ? window.i18n.t.bind(window.i18n) : (key) => key;
+                const prefix = t('filters.locations.prefix');
+                const locationName = t(`filters.predefined_locations.${loc.name}`) || loc.name;
+                
+                option.textContent = `${prefix} ${locationName}`;
+                option.dataset.locationKey = loc.name; // Store for translation updates
                 locationSelector.appendChild(option);
             });
         }
+    }
+    
+    /**
+     * Sort time filter options by minutes from now
+     * Orders the three time filter choices from shortest to longest time
+     */
+    sortTimeFilters() {
+        const timeFilter = document.getElementById('time-filter');
+        if (!timeFilter) return;
+        
+        const now = new Date();
+        
+        // Calculate minutes from now for each filter option
+        const optionsWithTime = Array.from(timeFilter.options).map(option => {
+            const value = option.value;
+            let targetTime;
+            
+            switch (value) {
+                case 'sunrise':
+                    targetTime = new Date(now);
+                    targetTime.setHours(6, 0, 0, 0);
+                    if (now >= targetTime) {
+                        targetTime.setDate(targetTime.getDate() + 1);
+                    }
+                    break;
+                    
+                case 'sunday':
+                    targetTime = new Date(now);
+                    const daysUntilSunday = (7 - now.getDay()) % 7 || 7;
+                    targetTime.setDate(targetTime.getDate() + daysUntilSunday);
+                    targetTime.setHours(20, 15, 0, 0);
+                    break;
+                    
+                case 'full-moon':
+                    if (this.nextFullMoonDate) {
+                        targetTime = this.nextFullMoonDate;
+                    } else {
+                        // Fallback: approximate ~29.5 days lunar cycle
+                        targetTime = new Date(now);
+                        targetTime.setDate(targetTime.getDate() + 15);
+                        targetTime.setHours(23, 59, 59, 999);
+                    }
+                    break;
+                    
+                default:
+                    targetTime = now;
+            }
+            
+            const minutesFromNow = Math.floor((targetTime - now) / (1000 * 60));
+            
+            return {
+                option: option,
+                value: value,
+                text: option.textContent,
+                minutesFromNow: minutesFromNow,
+                selected: option.selected
+            };
+        });
+        
+        // Sort by minutes from now (ascending)
+        optionsWithTime.sort((a, b) => a.minutesFromNow - b.minutesFromNow);
+        
+        // Remove all options
+        while (timeFilter.options.length > 0) {
+            timeFilter.remove(0);
+        }
+        
+        // Add options back in sorted order
+        optionsWithTime.forEach(item => {
+            const option = document.createElement('option');
+            option.value = item.value;
+            option.textContent = item.text;
+            option.selected = item.selected;
+            timeFilter.appendChild(option);
+        });
+        
+        this.log('Time filters sorted by minutes from now:', optionsWithTime.map(o => `${o.value}: ${o.minutesFromNow} min`));
     }
     
     populateCategories() {
@@ -534,17 +624,17 @@ class EventsApp {
                 // Simplified: next sunrise at 6 AM
                 const sunrise = new Date(now);
                 sunrise.setHours(6, 0, 0, 0);
-                if (now.getHours() >= 6) {
+                if (now >= sunrise) {
                     sunrise.setDate(sunrise.getDate() + 1);
                 }
                 return sunrise;
                 
             case 'sunday':
-                // Next Sunday at 23:59
+                // Next Sunday at 20:15 (prime time)
                 const sunday = new Date(now);
                 const daysUntilSunday = (7 - now.getDay()) % 7 || 7;
                 sunday.setDate(sunday.getDate() + daysUntilSunday);
-                sunday.setHours(23, 59, 59, 999);
+                sunday.setHours(20, 15, 0, 0);
                 return sunday;
                 
             case 'full-moon':
@@ -559,22 +649,6 @@ class EventsApp {
                     return nextFullMoon;
                 }
                 
-            case '6h':
-                return new Date(now.getTime() + 6 * 60 * 60 * 1000);
-                
-            case '12h':
-                return new Date(now.getTime() + 12 * 60 * 60 * 1000);
-                
-            case '24h':
-                return new Date(now.getTime() + 24 * 60 * 60 * 1000);
-                
-            case '48h':
-                return new Date(now.getTime() + 48 * 60 * 60 * 1000);
-                
-            case 'all':
-                // Return a date far in the future
-                return new Date(now.getFullYear() + 10, 11, 31);
-                
             default:
                 return this.getNextSunrise();
         }
@@ -586,7 +660,7 @@ class EventsApp {
         const sunrise = new Date(now);
         sunrise.setHours(6, 0, 0, 0);
         
-        if (now.getHours() >= 6) {
+        if (now >= sunrise) {
             sunrise.setDate(sunrise.getDate() + 1);
         }
         
@@ -856,6 +930,17 @@ class EventsApp {
             // Update the geolocation option
             if (locationSelector.options[0]) {
                 locationSelector.options[0].textContent = t('filters.locations.geolocation');
+            }
+            
+            // Update predefined location options
+            const prefix = t('filters.locations.prefix');
+            for (let i = 1; i < locationSelector.options.length; i++) {
+                const option = locationSelector.options[i];
+                const locationKey = option.dataset.locationKey;
+                if (locationKey) {
+                    const locationName = t(`filters.predefined_locations.${locationKey}`) || locationKey;
+                    option.textContent = `${prefix} ${locationName}`;
+                }
             }
         }
         
