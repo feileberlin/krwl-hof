@@ -505,7 +505,7 @@ class EventsApp {
                 case 'sunrise':
                     targetTime = new Date(now);
                     targetTime.setHours(6, 0, 0, 0);
-                    if (now.getHours() >= 6) {
+                    if (now >= targetTime) {
                         targetTime.setDate(targetTime.getDate() + 1);
                     }
                     break;
@@ -624,7 +624,7 @@ class EventsApp {
                 // Simplified: next sunrise at 6 AM
                 const sunrise = new Date(now);
                 sunrise.setHours(6, 0, 0, 0);
-                if (now.getHours() >= 6) {
+                if (now >= sunrise) {
                     sunrise.setDate(sunrise.getDate() + 1);
                 }
                 return sunrise;
@@ -660,7 +660,7 @@ class EventsApp {
         const sunrise = new Date(now);
         sunrise.setHours(6, 0, 0, 0);
         
-        if (now.getHours() >= 6) {
+        if (now >= sunrise) {
             sunrise.setDate(sunrise.getDate() + 1);
         }
         
