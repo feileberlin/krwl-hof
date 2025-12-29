@@ -26,8 +26,12 @@ wheels/
 venv/
 .venv/
 
-# IDE
-.vscode/
+# IDE - Track shared configs, ignore user-specific settings
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/tasks.json
+!.vscode/launch.json
 .idea/
 *.swp
 *.swo

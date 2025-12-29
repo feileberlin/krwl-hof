@@ -1,0 +1,57 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: Current File",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "Python: TUI Main",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/main.py",
+      "console": "integratedTerminal",
+      "justMyCode": false
+    },
+    {
+      "name": "Python: Generate Static Site",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/main.py",
+      "args": ["generate"],
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "Python: Test Scraper",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/test_scraper.py",
+      "args": ["--verbose"],
+      "console": "integratedTerminal",
+      "justMyCode": false
+    },
+    {
+      "name": "Python: Verify Features",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/verify_features.py",
+      "args": ["--verbose"],
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "Debug: Current Test File",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "args": ["--verbose"],
+      "console": "integratedTerminal",
+      "justMyCode": false
+    }
+  ]
+}

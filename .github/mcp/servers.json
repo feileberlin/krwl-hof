@@ -1,0 +1,63 @@
+{
+  "$schema": "https://modelcontextprotocol.io/schema/servers.json",
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      },
+      "metadata": {
+        "description": "GitHub MCP server for repository context",
+        "capabilities": [
+          "read:repo",
+          "read:issues",
+          "read:pull_requests",
+          "read:workflows"
+        ]
+      }
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "${workspaceFolder}"],
+      "metadata": {
+        "description": "Filesystem access for the workspace",
+        "capabilities": [
+          "read:files",
+          "write:files",
+          "list:directories"
+        ]
+      }
+    },
+    "memory": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"],
+      "metadata": {
+        "description": "Persistent memory for context across sessions",
+        "capabilities": [
+          "store:context",
+          "retrieve:context"
+        ]
+      }
+    }
+  },
+  "settings": {
+    "contextFiles": [
+      ".github/copilot-instructions.md",
+      "features.json",
+      "README.md",
+      "TESTING.md",
+      "config.dev.json",
+      "config.prod.json",
+      "static/.copilot-protected"
+    ],
+    "excludePatterns": [
+      "**/__pycache__/**",
+      "**/venv/**",
+      "**/node_modules/**",
+      "**/.git/**",
+      "**/static/libs/**"
+    ],
+    "autoLoadContext": true
+  }
+}
