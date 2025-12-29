@@ -2,9 +2,9 @@ name: Scrape Events (Twice Daily)
 
 on:
   schedule:
-    # Run twice daily at 8:00 AM and 8:00 PM UTC
-    - cron: '0 8 * * *'   # 8 AM UTC (9-10 AM CET depending on DST)
-    - cron: '0 20 * * *'  # 8 PM UTC (9-10 PM CET depending on DST)
+    # Run twice daily at 4:00 AM and 4:00 PM UTC
+    - cron: '0 4 * * *'   # 4 AM UTC (5-6 AM CET depending on DST)
+    - cron: '0 16 * * *'  # 4 PM UTC (5-6 PM CET depending on DST)
   workflow_dispatch:  # Allow manual triggering
 
 permissions:

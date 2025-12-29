@@ -230,7 +230,7 @@ The `static/` directory contains all files needed for deployment:
 
 The repository includes automated event scraping that runs **twice daily**:
 
-- **Schedule**: 8:00 AM and 8:00 PM UTC (9-10 AM/PM CET depending on DST)
+- **Schedule**: 4:00 AM and 4:00 PM UTC (5-6 AM/PM CET depending on DST)
 - **Workflow**: `.github/workflows/scrape-events.yml`
 - **Process**:
   1. Scrapes events from configured sources in `config.json`
