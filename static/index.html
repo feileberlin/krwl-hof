@@ -101,17 +101,21 @@
             </div>
         </noscript>
         
-        <header>
-            <h1>KRWL HOF Community Events</h1>
-            <div id="status">
-                <span id="location-status">Getting location...</span>
-            </div>
-        </header>
-        
         <div id="map">
             <div id="map-overlay">
                 <!-- Interactive filter sentence -->
                 <div id="filter-sentence">
+                    <!-- Logo: Inline SVG megaphone (gray stroke, transitions to pink on hover) -->
+                    <!-- Source: Generated from src/modules/generator.py template -->
+                    <a href="imprint.html" id="imprint-link">
+                        <svg xmlns="http://www.w3.org/2000/svg" id="site-logo" width="20" height="20" viewBox="0 0 20 20">
+                            <g transform="translate(1, 1.5)">
+                                <path style="fill:none;stroke:#cccccc;stroke-width:1.2;" 
+                                      d="M 4.43,15.8 H 3.81 c -0.64,-0.19 -0.9,-4.46 -0.02,-5.45 0.61,-0.06 3.81,-0.06 3.81,-0.06 0,0 2.37,0.19 7.44,-3.62 0,0 0.17,0.02 0.85,4.58 0,0 1.42,1.76 -0.11,3.71 0,0 -0.27,3.6 -0.7,4.52 0,0 -4.17,-3.43 -8.8,-3.73 l -0.04,3.58 c -0.07,0.43 -1.71,0.37 -1.72,0 z" />
+                            </g>
+                        </svg>
+                    </a>
+                    
                     <span id="event-count-text">0 events</span>
                     
                     <span id="category-text" class="filter-part" title="Click to change category">
@@ -165,22 +169,6 @@
                 
                 <!-- Environment watermark (bottom-left) -->
                 <div id="env-watermark" class="hidden"></div>
-                <!-- Logo: Inline SVG megaphone (gray stroke, transitions to pink on hover) -->
-                <!-- Source: Generated from src/modules/generator.py template -->
-                <a href="imprint.html" id="imprint-link">
-                    <svg xmlns="http://www.w3.org/2000/svg" id="site-logo" width="20" height="20" viewBox="0 0 20 20">
-                        <g transform="translate(1, 1.5)">
-                            <path style="fill:none;stroke:#cccccc;stroke-width:1.2;" 
-                                  d="M 4.43,15.8 H 3.81 c -0.64,-0.19 -0.9,-4.46 -0.02,-5.45 0.61,-0.06 3.81,-0.06 3.81,-0.06 0,0 2.37,0.19 7.44,-3.62 0,0 0.17,0.02 0.85,4.58 0,0 1.42,1.76 -0.11,3.71 0,0 -0.27,3.6 -0.7,4.52 0,0 -4.17,-3.43 -8.8,-3.73 l -0.04,3.58 c -0.07,0.43 -1.71,0.37 -1.72,0 z" />
-                        </g>
-                    </svg>
-                </a>
-            </div>
-        </div>
-        
-        <div id="event-list">
-            <div id="events-container">
-                <p>Loading events...</p>
             </div>
         </div>
         
