@@ -146,7 +146,7 @@ class EventsApp {
         const statusEl = document.getElementById('location-status');
         
         if ('geolocation' in navigator) {
-            statusEl.textContent = 'Getting your location...';
+            if (statusEl) statusEl.textContent = 'Getting your location...';
             
             navigator.geolocation.getCurrentPosition(
                 (position) => {
@@ -155,36 +155,38 @@ class EventsApp {
                         lon: position.coords.longitude
                     };
                     
-                    // Center map on user location
-                    this.map.setView([this.userLocation.lat, this.userLocation.lon], 13);
+                    // Center map on user location (if map is initialized)
+                    if (this.map) {
+                        this.map.setView([this.userLocation.lat, this.userLocation.lon], 13);
+                        
+                        // Add user marker with custom geolocation icon
+                        // Support customization from config or use default
+                        const userMarkerConfig = this.config.map.user_location_marker || {};
+                        const userIconUrl = userMarkerConfig.icon || 'markers/marker-geolocation.svg';
+                        const userIconSize = userMarkerConfig.size || [32, 48];
+                        const userIconAnchor = userMarkerConfig.anchor || [userIconSize[0] / 2, userIconSize[1]];
+                        const userPopupAnchor = userMarkerConfig.popup_anchor || [0, -userIconSize[1]];
+                        
+                        const userIcon = L.icon({
+                            iconUrl: userIconUrl,
+                            iconSize: userIconSize,
+                            iconAnchor: userIconAnchor,
+                            popupAnchor: userPopupAnchor
+                        });
+                        
+                        L.marker([this.userLocation.lat, this.userLocation.lon], {
+                            icon: userIcon
+                        }).addTo(this.map).bindPopup('You are here');
+                    }
                     
-                    // Add user marker with custom geolocation icon
-                    // Support customization from config or use default
-                    const userMarkerConfig = this.config.map.user_location_marker || {};
-                    const userIconUrl = userMarkerConfig.icon || 'markers/marker-geolocation.svg';
-                    const userIconSize = userMarkerConfig.size || [32, 48];
-                    const userIconAnchor = userMarkerConfig.anchor || [userIconSize[0] / 2, userIconSize[1]];
-                    const userPopupAnchor = userMarkerConfig.popup_anchor || [0, -userIconSize[1]];
-                    
-                    const userIcon = L.icon({
-                        iconUrl: userIconUrl,
-                        iconSize: userIconSize,
-                        iconAnchor: userIconAnchor,
-                        popupAnchor: userPopupAnchor
-                    });
-                    
-                    L.marker([this.userLocation.lat, this.userLocation.lon], {
-                        icon: userIcon
-                    }).addTo(this.map).bindPopup('You are here');
-                    
-                    statusEl.textContent = '📍 Location found';
+                    if (statusEl) statusEl.textContent = '📍 Location found';
                     
                     // Update events display
                     this.displayEvents();
                 },
                 (error) => {
                     console.error('Location error:', error);
-                    statusEl.textContent = '⚠️ Location unavailable - using default location';
+                    if (statusEl) statusEl.textContent = '⚠️ Location unavailable - using default location';
                     
                     // Use config default location as fallback
                     const defaultCenter = this.config.map.default_center;
@@ -193,15 +195,17 @@ class EventsApp {
                         lon: defaultCenter.lon
                     };
                     
-                    // Center map on default location
-                    this.map.setView([this.userLocation.lat, this.userLocation.lon], 13);
+                    // Center map on default location (if map is initialized)
+                    if (this.map) {
+                        this.map.setView([this.userLocation.lat, this.userLocation.lon], 13);
+                    }
                     
                     // Still display events with fallback location
                     this.displayEvents();
                 }
             );
         } else {
-            statusEl.textContent = '⚠️ Geolocation not supported - using default location';
+            if (statusEl) statusEl.textContent = '⚠️ Geolocation not supported - using default location';
             
             // Use config default location as fallback
             const defaultCenter = this.config.map.default_center;
@@ -410,30 +414,24 @@ class EventsApp {
     
     displayEvents() {
         const filteredEvents = this.filterEvents();
-        const container = document.getElementById('events-container');
-        const countEl = document.getElementById('event-count');
         
         // Update count with descriptive sentence
         this.updateFilterDescription(filteredEvents.length);
-        
-        // Clear existing content
-        container.innerHTML = '';
         
         // Clear existing markers
         this.markers.forEach(marker => marker.remove());
         this.markers = [];
         
         if (filteredEvents.length === 0) {
-            container.innerHTML = '<p>No events match the current filters.</p>';
+            // No events to display on map
             return;
         }
         
         // Sort by distance
         filteredEvents.sort((a, b) => (a.distance || 0) - (b.distance || 0));
         
-        // Display events
+        // Display events as markers on the map
         filteredEvents.forEach(event => {
-            this.displayEventCard(event, container);
             this.addEventMarker(event);
         });
         
@@ -635,76 +633,92 @@ class EventsApp {
         
         // Helper to hide all dropdowns
         const hideAllDropdowns = () => {
-            categoryDropdown.classList.add('hidden');
-            timeDropdown.classList.add('hidden');
-            distanceDropdown.classList.add('hidden');
-            locationDropdown.classList.add('hidden');
+            if (categoryDropdown) categoryDropdown.classList.add('hidden');
+            if (timeDropdown) timeDropdown.classList.add('hidden');
+            if (distanceDropdown) distanceDropdown.classList.add('hidden');
+            if (locationDropdown) locationDropdown.classList.add('hidden');
             
-            categoryTextEl.classList.remove('active');
-            timeTextEl.classList.remove('active');
-            distanceTextEl.classList.remove('active');
-            locationTextEl.classList.remove('active');
+            if (categoryTextEl) categoryTextEl.classList.remove('active');
+            if (timeTextEl) timeTextEl.classList.remove('active');
+            if (distanceTextEl) distanceTextEl.classList.remove('active');
+            if (locationTextEl) locationTextEl.classList.remove('active');
         };
         
         // Category filter click
-        categoryTextEl.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const wasHidden = categoryDropdown.classList.contains('hidden');
-            hideAllDropdowns();
-            if (wasHidden) {
-                // Sync dropdown with current filter state
-                categoryFilter.value = this.filters.category;
-                categoryDropdown.classList.remove('hidden');
-                categoryTextEl.classList.add('active');
-            }
-        });
+        if (categoryTextEl && categoryDropdown) {
+            categoryTextEl.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const wasHidden = categoryDropdown.classList.contains('hidden');
+                hideAllDropdowns();
+                if (wasHidden) {
+                    // Sync dropdown with current filter state
+                    const categoryFilter = document.getElementById('category-filter');
+                    if (categoryFilter) categoryFilter.value = this.filters.category;
+                    categoryDropdown.classList.remove('hidden');
+                    categoryTextEl.classList.add('active');
+                }
+            });
+        }
         
         // Time filter click
-        timeTextEl.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const wasHidden = timeDropdown.classList.contains('hidden');
-            hideAllDropdowns();
-            if (wasHidden) {
-                // Sync dropdown with current filter state
-                timeFilter.value = this.filters.timeFilter;
-                timeDropdown.classList.remove('hidden');
-                timeTextEl.classList.add('active');
-            }
-        });
+        if (timeTextEl && timeDropdown) {
+            timeTextEl.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const wasHidden = timeDropdown.classList.contains('hidden');
+                hideAllDropdowns();
+                if (wasHidden) {
+                    // Sync dropdown with current filter state
+                    const timeFilter = document.getElementById('time-filter');
+                    if (timeFilter) timeFilter.value = this.filters.timeFilter;
+                    timeDropdown.classList.remove('hidden');
+                    timeTextEl.classList.add('active');
+                }
+            });
+        }
         
         // Distance filter click
-        distanceTextEl.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const wasHidden = distanceDropdown.classList.contains('hidden');
-            hideAllDropdowns();
-            if (wasHidden) {
-                // Sync dropdown with current filter state
-                distanceFilter.value = this.filters.maxDistance;
-                distanceValue.textContent = `${this.filters.maxDistance} km`;
-                distanceDropdown.classList.remove('hidden');
-                distanceTextEl.classList.add('active');
-            }
-        });
+        if (distanceTextEl && distanceDropdown) {
+            distanceTextEl.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const wasHidden = distanceDropdown.classList.contains('hidden');
+                hideAllDropdowns();
+                if (wasHidden) {
+                    // Sync dropdown with current filter state
+                    const distanceFilter = document.getElementById('distance-filter');
+                    const distanceValue = document.getElementById('distance-value');
+                    if (distanceFilter) distanceFilter.value = this.filters.maxDistance;
+                    if (distanceValue) distanceValue.textContent = `${this.filters.maxDistance} km`;
+                    distanceDropdown.classList.remove('hidden');
+                    distanceTextEl.classList.add('active');
+                }
+            });
+        }
         
         // Location filter click
-        locationTextEl.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const wasHidden = locationDropdown.classList.contains('hidden');
-            hideAllDropdowns();
-            if (wasHidden) {
-                // Sync dropdown with current filter state
-                useCustomLocation.checked = this.filters.useCustomLocation;
-                if (this.filters.useCustomLocation && this.filters.customLat && this.filters.customLon) {
-                    customLocationInputs.classList.remove('hidden');
-                    document.getElementById('custom-lat').value = this.filters.customLat;
-                    document.getElementById('custom-lon').value = this.filters.customLon;
-                } else {
-                    customLocationInputs.classList.add('hidden');
+        if (locationTextEl && locationDropdown) {
+            locationTextEl.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const wasHidden = locationDropdown.classList.contains('hidden');
+                hideAllDropdowns();
+                if (wasHidden) {
+                    // Sync dropdown with current filter state
+                    const useCustomLocation = document.getElementById('use-custom-location');
+                    const customLocationInputs = document.getElementById('custom-location-inputs');
+                    if (useCustomLocation) useCustomLocation.checked = this.filters.useCustomLocation;
+                    if (this.filters.useCustomLocation && this.filters.customLat && this.filters.customLon) {
+                        if (customLocationInputs) customLocationInputs.classList.remove('hidden');
+                        const customLat = document.getElementById('custom-lat');
+                        const customLon = document.getElementById('custom-lon');
+                        if (customLat) customLat.value = this.filters.customLat;
+                        if (customLon) customLon.value = this.filters.customLon;
+                    } else {
+                        if (customLocationInputs) customLocationInputs.classList.add('hidden');
+                    }
+                    locationDropdown.classList.remove('hidden');
+                    locationTextEl.classList.add('active');
                 }
-                locationDropdown.classList.remove('hidden');
-                locationTextEl.classList.add('active');
-            }
-        });
+            });
+        }
         
         // Click outside to close dropdowns
         document.addEventListener('click', (e) => {
@@ -716,110 +730,140 @@ class EventsApp {
         // Distance filter
         const distanceFilter = document.getElementById('distance-filter');
         const distanceValue = document.getElementById('distance-value');
-        distanceFilter.addEventListener('input', (e) => {
-            const value = parseFloat(e.target.value);
-            this.filters.maxDistance = value;
-            distanceValue.textContent = `${value} km`;
-            this.displayEvents();
-        });
+        if (distanceFilter && distanceValue) {
+            distanceFilter.addEventListener('input', (e) => {
+                const value = parseFloat(e.target.value);
+                this.filters.maxDistance = value;
+                distanceValue.textContent = `${value} km`;
+                this.displayEvents();
+            });
+        }
         
         // Time filter
         const timeFilter = document.getElementById('time-filter');
-        timeFilter.addEventListener('change', (e) => {
-            this.filters.timeFilter = e.target.value;
-            this.displayEvents();
-            hideAllDropdowns();
-        });
+        if (timeFilter) {
+            timeFilter.addEventListener('change', (e) => {
+                this.filters.timeFilter = e.target.value;
+                this.displayEvents();
+                hideAllDropdowns();
+            });
+        }
         
         // Category filter
         const categoryFilter = document.getElementById('category-filter');
-        categoryFilter.addEventListener('change', (e) => {
-            this.filters.category = e.target.value;
-            this.displayEvents();
-            hideAllDropdowns();
-        });
+        if (categoryFilter) {
+            categoryFilter.addEventListener('change', (e) => {
+                this.filters.category = e.target.value;
+                this.displayEvents();
+                hideAllDropdowns();
+            });
+        }
         
         // Custom location checkbox
         const useCustomLocation = document.getElementById('use-custom-location');
         const customLocationInputs = document.getElementById('custom-location-inputs');
-        useCustomLocation.addEventListener('change', (e) => {
-            if (e.target.checked) {
-                customLocationInputs.classList.remove('hidden');
-                // Pre-fill with current location if available
-                if (this.userLocation) {
-                    document.getElementById('custom-lat').value = this.userLocation.lat.toFixed(4);
-                    document.getElementById('custom-lon').value = this.userLocation.lon.toFixed(4);
+        if (useCustomLocation && customLocationInputs) {
+            useCustomLocation.addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    customLocationInputs.classList.remove('hidden');
+                    // Pre-fill with current location if available
+                    if (this.userLocation) {
+                        const customLat = document.getElementById('custom-lat');
+                        const customLon = document.getElementById('custom-lon');
+                        if (customLat) customLat.value = this.userLocation.lat.toFixed(4);
+                        if (customLon) customLon.value = this.userLocation.lon.toFixed(4);
+                    }
+                } else {
+                    customLocationInputs.classList.add('hidden');
+                    this.filters.useCustomLocation = false;
+                    this.filters.customLat = null;
+                    this.filters.customLon = null;
+                    this.displayEvents();
+                    hideAllDropdowns();
                 }
-            } else {
-                customLocationInputs.classList.add('hidden');
-                this.filters.useCustomLocation = false;
-                this.filters.customLat = null;
-                this.filters.customLon = null;
-                this.displayEvents();
-                hideAllDropdowns();
-            }
-        });
+            });
+        }
         
         // Apply custom location button
         const applyCustomLocation = document.getElementById('apply-custom-location');
-        applyCustomLocation.addEventListener('click', () => {
-            const lat = parseFloat(document.getElementById('custom-lat').value);
-            const lon = parseFloat(document.getElementById('custom-lon').value);
-            
-            if (!isNaN(lat) && !isNaN(lon) && lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180) {
-                this.filters.useCustomLocation = true;
-                this.filters.customLat = lat;
-                this.filters.customLon = lon;
+        if (applyCustomLocation) {
+            applyCustomLocation.addEventListener('click', () => {
+                const lat = parseFloat(document.getElementById('custom-lat').value);
+                const lon = parseFloat(document.getElementById('custom-lon').value);
                 
-                // Update map view to custom location
-                this.map.setView([lat, lon], 13);
-                
-                this.displayEvents();
-                hideAllDropdowns();
-            } else {
-                alert('Please enter valid latitude (-90 to 90) and longitude (-180 to 180) values.');
-            }
-        });
+                if (!isNaN(lat) && !isNaN(lon) && lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180) {
+                    this.filters.useCustomLocation = true;
+                    this.filters.customLat = lat;
+                    this.filters.customLon = lon;
+                    
+                    // Update map view to custom location
+                    if (this.map) {
+                        this.map.setView([lat, lon], 13);
+                    }
+                    
+                    this.displayEvents();
+                    hideAllDropdowns();
+                } else {
+                    alert('Please enter valid latitude (-90 to 90) and longitude (-180 to 180) values.');
+                }
+            });
+        }
         
         // Reset filters button
         const resetFilters = document.getElementById('reset-filters-btn');
-        resetFilters.addEventListener('click', (e) => {
-            e.stopPropagation();
-            // Reset all filters to defaults
-            this.filters.maxDistance = 5;
-            this.filters.timeFilter = 'sunrise';
-            this.filters.category = 'all';
-            this.filters.useCustomLocation = false;
-            this.filters.customLat = null;
-            this.filters.customLon = null;
-            
-            // Reset UI elements
-            document.getElementById('distance-filter').value = 5;
-            document.getElementById('distance-value').textContent = '5 km';
-            document.getElementById('time-filter').value = 'sunrise';
-            document.getElementById('category-filter').value = 'all';
-            document.getElementById('use-custom-location').checked = false;
-            document.getElementById('custom-location-inputs').classList.add('hidden');
-            
-            // Reset map view
-            if (this.userLocation) {
-                this.map.setView([this.userLocation.lat, this.userLocation.lon], 13);
-            }
-            
-            this.displayEvents();
-            hideAllDropdowns();
-        });
+        if (resetFilters) {
+            resetFilters.addEventListener('click', (e) => {
+                e.stopPropagation();
+                // Reset all filters to defaults
+                this.filters.maxDistance = 5;
+                this.filters.timeFilter = 'sunrise';
+                this.filters.category = 'all';
+                this.filters.useCustomLocation = false;
+                this.filters.customLat = null;
+                this.filters.customLon = null;
+                
+                // Reset UI elements
+                const distanceFilterEl = document.getElementById('distance-filter');
+                const distanceValueEl = document.getElementById('distance-value');
+                const timeFilterEl = document.getElementById('time-filter');
+                const categoryFilterEl = document.getElementById('category-filter');
+                const useCustomLocationEl = document.getElementById('use-custom-location');
+                const customLocationInputsEl = document.getElementById('custom-location-inputs');
+                
+                if (distanceFilterEl) distanceFilterEl.value = 5;
+                if (distanceValueEl) distanceValueEl.textContent = '5 km';
+                if (timeFilterEl) timeFilterEl.value = 'sunrise';
+                if (categoryFilterEl) categoryFilterEl.value = 'all';
+                if (useCustomLocationEl) useCustomLocationEl.checked = false;
+                if (customLocationInputsEl) customLocationInputsEl.classList.add('hidden');
+                
+                // Reset map view
+                if (this.userLocation && this.map) {
+                    this.map.setView([this.userLocation.lat, this.userLocation.lon], 13);
+                }
+                
+                this.displayEvents();
+                hideAllDropdowns();
+            });
+        }
         
         // Event detail close listeners
-        document.getElementById('close-detail').addEventListener('click', () => {
-            document.getElementById('event-detail').classList.add('hidden');
-        });
+        const closeDetail = document.getElementById('close-detail');
+        const eventDetail = document.getElementById('event-detail');
         
-        document.getElementById('event-detail').addEventListener('click', (e) => {
-            if (e.target.id === 'event-detail') {
-                document.getElementById('event-detail').classList.add('hidden');
-            }
-        });
+        if (closeDetail) {
+            closeDetail.addEventListener('click', () => {
+                if (eventDetail) eventDetail.classList.add('hidden');
+            });
+        }
+        
+        if (eventDetail) {
+            eventDetail.addEventListener('click', (e) => {
+                if (e.target.id === 'event-detail') {
+                    eventDetail.classList.add('hidden');
+                }
+            });
+        }
     }
 }
 
