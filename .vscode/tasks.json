@@ -1,0 +1,130 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Setup: Install Python Dependencies",
+      "type": "shell",
+      "command": "pip install -r requirements.txt",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Setup: Download Frontend Libraries",
+      "type": "shell",
+      "command": "./download-libs.sh",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Test: Feature Verification",
+      "type": "shell",
+      "command": "python3 verify_features.py --verbose",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Test: Scraper Tests",
+      "type": "shell",
+      "command": "python3 test_scraper.py --verbose",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Test: Event Schema Validation",
+      "type": "shell",
+      "command": "python3 test_event_schema.py --verbose",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Test: KISS Compliance",
+      "type": "shell",
+      "command": "python3 check_kiss.py --verbose",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Test: All Tests",
+      "type": "shell",
+      "command": "python3 verify_features.py --verbose && python3 test_scraper.py --verbose && python3 test_filters.py --verbose && python3 test_event_schema.py --verbose && python3 check_kiss.py --verbose && python3 test_translations.py --verbose",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Generate: Static Site",
+      "type": "shell",
+      "command": "python3 src/main.py generate",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Generate: Documentation",
+      "type": "shell",
+      "command": "python3 docs/build_docs.py",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Server: Start Local Development Server",
+      "type": "shell",
+      "command": "cd static && python3 -m http.server 8000",
+      "group": "none",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "TUI: Launch Event Manager",
+      "type": "shell",
+      "command": "python3 src/main.py",
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

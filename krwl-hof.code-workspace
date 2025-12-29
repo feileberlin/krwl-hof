@@ -1,0 +1,35 @@
+{
+  "folders": [
+    {
+      "name": "KRWL HOF",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "files.associations": {
+      "*.json": "jsonc"
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "github.copilot",
+      "github.copilot-chat",
+      "ms-python.python",
+      "ms-python.vscode-pylance",
+      "ms-python.black-formatter",
+      "dbaeumer.vscode-eslint",
+      "redhat.vscode-yaml",
+      "mhutchie.git-graph",
+      "eamodio.gitlens",
+      "yzhang.markdown-all-in-one"
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": []
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": []
+  }
+}
