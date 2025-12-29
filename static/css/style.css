@@ -549,7 +549,7 @@ body {
 }
 
 .leaflet-tooltip.event-time-tooltip:before {
-    border-top-color: #333333;
+    border-top-color: #4CAF50;
 }
 
 /* Keyboard focus styles for markers */
