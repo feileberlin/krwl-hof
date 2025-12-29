@@ -385,6 +385,7 @@ body {
     height: auto;
     width: auto;
     display: block;
+    color: #00ff00; /* Green stroke color for inline SVG */
 }
 
 /* Tablet and up */
