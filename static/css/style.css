@@ -856,13 +856,6 @@ body {
 .event-location {
     margin: 0.5rem 0;
     font-size: 0.95rem;
-    color: #666;
-}
-
-.event-time,
-.event-location {
-    margin: 0.5rem 0;
-    font-size: 0.95rem;
     color: #b0b0b0;
 }
 
