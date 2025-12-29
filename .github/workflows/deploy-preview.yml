@@ -20,6 +20,9 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: preview
+      url: ${{ steps.deployment.outputs.page_url }}preview/
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -49,13 +52,57 @@ jobs:
             echo "✓ Generated fresh demo events with current timestamps"
           fi
           
-          # Use development config (debugging enabled, caching disabled)
-          if [ -f config.dev.json ]; then
+          # Use preview config (debugging enabled, caching disabled, real events only)
+          if [ -f config.preview.json ]; then
+            cp config.preview.json publish/preview/config.json
+            echo "✓ Using preview config (debug mode enabled, real events only)"
+          elif [ -f config.dev.json ]; then
             cp config.dev.json publish/preview/config.json
-            echo "✓ Using development config (debug mode enabled, demo+real data)"
+            echo "✓ Using development config (fallback)"
           elif [ -f config.sample.json ]; then
             cp config.sample.json publish/preview/config.json
             echo "✓ Using sample config"
+          fi
+          
+          # Inject build metadata (commit SHA, PR number) into config
+          if [ -f publish/preview/config.json ]; then
+            COMMIT_SHORT="${GITHUB_SHA:0:7}"
+            
+            # Try to get PR number from various sources
+            PR_NUMBER=""
+            if [ "${{ github.event_name }}" = "pull_request" ]; then
+              PR_NUMBER="${{ github.event.pull_request.number }}"
+            elif [ -n "${{ github.event.number }}" ]; then
+              PR_NUMBER="${{ github.event.number }}"
+            fi
+            
+            # Create build_info section using jq
+            if command -v jq &> /dev/null; then
+              BUILD_INFO=$(jq -n \
+                --arg commit "$COMMIT_SHORT" \
+                --arg sha "$GITHUB_SHA" \
+                --arg pr "$PR_NUMBER" \
+                --arg ref "$GITHUB_REF" \
+                --arg actor "$GITHUB_ACTOR" \
+                --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+                '{
+                  commit_short: $commit,
+                  commit_sha: $sha,
+                  pr_number: $pr,
+                  ref: $ref,
+                  deployed_by: $actor,
+                  deployed_at: $timestamp
+                }')
+              
+              # Merge build_info into config.json
+              jq --argjson build_info "$BUILD_INFO" '. + {build_info: $build_info}' \
+                publish/preview/config.json > publish/preview/config.json.tmp
+              mv publish/preview/config.json.tmp publish/preview/config.json
+              
+              echo "✓ Injected build metadata: commit $COMMIT_SHORT, PR #$PR_NUMBER"
+            else
+              echo "⚠ jq not available, skipping build metadata injection"
+            fi
           fi
           
           # DO NOT copy CNAME for preview (prevents custom domain conflict)
@@ -101,4 +148,5 @@ jobs:
           path: publish
 
       - name: Deploy to GitHub Pages
+        id: deployment
         uses: actions/deploy-pages@v4

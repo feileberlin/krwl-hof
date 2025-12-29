@@ -141,6 +141,8 @@ class StaticSiteGenerator:
         <div id="map">
             <div id="map-overlay">
                 <div id="event-count">0 events</div>
+                <!-- Environment watermark (bottom-left) -->
+                <div id="env-watermark" class="hidden"></div>
                 <!-- Logo: Inline SVG megaphone (white stroke, no fill) -->
                 <!-- Source: Generated from src/modules/generator.py template -->
                 <a href="imprint.html" id="imprint-link">
@@ -354,6 +356,46 @@ header h1 {
 
 #imprint-text {
     display: none;
+}
+
+#env-watermark {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 0.5rem 1rem;
+    background: rgba(30, 30, 30, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    text-transform: uppercase;
+    font-family: 'Courier New', monospace;
+}
+
+#env-watermark.hidden {
+    display: none;
+}
+
+#env-watermark.production {
+    border: 2px solid #4CAF50;
+    color: #4CAF50;
+}
+
+#env-watermark.preview {
+    border: 2px solid #FFC107;
+    color: #FFC107;
+}
+
+#env-watermark.testing {
+    border: 2px solid #2196F3;
+    color: #2196F3;
+}
+
+#env-watermark.development {
+    border: 2px solid #9C27B0;
+    color: #9C27B0;
 }
 
 #event-list {
@@ -704,6 +746,9 @@ class EventsApp {
         // Load configuration
         await this.loadConfig();
         
+        // Display environment watermark if configured
+        this.displayEnvironmentWatermark();
+        
         // Initialize map
         this.initMap();
         
@@ -715,6 +760,60 @@ class EventsApp {
         
         // Setup event listeners
         this.setupEventListeners();
+    }
+    
+    displayEnvironmentWatermark() {
+        const watermark = document.getElementById('env-watermark');
+        if (!watermark) return;
+        
+        // Check if watermark is enabled in config
+        const watermarkConfig = this.config.watermark || {};
+        const enabled = watermarkConfig.enabled !== undefined ? watermarkConfig.enabled : false;
+        
+        if (!enabled) {
+            watermark.classList.add('hidden');
+            return;
+        }
+        
+        // Get environment info
+        const environment = this.config.app?.environment || 'unknown';
+        const envText = watermarkConfig.text || environment.toUpperCase();
+        
+        // Get build info (commit, PR)
+        const buildInfo = this.config.build_info || {};
+        let text = envText;
+        
+        // Add commit info if available
+        if (buildInfo.commit_short) {
+            text += ` • ${buildInfo.commit_short}`;
+        }
+        
+        // Add PR number if available
+        if (buildInfo.pr_number && buildInfo.pr_number !== '') {
+            text += ` • PR#${buildInfo.pr_number}`;
+        }
+        
+        // Set watermark text and style
+        watermark.textContent = text;
+        watermark.classList.remove('hidden', 'production', 'preview', 'testing', 'development');
+        watermark.classList.add(environment.toLowerCase());
+        
+        // Make watermark clickable to show more details if available
+        if (buildInfo.commit_sha) {
+            watermark.style.cursor = 'pointer';
+            watermark.title = `Click for build details\\nCommit: ${buildInfo.commit_sha}\\nDeployed: ${buildInfo.deployed_at || 'N/A'}\\nDeployed by: ${buildInfo.deployed_by || 'N/A'}`;
+            watermark.onclick = () => {
+                const details = [
+                    `Environment: ${environment}`,
+                    `Commit: ${buildInfo.commit_sha}`,
+                    buildInfo.pr_number ? `PR: #${buildInfo.pr_number}` : null,
+                    `Deployed: ${buildInfo.deployed_at || 'N/A'}`,
+                    `Deployed by: ${buildInfo.deployed_by || 'N/A'}`,
+                    `Ref: ${buildInfo.ref || 'N/A'}`
+                ].filter(Boolean).join('\\n');
+                alert(details);
+            };
+        }
     }
     
     async loadConfig() {

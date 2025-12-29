@@ -1,9 +1,14 @@
 {
   "app": {
-    "name": "KRWL HOF Community Events [PREVIEW]",
-    "description": "Community events scraper and viewer with geolocation filtering"
+    "name": "KRWL HOF Community Events [TESTING]",
+    "description": "Community events scraper and viewer with geolocation filtering",
+    "environment": "testing"
   },
   "debug": true,
+  "watermark": {
+    "enabled": true,
+    "text": "TESTING"
+  },
   "performance": {
     "cache_enabled": false,
     "prefetch_events": false
