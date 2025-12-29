@@ -1,0 +1,138 @@
+name: Scrape Events (Twice Daily)
+
+on:
+  schedule:
+    # Run twice daily at 8:00 AM and 8:00 PM UTC
+    - cron: '0 8 * * *'   # 8 AM UTC (9-10 AM CET depending on DST)
+    - cron: '0 20 * * *'  # 8 PM UTC (9-10 PM CET depending on DST)
+  workflow_dispatch:  # Allow manual triggering
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  scrape-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install Python dependencies
+        run: |
+          echo "Installing scraping dependencies..."
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          echo "✓ Dependencies installed"
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Run event scraper
+        run: |
+          echo "Starting event scraping at $(date)"
+          cd src
+          python3 main.py scrape
+          echo "✓ Scraping completed"
+
+      - name: Check for changes
+        id: check_changes
+        run: |
+          if [[ -n $(git status --porcelain) ]]; then
+            echo "changes=true" >> $GITHUB_OUTPUT
+            echo "✓ New events found"
+          else
+            echo "changes=false" >> $GITHUB_OUTPUT
+            echo "ℹ No new events found"
+          fi
+
+      - name: Commit scraped events
+        if: steps.check_changes.outputs.changes == 'true'
+        run: |
+          git add data/
+          git commit -m "chore: automated event scraping - $(date -u +"%Y-%m-%d %H:%M UTC")"
+          echo "✓ Changes committed"
+
+      - name: Generate static site
+        if: steps.check_changes.outputs.changes == 'true'
+        run: |
+          echo "Generating static site files..."
+          cd src
+          python3 main.py generate
+          echo "✓ Static site generated"
+
+      - name: Commit generated static files
+        if: steps.check_changes.outputs.changes == 'true'
+        run: |
+          git add static/
+          git commit -m "chore: regenerate static site after scraping - $(date -u +"%Y-%m-%d %H:%M UTC")" || echo "No static file changes to commit"
+          echo "✓ Static files committed (if changed)"
+
+      - name: Push changes
+        if: steps.check_changes.outputs.changes == 'true'
+        run: |
+          git push
+          echo "✓ Changes pushed to repository"
+
+      - name: Download Leaflet library
+        if: steps.check_changes.outputs.changes == 'true'
+        run: |
+          ./download-libs.sh
+          echo "✓ Leaflet library downloaded"
+
+      - name: Prepare publish directory
+        if: steps.check_changes.outputs.changes == 'true'
+        run: |
+          set -euo pipefail
+          rm -rf publish
+          mkdir -p publish
+          if [ -d static ]; then
+            # copy everything from static into publish root (preserve attributes)
+            cp -a static/. publish/ || true
+          fi
+          # Use production config (optimized for speed, no debugging)
+          if [ -f config.prod.json ]; then
+            cp config.prod.json publish/config.json
+            echo "✓ Using production config (optimized for maximum speed)"
+          fi
+          # include CNAME so custom domain stays configured
+          if [ -f CNAME ]; then
+            cp CNAME publish/CNAME
+            echo "✓ CNAME configured for custom domain"
+          fi
+          # prevent Jekyll processing
+          touch publish/.nojekyll
+          echo "Production publish directory contents:"
+          ls -la publish
+
+      - name: Upload Pages artifact
+        if: steps.check_changes.outputs.changes == 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: publish
+
+      - name: Deploy to GitHub Pages
+        if: steps.check_changes.outputs.changes == 'true'
+        uses: actions/deploy-pages@v4
+
+      - name: Summary
+        run: |
+          echo "## Scraping Run Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Date**: $(date -u +"%Y-%m-%d %H:%M UTC")" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.check_changes.outputs.changes }}" == "true" ]; then
+            echo "- **Status**: ✅ New events found and deployed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- **Status**: ℹ️ No new events found" >> $GITHUB_STEP_SUMMARY
+          fi
