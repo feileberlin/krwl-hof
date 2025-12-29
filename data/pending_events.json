@@ -6,7 +6,7 @@
       "description": "Weekly street food market with vendors from around the world. Try cuisines from 15+ countries. Live music entertainment.",
       "location": {
         "name": "Altstadt Hof",
-        "lat": 50.3170,
+        "lat": 50.317,
         "lon": 11.9167
       },
       "start_time": "2025-12-09T12:00:00",
@@ -22,8 +22,8 @@
       "description": "Learn basic bike maintenance and repair. Bring your bike if it needs fixing. Tools and parts available for purchase.",
       "location": {
         "name": "Kunstkaufhaus Hof",
-        "lat": 50.3160,
-        "lon": 11.9190
+        "lat": 50.316,
+        "lon": 11.919
       },
       "start_time": "2025-12-09T10:00:00",
       "end_time": "2025-12-09T13:00:00",
@@ -55,7 +55,7 @@
       "location": {
         "name": "Galeriehaus Hof",
         "lat": 50.3167,
-        "lon": 11.9180
+        "lon": 11.918
       },
       "start_time": "2025-12-09T18:30:00",
       "end_time": "2025-12-09T21:00:00",
@@ -86,8 +86,8 @@
       "description": "Join us for a communal breakfast. Share stories over fresh coffee and homemade pastries. Everyone contributes something!",
       "location": {
         "name": "VHS Hofer Land",
-        "lat": 50.3180,
-        "lon": 11.9200
+        "lat": 50.318,
+        "lon": 11.92
       },
       "start_time": "2025-12-09T08:00:00",
       "end_time": "2025-12-09T10:30:00",
@@ -95,7 +95,71 @@
       "source": "facebook",
       "scraped_at": "2025-12-08T11:45:00",
       "status": "pending"
+    },
+    {
+      "id": "html_frankenpost_2476130393080530401",
+      "title": "AUCHEVENTMELDERWERDEN?",
+      "description": "Jetzt ganz einfach dabei sein.",
+      "location": {
+        "name": "Regionalzeitung",
+        "lat": 50.3167,
+        "lon": 11.9167
+      },
+      "start_time": "2026-01-05T18:00:17.712009",
+      "end_time": null,
+      "url": "https://www.eventmelder-online.de",
+      "source": "Frankenpost",
+      "scraped_at": "2025-12-29T04:12:17.712026",
+      "status": "pending"
+    },
+    {
+      "id": "html_frankenpost_3332812410556433463",
+      "title": "Weihnachtlicher Stadtrundgang",
+      "description": "29.Dezember10:30",
+      "location": {
+        "name": "Regionalzeitung",
+        "lat": 50.3167,
+        "lon": 11.9167
+      },
+      "start_time": "2025-12-29T18:00:00",
+      "end_time": null,
+      "url": "https://event.frankenpost.de/detail.php?event_id=3214209",
+      "source": "Frankenpost",
+      "scraped_at": "2025-12-29T04:12:17.712922",
+      "status": "pending"
+    },
+    {
+      "id": "html_frankenpost_-7306179862626073948",
+      "title": "F\u00fchrung im Friedrich-Wilhelm-Stollen",
+      "description": "Montag,29.12.2025,11:00 Uhr",
+      "location": {
+        "name": "Regionalzeitung",
+        "lat": 50.3167,
+        "lon": 11.9167
+      },
+      "start_time": "2025-12-29T18:00:00",
+      "end_time": null,
+      "url": "https://event.frankenpost.de/detail.php?event_id=3212842",
+      "source": "Frankenpost",
+      "scraped_at": "2025-12-29T04:12:17.713563",
+      "status": "pending"
+    },
+    {
+      "id": "html_frankenpost_764604225559465446",
+      "title": "F\u00fchrung: Stadtgeschichte f\u00fcr Kinder",
+      "description": "Montag,29.12.2025,14:30 Uhr",
+      "location": {
+        "name": "Regionalzeitung",
+        "lat": 50.3167,
+        "lon": 11.9167
+      },
+      "start_time": "2025-12-29T18:00:00",
+      "end_time": null,
+      "url": "https://event.frankenpost.de/detail.php?event_id=3152877",
+      "source": "Frankenpost",
+      "scraped_at": "2025-12-29T04:12:17.714063",
+      "status": "pending"
     }
   ],
-  "last_scraped": "2025-12-08T11:45:00"
+  "last_scraped": "2025-12-29T04:12:17.714304"
 }
