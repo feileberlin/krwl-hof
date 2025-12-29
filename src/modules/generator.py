@@ -12,10 +12,62 @@ class StaticSiteGenerator:
         self.config = config
         self.base_path = base_path
         self.static_path = base_path / 'static'
+    
+    def check_manual_changes(self):
+        """Check if static files differ from what templates would generate.
+        Returns True if manual changes detected, False otherwise."""
+        import tempfile
+        import filecmp
         
-    def generate_all(self):
-        """Generate all static files"""
+        # Generate templates to temp location
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            
+            # Generate to temp files
+            html_content = self._get_html_content()
+            css_content = self._get_css_content()
+            js_content = self._get_js_content()
+            
+            (tmp_path / 'index.html').write_text(html_content)
+            (tmp_path / 'style.css').write_text(css_content)
+            (tmp_path / 'app.js').write_text(js_content)
+            
+            # Compare with existing static files
+            files_differ = []
+            if (self.static_path / 'index.html').exists():
+                if not filecmp.cmp(tmp_path / 'index.html', self.static_path / 'index.html', shallow=False):
+                    files_differ.append('index.html')
+            
+            if (self.static_path / 'css' / 'style.css').exists():
+                if not filecmp.cmp(tmp_path / 'style.css', self.static_path / 'css' / 'style.css', shallow=False):
+                    files_differ.append('css/style.css')
+            
+            if (self.static_path / 'js' / 'app.js').exists():
+                if not filecmp.cmp(tmp_path / 'app.js', self.static_path / 'js' / 'app.js', shallow=False):
+                    files_differ.append('js/app.js')
+            
+            if files_differ:
+                print("\n⚠️  WARNING: Manual changes detected in static files!")
+                print("The following files differ from generator templates:")
+                for f in files_differ:
+                    print(f"  - static/{f}")
+                print("\nThese changes will be OVERWRITTEN if you continue.")
+                return True
+            
+            return False
+        
+    def generate_all(self, skip_check=False):
+        """Generate all static files.
+        Returns True if generation completed, False if cancelled."""
         from .utils import archive_old_events
+        
+        # Check for manual changes unless explicitly skipped
+        if not skip_check:
+            if self.check_manual_changes():
+                response = input("\nContinue anyway? (yes/no): ").strip().lower()
+                if response != 'yes':
+                    print("Generation cancelled.")
+                    return False
         
         print("Archiving old events...")
         archived_count = archive_old_events(self.base_path)
@@ -34,9 +86,15 @@ class StaticSiteGenerator:
         print("Copying data files...")
         self._copy_data_files()
         
-    def _generate_html(self):
-        """Generate index.html"""
-        html_content = '''<!DOCTYPE html>
+        print("Creating warning notice...")
+        self._create_warning_notice()
+        
+        print("\n✓ Generation complete!")
+        return True
+    
+    def _get_html_content(self):
+        """Get HTML content from template"""
+        return '''<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -138,14 +196,17 @@ class StaticSiteGenerator:
 </body>
 </html>
 '''
-        
+    
+    def _generate_html(self):
+        """Generate index.html"""
+        html_content = self._get_html_content()
         html_path = self.static_path / 'index.html'
         with open(html_path, 'w') as f:
             f.write(html_content)
             
-    def _generate_css(self):
-        """Generate style.css"""
-        css_content = '''* {
+    def _get_css_content(self):
+        """Get CSS content from template"""
+        return '''* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -573,14 +634,17 @@ header h1 {
     }
 }
 '''
-        
+    
+    def _generate_css(self):
+        """Generate style.css"""
+        css_content = self._get_css_content()
         css_path = self.static_path / 'css' / 'style.css'
         with open(css_path, 'w') as f:
             f.write(css_content)
-            
-    def _generate_js(self):
-        """Generate app.js"""
-        js_content = '''// KRWL HOF Community Events App
+    
+    def _get_js_content(self):
+        """Get JavaScript content from template"""
+        return '''// KRWL HOF Community Events App
 class EventsApp {
     constructor() {
         this.map = null;
@@ -1149,10 +1213,44 @@ document.addEventListener('DOMContentLoaded', () => {
     new EventsApp();
 });
 '''
-        
+    
+    def _generate_js(self):
+        """Generate app.js"""
+        js_content = self._get_js_content()
         js_path = self.static_path / 'js' / 'app.js'
         with open(js_path, 'w') as f:
             f.write(js_content)
+    
+    def _create_warning_notice(self):
+        """Create a warning notice in static folder about auto-generation"""
+        notice_path = self.static_path / 'DO_NOT_EDIT_README.txt'
+        notice_content = '''⚠️  WARNING: AUTO-GENERATED FILES ⚠️
+=======================================
+
+The following files in this directory are AUTO-GENERATED by the build system:
+  - index.html
+  - css/style.css
+  - js/app.js
+
+These files are regenerated from templates in:
+  src/modules/generator.py
+
+🚫 DO NOT manually edit these files directly!
+   Any manual changes will be OVERWRITTEN during the next build.
+
+✅ To make changes:
+   1. Edit the templates in src/modules/generator.py
+   2. Run: python3 src/main.py generate
+   3. Commit both the template changes AND generated files
+
+📋 Other files (config.json, events.json, etc.) are data files and safe to edit.
+
+Last generated: ''' + __import__('datetime').datetime.now().strftime('%Y-%m-%d %H:%M:%S') + '''
+
+For more information, see the project README.md
+'''
+        with open(notice_path, 'w') as f:
+            f.write(notice_content)
             
     def _copy_data_files(self):
         """Copy data and config files to static directory"""
