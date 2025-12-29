@@ -148,7 +148,7 @@ All markers should follow the terminal aesthetic:
 
 1. **Size**: 32×48 pixels (or proportional)
 2. **ViewBox**: `0 0 32 48` (or proportional)
-3. **Style**: Green outlines (`#00ff00`), no fills
+3. **Style**: Barbie red outlines (`#FF69B4`), no fills
 4. **Stroke Width**: 2px for main outline, 1-1.5px for details
 5. **Shadow**: Black ellipse with 50% opacity at bottom
 6. **Anchor**: Bottom center point
@@ -162,10 +162,10 @@ All markers should follow the terminal aesthetic:
   
   <!-- Custom shape -->
   <path d="M16 2 C9 2 3 8 3 15 C3 24 16 46 16 46 C16 46 29 24 29 15 C29 8 23 2 16 2 Z" 
-        fill="none" stroke="#00ff00" stroke-width="2"/>
+        fill="none" stroke="#FF69B4" stroke-width="2"/>
   
   <!-- Custom icon -->
-  <circle cx="16" cy="15" r="4" fill="none" stroke="#00ff00" stroke-width="1.5"/>
+  <circle cx="16" cy="15" r="4" fill="none" stroke="#FF69B4" stroke-width="1.5"/>
 </svg>
 ```
 
@@ -269,16 +269,16 @@ See `static/markers/README.md` for the complete list.
 
 ## Terminal Glow Effect
 
-All markers automatically get a green glow effect via CSS:
+All markers automatically get a barbie red glow effect via CSS:
 
 ```css
 .leaflet-marker-icon {
-    filter: drop-shadow(0 0 2px #00ff00);
+    filter: drop-shadow(0 0 2px #FF69B4);
 }
 
 .leaflet-marker-icon:hover {
-    filter: drop-shadow(0 0 4px #00ff00) 
-            drop-shadow(0 0 8px #00ff00);
+    filter: drop-shadow(0 0 4px #FF69B4) 
+            drop-shadow(0 0 8px #FF69B4);
 }
 ```
 
