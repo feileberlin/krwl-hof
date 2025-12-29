@@ -143,12 +143,12 @@ class StaticSiteGenerator:
                 <div id="event-count">0 events</div>
                 <!-- Environment watermark (bottom-left) -->
                 <div id="env-watermark" class="hidden"></div>
-                <!-- Logo: Inline SVG megaphone (white stroke, no fill) -->
+                <!-- Logo: Inline SVG megaphone (gray stroke, transitions to pink on hover) -->
                 <!-- Source: Generated from src/modules/generator.py template -->
                 <a href="imprint.html" id="imprint-link">
                     <svg xmlns="http://www.w3.org/2000/svg" id="site-logo" width="20" height="20" viewBox="0 0 20 20">
                         <g transform="translate(1, 1.5)">
-                            <path style="fill:none;stroke:#ffffff;stroke-width:1.2;" 
+                            <path style="fill:none;stroke:#cccccc;stroke-width:1.2;" 
                                   d="M 4.43,15.8 H 3.81 c -0.64,-0.19 -0.9,-4.46 -0.02,-5.45 0.61,-0.06 3.81,-0.06 3.81,-0.06 0,0 2.37,0.19 7.44,-3.62 0,0 0.17,0.02 0.85,4.58 0,0 1.42,1.76 -0.11,3.71 0,0 -0.27,3.6 -0.7,4.52 0,0 -4.17,-3.43 -8.8,-3.73 l -0.04,3.58 c -0.07,0.43 -1.71,0.37 -1.72,0 z" />
                         </g>
                     </svg>
@@ -240,6 +240,17 @@ class StaticSiteGenerator:
 /* DO NOT EDIT: Manual changes will be overwritten on next build */
 /* To modify: Edit templates in src/modules/generator.py, then run: python3 src/main.py generate */
 
+/*
+MONOCHROME COLOR PALETTE:
+- Accent (Barbie Red): #FF69B4
+- Accent Glow: rgba(255, 105, 180, 0.3-0.5)
+- Backgrounds: #1a1a1a, #2d2d2d, #2a2a2a (dark grays)
+- Text Primary: #ffffff, #ccc (light grays)
+- Text Secondary: #aaa, #888 (medium grays)
+- Borders/Accents: All use #FF69B4 or gray shades
+- NO other colors used (no green, blue, yellow, etc.)
+*/
+
 * {
     margin: 0;
     padding: 0;
@@ -269,6 +280,8 @@ header {
 header h1 {
     font-size: 1.5rem;
     margin-bottom: 0.5rem;
+    color: #FF69B4;
+    text-shadow: 0 0 10px rgba(255, 105, 180, 0.3);
 }
 
 #status {
@@ -339,22 +352,23 @@ header h1 {
     padding: 0.6rem 1rem;
     background: rgba(30, 30, 30, 0.95);
     backdrop-filter: blur(10px);
-    color: #4CAF50;
+    color: #ccc;
     text-decoration: none;
     border-radius: 8px;
-    border: 2px solid #4CAF50;
+    border: 2px solid #555;
     font-size: 0.85rem;
     font-weight: 500;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-    transition: background 0.2s, color 0.2s;
+    transition: all 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 #imprint-link:hover {
-    background: rgba(76, 175, 80, 0.2);
-    color: #fff;
+    background: rgba(255, 105, 180, 0.1);
+    border-color: #FF69B4;
+    color: #FF69B4;
 }
 
 #site-logo {
@@ -363,6 +377,15 @@ header h1 {
     height: auto;
     width: auto;
     display: block;
+}
+
+#site-logo path {
+    stroke: #ccc !important;
+    transition: stroke 0.2s;
+}
+
+#imprint-link:hover #site-logo path {
+    stroke: #FF69B4 !important;
 }
 
 #imprint-text {
@@ -389,24 +412,14 @@ header h1 {
     display: none;
 }
 
-#env-watermark.production {
-    border: 2px solid #4CAF50;
-    color: #4CAF50;
-}
-
-#env-watermark.preview {
-    border: 2px solid #FFC107;
-    color: #FFC107;
-}
-
-#env-watermark.testing {
-    border: 2px solid #2196F3;
-    color: #2196F3;
-}
-
+/* All environment markers use same monochrome style */
+#env-watermark.production,
+#env-watermark.preview,
+#env-watermark.testing,
 #env-watermark.development {
-    border: 2px solid #9C27B0;
-    color: #9C27B0;
+    border: 2px solid #FF69B4;
+    color: #FF69B4;
+    text-shadow: 0 0 5px rgba(255, 105, 180, 0.5);
 }
 
 #event-list {
@@ -426,19 +439,20 @@ header h1 {
 #event-list h2 {
     font-size: 1.2rem;
     margin-bottom: 1rem;
-    color: #fff;
+    color: #FF69B4;
+    text-shadow: 0 0 10px rgba(255, 105, 180, 0.3);
 }
 
 #filters-section {
     margin-bottom: 1.5rem;
     padding-bottom: 1rem;
-    border-bottom: 1px solid rgba(76, 175, 80, 0.3);
+    border-bottom: 1px solid rgba(255, 105, 180, 0.3);
 }
 
 #filters-section h3 {
     font-size: 1rem;
     margin-bottom: 1rem;
-    color: #4CAF50;
+    color: #FF69B4;
 }
 
 .filter-group {
@@ -464,14 +478,18 @@ header h1 {
     padding: 0.5rem;
     background: rgba(45, 45, 45, 0.9);
     color: #fff;
-    border: 1px solid #4CAF50;
+    border: 1px solid #555;
     border-radius: 5px;
     font-size: 0.85rem;
     cursor: pointer;
+    transition: border-color 0.2s;
 }
 
-.filter-group select:hover {
+.filter-group select:hover,
+.filter-group select:focus {
     background: rgba(55, 55, 55, 0.9);
+    border-color: #FF69B4;
+    outline: none;
 }
 
 .filter-group input[type="number"] {
@@ -479,10 +497,16 @@ header h1 {
     padding: 0.5rem;
     background: rgba(45, 45, 45, 0.9);
     color: #fff;
-    border: 1px solid #4CAF50;
+    border: 1px solid #555;
     border-radius: 5px;
     font-size: 0.85rem;
     margin-bottom: 0.5rem;
+    transition: border-color 0.2s;
+}
+
+.filter-group input[type="number"]:focus {
+    border-color: #FF69B4;
+    outline: none;
 }
 
 .filter-group input[type="number"]:first-of-type {
@@ -500,38 +524,42 @@ header h1 {
 #apply-custom-location {
     width: 100%;
     padding: 0.5rem;
-    background: #4CAF50;
+    background: #FF69B4;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 0.85rem;
-    transition: background 0.2s;
+    transition: all 0.2s;
+    box-shadow: 0 0 10px rgba(255, 105, 180, 0.3);
 }
 
 #apply-custom-location:hover {
-    background: #45a049;
+    background: #ff4da6;
+    box-shadow: 0 0 15px rgba(255, 105, 180, 0.5);
 }
 
 #reset-filters {
     width: 100%;
     padding: 0.5rem;
-    background: rgba(255, 87, 34, 0.2);
-    color: #FF5722;
-    border: 1px solid #FF5722;
+    background: rgba(100, 100, 100, 0.2);
+    color: #aaa;
+    border: 1px solid #555;
     border-radius: 5px;
     cursor: pointer;
     font-size: 0.85rem;
     margin-top: 0.5rem;
-    transition: background 0.2s;
+    transition: all 0.2s;
 }
 
 #reset-filters:hover {
-    background: rgba(255, 87, 34, 0.3);
+    background: rgba(100, 100, 100, 0.3);
+    border-color: #888;
+    color: #ccc;
 }
 
 #distance-value {
-    color: #4CAF50;
+    color: #FF69B4;
     font-weight: bold;
     font-size: 0.9rem;
 }
@@ -553,19 +581,20 @@ header h1 {
     padding: 1rem;
     margin-bottom: 1rem;
     cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    border-left: 3px solid #4CAF50;
+    transition: all 0.2s;
+    border-left: 3px solid #FF69B4;
 }
 
 .event-card:hover {
     transform: translateX(-5px);
-    box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+    box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
+    background: rgba(55, 55, 55, 0.9);
 }
 
 .event-card h3 {
     font-size: 1rem;
     margin-bottom: 0.5rem;
-    color: #4CAF50;
+    color: #FF69B4;
 }
 
 .event-card p {
@@ -605,6 +634,8 @@ header h1 {
     max-height: 80vh;
     overflow-y: auto;
     position: relative;
+    border: 2px solid #FF69B4;
+    box-shadow: 0 0 20px rgba(255, 105, 180, 0.3);
 }
 
 #close-detail {
@@ -613,24 +644,27 @@ header h1 {
     right: 1rem;
     background: none;
     border: none;
-    color: #fff;
+    color: #ccc;
     font-size: 2rem;
     cursor: pointer;
     line-height: 1;
+    transition: color 0.2s;
 }
 
 #close-detail:hover {
-    color: #4CAF50;
+    color: #FF69B4;
 }
 
 .detail-content h2 {
     margin-bottom: 1rem;
-    color: #4CAF50;
+    color: #FF69B4;
+    text-shadow: 0 0 10px rgba(255, 105, 180, 0.3);
 }
 
 .detail-content p {
     line-height: 1.6;
     margin-bottom: 1rem;
+    color: #ccc;
 }
 
 #detail-info {
@@ -638,44 +672,49 @@ header h1 {
     padding: 1rem;
     border-radius: 8px;
     margin: 1rem 0;
+    border: 1px solid rgba(255, 105, 180, 0.2);
 }
 
 #detail-link {
     display: inline-block;
-    background: #4CAF50;
+    background: #FF69B4;
     color: white;
     padding: 0.75rem 1.5rem;
     border-radius: 5px;
     text-decoration: none;
-    transition: background 0.2s;
+    transition: all 0.2s;
+    box-shadow: 0 0 10px rgba(255, 105, 180, 0.3);
 }
 
 #detail-link:hover {
-    background: #45a049;
+    background: #ff4da6;
+    box-shadow: 0 0 15px rgba(255, 105, 180, 0.5);
 }
 
 /* Leaflet customization */
 .leaflet-popup-content-wrapper {
     background: #2d2d2d;
     color: white;
+    border: 2px solid #FF69B4;
 }
 
 .leaflet-popup-tip {
     background: #2d2d2d;
+    border-color: #FF69B4;
 }
 
-/* Terminal-style SVG marker glow effect */
+/* Monochrome marker glow - barbie red instead of green */
 .leaflet-marker-icon {
-    filter: drop-shadow(0 0 2px #00ff00);
+    filter: drop-shadow(0 0 2px #FF69B4);
     transition: filter 0.2s ease;
 }
 
 .leaflet-marker-icon:hover {
-    filter: drop-shadow(0 0 4px #00ff00) 
-            drop-shadow(0 0 8px #00ff00);
+    filter: drop-shadow(0 0 4px #FF69B4) 
+            drop-shadow(0 0 8px #FF69B4);
 }
 
-/* Scrollbar styling */
+/* Scrollbar styling - monochrome */
 ::-webkit-scrollbar {
     width: 8px;
 }
@@ -685,12 +724,12 @@ header h1 {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #4CAF50;
+    background: #FF69B4;
     border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #45a049;
+    background: #ff4da6;
 }
 
 @media (max-width: 768px) {
