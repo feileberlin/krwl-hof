@@ -177,11 +177,12 @@ body {
     left: 0;
     right: 0;
     font-family: 'Courier New', 'Consolas', 'Monaco', monospace;
-    font-size: 0.85rem;
+    /* Mobile-first: Slightly smaller font for better fit */
+    font-size: 0.75rem;
     font-weight: 600;
     color: #00ff00;
-    /* Mobile-first: More padding for better touch targets */
-    padding: 0.8rem;
+    /* Mobile-first: Adequate padding for touch targets */
+    padding: 0.7rem 0.5rem;
     background: rgba(0, 0, 0, 0.95);
     backdrop-filter: blur(10px);
     border-radius: 0 0 8px 8px;
@@ -191,10 +192,13 @@ body {
     box-shadow: 0 0 20px rgba(0, 255, 0, 0.3), inset 0 0 10px rgba(0, 255, 0, 0.1);
     display: flex;
     flex-wrap: wrap;
-    /* Mobile-first: Slightly larger gap for better touch separation */
-    gap: 0.5rem;
-    align-items: stretch;
+    /* Mobile-first: Minimal gap to keep sentence compact */
+    gap: 0.2rem;
+    align-items: center;
     text-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
+    /* Mobile-first: Allow horizontal scrolling if needed to keep one line */
+    overflow-x: auto;
+    white-space: nowrap;
 }
 
 /* Tablet and up */
@@ -207,7 +211,6 @@ body {
         padding: 0.8rem;
         border-radius: 8px;
         gap: 0.3rem;
-        align-items: center;
     }
 }
 
@@ -275,19 +278,11 @@ body {
 }
 
 .filter-part {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
-    /* Mobile-first: Each filter takes full width for better touch targets */
-    flex: 1 1 100%;
-}
-
-/* Tablet and up: filters can be inline */
-@media (min-width: 640px) {
-    .filter-part {
-        display: inline-flex;
-        flex: 0 1 auto;
-    }
+    gap: 0.2rem;
+    /* Keep inline even on mobile for sentence format */
+    flex-shrink: 0;
 }
 
 .inline-filter {
@@ -296,33 +291,33 @@ body {
     border: none;
     border-bottom: 2px dashed #4CAF50;
     color: #4CAF50;
-    font-size: 0.85rem;
+    /* Mobile-first: Readable font size */
+    font-size: 0.75rem;
     font-weight: 500;
     font-family: inherit;
-    /* Mobile-first: Better touch targets with more padding */
-    padding: 0.5rem 1.8rem 0.5rem 0.4rem;
+    /* Mobile-first: Better touch targets with adequate padding */
+    padding: 0.4rem 1.5rem 0.4rem 0.3rem;
     cursor: pointer;
     transition: all 0.2s;
     background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8"><path fill="%234CAF50" d="M1.41 0L6 4.59L10.59 0L12 1.41l-6 6l-6-6z"/></svg>');
     background-repeat: no-repeat;
-    background-position: right 0.4rem center;
-    background-size: 12px;
-    /* Mobile-first: Constrain width and handle overflow */
-    width: 100%;
+    background-position: right 0.3rem center;
+    background-size: 10px;
+    /* Mobile-first: Ensure adequate touch target height */
     min-height: 44px;
-    /* Use line-height for vertical centering instead of flexbox */
     line-height: 1.5;
     box-sizing: border-box;
+    /* Mobile-first: Auto width to keep sentence format */
+    width: auto;
+    display: inline-block;
 }
 
-/* Tablet and up: reduce padding and allow auto width */
+/* Tablet and up: slightly increase font size */
 @media (min-width: 640px) {
     .inline-filter {
         font-size: 0.95rem;
         padding: 0.2rem 1.5rem 0.2rem 0.2rem;
         background-position: right 0.2rem center;
-        background-size: 10px;
-        width: auto;
         min-height: auto;
     }
 }
