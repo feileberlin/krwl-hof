@@ -134,11 +134,14 @@ class EventsApp {
             imprintText.textContent = ui.imprint_text;
         }
         
-        // Load logo if configured (inline SVG, just show/hide)
-        if (siteLogo && ui.logo) {
-            siteLogo.style.display = 'block';
-            if (imprintText) {
-                imprintText.style.display = 'none';
+        // Show logo if configured (inline SVG, just show/hide)
+        if (siteLogo) {
+            // Only show logo if logo is configured in config
+            if (ui.logo) {
+                siteLogo.style.display = 'block';
+                if (imprintText) {
+                    imprintText.style.display = 'none';
+                }
             }
         }
     }
