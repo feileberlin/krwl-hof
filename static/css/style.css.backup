@@ -173,12 +173,12 @@ body {
     left: 0;
     right: 0;
     padding: 0.5rem 0.6rem;
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(0, 0, 0, 0.85);
     backdrop-filter: blur(5px);
-    border-bottom: 1px solid #e0e0e0;
-    font-family: inherit;
-    font-size: 0.8rem;
-    color: #666666;
+    border-bottom: 1px solid rgba(0, 255, 0, 0.3);
+    font-family: 'Courier New', 'Consolas', 'Monaco', monospace;
+    font-size: 0.75rem;
+    color: #00ff00;
     z-index: 998;
 }
 
@@ -195,15 +195,15 @@ body {
     align-items: center;
     gap: 0.3rem;
     padding: 0.2rem 0.5rem;
-    background: rgba(76, 175, 80, 0.1);
-    border: 1px solid rgba(76, 175, 80, 0.3);
+    background: rgba(0, 255, 0, 0.1);
+    border: 1px solid rgba(0, 255, 0, 0.3);
     border-radius: 4px;
     transition: all 0.2s;
 }
 
 .category-count:hover {
-    background: rgba(76, 175, 80, 0.15);
-    border-color: rgba(76, 175, 80, 0.5);
+    background: rgba(0, 255, 0, 0.2);
+    border-color: rgba(0, 255, 0, 0.5);
 }
 
 .category-count .label {
@@ -212,7 +212,7 @@ body {
 
 .category-count .count {
     font-weight: bold;
-    color: #333333;
+    color: #4CAF50;
 }
 
 /* Tablet and up */
@@ -225,7 +225,7 @@ body {
     }
     
     #category-counts {
-        font-size: 0.85rem;
+        font-size: 0.8rem;
     }
 }
 
@@ -242,7 +242,7 @@ body {
     background: transparent;
     border: none;
     border-bottom: 2px solid #4CAF50;
-    color: #333333;
+    color: #4CAF50;
     /* Mobile-first: Readable font size */
     font-size: 0.85rem;
     font-weight: 500;
@@ -310,7 +310,7 @@ body {
     padding: 0.5rem 0.8rem;
     background: rgba(30, 30, 30, 0.95);
     backdrop-filter: blur(10px);
-    color: #333333;
+    color: #4CAF50;
     text-decoration: none;
     border-radius: 8px 0 0 0;
     border: 2px solid #4CAF50;
@@ -388,8 +388,8 @@ body {
 #language-select {
     background: transparent;
     border: 1px solid #4CAF50;
-    color: #333333;
-    font-family: inherit, monospace;
+    color: #4CAF50;
+    font-family: 'Courier New', 'Consolas', 'Monaco', monospace;
     font-size: 0.75rem;
     padding: 0.3rem 0.5rem;
     border-radius: 4px;
@@ -410,7 +410,7 @@ body {
 
 #language-select option {
     background: #1a1a1a;
-    color: #333333;
+    color: #4CAF50;
 }
 
 /* Tablet and up */
@@ -448,7 +448,7 @@ body {
 
 .detail-content {
     background: #000000;
-    border: 2px solid #4CAF50;
+    border: 2px solid #00ff00;
     border-radius: 12px;
     padding: 1.5rem;
     max-width: 600px;
@@ -457,7 +457,7 @@ body {
     max-height: 90dvh;
     overflow-y: auto;
     position: relative;
-    color: #333333;
+    color: #00ff00;
     box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
 }
 
@@ -475,7 +475,7 @@ body {
     right: 1rem;
     background: none;
     border: none;
-    color: #333333;
+    color: #00ff00;
     font-size: 2rem;
     cursor: pointer;
     line-height: 1;
@@ -488,7 +488,7 @@ body {
 }
 
 #close-detail:hover {
-    color: #333333;
+    color: #4CAF50;
 }
 
 #close-detail:focus {
@@ -503,7 +503,7 @@ body {
 
 .detail-content h2 {
     margin-bottom: 1rem;
-    color: #333333;
+    color: #00ff00;
     padding-right: 2rem;
     text-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
 }
@@ -511,7 +511,7 @@ body {
 .detail-content p {
     line-height: 1.6;
     margin-bottom: 1rem;
-    color: #333333;
+    color: #00ff00;
 }
 
 #detail-info {
@@ -524,9 +524,9 @@ body {
 #detail-link {
     display: inline-block;
     background: rgba(0, 255, 0, 0.1);
-    color: #333333;
+    color: #00ff00;
     padding: 0.75rem 1.5rem;
-    border: 2px solid #4CAF50;
+    border: 2px solid #00ff00;
     border-radius: 5px;
     text-decoration: none;
     transition: all 0.2s;
@@ -541,8 +541,8 @@ body {
 /* Enhanced Leaflet tooltip styling (for permanent time preview) */
 .leaflet-tooltip.event-time-tooltip {
     background: rgba(0, 0, 0, 0.95);
-    color: #333333;
-    border: 1px solid #4CAF50;
+    color: #00ff00;
+    border: 1px solid #00ff00;
     border-radius: 4px;
     padding: 4px 8px;
     font-size: 11px;
@@ -552,7 +552,7 @@ body {
 }
 
 .leaflet-tooltip.event-time-tooltip:before {
-    border-top-color: #333333;
+    border-top-color: #00ff00;
 }
 
 /* Keyboard focus styles for markers */
@@ -570,8 +570,8 @@ body {
 /* Enhanced Leaflet popup styling */
 .leaflet-popup-content-wrapper {
     background: #000000;
-    color: #333333;
-    border: 2px solid #4CAF50;
+    color: #00ff00;
+    border: 2px solid #00ff00;
     border-radius: 8px;
     padding: 0;
     box-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
@@ -581,18 +581,18 @@ body {
     margin: 0;
     min-width: 200px;
     max-width: 300px;
-    color: #333333;
+    color: #00ff00;
 }
 
 .leaflet-popup-tip {
     background: #000000;
-    border: 1px solid #4CAF50;
+    border: 1px solid #00ff00;
 }
 
 /* Enhanced popup styling with terminal theme */
 .event-popup {
     padding: 1rem;
-    font-family: inherit, monospace;
+    font-family: 'Courier New', 'Consolas', 'Monaco', monospace;
     position: relative;
 }
 
@@ -623,7 +623,7 @@ body {
     display: block;
     width: 100%;
     height: 3px;
-    background: #4CAF50;
+    background: #00ff00;
     border-radius: 2px;
     transition: all 0.3s ease;
     box-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
@@ -656,7 +656,7 @@ body {
     top: 2.5rem;
     right: 0;
     background: #000000;
-    border: 2px solid #4CAF50;
+    border: 2px solid #00ff00;
     border-radius: 4px;
     padding: 0.5rem 0;
     min-width: 180px;
@@ -686,13 +686,13 @@ body {
     align-items: center;
     gap: 0.75rem;
     padding: 0.6rem 1rem;
-    color: #333333;
+    color: #00ff00;
     background: transparent;
     border: none;
     width: 100%;
     text-align: left;
     cursor: pointer;
-    font-family: inherit, monospace;
+    font-family: 'Courier New', 'Consolas', 'Monaco', monospace;
     font-size: 0.85rem;
     text-decoration: none;
     transition: all 0.2s;
@@ -701,7 +701,7 @@ body {
 
 .menu-item:hover {
     background: rgba(0, 255, 0, 0.1);
-    border-left-color: #333333;
+    border-left-color: #00ff00;
     padding-left: 1.2rem;
 }
 
@@ -746,7 +746,7 @@ body {
 
 /* Visit counter */
 .visit-count {
-    color: #333333;
+    color: #00ff00;
     font-weight: bold;
     text-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
 }
@@ -761,7 +761,7 @@ body {
 
 
 .event-popup h3 {
-    color: #333333;
+    color: #00ff00;
     margin: 0 0 0.75rem 0;
     font-size: 1.1rem;
     border-bottom: 2px solid rgba(0, 255, 0, 0.5);
@@ -773,13 +773,14 @@ body {
 /* Blinking cursor after title */
 .event-popup h3::after {
     content: '█';
+    animation: blink-cursor 1s step-end infinite;
     margin-left: 0.2rem;
 }
 
 .event-popup-info {
     margin: 0.5rem 0;
     line-height: 1.6;
-    color: #333333;
+    color: #00ff00;
 }
 
 /* Typewriter effect for info lines */
@@ -792,7 +793,7 @@ body {
     overflow: hidden;
     white-space: nowrap;
     border-right: 2px solid rgba(0, 255, 0, 0);
-    color: #333333;
+    color: #00ff00;
 }
 
 /* Apply typewriter animation on popup open */
@@ -804,7 +805,7 @@ body {
 .event-popup-info .icon {
     min-width: 20px;
     text-align: center;
-    color: #333333;
+    color: #00ff00;
 }
 
 /* Description with typewriter effect */
@@ -816,7 +817,7 @@ body {
     border-radius: 6px;
     font-size: 0.85rem;
     line-height: 1.5;
-    color: #333333;
+    color: #00ff00;
     text-shadow: 0 0 3px rgba(0, 255, 0, 0.5);
     position: relative;
 }
@@ -824,24 +825,25 @@ body {
 /* Blinking cursor at end of description */
 .event-popup-description::after {
     content: '█';
+    animation: blink-cursor 1s step-end infinite;
     margin-left: 0.2rem;
-    color: #333333;
+    color: #00ff00;
 }
 
 /* Link styled as terminal command */
 .event-popup-link {
     display: inline-block;
     background: rgba(0, 255, 0, 0.1);
-    color: #333333;
+    color: #00ff00;
     padding: 0.5rem 1rem;
-    border: 2px solid #4CAF50;
+    border: 2px solid #00ff00;
     border-radius: 5px;
     text-decoration: none;
     font-size: 0.9rem;
     margin-top: 0.5rem;
     transition: all 0.2s;
     text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
-    font-family: inherit, monospace;
+    font-family: 'Courier New', 'Consolas', 'Monaco', monospace;
 }
 
 /* Command prefix */
@@ -866,7 +868,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #4CAF50;
+    background: #00ff00;
     border-radius: 4px;
 }
 
@@ -884,15 +886,15 @@ body {
 .noscript-container {
     min-height: 100vh;
     background: #000000;
-    color: #333333;
-    font-family: inherit, monospace;
+    color: #00ff00;
+    font-family: 'Courier New', 'Consolas', 'Monaco', monospace;
     padding: 2rem;
     max-width: 1200px;
     margin: 0 auto;
 }
 
 .noscript-header {
-    border: 2px solid #4CAF50;
+    border: 2px solid #00ff00;
     border-radius: 8px;
     padding: 2rem;
     margin-bottom: 2rem;
@@ -909,7 +911,7 @@ body {
 
 .noscript-header h1::before {
     content: '> ';
-    color: #333333;
+    color: #00ff00;
 }
 
 .noscript-header .warning {
@@ -923,7 +925,7 @@ body {
 }
 
 .noscript-header .info {
-    color: #333333;
+    color: #00ff00;
     margin-top: 0.5rem;
     opacity: 0.8;
 }
@@ -946,7 +948,7 @@ body {
 
 .noscript-main h2::before {
     content: '>> ';
-    color: #333333;
+    color: #00ff00;
 }
 
 /* Event List Styles */
@@ -958,7 +960,7 @@ body {
 
 .event-item {
     border: 1px solid rgba(0, 255, 0, 0.3);
-    border-left: 3px solid #4CAF50;
+    border-left: 3px solid #00ff00;
     border-radius: 4px;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
@@ -974,7 +976,7 @@ body {
 }
 
 .event-item h3 {
-    color: #333333;
+    color: #00ff00;
     font-size: 1.2rem;
     margin-bottom: 0.75rem;
     text-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
@@ -982,6 +984,7 @@ body {
 
 .event-item h3::after {
     content: ' █';
+    animation: blink-cursor 1s step-end infinite;
 }
 
 .event-time,
@@ -1011,12 +1014,12 @@ body {
 }
 
 .action-btn {
-    color: #333333;
+    color: #00ff00;
     background: rgba(0, 255, 0, 0.1);
-    border: 1px solid #4CAF50;
+    border: 1px solid #00ff00;
     padding: 0.4rem 0.8rem;
     font-size: 0.8rem;
-    font-family: inherit, monospace;
+    font-family: 'Courier New', 'Consolas', 'Monaco', monospace;
     cursor: pointer;
     border-radius: 3px;
     text-decoration: none;
@@ -1054,12 +1057,13 @@ body {
 }
 
 .loading {
-    color: #333333;
+    color: #00ff00;
     animation: glow-pulse 1.5s infinite;
 }
 
 .loading::after {
     content: ' █';
+    animation: blink-cursor 0.5s step-end infinite;
 }
 
 .no-events {
@@ -1088,7 +1092,7 @@ body {
 }
 
 .noscript-footer a {
-    color: #333333;
+    color: #00ff00;
     text-decoration: underline;
 }
 
@@ -1124,7 +1128,7 @@ body {
  */
 .imprint-popup-container .leaflet-popup-content-wrapper {
     background: rgba(0, 100, 0, 0.95);
-    border: 2px solid #4CAF50;
+    border: 2px solid #00ff00;
     box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
     max-height: 500px;
     overflow-y: auto;
@@ -1132,11 +1136,11 @@ body {
 
 .imprint-popup-container .leaflet-popup-tip {
     background: rgba(0, 100, 0, 0.95);
-    border: 1px solid #4CAF50;
+    border: 1px solid #00ff00;
 }
 
 .imprint-popup h3 {
-    color: #333333;
+    color: #00ff00;
     font-family: 'Courier New', Courier, monospace;
     font-size: 1.2rem;
     font-weight: bold;
@@ -1147,7 +1151,7 @@ body {
 }
 
 .imprint-popup p {
-    color: #333333;
+    color: #00ff00;
     font-family: 'Courier New', Courier, monospace;
     font-size: 0.85rem;
     margin: 0.25rem 0;
@@ -1155,20 +1159,20 @@ body {
 }
 
 .imprint-popup strong {
-    color: #333333;
+    color: #00ff00;
     text-shadow: 0 0 8px rgba(0, 255, 0, 0.6);
     font-weight: bold;
 }
 
 .imprint-popup a {
-    color: #333333;
+    color: #00ff00;
     text-decoration: underline;
     transition: all 0.2s;
 }
 
 .imprint-popup a:hover {
     text-shadow: 0 0 12px rgba(0, 255, 0, 0.9);
-    color: #333333;
+    color: #00ff00;
 }
 
 .imprint-popup em {
