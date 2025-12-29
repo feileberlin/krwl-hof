@@ -67,9 +67,14 @@ Once initialized, these files will automatically appear in the Wiki:
 - **docs/LEAFLET_I18N.md** → i18n guide
 - **docs/WIKI_SETUP.md** → Wiki setup guide (this document)
 - **TESTING.md** → Testing guide
-- **static/LOCALIZATION.md** → App localization
-- **static/PWA_README.md** → PWA features
-- **.github/*.md** → Development docs
+- **static/LOCALIZATION.md** → Static-LOCALIZATION.md (App localization)
+- **static/PWA_README.md** → Static-PWA.md (PWA features)
+- **.github/DEV_ENVIRONMENT.md** → Dev-Environment.md
+- **.github/FEATURE_REGISTRY.md** → Dev-Feature-Registry.md
+- **.github/DEPLOYMENT.md** → Dev-Deployment.md
+- **.github/PROMOTE_WORKFLOW.md** → Dev-Promote-Workflow.md
+
+> **Note**: GitHub Wiki requires flat structure. Files from subdirectories are copied with prefixes.
 
 ## Verification
 
