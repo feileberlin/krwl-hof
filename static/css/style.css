@@ -73,7 +73,7 @@ header h1 {
     max-width: 320px;
     font-size: 0.95rem;
     font-weight: 500;
-    color: #4CAF50;
+    color: #ffffff;
     padding: 0.8rem;
     background: rgba(30, 30, 30, 0.95);
     backdrop-filter: blur(10px);
@@ -81,6 +81,7 @@ header h1 {
     border: 2px solid #4CAF50;
     line-height: 1.4;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
 }
 
 #imprint-link {
