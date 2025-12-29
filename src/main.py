@@ -154,7 +154,7 @@ class EventManagerTUI:
                 return
             
             # Check authentication
-            auth_ok, auth_msg = launcher._check_gh_auth()
+            auth_ok, auth_msg = launcher.check_gh_auth()
             if not auth_ok:
                 print(f"\n⚠️  {auth_msg}")
                 print("\nTo authenticate, run: gh auth login")

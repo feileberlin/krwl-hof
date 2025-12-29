@@ -17,6 +17,9 @@ class WorkflowLauncher:
     """Manages GitHub Actions workflow triggering via GitHub CLI"""
     
     # Define workflows that support manual triggering (workflow_dispatch)
+    # NOTE: These are hardcoded for simplicity following KISS principles.
+    # For a more dynamic approach, consider parsing workflow YAML files directly
+    # or maintaining a separate configuration file if the workflow list grows significantly.
     AVAILABLE_WORKFLOWS = {
         'deploy-pages': {
             'file': 'deploy-pages.yml',
@@ -169,8 +172,12 @@ class WorkflowLauncher:
         except (subprocess.TimeoutExpired, FileNotFoundError):
             return False
     
+    def check_gh_auth(self) -> Tuple[bool, str]:
+        """Check if GitHub CLI is authenticated (public method)"""
+        return self._check_gh_auth()
+    
     def _check_gh_auth(self) -> Tuple[bool, str]:
-        """Check if GitHub CLI is authenticated"""
+        """Check if GitHub CLI is authenticated (internal implementation)"""
         if not self.gh_available:
             return False, "GitHub CLI (gh) is not installed"
         
@@ -223,7 +230,7 @@ class WorkflowLauncher:
             Tuple of (success: bool, message: str)
         """
         # Check authentication first
-        auth_ok, auth_msg = self._check_gh_auth()
+        auth_ok, auth_msg = self.check_gh_auth()
         if not auth_ok:
             return False, f"Authentication failed: {auth_msg}"
         
@@ -256,12 +263,22 @@ class WorkflowLauncher:
                 return True, f"✓ Workflow '{workflow['name']}' triggered successfully on branch '{branch}'"
             else:
                 error_msg = result.stderr.strip() or result.stdout.strip()
+                # Sanitize error message to avoid leaking sensitive information
+                if 'token' in error_msg.lower() or 'auth' in error_msg.lower():
+                    return False, "Failed to trigger workflow: Authentication error. Check your GitHub CLI credentials."
                 return False, f"Failed to trigger workflow: {error_msg}"
                 
         except subprocess.TimeoutExpired:
             return False, "Workflow trigger timed out"
+        except subprocess.CalledProcessError as e:
+            return False, f"GitHub CLI error: Command failed with exit code {e.returncode}"
+        except FileNotFoundError:
+            return False, "GitHub CLI (gh) not found. Please install it from https://cli.github.com/"
         except Exception as e:
-            return False, f"Error triggering workflow: {str(e)}"
+            # Log full exception but return sanitized message
+            import sys
+            print(f"DEBUG: Unexpected error: {type(e).__name__}: {str(e)}", file=sys.stderr)
+            return False, "Error triggering workflow: An unexpected error occurred"
     
     def get_workflow_runs(self, workflow_id: str, limit: int = 5) -> Tuple[bool, List[Dict]]:
         """
@@ -274,7 +291,7 @@ class WorkflowLauncher:
         Returns:
             Tuple of (success: bool, runs: List[Dict])
         """
-        auth_ok, auth_msg = self._check_gh_auth()
+        auth_ok, auth_msg = self.check_gh_auth()
         if not auth_ok:
             return False, []
         
@@ -300,7 +317,17 @@ class WorkflowLauncher:
             else:
                 return False, []
                 
-        except Exception:
+        except json.JSONDecodeError as e:
+            import sys
+            print(f"DEBUG: Failed to parse workflow runs JSON: {e}", file=sys.stderr)
+            return False, []
+        except subprocess.TimeoutExpired:
+            return False, []
+        except subprocess.CalledProcessError:
+            return False, []
+        except Exception as e:
+            import sys
+            print(f"DEBUG: Unexpected error fetching workflow runs: {type(e).__name__}", file=sys.stderr)
             return False, []
 
 
