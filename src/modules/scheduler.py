@@ -1,6 +1,7 @@
 """Schedule configuration module for event scraping"""
 
 import json
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -23,8 +24,14 @@ class ScheduleConfig:
         try:
             with open(self.config_path, 'r') as f:
                 return json.load(f)
-        except Exception as e:
-            print(f"Warning: Could not load config from {self.config_path}: {e}")
+        except FileNotFoundError:
+            print(f"Warning: Config file not found: {self.config_path}")
+            return {}
+        except json.JSONDecodeError as e:
+            print(f"Warning: Invalid JSON in config file {self.config_path}: {e}")
+            return {}
+        except PermissionError:
+            print(f"Warning: Permission denied reading config file: {self.config_path}")
             return {}
     
     def get_schedule(self):
@@ -64,8 +71,6 @@ class ScheduleConfig:
 
 def main():
     """Command-line interface for schedule logging"""
-    import sys
-    
     config_path = sys.argv[1] if len(sys.argv) > 1 else None
     scheduler = ScheduleConfig(config_path)
     scheduler.log_schedule()
