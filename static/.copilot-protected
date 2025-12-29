@@ -1,0 +1,33 @@
+⚠️  COPILOT/AGENT WARNING ⚠️
+================================
+
+This directory contains AUTO-GENERATED files that should NOT be edited directly.
+
+🚫 AGENTS MUST NOT:
+   - Edit index.html, css/style.css, or js/app.js directly
+   - Create helper scripts to modify these files
+   - Make changes without going through the generator
+
+✅ TO MAKE CHANGES:
+   1. Edit the templates in: src/modules/generator.py
+   2. Run the generator: python3 src/main.py generate
+   3. The generator will check for conflicts and warn before overwriting
+
+📋 FILES THAT ARE SAFE TO EDIT:
+   - config.json (app configuration data)
+   - events.json (event data)
+   - Other non-generated assets
+
+🔍 HOW TO IDENTIFY GENERATED FILES:
+   Look for these comments at the top of files:
+   - HTML: <!-- AUTO-GENERATED: This file is generated from src/modules/generator.py -->
+   - CSS:  /* AUTO-GENERATED: This file is generated from src/modules/generator.py */
+   - JS:   // AUTO-GENERATED: This file is generated from src/modules/generator.py
+
+⚡ GENERATOR HAS BUILT-IN PROTECTION:
+   - Detects manual changes before regeneration
+   - Prompts for confirmation before overwriting
+   - Shows which files will be affected
+
+Last updated: 2025-12-29
+See: static/DO_NOT_EDIT_README.txt for more details

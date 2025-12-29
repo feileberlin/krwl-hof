@@ -1,4 +1,21 @@
-"""Static site generator module"""
+"""Static site generator module
+
+⚠️  IMPORTANT: This module generates static HTML/CSS/JS files
+    
+The templates in this file are the SINGLE SOURCE OF TRUTH for:
+  - static/index.html
+  - static/css/style.css
+  - static/js/app.js
+
+DO NOT edit those files directly - edit the templates here instead.
+
+The generator includes protection against overwriting manual changes:
+  - check_manual_changes() detects differences before regeneration
+  - User is prompted to confirm before overwriting
+  - Generated files include AUTO-GENERATED comments at the top
+
+To regenerate: python3 src/main.py generate
+"""
 
 import json
 from pathlib import Path
@@ -6,16 +23,73 @@ from .utils import load_events
 
 
 class StaticSiteGenerator:
-    """Generator for static site files"""
+    """Generator for static site files
+    
+    This class manages generation of static HTML, CSS, and JavaScript files
+    from templates defined in this module. All edits to the static site
+    structure should be made here, not in the static/ directory directly.
+    """
     
     def __init__(self, config, base_path):
         self.config = config
         self.base_path = base_path
         self.static_path = base_path / 'static'
+    
+    def check_manual_changes(self):
+        """Check if static files differ from what templates would generate.
+        Returns True if manual changes detected, False otherwise."""
+        import tempfile
+        import filecmp
         
-    def generate_all(self):
-        """Generate all static files"""
+        # Generate templates to temp location
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            
+            # Generate to temp files
+            html_content = self._get_html_content()
+            css_content = self._get_css_content()
+            js_content = self._get_js_content()
+            
+            (tmp_path / 'index.html').write_text(html_content)
+            (tmp_path / 'style.css').write_text(css_content)
+            (tmp_path / 'app.js').write_text(js_content)
+            
+            # Compare with existing static files
+            files_differ = []
+            if (self.static_path / 'index.html').exists():
+                if not filecmp.cmp(tmp_path / 'index.html', self.static_path / 'index.html', shallow=False):
+                    files_differ.append('index.html')
+            
+            if (self.static_path / 'css' / 'style.css').exists():
+                if not filecmp.cmp(tmp_path / 'style.css', self.static_path / 'css' / 'style.css', shallow=False):
+                    files_differ.append('css/style.css')
+            
+            if (self.static_path / 'js' / 'app.js').exists():
+                if not filecmp.cmp(tmp_path / 'app.js', self.static_path / 'js' / 'app.js', shallow=False):
+                    files_differ.append('js/app.js')
+            
+            if files_differ:
+                print("\n⚠️  WARNING: Manual changes detected in static files!")
+                print("The following files differ from generator templates:")
+                for f in files_differ:
+                    print(f"  - static/{f}")
+                print("\nThese changes will be OVERWRITTEN if you continue.")
+                return True
+            
+            return False
+        
+    def generate_all(self, skip_check=False):
+        """Generate all static files.
+        Returns True if generation completed, False if cancelled."""
         from .utils import archive_old_events
+        
+        # Check for manual changes unless explicitly skipped
+        if not skip_check:
+            if self.check_manual_changes():
+                response = input("\nContinue anyway? (yes/no): ").strip().lower()
+                if response != 'yes':
+                    print("Generation cancelled.")
+                    return False
         
         print("Archiving old events...")
         archived_count = archive_old_events(self.base_path)
@@ -34,9 +108,15 @@ class StaticSiteGenerator:
         print("Copying data files...")
         self._copy_data_files()
         
-    def _generate_html(self):
-        """Generate index.html"""
-        html_content = '''<!DOCTYPE html>
+        print("Creating warning notice...")
+        self._create_warning_notice()
+        
+        print("\n✓ Generation complete!")
+        return True
+    
+    def _get_html_content(self):
+        """Get HTML content from template"""
+        return '''<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -46,6 +126,10 @@ class StaticSiteGenerator:
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
+    <!-- AUTO-GENERATED: This file is generated from src/modules/generator.py -->
+    <!-- DO NOT EDIT: Manual changes will be overwritten on next build -->
+    <!-- To modify: Edit templates in src/modules/generator.py, then run: python3 src/main.py generate -->
+    
     <div id="app">
         <header>
             <h1>KRWL HOF Community Events</h1>
@@ -57,9 +141,15 @@ class StaticSiteGenerator:
         <div id="map">
             <div id="map-overlay">
                 <div id="event-count">0 events</div>
+                <!-- Logo: Inline SVG megaphone (white stroke, no fill) -->
+                <!-- Source: Generated from src/modules/generator.py template -->
                 <a href="imprint.html" id="imprint-link">
-                    <img id="site-logo" src="logo.png" alt="Site Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
-                    <span id="imprint-text" style="display: none;">Imprint</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" id="site-logo" width="20" height="20" viewBox="0 0 20 20">
+                        <g transform="translate(1, 1.5)">
+                            <path style="fill:none;stroke:#ffffff;stroke-width:1.2;" 
+                                  d="M 4.43,15.8 H 3.81 c -0.64,-0.19 -0.9,-4.46 -0.02,-5.45 0.61,-0.06 3.81,-0.06 3.81,-0.06 0,0 2.37,0.19 7.44,-3.62 0,0 0.17,0.02 0.85,4.58 0,0 1.42,1.76 -0.11,3.71 0,0 -0.27,3.6 -0.7,4.52 0,0 -4.17,-3.43 -8.8,-3.73 l -0.04,3.58 c -0.07,0.43 -1.71,0.37 -1.72,0 z" />
+                        </g>
+                    </svg>
                 </a>
             </div>
         </div>
@@ -134,14 +224,21 @@ class StaticSiteGenerator:
 </body>
 </html>
 '''
-        
+    
+    def _generate_html(self):
+        """Generate index.html"""
+        html_content = self._get_html_content()
         html_path = self.static_path / 'index.html'
         with open(html_path, 'w') as f:
             f.write(html_content)
             
-    def _generate_css(self):
-        """Generate style.css"""
-        css_content = '''* {
+    def _get_css_content(self):
+        """Get CSS content from template"""
+        return '''/* AUTO-GENERATED: This file is generated from src/modules/generator.py */
+/* DO NOT EDIT: Manual changes will be overwritten on next build */
+/* To modify: Edit templates in src/modules/generator.py, then run: python3 src/main.py generate */
+
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -569,14 +666,21 @@ header h1 {
     }
 }
 '''
-        
+    
+    def _generate_css(self):
+        """Generate style.css"""
+        css_content = self._get_css_content()
         css_path = self.static_path / 'css' / 'style.css'
         with open(css_path, 'w') as f:
             f.write(css_content)
-            
-    def _generate_js(self):
-        """Generate app.js"""
-        js_content = '''// KRWL HOF Community Events App
+    
+    def _get_js_content(self):
+        """Get JavaScript content from template"""
+        return '''// AUTO-GENERATED: This file is generated from src/modules/generator.py
+// DO NOT EDIT: Manual changes will be overwritten on next build
+// To modify: Edit templates in src/modules/generator.py, then run: python3 src/main.py generate
+
+// KRWL HOF Community Events App
 class EventsApp {
     constructor() {
         this.map = null;
@@ -1145,10 +1249,44 @@ document.addEventListener('DOMContentLoaded', () => {
     new EventsApp();
 });
 '''
-        
+    
+    def _generate_js(self):
+        """Generate app.js"""
+        js_content = self._get_js_content()
         js_path = self.static_path / 'js' / 'app.js'
         with open(js_path, 'w') as f:
             f.write(js_content)
+    
+    def _create_warning_notice(self):
+        """Create a warning notice in static folder about auto-generation"""
+        notice_path = self.static_path / 'DO_NOT_EDIT_README.txt'
+        notice_content = '''⚠️  WARNING: AUTO-GENERATED FILES ⚠️
+=======================================
+
+The following files in this directory are AUTO-GENERATED by the build system:
+  - index.html
+  - css/style.css
+  - js/app.js
+
+These files are regenerated from templates in:
+  src/modules/generator.py
+
+🚫 DO NOT manually edit these files directly!
+   Any manual changes will be OVERWRITTEN during the next build.
+
+✅ To make changes:
+   1. Edit the templates in src/modules/generator.py
+   2. Run: python3 src/main.py generate
+   3. Commit both the template changes AND generated files
+
+📋 Other files (config.json, events.json, etc.) are data files and safe to edit.
+
+Last generated: ''' + __import__('datetime').datetime.now().strftime('%Y-%m-%d %H:%M:%S') + '''
+
+For more information, see the project README.md
+'''
+        with open(notice_path, 'w') as f:
+            f.write(notice_content)
             
     def _copy_data_files(self):
         """Copy data and config files to static directory"""

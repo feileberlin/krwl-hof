@@ -124,10 +124,11 @@ class EventManagerTUI:
         print("-" * 60)
         
         generator = StaticSiteGenerator(self.config, self.base_path)
-        generator.generate_all()
+        success = generator.generate_all()
         
-        print("\nStatic site generated successfully!")
-        print(f"Files saved to: {self.base_path / 'static'}")
+        if success:
+            print("\nStatic site generated successfully!")
+            print(f"Files saved to: {self.base_path / 'static'}")
         self.print_footer("generate")
         input("\nPress Enter to continue...")
         
@@ -605,10 +606,12 @@ def cli_generate(base_path, config):
     """CLI: Generate static site"""
     print("Generating static site files...")
     generator = StaticSiteGenerator(config, base_path)
-    generator.generate_all()
-    print(f"✓ Static site generated successfully!")
-    print(f"  Files saved to: {base_path / 'static'}")
-    return 0
+    success = generator.generate_all()
+    if success:
+        print(f"✓ Static site generated successfully!")
+        print(f"  Files saved to: {base_path / 'static'}")
+        return 0
+    return 1
 
 
 def cli_load_examples(base_path):
