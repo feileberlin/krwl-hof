@@ -26,6 +26,9 @@ class EventsApp {
         // Load configuration
         await this.loadConfig();
         
+        // Display environment watermark if configured
+        this.displayEnvironmentWatermark();
+        
         // Initialize map
         this.initMap();
         
@@ -37,6 +40,60 @@ class EventsApp {
         
         // Setup event listeners
         this.setupEventListeners();
+    }
+    
+    displayEnvironmentWatermark() {
+        const watermark = document.getElementById('env-watermark');
+        if (!watermark) return;
+        
+        // Check if watermark is enabled in config
+        const watermarkConfig = this.config.watermark || {};
+        const enabled = watermarkConfig.enabled !== undefined ? watermarkConfig.enabled : false;
+        
+        if (!enabled) {
+            watermark.classList.add('hidden');
+            return;
+        }
+        
+        // Get environment info
+        const environment = this.config.app?.environment || 'unknown';
+        const envText = watermarkConfig.text || environment.toUpperCase();
+        
+        // Get build info (commit, PR)
+        const buildInfo = this.config.build_info || {};
+        let text = envText;
+        
+        // Add commit info if available
+        if (buildInfo.commit_short) {
+            text += ` • ${buildInfo.commit_short}`;
+        }
+        
+        // Add PR number if available
+        if (buildInfo.pr_number && buildInfo.pr_number !== '') {
+            text += ` • PR#${buildInfo.pr_number}`;
+        }
+        
+        // Set watermark text and style
+        watermark.textContent = text;
+        watermark.classList.remove('hidden', 'production', 'preview', 'testing', 'development');
+        watermark.classList.add(environment.toLowerCase());
+        
+        // Make watermark clickable to show more details if available
+        if (buildInfo.commit_sha) {
+            watermark.style.cursor = 'pointer';
+            watermark.title = `Click for build details\nCommit: ${buildInfo.commit_sha}\nDeployed: ${buildInfo.deployed_at || 'N/A'}\nDeployed by: ${buildInfo.deployed_by || 'N/A'}`;
+            watermark.onclick = () => {
+                const details = [
+                    `Environment: ${environment}`,
+                    `Commit: ${buildInfo.commit_sha}`,
+                    buildInfo.pr_number ? `PR: #${buildInfo.pr_number}` : null,
+                    `Deployed: ${buildInfo.deployed_at || 'N/A'}`,
+                    `Deployed by: ${buildInfo.deployed_by || 'N/A'}`,
+                    `Ref: ${buildInfo.ref || 'N/A'}`
+                ].filter(Boolean).join('\n');
+                alert(details);
+            };
+        }
     }
     
     async loadConfig() {

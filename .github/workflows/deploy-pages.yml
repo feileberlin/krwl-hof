@@ -20,6 +20,9 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -45,6 +48,38 @@ jobs:
             cp config.prod.json publish/config.json
             echo "✓ Using production config (optimized for maximum speed)"
           fi
+          
+          # Inject build metadata (commit SHA) into config
+          if [ -f publish/config.json ]; then
+            COMMIT_SHORT="${GITHUB_SHA:0:7}"
+            
+            # Create build_info section using jq
+            if command -v jq &> /dev/null; then
+              BUILD_INFO=$(jq -n \
+                --arg commit "$COMMIT_SHORT" \
+                --arg sha "$GITHUB_SHA" \
+                --arg ref "$GITHUB_REF" \
+                --arg actor "$GITHUB_ACTOR" \
+                --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+                '{
+                  commit_short: $commit,
+                  commit_sha: $sha,
+                  ref: $ref,
+                  deployed_by: $actor,
+                  deployed_at: $timestamp
+                }')
+              
+              # Merge build_info into config.json
+              jq --argjson build_info "$BUILD_INFO" '. + {build_info: $build_info}' \
+                publish/config.json > publish/config.json.tmp
+              mv publish/config.json.tmp publish/config.json
+              
+              echo "✓ Injected build metadata: commit $COMMIT_SHORT"
+            else
+              echo "⚠ jq not available, skipping build metadata injection"
+            fi
+          fi
+          
           # include CNAME so custom domain stays configured
           if [ -f CNAME ]; then
             cp CNAME publish/CNAME
@@ -61,4 +96,5 @@ jobs:
           path: publish
 
       - name: Deploy to GitHub Pages
+        id: deployment
         uses: actions/deploy-pages@v4

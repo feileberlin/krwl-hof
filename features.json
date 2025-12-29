@@ -596,6 +596,60 @@
                 ".github/DEV_ENVIRONMENT.md"
             ],
             "test_method": "check_files_exist"
+        },
+        {
+            "id": "environment-watermark",
+            "name": "Environment Watermark with Build Info",
+            "description": "Visual watermark in bottom-left corner showing environment (production/preview/testing), commit SHA, and PR number. Configurable per environment with clickable details.",
+            "category": "frontend",
+            "implemented": true,
+            "files": [
+                "src/modules/generator.py",
+                "config.prod.json",
+                "config.preview.json",
+                "config.dev.json",
+                "docs/CONFIGURATION.md"
+            ],
+            "config_keys": [
+                "app.environment",
+                "watermark.enabled",
+                "watermark.text"
+            ],
+            "code_patterns": [
+                {
+                    "file": "src/modules/generator.py",
+                    "pattern": "#env-watermark|displayEnvironmentWatermark",
+                    "description": "Watermark HTML element and JavaScript display function"
+                }
+            ],
+            "test_method": "manual",
+            "test_instructions": "1. Start local server: cd static && python3 -m http.server 8000\n2. Edit static/config.json to set watermark.enabled=true\n3. Open http://localhost:8000\n4. Verify watermark appears in bottom-left corner\n5. Click watermark to see build details popup"
+        },
+        {
+            "id": "github-environments",
+            "name": "GitHub Environments UI Integration",
+            "description": "Configure GitHub Actions workflows to use environments, making deployments visible in GitHub UI with direct links to preview and production sites",
+            "category": "infrastructure",
+            "implemented": true,
+            "files": [
+                ".github/workflows/deploy-pages.yml",
+                ".github/workflows/deploy-preview.yml"
+            ],
+            "config_keys": [],
+            "code_patterns": [
+                {
+                    "file": ".github/workflows/deploy-pages.yml",
+                    "pattern": "environment:\\s+name: production",
+                    "description": "Production environment configuration"
+                },
+                {
+                    "file": ".github/workflows/deploy-preview.yml",
+                    "pattern": "environment:\\s+name: preview",
+                    "description": "Preview environment configuration"
+                }
+            ],
+            "test_method": "manual",
+            "test_instructions": "1. Navigate to GitHub repository\n2. Click 'Environments' in sidebar\n3. Verify 'production' and 'preview' environments are listed\n4. Click on environment to see deployment history\n5. Click 'View deployment' button to open deployed site"
         }
     ]
 }

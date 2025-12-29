@@ -120,6 +120,46 @@ header h1 {
     display: none;
 }
 
+#env-watermark {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 0.5rem 1rem;
+    background: rgba(30, 30, 30, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    text-transform: uppercase;
+    font-family: 'Courier New', monospace;
+}
+
+#env-watermark.hidden {
+    display: none;
+}
+
+#env-watermark.production {
+    border: 2px solid #4CAF50;
+    color: #4CAF50;
+}
+
+#env-watermark.preview {
+    border: 2px solid #FFC107;
+    color: #FFC107;
+}
+
+#env-watermark.testing {
+    border: 2px solid #2196F3;
+    color: #2196F3;
+}
+
+#env-watermark.development {
+    border: 2px solid #9C27B0;
+    color: #9C27B0;
+}
+
 #event-list {
     position: fixed;
     right: 0;
