@@ -191,14 +191,14 @@ body {
     line-height: 1.8;
     box-shadow: 0 0 20px rgba(0, 255, 0, 0.3), inset 0 0 10px rgba(0, 255, 0, 0.1);
     display: flex;
-    flex-wrap: wrap;
+    /* Mobile-first: No wrap to maintain one-line sentence format */
+    flex-wrap: nowrap;
     /* Mobile-first: Minimal gap to keep sentence compact */
     gap: 0.2rem;
     align-items: center;
     text-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
     /* Mobile-first: Allow horizontal scrolling if needed to keep one line */
     overflow-x: auto;
-    white-space: nowrap;
 }
 
 /* Tablet and up */
@@ -211,6 +211,7 @@ body {
         padding: 0.8rem;
         border-radius: 8px;
         gap: 0.3rem;
+        flex-wrap: wrap;
     }
 }
 
