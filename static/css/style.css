@@ -293,16 +293,6 @@ header h1 {
     display: none; /* Hidden for fullscreen map */
 }
 
-    background: rgba(100, 100, 100, 0.2);
-    color: #aaa;
-    border: 1px solid #555;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.85rem;
-    margin-top: 0.5rem;
-    transition: all 0.2s;
-}
-
 #reset-filters:hover {
     background: rgba(100, 100, 100, 0.3);
     border-color: #888;
