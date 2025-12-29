@@ -120,9 +120,12 @@ class StaticSiteGenerator:
         events_data = load_events(self.base_path)
         events = events_data.get('events', []) if isinstance(events_data, dict) else []
         
-        # Serialize events data for inline injection
-        import json
-        events_json = json.dumps(events_data)
+        # Serialize events data for inline injection with HTML-safe encoding
+        # Using html.escape to prevent XSS attacks from malicious event data
+        import html
+        events_json_raw = json.dumps(events_data)
+        # Escape only the potentially dangerous characters while keeping JSON valid
+        events_json = events_json_raw.replace('<', '\\u003c').replace('>', '\\u003e').replace('&', '\\u0026')
         
         # Generate noscript event cards
         noscript_events_html = ""
