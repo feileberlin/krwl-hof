@@ -10,6 +10,7 @@ class EventsApp {
         this.events = [];
         this.markers = [];
         this.config = null;
+        this.currentEdgeDetail = null;
         this.filters = {
             maxDistance: 5,
             timeFilter: 'sunrise',
@@ -586,7 +587,23 @@ class EventsApp {
             icon: customIcon
         }).addTo(this.map);
         
-        marker.bindPopup(`<strong>${event.title}</strong><br>${event.location.name}`);
+        // Show edge detail on hover
+        marker.on('mouseover', () => {
+            this.showEventDetailAtEdge(event, marker);
+        });
+        
+        // Hide edge detail when mouse leaves (with slight delay)
+        marker.on('mouseout', () => {
+            setTimeout(() => {
+                // Only hide if not hovering over the detail box
+                const edgeDetail = document.getElementById('current-edge-detail');
+                if (edgeDetail && !edgeDetail.matches(':hover')) {
+                    this.hideEventDetailAtEdge();
+                }
+            }, 200);
+        });
+        
+        // Click shows full modal
         marker.on('click', () => this.showEventDetail(event));
         
         this.markers.push(marker);
@@ -617,6 +634,216 @@ class EventsApp {
         }
         
         detail.classList.remove('hidden');
+    }
+    
+    // Edge-positioned event details with SVG arrows
+    showEventDetailAtEdge(event, markerElement) {
+        // Remove any existing edge details
+        this.hideEventDetailAtEdge();
+        
+        if (!this.map || !markerElement) return;
+        
+        // Get marker position on screen
+        const markerLatLng = markerElement.getLatLng();
+        const markerPoint = this.map.latLngToContainerPoint(markerLatLng);
+        
+        // Create detail box
+        const detailBox = document.createElement('div');
+        detailBox.className = 'event-detail-edge';
+        detailBox.id = 'current-edge-detail';
+        
+        // Format event data
+        const eventDate = new Date(event.start_time);
+        const timeStr = eventDate.toLocaleString('en-US', { 
+            month: 'short', 
+            day: 'numeric', 
+            hour: '2-digit', 
+            minute: '2-digit' 
+        });
+        
+        const distanceStr = event.distance !== undefined 
+            ? `${event.distance.toFixed(1)} km away` 
+            : '';
+        
+        detailBox.innerHTML = `
+            <h3>${event.title}</h3>
+            <p class="detail-time">🕐 ${timeStr}</p>
+            <p>📍 ${event.location.name}</p>
+            ${distanceStr ? `<p class="detail-distance">📏 ${distanceStr}</p>` : ''}
+        `;
+        
+        // Add to overlay
+        const mapOverlay = document.getElementById('map-overlay');
+        mapOverlay.appendChild(detailBox);
+        
+        // Determine best edge position
+        const position = this.calculateEdgePosition(markerPoint, detailBox);
+        
+        // Position the detail box
+        detailBox.style.top = position.top + 'px';
+        detailBox.style.left = position.left + 'px';
+        
+        // Draw SVG arrow
+        this.drawArrowToDetailBox(markerPoint, position, detailBox);
+        
+        // Store reference
+        this.currentEdgeDetail = {
+            box: detailBox,
+            event: event,
+            marker: markerElement
+        };
+        
+        // Click to show full detail modal
+        detailBox.addEventListener('click', () => this.showEventDetail(event));
+        
+        // Keep detail visible when hovering over it
+        detailBox.addEventListener('mouseenter', () => {
+            // Cancel any pending hide timeout
+            if (this.hideEdgeDetailTimeout) {
+                clearTimeout(this.hideEdgeDetailTimeout);
+                this.hideEdgeDetailTimeout = null;
+            }
+        });
+        
+        // Hide when mouse leaves the detail box
+        detailBox.addEventListener('mouseleave', () => {
+            this.hideEdgeDetailTimeout = setTimeout(() => {
+                this.hideEventDetailAtEdge();
+            }, 300);
+        });
+    }
+    
+    calculateEdgePosition(markerPoint, detailBox) {
+        const mapContainer = document.getElementById('map');
+        const mapRect = mapContainer.getBoundingClientRect();
+        const boxRect = detailBox.getBoundingClientRect();
+        
+        const margin = 20;
+        const boxWidth = 280;
+        const boxHeight = boxRect.height || 120;
+        
+        let top, left, edge;
+        
+        // Determine which edge is closest
+        const distToLeft = markerPoint.x;
+        const distToRight = mapRect.width - markerPoint.x;
+        const distToTop = markerPoint.y;
+        const distToBottom = mapRect.height - markerPoint.y;
+        
+        const minDist = Math.min(distToLeft, distToRight, distToTop, distToBottom);
+        
+        if (minDist === distToRight) {
+            // Position on right edge
+            left = mapRect.width - boxWidth - margin;
+            top = Math.max(margin, Math.min(markerPoint.y - boxHeight / 2, mapRect.height - boxHeight - margin));
+            edge = 'right';
+        } else if (minDist === distToLeft) {
+            // Position on left edge
+            left = margin;
+            top = Math.max(margin, Math.min(markerPoint.y - boxHeight / 2, mapRect.height - boxHeight - margin));
+            edge = 'left';
+        } else if (minDist === distToBottom) {
+            // Position on bottom edge
+            top = mapRect.height - boxHeight - margin;
+            left = Math.max(margin, Math.min(markerPoint.x - boxWidth / 2, mapRect.width - boxWidth - margin));
+            edge = 'bottom';
+        } else {
+            // Position on top edge
+            top = margin + 80; // Account for filter sentence at top
+            left = Math.max(margin, Math.min(markerPoint.x - boxWidth / 2, mapRect.width - boxWidth - margin));
+            edge = 'top';
+        }
+        
+        return { top, left, edge, markerPoint };
+    }
+    
+    drawArrowToDetailBox(markerPoint, position, detailBox) {
+        const arrowContainer = document.getElementById('event-arrows-container');
+        if (!arrowContainer) return;
+        
+        // Clear existing arrows
+        arrowContainer.innerHTML = '';
+        
+        // Create SVG
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.style.width = '100%';
+        svg.style.height = '100%';
+        svg.style.position = 'absolute';
+        svg.style.top = '0';
+        svg.style.left = '0';
+        svg.style.pointerEvents = 'none';
+        
+        // Calculate detail box center
+        const boxRect = detailBox.getBoundingClientRect();
+        const boxCenterX = boxRect.left + boxRect.width / 2;
+        const boxCenterY = boxRect.top + boxRect.height / 2;
+        
+        // Calculate connection points for smoother arrows
+        let boxX, boxY;
+        const dx = boxCenterX - markerPoint.x;
+        const dy = boxCenterY - markerPoint.y;
+        const angle = Math.atan2(dy, dx);
+        
+        // Find edge point on box
+        if (Math.abs(dx) > Math.abs(dy)) {
+            // Connect to left or right edge
+            boxX = dx > 0 ? boxRect.left : boxRect.right;
+            boxY = boxCenterY;
+        } else {
+            // Connect to top or bottom edge
+            boxX = boxCenterX;
+            boxY = dy > 0 ? boxRect.top : boxRect.bottom;
+        }
+        
+        // Create curved path
+        const midX = (markerPoint.x + boxX) / 2;
+        const midY = (markerPoint.y + boxY) / 2;
+        
+        // Create path with quadratic curve
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        const pathData = `M ${markerPoint.x} ${markerPoint.y} Q ${midX} ${midY} ${boxX} ${boxY}`;
+        path.setAttribute('d', pathData);
+        path.setAttribute('stroke', '#FF69B4');
+        path.setAttribute('stroke-width', '2');
+        path.setAttribute('fill', 'none');
+        path.setAttribute('stroke-dasharray', '5,5');
+        path.style.filter = 'drop-shadow(0 0 3px rgba(255, 105, 180, 0.5))';
+        
+        svg.appendChild(path);
+        
+        // Add arrowhead at box end
+        const arrowhead = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+        const arrowSize = 8;
+        const arrowAngle = Math.atan2(boxY - midY, boxX - midX);
+        
+        const p1x = boxX + arrowSize * Math.cos(arrowAngle + Math.PI * 0.8);
+        const p1y = boxY + arrowSize * Math.sin(arrowAngle + Math.PI * 0.8);
+        const p2x = boxX;
+        const p2y = boxY;
+        const p3x = boxX + arrowSize * Math.cos(arrowAngle - Math.PI * 0.8);
+        const p3y = boxY + arrowSize * Math.sin(arrowAngle - Math.PI * 0.8);
+        
+        arrowhead.setAttribute('points', `${p1x},${p1y} ${p2x},${p2y} ${p3x},${p3y}`);
+        arrowhead.setAttribute('fill', '#FF69B4');
+        arrowhead.style.filter = 'drop-shadow(0 0 3px rgba(255, 105, 180, 0.5))';
+        
+        svg.appendChild(arrowhead);
+        arrowContainer.appendChild(svg);
+    }
+    
+    hideEventDetailAtEdge() {
+        if (this.currentEdgeDetail) {
+            if (this.currentEdgeDetail.box && this.currentEdgeDetail.box.parentElement) {
+                this.currentEdgeDetail.box.remove();
+            }
+            this.currentEdgeDetail = null;
+        }
+        
+        // Clear arrows
+        const arrowContainer = document.getElementById('event-arrows-container');
+        if (arrowContainer) {
+            arrowContainer.innerHTML = '';
+        }
     }
     
     setupEventListeners() {
