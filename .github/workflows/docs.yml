@@ -98,25 +98,11 @@ jobs:
           cd /tmp/wiki
           
           # Copy documentation files
-          echo "📝 Copying documentation files..."
+          echo "📝 Copying documentation files from docs/ directory..."
+          echo "Note: GitHub Wiki uses flat structure - syncing all .md files from docs/"
           
-          # Main docs
+          # Copy all markdown files from docs/ directory (already flat)
           cp $GITHUB_WORKSPACE/docs/*.md . || true
-          
-          # Root documentation
-          cp $GITHUB_WORKSPACE/TESTING.md . || true
-          
-          # Static documentation
-          mkdir -p static
-          cp $GITHUB_WORKSPACE/static/LOCALIZATION.md static/ || true
-          cp $GITHUB_WORKSPACE/static/PWA_README.md static/ || true
-          
-          # .github documentation
-          mkdir -p .github
-          cp $GITHUB_WORKSPACE/.github/DEV_ENVIRONMENT.md .github/ || true
-          cp $GITHUB_WORKSPACE/.github/FEATURE_REGISTRY.md .github/ || true
-          cp $GITHUB_WORKSPACE/.github/DEPLOYMENT.md .github/ || true
-          cp $GITHUB_WORKSPACE/.github/PROMOTE_WORKFLOW.md .github/ || true
           
           # Check if there are changes
           if git diff --quiet; then

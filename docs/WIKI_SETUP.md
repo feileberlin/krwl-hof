@@ -55,21 +55,24 @@ Once initialized, the following documentation will appear in the Wiki:
 - `SCRAPING.md` - Event scraping guide
 - `DEPLOYMENT.md` - Deployment workflows
 - `LEAFLET_I18N.md` - Map internationalization
+- `WIKI_SETUP.md` - This guide
 - `_Sidebar.md` - Wiki navigation sidebar
 - `_Footer.md` - Wiki footer
 
 ### Root Documentation
 - `TESTING.md` - Testing guide
 
-### Static Documentation
-- `static/LOCALIZATION.md` - Application i18n guide
-- `static/PWA_README.md` - Progressive Web App features
+### Static Documentation (flattened with prefix)
+- `Static-LOCALIZATION.md` - Application i18n guide (from `static/LOCALIZATION.md`)
+- `Static-PWA.md` - Progressive Web App features (from `static/PWA_README.md`)
 
-### GitHub Documentation
-- `.github/DEV_ENVIRONMENT.md` - Development environment setup
-- `.github/FEATURE_REGISTRY.md` - Feature registry system
-- `.github/DEPLOYMENT.md` - Deployment guide
-- `.github/PROMOTE_WORKFLOW.md` - Promote preview workflow
+### GitHub Documentation (flattened with prefix)
+- `Dev-Environment.md` - Development environment setup (from `.github/DEV_ENVIRONMENT.md`)
+- `Dev-Feature-Registry.md` - Feature registry system (from `.github/FEATURE_REGISTRY.md`)
+- `Dev-Deployment.md` - Deployment guide (from `.github/DEPLOYMENT.md`)
+- `Dev-Promote-Workflow.md` - Promote preview workflow (from `.github/PROMOTE_WORKFLOW.md`)
+
+> **Note**: GitHub Wiki requires all pages at the root level. Files from subdirectories are copied with prefixes to maintain organization while staying flat.
 
 ## Automated Sync
 

@@ -2,9 +2,8 @@
 #
 # Sync documentation to GitHub Wiki
 #
-# Our docs work as standalone files AND in the wiki.
-# This script helps you manually sync them to the wiki repository.
-# (Normally this happens automatically when merging to main!)
+# Simple sync: Copy all .md files from docs/ directory to wiki.
+# The docs/ directory is already flat, so this is straightforward.
 #
 # Usage:
 #   ./sync-to-wiki.sh [wiki-repo-path]
@@ -33,29 +32,11 @@ else
 fi
 
 echo ""
-echo "📝 Copying documentation..."
+echo "📝 Copying documentation from docs/ directory..."
+echo "   (GitHub Wiki uses flat structure, docs/ is already flat)"
 
-# Copy main docs
-echo "   ✓ docs/ → wiki root"
+# Copy all markdown files from docs/ directory
 cp -v ../docs/*.md . 2>/dev/null || true
-
-# Copy root docs
-echo "   ✓ Root documentation"
-cp -v ../TESTING.md . 2>/dev/null || true
-
-# Copy static docs
-echo "   ✓ static/ documentation"
-mkdir -p static
-cp -v ../static/LOCALIZATION.md static/ 2>/dev/null || true
-cp -v ../static/PWA_README.md static/ 2>/dev/null || true
-
-# Copy .github docs
-echo "   ✓ .github/ documentation"
-mkdir -p .github
-cp -v ../.github/DEV_ENVIRONMENT.md .github/ 2>/dev/null || true
-cp -v ../.github/FEATURE_REGISTRY.md .github/ 2>/dev/null || true
-cp -v ../.github/DEPLOYMENT.md .github/ 2>/dev/null || true
-cp -v ../.github/PROMOTE_WORKFLOW.md .github/ 2>/dev/null || true
 
 echo ""
 echo "📊 What changed:"
