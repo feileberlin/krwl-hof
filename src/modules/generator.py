@@ -290,6 +290,15 @@ header h1 {
     z-index: 1;
 }
 
+/* Set dark gray background for unloaded map tiles */
+.leaflet-container {
+    background: #2a2a2a;
+}
+
+.leaflet-tile-container {
+    background: #2a2a2a;
+}
+
 #map-overlay {
     position: absolute;
     top: 10px;
@@ -849,8 +858,8 @@ class EventsApp {
         const center = this.config.map.default_center;
         this.map = L.map('map').setView([center.lat, center.lon], this.config.map.default_zoom);
         
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        L.tileLayer(this.config.map.tile_provider, {
+            attribution: this.config.map.attribution
         }).addTo(this.map);
     }
     
