@@ -1,4 +1,21 @@
-"""Static site generator module"""
+"""Static site generator module
+
+⚠️  IMPORTANT: This module generates static HTML/CSS/JS files
+    
+The templates in this file are the SINGLE SOURCE OF TRUTH for:
+  - static/index.html
+  - static/css/style.css
+  - static/js/app.js
+
+DO NOT edit those files directly - edit the templates here instead.
+
+The generator includes protection against overwriting manual changes:
+  - check_manual_changes() detects differences before regeneration
+  - User is prompted to confirm before overwriting
+  - Generated files include AUTO-GENERATED comments at the top
+
+To regenerate: python3 src/main.py generate
+"""
 
 import json
 from pathlib import Path
@@ -6,7 +23,12 @@ from .utils import load_events
 
 
 class StaticSiteGenerator:
-    """Generator for static site files"""
+    """Generator for static site files
+    
+    This class manages generation of static HTML, CSS, and JavaScript files
+    from templates defined in this module. All edits to the static site
+    structure should be made here, not in the static/ directory directly.
+    """
     
     def __init__(self, config, base_path):
         self.config = config
@@ -104,6 +126,10 @@ class StaticSiteGenerator:
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
+    <!-- AUTO-GENERATED: This file is generated from src/modules/generator.py -->
+    <!-- DO NOT EDIT: Manual changes will be overwritten on next build -->
+    <!-- To modify: Edit templates in src/modules/generator.py, then run: python3 src/main.py generate -->
+    
     <div id="app">
         <header>
             <h1>KRWL HOF Community Events</h1>
@@ -115,6 +141,8 @@ class StaticSiteGenerator:
         <div id="map">
             <div id="map-overlay">
                 <div id="event-count">0 events</div>
+                <!-- Logo: Inline SVG megaphone (white stroke, no fill) -->
+                <!-- Source: Generated from src/modules/generator.py template -->
                 <a href="imprint.html" id="imprint-link">
                     <svg xmlns="http://www.w3.org/2000/svg" id="site-logo" width="20" height="20" viewBox="0 0 20 20">
                         <g transform="translate(1, 1.5)">
@@ -206,7 +234,11 @@ class StaticSiteGenerator:
             
     def _get_css_content(self):
         """Get CSS content from template"""
-        return '''* {
+        return '''/* AUTO-GENERATED: This file is generated from src/modules/generator.py */
+/* DO NOT EDIT: Manual changes will be overwritten on next build */
+/* To modify: Edit templates in src/modules/generator.py, then run: python3 src/main.py generate */
+
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -644,7 +676,11 @@ header h1 {
     
     def _get_js_content(self):
         """Get JavaScript content from template"""
-        return '''// KRWL HOF Community Events App
+        return '''// AUTO-GENERATED: This file is generated from src/modules/generator.py
+// DO NOT EDIT: Manual changes will be overwritten on next build
+// To modify: Edit templates in src/modules/generator.py, then run: python3 src/main.py generate
+
+// KRWL HOF Community Events App
 class EventsApp {
     constructor() {
         this.map = null;
