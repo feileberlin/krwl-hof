@@ -59,10 +59,11 @@ A **fullscreen, mobile-first** interactive map application for discovering commu
 └──────┘ └───────────┘ └──────────────┘
 
 Data Flow:
-1. config.json → Configures app behavior, UI, map
-2. events.json → Fetched and filtered by location/time
-3. app.js → Renders markers with tooltips on Leaflet map
-4. User interaction → Updates filters → Refreshes map
+1. GitHub Actions (twice daily) → Scrapes events from sources
+2. config.json → Configures app behavior, UI, map, sources
+3. events.json → Generated from scraped data, filtered by location/time
+4. app.js → Renders markers with tooltips on Leaflet map
+5. User interaction → Updates filters → Refreshes map
 ```
 
 
@@ -224,6 +225,23 @@ The `static/` directory contains all files needed for deployment:
 - **GitHub Pages**: Already configured (see `.nojekyll`)
 - **Netlify/Vercel**: Point to `static/` directory
 - **Any static host**: Upload `static/` contents
+
+### Automated Event Scraping
+
+The repository includes automated event scraping that runs **twice daily**:
+
+- **Schedule**: 8:00 AM and 8:00 PM UTC (9-10 AM/PM CET depending on DST)
+- **Workflow**: `.github/workflows/scrape-events.yml`
+- **Process**:
+  1. Scrapes events from configured sources in `config.json`
+  2. Adds new events to pending queue for review
+  3. If new events are found, automatically:
+     - Commits the scraped data
+     - Generates updated static site
+     - Deploys to GitHub Pages
+- **Manual trigger**: Can be triggered manually via GitHub Actions interface
+
+To configure scraping sources, edit the `scraping.sources` section in `config.json` or `config.prod.json`.
 
 ## ♿ Accessibility
 
