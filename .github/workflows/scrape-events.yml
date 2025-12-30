@@ -139,7 +139,7 @@ jobs:
 
       - name: Upload Pages artifact
         if: steps.check_changes.outputs.changes == 'true'
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: publish
 
