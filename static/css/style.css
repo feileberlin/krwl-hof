@@ -233,13 +233,13 @@ header {
 }
 
 #site-logo {
-    height: 20px;
-    width: 20px;
+    height: 40px;
+    width: 40px;
     display: block;
 }
 
 #site-logo path {
-    stroke: #ccc !important;
+    stroke: #FF69B4 !important;
     transition: stroke 0.2s;
 }
 
