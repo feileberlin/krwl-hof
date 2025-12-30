@@ -27,7 +27,9 @@ class EventScraper:
         
         if not SCRAPING_ENABLED:
             # Print warning when scraper is instantiated without required libraries
-            print("Warning: Scraping libraries not installed. Install with: pip install -r requirements.txt", file=sys.stderr)
+            print("Warning: Scraping libraries not installed.", file=sys.stderr)
+            print("Install with: pip install -r requirements.txt", file=sys.stderr)
+            print("Or install directly: pip install requests beautifulsoup4 lxml feedparser", file=sys.stderr)
             self.session = None
         else:
             self.session = requests.Session()
@@ -39,7 +41,8 @@ class EventScraper:
         """Scrape events from all configured sources"""
         if not SCRAPING_ENABLED:
             print("ERROR: Scraping libraries not installed. Cannot scrape events.", file=sys.stderr)
-            print("Install with: pip install requests beautifulsoup4 lxml feedparser", file=sys.stderr)
+            print("Install with: pip install -r requirements.txt", file=sys.stderr)
+            print("Or install directly: pip install requests beautifulsoup4 lxml feedparser", file=sys.stderr)
             return []
             
         pending_data = load_pending_events(self.base_path)
