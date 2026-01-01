@@ -3,9 +3,7 @@
 Tests for bulk approve/reject operations with wildcard support.
 """
 
-import json
 import sys
-import tempfile
 from pathlib import Path
 
 # Add src to path

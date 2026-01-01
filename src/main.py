@@ -19,7 +19,7 @@ from modules.scraper import EventScraper
 from modules.editor import EventEditor
 from modules.generator import StaticSiteGenerator
 from modules.workflow_launcher import WorkflowLauncher
-from modules.utils import load_config, load_events, save_events, load_pending_events, save_pending_events
+from modules.utils import load_config, load_events, save_events, load_pending_events, save_pending_events, backup_published_event
 
 
 class EventManagerTUI:
@@ -746,7 +746,6 @@ def cli_publish_event(base_path, event_id):
     event['published_at'] = datetime.now().isoformat()
     
     # Backup the published event
-    from modules.utils import backup_published_event
     backup_path = backup_published_event(base_path, event)
     print(f"✓ Event backed up to: {backup_path.relative_to(base_path)}")
     
@@ -887,7 +886,6 @@ def cli_bulk_publish_events(base_path, event_ids_str):
             event['published_at'] = datetime.now().isoformat()
             
             # Backup the published event
-            from modules.utils import backup_published_event
             backup_path = backup_published_event(base_path, event)
             
             # Add to published events
