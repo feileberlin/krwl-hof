@@ -14,7 +14,21 @@
     "prefetch_events": false
   },
   "data": {
-    "source": "real"
+    "source": "both",
+    "sources": {
+      "real": {
+        "url": "events.json",
+        "description": "Real scraped events data"
+      },
+      "demo": {
+        "url": "events.demo.json",
+        "description": "Demo events with current timestamps for testing"
+      },
+      "both": {
+        "urls": ["events.json", "events.demo.json"],
+        "description": "Combine real and demo events (useful for testing with live data)"
+      }
+    }
   },
   "scraping": {
     "schedule": {

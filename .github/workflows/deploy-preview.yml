@@ -52,10 +52,10 @@ jobs:
             echo "✓ Generated fresh demo events with current timestamps"
           fi
           
-          # Use preview config (debugging enabled, caching disabled, real events only)
+          # Use preview config (debugging enabled, caching disabled, both real and demo events)
           if [ -f config.preview.json ]; then
             cp config.preview.json publish/preview/config.json
-            echo "✓ Using preview config (debug mode enabled, real events only)"
+            echo "✓ Using preview config (debug mode enabled, showing both real and demo events)"
           elif [ -f config.dev.json ]; then
             cp config.dev.json publish/preview/config.json
             echo "✓ Using development config (fallback)"
@@ -139,6 +139,8 @@ jobs:
           echo ""
           echo "Preview environment publish directory contents:"
           ls -la publish/preview
+          echo ""
+          echo "Note: This preview environment shows both real and demo events for testing purposes."
         env:
           GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
 
