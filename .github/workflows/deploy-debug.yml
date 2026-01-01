@@ -63,12 +63,12 @@ jobs:
             cp config.dev.json publish/debug/config.json
             echo "✓ Using development config (fallback)"
           elif [ -f config.sample.json ]; then
-            cp config.sample.json publish/preview/config.json
+            cp config.sample.json publish/debug/config.json
             echo "✓ Using sample config"
           fi
           
           # Inject build metadata (commit SHA, PR number) into config
-          if [ -f publish/preview/config.json ]; then
+          if [ -f publish/debug/config.json ]; then
             COMMIT_SHORT="${GITHUB_SHA:0:7}"
             
             # Try to get PR number from various sources
@@ -99,8 +99,8 @@ jobs:
               
               # Merge build_info into config.json
               jq --argjson build_info "$BUILD_INFO" '. + {build_info: $build_info}' \
-                publish/preview/config.json > publish/preview/config.json.tmp
-              mv publish/preview/config.json.tmp publish/preview/config.json
+                publish/debug/config.json > publish/debug/config.json.tmp
+              mv publish/debug/config.json.tmp publish/debug/config.json
               
               echo "✓ Injected build metadata: commit $COMMIT_SHORT, PR #$PR_NUMBER"
             else
