@@ -1,0 +1,141 @@
+{
+  "app": {
+    "name": "KRWL HOF Community Events",
+    "description": "Community events with AI-powered smart scraping"
+  },
+  "ai": {
+    "default_provider": "duckduckgo",
+    "duckduckgo": {
+      "model": "gpt-4o-mini",
+      "rate_limit": {
+        "min_delay": 5.0,
+        "max_delay": 15.0,
+        "max_requests_per_session": 10
+      }
+    },
+    "bing": {
+      "conversation_style": "balanced",
+      "rate_limit": {
+        "min_delay": 5.0,
+        "max_delay": 10.0,
+        "max_requests_per_session": 8
+      }
+    },
+    "google": {
+      "model": "gemini-pro",
+      "api_key": "YOUR_GOOGLE_API_KEY_HERE",
+      "rate_limit": {
+        "min_delay": 2.0,
+        "max_delay": 5.0,
+        "max_requests_per_session": 15
+      }
+    },
+    "ollama": {
+      "host": "http://localhost:11434",
+      "model": "llama3.2",
+      "rate_limit": {
+        "min_delay": 0.5,
+        "max_delay": 1.0,
+        "max_requests_per_session": 50
+      }
+    }
+  },
+  "image_analysis": {
+    "enabled": true,
+    "ocr_enabled": true,
+    "ocr_provider": "tesseract",
+    "languages": ["eng", "deu"],
+    "ai_provider": "duckduckgo"
+  },
+  "scraping": {
+    "sources": [
+      {
+        "name": "Example RSS Feed",
+        "url": "https://example.com/events.rss",
+        "type": "rss",
+        "enabled": true,
+        "options": {
+          "filter_ads": true,
+          "exclude_keywords": ["gewinnspiel", "werbung", "sponsored"],
+          "include_keywords": [],
+          "max_days_ahead": 60,
+          "category": "culture",
+          "ai_provider": "duckduckgo"
+        }
+      },
+      {
+        "name": "Example HTML Page",
+        "url": "https://example.com/events",
+        "type": "html",
+        "enabled": true,
+        "options": {
+          "filter_ads": true,
+          "exclude_keywords": ["ad", "advertisement"],
+          "max_days_ahead": 90,
+          "default_location": {
+            "name": "Example Venue",
+            "lat": 50.3167,
+            "lon": 11.9167
+          }
+        }
+      },
+      {
+        "name": "Example API",
+        "url": "https://api.example.com/events",
+        "type": "api",
+        "enabled": true,
+        "options": {
+          "max_days_ahead": 60
+        }
+      },
+      {
+        "name": "Example Facebook Page",
+        "url": "https://www.facebook.com/ExamplePage/events",
+        "type": "facebook",
+        "enabled": false,
+        "access_token": "YOUR_FACEBOOK_ACCESS_TOKEN",
+        "page_id": "ExamplePageID",
+        "notes": "Requires Facebook Graph API credentials",
+        "options": {
+          "filter_ads": true,
+          "category": "social"
+        }
+      },
+      {
+        "name": "Example Instagram Profile",
+        "url": "https://www.instagram.com/example/",
+        "type": "instagram",
+        "enabled": false,
+        "notes": "Not yet implemented - placeholder",
+        "options": {
+          "filter_ads": true
+        }
+      },
+      {
+        "name": "Example Telegram Channel",
+        "url": "https://t.me/example_channel",
+        "type": "telegram",
+        "enabled": false,
+        "notes": "Not yet implemented - placeholder"
+      },
+      {
+        "name": "Example with Custom AI Prompt",
+        "url": "https://example.com/complex-events",
+        "type": "html",
+        "enabled": false,
+        "options": {
+          "ai_provider": "google",
+          "ai_prompt": "Extract event information. Pay special attention to multi-day events and recurring schedules. Return JSON with title, description, start_time, end_time, location.",
+          "filter_ads": true,
+          "max_days_ahead": 120
+        }
+      }
+    ]
+  },
+  "map": {
+    "default_center": {
+      "lat": 50.3167,
+      "lon": 11.9167
+    }
+  }
+}
