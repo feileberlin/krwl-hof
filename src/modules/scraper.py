@@ -17,6 +17,13 @@ except ImportError:
     # Note: Warning is printed only when scraping is actually attempted,
     # not at import time to avoid interference with other modules
 
+# Try to import SmartScraper for enhanced functionality
+try:
+    from .smart_scraper import SmartScraper
+    SMART_SCRAPER_AVAILABLE = True
+except ImportError:
+    SMART_SCRAPER_AVAILABLE = False
+
 
 class EventScraper:
     """Scraper for community events from various sources"""
@@ -24,6 +31,16 @@ class EventScraper:
     def __init__(self, config, base_path):
         self.config = config
         self.base_path = base_path
+        
+        # Try to initialize SmartScraper for enhanced functionality
+        self.smart_scraper = None
+        if SMART_SCRAPER_AVAILABLE:
+            try:
+                self.smart_scraper = SmartScraper(config, base_path)
+                print("✓ Enhanced scraping enabled (SmartScraper)")
+            except Exception as e:
+                print(f"⚠ SmartScraper initialization failed: {e}")
+                self.smart_scraper = None
         
         if not SCRAPING_ENABLED:
             # Print warning when scraper is instantiated without required libraries
@@ -107,7 +124,16 @@ class EventScraper:
         """Scrape events from a single source"""
         if not SCRAPING_ENABLED:
             return []
+        
+        # Try SmartScraper first for enhanced functionality
+        if self.smart_scraper:
+            try:
+                return self.smart_scraper.scrape_source(source)
+            except Exception as e:
+                print(f"  ⚠ SmartScraper failed, falling back to legacy: {e}")
+                # Fall through to legacy scraper
             
+        # Legacy scraper
         source_type = source.get('type', 'rss')
         
         if source_type == 'rss':
