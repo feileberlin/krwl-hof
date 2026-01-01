@@ -14,14 +14,14 @@ def load_config(base_path):
 
 def load_events(base_path):
     """Load published events from events.json"""
-    events_path = base_path / 'data' / 'events.json'
+    events_path = base_path / 'static' / 'events.json'
     with open(events_path, 'r') as f:
         return json.load(f)
 
 
 def save_events(base_path, events_data):
     """Save published events to events.json"""
-    events_path = base_path / 'data' / 'events.json'
+    events_path = base_path / 'static' / 'events.json'
     events_data['last_updated'] = datetime.now().isoformat()
     with open(events_path, 'w') as f:
         json.dump(events_data, f, indent=2)
@@ -29,14 +29,14 @@ def save_events(base_path, events_data):
 
 def load_pending_events(base_path):
     """Load pending events from pending_events.json"""
-    pending_path = base_path / 'data' / 'pending_events.json'
+    pending_path = base_path / 'static' / 'pending_events.json'
     with open(pending_path, 'r') as f:
         return json.load(f)
 
 
 def save_pending_events(base_path, pending_data):
     """Save pending events to pending_events.json"""
-    pending_path = base_path / 'data' / 'pending_events.json'
+    pending_path = base_path / 'static' / 'pending_events.json'
     pending_data['last_scraped'] = datetime.now().isoformat()
     with open(pending_path, 'w') as f:
         json.dump(pending_data, f, indent=2)
@@ -134,7 +134,7 @@ def archive_old_events(base_path):
     
     # Save archived events if there are any
     if archived_events:
-        archive_path = base_path / 'data' / 'archived_events.json'
+        archive_path = base_path / 'static' / 'archived_events.json'
         try:
             with open(archive_path, 'r') as f:
                 archive_data = json.load(f)
@@ -188,3 +188,78 @@ def filter_events_by_time(events, config):
             continue
     
     return filtered_events
+
+
+def backup_published_event(base_path, event):
+    """
+    Backup a single published event to backups/events/ folder.
+    Each event is saved as a separate JSON file named by event ID.
+    
+    Args:
+        base_path: Root path of the repository
+        event: Event dictionary to backup
+        
+    Returns:
+        Path to the backup file created
+    """
+    import os
+    
+    # Create backups directory structure
+    backups_dir = base_path / 'backups' / 'events'
+    backups_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Generate filename from event ID and timestamp
+    event_id = event.get('id', 'unknown')
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    filename = f"{event_id}_{timestamp}.json"
+    
+    backup_path = backups_dir / filename
+    
+    # Add backup metadata
+    backup_data = {
+        'backed_up_at': datetime.now().isoformat(),
+        'event': event
+    }
+    
+    # Save backup
+    with open(backup_path, 'w') as f:
+        json.dump(backup_data, f, indent=2)
+    
+    return backup_path
+
+
+def load_historical_events(base_path):
+    """
+    Load all historical events from backups/events/ folder.
+    Returns a list of event dictionaries from all backup files.
+    
+    This is used by the scraper to check against historical data
+    and prevent re-scraping events that were already published.
+    
+    Args:
+        base_path: Root path of the repository
+        
+    Returns:
+        List of event dictionaries
+    """
+    backups_dir = base_path / 'backups' / 'events'
+    historical_events = []
+    
+    if not backups_dir.exists():
+        return historical_events
+    
+    # Load all backup files
+    for backup_file in backups_dir.glob('*.json'):
+        try:
+            with open(backup_file, 'r') as f:
+                backup_data = json.load(f)
+                # Extract the event from backup metadata
+                event = backup_data.get('event')
+                if event:
+                    historical_events.append(event)
+        except (json.JSONDecodeError, IOError) as e:
+            # Skip corrupted or unreadable backup files
+            print(f"Warning: Could not load backup file {backup_file}: {e}")
+            continue
+    
+    return historical_events

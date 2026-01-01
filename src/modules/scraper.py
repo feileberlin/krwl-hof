@@ -60,16 +60,37 @@ class EventScraper:
                 print(f"  ✓ Found {len(events)} events")
             except Exception as e:
                 print(f"  ✗ Error: {str(e)}")
-                
-        # Add new events to pending
+        
+        # Load historical events for deduplication
+        from .utils import load_historical_events, load_events
+        historical_events = load_historical_events(self.base_path)
+        published_events = load_events(self.base_path).get('events', [])
+        
+        # Add new events to pending (check against pending, published, and historical)
         added_count = 0
+        skipped_duplicate = 0
         for event in new_events:
-            if not self._event_exists(pending_data['pending_events'], event):
-                pending_data['pending_events'].append(event)
-                added_count += 1
+            # Check if event exists in pending queue
+            if self._event_exists(pending_data['pending_events'], event):
+                skipped_duplicate += 1
+                continue
+            
+            # Check if event exists in currently published events
+            if self._event_exists(published_events, event):
+                skipped_duplicate += 1
+                continue
+            
+            # Check if event exists in historical backups
+            if self._event_exists(historical_events, event):
+                skipped_duplicate += 1
+                continue
+            
+            # Event is new - add to pending
+            pending_data['pending_events'].append(event)
+            added_count += 1
                 
         save_pending_events(self.base_path, pending_data)
-        print(f"\n📊 Total: {len(new_events)} scraped, {added_count} new")
+        print(f"\n📊 Total: {len(new_events)} scraped, {added_count} new, {skipped_duplicate} duplicates skipped")
         return new_events
         
     def scrape_source(self, source):

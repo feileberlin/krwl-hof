@@ -1,0 +1,179 @@
+name: 📋 Review Events (GitHub UI)
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Action to perform'
+        required: true
+        type: choice
+        options:
+          - 'list'
+          - 'approve'
+          - 'reject'
+      event_id:
+        description: 'Event ID (required for approve/reject)'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  review-event:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install Python dependencies
+        run: |
+          echo "Installing dependencies..."
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          echo "✓ Dependencies installed"
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: List Pending Events
+        if: github.event.inputs.action == 'list'
+        run: |
+          echo "## 📋 Pending Events" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          cd src
+          python3 main.py list-pending > /tmp/pending_list.txt
+          
+          if grep -q "No pending events" /tmp/pending_list.txt; then
+            echo "**No pending events found.**" >> $GITHUB_STEP_SUMMARY
+          else
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            cat /tmp/pending_list.txt >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "---" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### How to Approve/Reject:" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "1. Go to **Actions** → **Review Events (GitHub UI)**" >> $GITHUB_STEP_SUMMARY
+            echo "2. Click **Run workflow**" >> $GITHUB_STEP_SUMMARY
+            echo "3. Select action: **approve** or **reject**" >> $GITHUB_STEP_SUMMARY
+            echo "4. Enter the **Event ID** from the list above" >> $GITHUB_STEP_SUMMARY
+            echo "5. Click **Run workflow**" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          cat /tmp/pending_list.txt
+
+      - name: Approve Event
+        if: github.event.inputs.action == 'approve'
+        run: |
+          if [ -z "${{ github.event.inputs.event_id }}" ]; then
+            echo "❌ Error: Event ID is required for approve action"
+            echo "## ❌ Approval Failed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Error:** Event ID is required for approve action" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+          
+          echo "Approving event: ${{ github.event.inputs.event_id }}"
+          cd src
+          
+          if python3 main.py publish "${{ github.event.inputs.event_id }}"; then
+            echo "## ✅ Event Approved Successfully" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Event ID:** ${{ github.event.inputs.event_id }}" >> $GITHUB_STEP_SUMMARY
+            echo "**Published at:** $(date -u +"%Y-%m-%d %H:%M UTC")" >> $GITHUB_STEP_SUMMARY
+            echo "**Published by:** @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## ❌ Approval Failed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Event ID:** ${{ github.event.inputs.event_id }}" >> $GITHUB_STEP_SUMMARY
+            echo "**Error:** Event not found or could not be published" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+      - name: Reject Event
+        if: github.event.inputs.action == 'reject'
+        run: |
+          if [ -z "${{ github.event.inputs.event_id }}" ]; then
+            echo "❌ Error: Event ID is required for reject action"
+            echo "## ❌ Rejection Failed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Error:** Event ID is required for reject action" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+          
+          echo "Rejecting event: ${{ github.event.inputs.event_id }}"
+          cd src
+          
+          if python3 main.py reject "${{ github.event.inputs.event_id }}"; then
+            echo "## 🗑️ Event Rejected Successfully" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Event ID:** ${{ github.event.inputs.event_id }}" >> $GITHUB_STEP_SUMMARY
+            echo "**Rejected at:** $(date -u +"%Y-%m-%d %H:%M UTC")" >> $GITHUB_STEP_SUMMARY
+            echo "**Rejected by:** @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## ❌ Rejection Failed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Event ID:** ${{ github.event.inputs.event_id }}" >> $GITHUB_STEP_SUMMARY
+            echo "**Error:** Event not found or could not be rejected" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+      - name: Check for changes
+        id: check_changes
+        if: github.event.inputs.action != 'list'
+        run: |
+          if [[ -n $(git status --porcelain) ]]; then
+            echo "changes=true" >> $GITHUB_OUTPUT
+            echo "✓ Changes detected"
+          else
+            echo "changes=false" >> $GITHUB_OUTPUT
+            echo "ℹ No changes to commit"
+          fi
+
+      - name: Commit changes
+        if: github.event.inputs.action != 'list' && steps.check_changes.outputs.changes == 'true'
+        run: |
+          git add static/
+          git add backups/
+          
+          if [ "${{ github.event.inputs.action }}" == "approve" ]; then
+            git commit -m "editorial: approve event ${{ github.event.inputs.event_id }} via GitHub UI by @${{ github.actor }}"
+          else
+            git commit -m "editorial: reject event ${{ github.event.inputs.event_id }} via GitHub UI by @${{ github.actor }}"
+          fi
+          
+          echo "✓ Changes committed"
+
+      - name: Push changes
+        if: github.event.inputs.action != 'list' && steps.check_changes.outputs.changes == 'true'
+        run: |
+          git push
+          echo "✓ Changes pushed to repository"
+
+      - name: Summary
+        if: always()
+        run: |
+          if [ "${{ github.event.inputs.action }}" == "list" ]; then
+            echo "📋 Listed pending events"
+          elif [ "${{ github.event.inputs.action }}" == "approve" ]; then
+            if [ "${{ steps.check_changes.outputs.changes }}" == "true" ]; then
+              echo "✅ Event ${{ github.event.inputs.event_id }} approved and published"
+            fi
+          elif [ "${{ github.event.inputs.action }}" == "reject" ]; then
+            if [ "${{ steps.check_changes.outputs.changes }}" == "true" ]; then
+              echo "🗑️ Event ${{ github.event.inputs.event_id }} rejected"
+            fi
+          fi

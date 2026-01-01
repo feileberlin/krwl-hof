@@ -1,4 +1,4 @@
-name: 🔄 Scrape Events & Deploy
+name: 🔄 Scrape Events
 
 on:
   schedule:
@@ -13,23 +13,12 @@ on:
     - cron: '0 3 * * *'   # ~4 AM CET (3 AM UTC)
     - cron: '0 15 * * *'  # ~4 PM CET (3 PM UTC)
   workflow_dispatch:
-    inputs:
-      force_deploy:
-        description: '🚀 Force deployment even if no new events found'
-        required: false
-        default: 'false'
-        type: choice
-        options:
-          - 'false'
-          - 'true'
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 jobs:
-  scrape-and-deploy:
+  scrape:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -81,24 +70,10 @@ jobs:
       - name: Commit scraped events
         if: steps.check_changes.outputs.changes == 'true'
         run: |
-          git add data/
+          git add static/
+          git add backups/
           git commit -m "chore: automated event scraping - $(date -u +"%Y-%m-%d %H:%M UTC")"
           echo "✓ Changes committed"
-
-      - name: Generate static site
-        if: steps.check_changes.outputs.changes == 'true'
-        run: |
-          echo "Generating static site files..."
-          cd src
-          python3 main.py generate
-          echo "✓ Static site generated"
-
-      - name: Commit generated static files
-        if: steps.check_changes.outputs.changes == 'true'
-        run: |
-          git add static/
-          git commit -m "chore: regenerate static site after scraping - $(date -u +"%Y-%m-%d %H:%M UTC")" || echo "No static file changes to commit"
-          echo "✓ Static files committed (if changed)"
 
       - name: Push changes
         if: steps.check_changes.outputs.changes == 'true'
@@ -106,54 +81,21 @@ jobs:
           git push
           echo "✓ Changes pushed to repository"
 
-      - name: Download Leaflet library
-        if: steps.check_changes.outputs.changes == 'true'
-        run: |
-          ./download-libs.sh
-          echo "✓ Leaflet library downloaded"
-
-      - name: Prepare publish directory
-        if: steps.check_changes.outputs.changes == 'true'
-        run: |
-          set -euo pipefail
-          rm -rf publish
-          mkdir -p publish
-          if [ -d static ]; then
-            # copy everything from static into publish root (preserve attributes)
-            cp -a static/. publish/ || true
-          fi
-          # Use production config (optimized for speed, no debugging)
-          if [ -f config.prod.json ]; then
-            cp config.prod.json publish/config.json
-            echo "✓ Using production config (optimized for maximum speed)"
-          fi
-          # include CNAME so custom domain stays configured
-          if [ -f CNAME ]; then
-            cp CNAME publish/CNAME
-            echo "✓ CNAME configured for custom domain"
-          fi
-          # prevent Jekyll processing
-          touch publish/.nojekyll
-          echo "Production publish directory contents:"
-          ls -la publish
-
-      - name: Upload Pages artifact
-        if: steps.check_changes.outputs.changes == 'true'
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: publish
-
-      - name: Deploy to GitHub Pages
-        if: steps.check_changes.outputs.changes == 'true'
-        uses: actions/deploy-pages@v4
-
       - name: Summary
         run: |
           echo "## Scraping Run Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "- **Date**: $(date -u +"%Y-%m-%d %H:%M UTC")" >> $GITHUB_STEP_SUMMARY
           if [ "${{ steps.check_changes.outputs.changes }}" == "true" ]; then
-            echo "- **Status**: ✅ New events found and deployed" >> $GITHUB_STEP_SUMMARY
+            echo "- **Status**: ✅ New events found and added to pending queue" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### Next Steps" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "To review and approve pending events:" >> $GITHUB_STEP_SUMMARY
+            echo "1. Go to **Actions** → **Review Events (GitHub UI)**" >> $GITHUB_STEP_SUMMARY
+            echo "2. Click **Run workflow** and select **list** to see pending events" >> $GITHUB_STEP_SUMMARY
+            echo "3. Approve or reject events using the workflow" >> $GITHUB_STEP_SUMMARY
           else
             echo "- **Status**: ℹ️ No new events found" >> $GITHUB_STEP_SUMMARY
           fi
+

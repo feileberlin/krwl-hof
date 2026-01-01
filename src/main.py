@@ -315,8 +315,8 @@ class EventManagerTUI:
         
         try:
             # Backup existing data
-            events_file = self.base_path / 'data' / 'events.json'
-            pending_file = self.base_path / 'data' / 'pending_events.json'
+            events_file = self.base_path / 'static' / 'events.json'
+            pending_file = self.base_path / 'static' / 'pending_events.json'
             
             if events_file.exists():
                 shutil.copy(events_file, str(events_file) + '.backup')
@@ -367,8 +367,8 @@ class EventManagerTUI:
         try:
             import shutil
             
-            events_file = self.base_path / 'data' / 'events.json'
-            pending_file = self.base_path / 'data' / 'pending_events.json'
+            events_file = self.base_path / 'static' / 'events.json'
+            pending_file = self.base_path / 'static' / 'pending_events.json'
             
             # Backup before clearing
             if events_file.exists():
@@ -712,6 +712,11 @@ def cli_publish_event(base_path, event_id):
     # Publish event
     event['status'] = 'published'
     event['published_at'] = datetime.now().isoformat()
+    
+    # Backup the published event
+    from modules.utils import backup_published_event
+    backup_path = backup_published_event(base_path, event)
+    print(f"✓ Event backed up to: {backup_path.relative_to(base_path)}")
     
     events_data = load_events(base_path)
     events_data['events'].append(event)

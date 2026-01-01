@@ -19,6 +19,10 @@ class EventEditor:
             print("No pending events to review.")
             input("\nPress Enter to continue...")
             return
+        
+        # Load historical events once for all reviews
+        from .utils import load_historical_events
+        historical_events = load_historical_events(self.base_path)
             
         i = 0
         while i < len(pending_events):
@@ -28,6 +32,23 @@ class EventEditor:
             print(f"Event {i + 1} of {len(pending_events)}")
             print("=" * 60)
             self._display_event(event)
+            
+            # Show similar historical events
+            similar_events = self._find_similar_events(event, historical_events)
+            if similar_events:
+                print("\n" + "─" * 60)
+                print("📚 Similar Historical Events Found:")
+                print("─" * 60)
+                for idx, similar in enumerate(similar_events[:3], 1):  # Show top 3
+                    print(f"\n{idx}. {similar['event'].get('title', 'N/A')}")
+                    print(f"   Location: {similar['event'].get('location', {}).get('name', 'N/A')}")
+                    print(f"   Time: {similar['event'].get('start_time', 'N/A')}")
+                    if similar['event'].get('description'):
+                        desc = similar['event'].get('description', '')
+                        desc_preview = desc[:100] + '...' if len(desc) > 100 else desc
+                        print(f"   Description: {desc_preview}")
+                    print(f"   Similarity: {similar['score']:.0%}")
+            
             print("-" * 60)
             print("Options:")
             print("  (a) Approve and publish")
@@ -83,6 +104,11 @@ class EventEditor:
         """Approve and publish an event"""
         event['status'] = 'published'
         event['published_at'] = datetime.now().isoformat()
+        
+        # Backup the published event
+        from .utils import backup_published_event
+        backup_path = backup_published_event(self.base_path, event)
+        print(f"  ✓ Event backed up to: {backup_path.relative_to(self.base_path)}")
         
         # Add to published events
         events_data = load_events(self.base_path)
@@ -148,3 +174,62 @@ class EventEditor:
             event['url'] = new_url
             
         print("\nEvent updated!")
+    
+    def _find_similar_events(self, event, historical_events):
+        """
+        Find similar events in historical data based on title and location.
+        Returns a list of similar events sorted by similarity score.
+        """
+        if not historical_events:
+            return []
+        
+        similar = []
+        event_title = event.get('title', '').lower()
+        event_location = event.get('location', {}).get('name', '').lower()
+        event_lat = event.get('location', {}).get('lat')
+        event_lon = event.get('location', {}).get('lon')
+        
+        for historical in historical_events:
+            score = 0.0
+            
+            # Compare titles (word overlap)
+            hist_title = historical.get('title', '').lower()
+            if hist_title and event_title:
+                event_words = set(event_title.split())
+                hist_words = set(hist_title.split())
+                if event_words and hist_words:
+                    common_words = event_words.intersection(hist_words)
+                    title_score = len(common_words) / max(len(event_words), len(hist_words))
+                    score += title_score * 0.6  # Title is 60% of score
+            
+            # Compare locations (string similarity)
+            hist_location = historical.get('location', {}).get('name', '').lower()
+            if hist_location and event_location:
+                if event_location in hist_location or hist_location in event_location:
+                    score += 0.3  # Location match is 30% of score
+                elif any(word in hist_location for word in event_location.split()):
+                    score += 0.15  # Partial location match
+            
+            # Compare coordinates (distance-based)
+            hist_lat = historical.get('location', {}).get('lat')
+            hist_lon = historical.get('location', {}).get('lon')
+            if all([event_lat, event_lon, hist_lat, hist_lon]):
+                try:
+                    from .utils import calculate_distance
+                    distance = calculate_distance(event_lat, event_lon, hist_lat, hist_lon)
+                    if distance < 1.0:  # Within 1 km
+                        score += 0.1  # Proximity is 10% of score
+                except:
+                    pass
+            
+            # Only include if similarity score is above threshold
+            if score > 0.3:  # 30% similarity threshold
+                similar.append({
+                    'event': historical,
+                    'score': score
+                })
+        
+        # Sort by similarity score (highest first)
+        similar.sort(key=lambda x: x['score'], reverse=True)
+        
+        return similar
