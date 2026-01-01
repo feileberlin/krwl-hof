@@ -5,6 +5,7 @@ A modular Python TUI for managing community events
 """
 
 import argparse
+import fnmatch
 import json
 import os
 import sys
@@ -18,7 +19,7 @@ from modules.scraper import EventScraper
 from modules.editor import EventEditor
 from modules.generator import StaticSiteGenerator
 from modules.workflow_launcher import WorkflowLauncher
-from modules.utils import load_config, load_events, save_events, load_pending_events, save_pending_events
+from modules.utils import load_config, load_events, save_events, load_pending_events, save_pending_events, backup_published_event
 
 
 class EventManagerTUI:
@@ -587,8 +588,8 @@ COMMANDS:
     review                    Review pending events interactively
     publish EVENT_ID          Publish a specific pending event
     reject EVENT_ID           Reject a specific pending event
-    bulk-publish IDS          Bulk publish pending events (comma-separated IDs)
-    bulk-reject IDS           Bulk reject pending events (comma-separated IDs)
+    bulk-publish IDS          Bulk publish pending events (comma-separated IDs/patterns)
+    bulk-reject IDS           Bulk reject pending events (comma-separated IDs/patterns)
     list                      List all published events
     list-pending              List all pending events
     generate                  Generate static site files
@@ -618,11 +619,18 @@ EXAMPLES:
     # Publish a single event
     python3 main.py publish pending_1
     
-    # Bulk publish multiple events
+    # Bulk publish multiple events (exact IDs)
     python3 main.py bulk-publish pending_1,pending_2,pending_3
     
-    # Bulk reject multiple events
-    python3 main.py bulk-reject pending_4,pending_5
+    # Bulk publish using wildcards
+    python3 main.py bulk-publish "pending_*"
+    python3 main.py bulk-publish "html_frankenpost_*"
+    
+    # Bulk reject with wildcards and exact IDs
+    python3 main.py bulk-reject "html_frankenpost_*,pending_5"
+    
+    # Reject all events with specific pattern in title/ID
+    python3 main.py bulk-reject "*AUCHEVENTMELDERWERDEN*"
     
     # Generate static site
     python3 main.py generate
@@ -642,6 +650,19 @@ EXAMPLES:
     # Get help
     python3 main.py --help
 
+WILDCARD PATTERNS:
+    Bulk operations support Unix-style wildcards:
+    *       Matches any characters (including none)
+    ?       Matches exactly one character
+    [seq]   Matches any character in seq
+    [!seq]  Matches any character not in seq
+    
+    Examples:
+    pending_*              Match all events with IDs starting with 'pending_'
+    html_frankenpost_*     Match all events from the Frankenpost source
+    *AUCHEVENT*            Match any event with 'AUCHEVENT' in the ID
+    pending_[1-3]          Match pending_1, pending_2, pending_3
+    
 DOCUMENTATION:
     Full documentation available in README.txt or via the TUI
     (Main Menu → View Documentation)
@@ -725,7 +746,6 @@ def cli_publish_event(base_path, event_id):
     event['published_at'] = datetime.now().isoformat()
     
     # Backup the published event
-    from modules.utils import backup_published_event
     backup_path = backup_published_event(base_path, event)
     print(f"✓ Event backed up to: {backup_path.relative_to(base_path)}")
     
@@ -739,6 +759,48 @@ def cli_publish_event(base_path, event_id):
     
     print(f"✓ Published event: {event.get('title')}")
     return 0
+
+
+def expand_wildcard_patterns(patterns, pending_events):
+    """
+    Expand wildcard patterns to match event IDs.
+    
+    Args:
+        patterns: List of patterns (can include wildcards like * and ?)
+        pending_events: List of pending events with 'id' field
+        
+    Returns:
+        List of expanded event IDs (duplicates removed, order preserved)
+    """
+    expanded_ids = []
+    seen_ids = set()
+    
+    for pattern in patterns:
+        pattern = pattern.strip()
+        if not pattern:
+            continue
+            
+        # Check if pattern contains wildcards
+        if '*' in pattern or '?' in pattern or '[' in pattern:
+            # Match against all pending event IDs
+            matches_found = False
+            for event in pending_events:
+                event_id = event.get('id', '')
+                if fnmatch.fnmatch(event_id, pattern):
+                    matches_found = True
+                    if event_id not in seen_ids:
+                        expanded_ids.append(event_id)
+                        seen_ids.add(event_id)
+            
+            if not matches_found:
+                print(f"⚠ Warning: Pattern '{pattern}' matched no events")
+        else:
+            # Exact ID - add if not already seen
+            if pattern not in seen_ids:
+                expanded_ids.append(pattern)
+                seen_ids.add(pattern)
+    
+    return expanded_ids
 
 
 def cli_reject_event(base_path, event_id):
@@ -768,16 +830,24 @@ def cli_reject_event(base_path, event_id):
 
 
 def cli_bulk_publish_events(base_path, event_ids_str):
-    """CLI: Bulk publish pending events"""
-    # Parse comma-separated event IDs
-    event_ids = [eid.strip() for eid in event_ids_str.split(',')]
+    """CLI: Bulk publish pending events (supports wildcards)"""
+    # Parse comma-separated event IDs/patterns
+    patterns = [p.strip() for p in event_ids_str.split(',')]
     
-    if not event_ids:
-        print("Error: No event IDs provided")
+    if not patterns:
+        print("Error: No event IDs or patterns provided")
         return 1
     
     pending_data = load_pending_events(base_path)
     events = pending_data.get('pending_events', [])
+    
+    # Expand wildcards
+    event_ids = expand_wildcard_patterns(patterns, events)
+    
+    if not event_ids:
+        print("Error: No events matched the provided patterns")
+        return 1
+    
     events_data = load_events(base_path)
     
     published_count = 0
@@ -787,6 +857,8 @@ def cli_bulk_publish_events(base_path, event_ids_str):
     print(f"Bulk publishing {len(event_ids)} event(s)...")
     print("-" * 80)
     
+    # Collect events and indices first
+    events_to_publish = []
     for event_id in event_ids:
         # Find event
         event = None
@@ -801,21 +873,25 @@ def cli_bulk_publish_events(base_path, event_ids_str):
             print(f"✗ Event '{event_id}' not found in pending queue")
             failed_count += 1
             failed_ids.append(event_id)
-            continue
-        
+        else:
+            events_to_publish.append((event_index, event_id, event))
+    
+    # Sort by index in reverse order to safely remove from pending list
+    events_to_publish.sort(key=lambda x: x[0], reverse=True)
+    
+    for event_index, event_id, event in events_to_publish:
         try:
             # Publish event
             event['status'] = 'published'
             event['published_at'] = datetime.now().isoformat()
             
             # Backup the published event
-            from modules.utils import backup_published_event
             backup_path = backup_published_event(base_path, event)
             
             # Add to published events
             events_data['events'].append(event)
             
-            # Remove from pending
+            # Remove from pending (safe because we're removing in reverse order)
             events.pop(event_index)
             
             print(f"✓ Published: {event.get('title')} (ID: {event_id})")
@@ -842,16 +918,23 @@ def cli_bulk_publish_events(base_path, event_ids_str):
 
 
 def cli_bulk_reject_events(base_path, event_ids_str):
-    """CLI: Bulk reject pending events"""
-    # Parse comma-separated event IDs
-    event_ids = [eid.strip() for eid in event_ids_str.split(',')]
+    """CLI: Bulk reject pending events (supports wildcards)"""
+    # Parse comma-separated event IDs/patterns
+    patterns = [p.strip() for p in event_ids_str.split(',')]
     
-    if not event_ids:
-        print("Error: No event IDs provided")
+    if not patterns:
+        print("Error: No event IDs or patterns provided")
         return 1
     
     pending_data = load_pending_events(base_path)
     events = pending_data.get('pending_events', [])
+    
+    # Expand wildcards
+    event_ids = expand_wildcard_patterns(patterns, events)
+    
+    if not event_ids:
+        print("Error: No events matched the provided patterns")
+        return 1
     
     rejected_count = 0
     failed_count = 0
@@ -860,7 +943,8 @@ def cli_bulk_reject_events(base_path, event_ids_str):
     print(f"Bulk rejecting {len(event_ids)} event(s)...")
     print("-" * 80)
     
-    # Process events in reverse order to handle index changes correctly
+    # Collect indices first to avoid shifting issues during removal
+    indices_to_remove = []
     for event_id in event_ids:
         # Find event
         event_index = None
@@ -875,10 +959,15 @@ def cli_bulk_reject_events(base_path, event_ids_str):
             print(f"✗ Event '{event_id}' not found in pending queue")
             failed_count += 1
             failed_ids.append(event_id)
-            continue
-        
+        else:
+            indices_to_remove.append((event_index, event_id, event_title))
+    
+    # Sort by index in reverse order and remove
+    indices_to_remove.sort(key=lambda x: x[0], reverse=True)
+    
+    for event_index, event_id, event_title in indices_to_remove:
         try:
-            # Remove from pending
+            # Remove from pending (safe because we're removing in reverse order)
             events.pop(event_index)
             print(f"✓ Rejected: {event_title} (ID: {event_id})")
             rejected_count += 1
