@@ -788,10 +788,10 @@ def expand_wildcard_patterns(patterns, pending_events):
             for event in pending_events:
                 event_id = event.get('id', '')
                 if fnmatch.fnmatch(event_id, pattern):
+                    matches_found = True
                     if event_id not in seen_ids:
                         expanded_ids.append(event_id)
                         seen_ids.add(event_id)
-                        matches_found = True
             
             if not matches_found:
                 print(f"⚠ Warning: Pattern '{pattern}' matched no events")

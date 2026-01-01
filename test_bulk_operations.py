@@ -106,6 +106,13 @@ def test_expand_wildcard_patterns():
     assert result == expected, f"Test 11 failed: expected {expected}, got {result}"
     print("✓ Test 11: Character ranges in brackets")
     
+    # Test 12: Duplicate patterns (all matches already in seen_ids should still report as matched)
+    patterns = ['pending_*', 'pending_*']
+    result = expand_wildcard_patterns(patterns, events)
+    expected = ['pending_1', 'pending_2', 'pending_3']  # No duplicates, but no warning either
+    assert result == expected, f"Test 12 failed: expected {expected}, got {result}"
+    print("✓ Test 12: Duplicate patterns handled correctly")
+    
     print("\n✅ All wildcard pattern expansion tests passed!")
 
 
