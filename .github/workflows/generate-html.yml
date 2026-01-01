@@ -1,0 +1,65 @@
+name: 📄 Generate HTML
+
+on:
+  push:
+    branches:
+      - main
+      - preview
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Leaflet library
+        run: ./download-libs.sh
+
+      - name: Generate fresh demo events (preview only)
+        if: github.ref == 'refs/heads/preview'
+        run: python3 scripts/generate_demo_events.py > static/events.demo.json
+
+      - name: Generate HTML (production or preview based on branch)
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            python3 scripts/generate_html.py production
+            FILE="static/index.html"
+            MODE="production"
+          else
+            python3 scripts/generate_html.py preview
+            FILE="preview/index.html"
+            MODE="preview"
+          fi
+          echo "FILE=$FILE" >> $GITHUB_ENV
+          echo "MODE=$MODE" >> $GITHUB_ENV
+
+      - name: Commit generated file
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if [ "$MODE" == "preview" ]; then
+            git add preview/index.html static/events.demo.json
+          else
+            git add static/index.html
+          fi
+          if git diff --staged --quiet; then
+            echo "No changes"
+          else
+            git commit -m "Generate $FILE [skip ci]"
+            git push
+            echo ""
+            echo "✓ Generated $FILE!"
+            if [ "$MODE" == "preview" ]; then
+              echo ""
+              echo "📥 NO DEPLOYMENT - Download and open:"
+              echo "  https://github.com/${{ github.repository }}/raw/preview/preview/index.html"
+            else
+              echo ""
+              echo "🚀 Deployed at https://krwl.in/"
+            fi
+          fi
