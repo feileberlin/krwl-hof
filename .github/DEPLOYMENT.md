@@ -18,7 +18,7 @@ This repository uses a safe two-step deployment process:
 3. **Submit PR to `preview`** branch
 4. **Merge to preview** → auto-deploys to `/preview/` path
 5. **Test preview site** thoroughly
-6. **Run "Promote Debug"** workflow → creates PR to `main`
+6. **Run "Promote Preview"** workflow → creates PR to `main`
 7. **Merge to main** → deploys to production
 
 ## Configuration Files
@@ -74,7 +74,7 @@ Demo events are automatically generated from real event templates with fresh tim
 
 **Result**: Debug-enabled preview at `yourdomain.com/preview/` with fresh demo events
 
-### 3. Promote Debug (`promote-debug.yml`)
+### 3. Promote Preview (`promote-preview.yml`)
 **Triggers**: Manual dispatch only
 
 **What it does**:
@@ -83,7 +83,7 @@ Demo events are automatically generated from real event templates with fresh tim
 
 **Usage**:
 ```
-Actions → Promote Debug to Production → Run workflow
+Actions → Promote Preview to Production → Run workflow
 ```
 
 **📚 Detailed Guide**: See [PROMOTE_WORKFLOW.md](PROMOTE_WORKFLOW.md) for complete documentation on:
