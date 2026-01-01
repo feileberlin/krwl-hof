@@ -43,6 +43,7 @@ Our docs work everywhere - browse on GitHub, read locally, or check the wiki. Yo
 ### Quick Links
 
 - [📖 Documentation Home](docs/Home.md) - Start here!
+- [📋 Changelog](CHANGELOG.md) - Release history and changes
 - [🛠️ Setup Guide](docs/SETUP.md) - Get your dev environment ready
 - [🧪 Testing](TESTING.md) - How to test everything
 - [🕷️ Scraping](docs/SCRAPING.md) - Adding event sources

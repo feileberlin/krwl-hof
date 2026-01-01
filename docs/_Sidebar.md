@@ -7,6 +7,9 @@
 - [[SETUP]]
 - [[WIKI_SETUP]] ⚙️
 
+## Project Info
+- [📋 Changelog](https://github.com/feileberlin/krwl-hof/blob/main/CHANGELOG.md)
+
 ## Core Docs
 - [[SCRAPING]]
 - [[DEPLOYMENT]]
