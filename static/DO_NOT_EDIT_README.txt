@@ -26,6 +26,6 @@ This file is regenerated from:
    - config.json (runtime configuration)
    - content.json / content.de.json (translations)
 
-Last generated: 2026-01-01 14:41:53
+Last generated: 2026-01-01 14:50:07
 
 For more information, see the project README.md
