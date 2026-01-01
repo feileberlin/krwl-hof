@@ -125,7 +125,7 @@ jobs:
               'name': '${{ inputs.source_name }}',
               'type': '${{ inputs.source_type }}',
               'url': '${{ inputs.source_url }}',
-              'enabled': ${{ inputs.source_enabled }},
+              'enabled': '${{ inputs.source_enabled }}' == 'true',
               'options': {}
           }
           
