@@ -587,6 +587,8 @@ COMMANDS:
     review                    Review pending events interactively
     publish EVENT_ID          Publish a specific pending event
     reject EVENT_ID           Reject a specific pending event
+    bulk-publish IDS          Bulk publish pending events (comma-separated IDs)
+    bulk-reject IDS           Bulk reject pending events (comma-separated IDs)
     list                      List all published events
     list-pending              List all pending events
     generate                  Generate static site files
@@ -612,6 +614,15 @@ EXAMPLES:
     
     # List all published events
     python3 main.py list
+    
+    # Publish a single event
+    python3 main.py publish pending_1
+    
+    # Bulk publish multiple events
+    python3 main.py bulk-publish pending_1,pending_2,pending_3
+    
+    # Bulk reject multiple events
+    python3 main.py bulk-reject pending_4,pending_5
     
     # Generate static site
     python3 main.py generate
@@ -753,6 +764,141 @@ def cli_reject_event(base_path, event_id):
     save_pending_events(base_path, pending_data)
     
     print(f"✓ Rejected event: {event_title}")
+    return 0
+
+
+def cli_bulk_publish_events(base_path, event_ids_str):
+    """CLI: Bulk publish pending events"""
+    # Parse comma-separated event IDs
+    event_ids = [eid.strip() for eid in event_ids_str.split(',')]
+    
+    if not event_ids:
+        print("Error: No event IDs provided")
+        return 1
+    
+    pending_data = load_pending_events(base_path)
+    events = pending_data.get('pending_events', [])
+    events_data = load_events(base_path)
+    
+    published_count = 0
+    failed_count = 0
+    failed_ids = []
+    
+    print(f"Bulk publishing {len(event_ids)} event(s)...")
+    print("-" * 80)
+    
+    for event_id in event_ids:
+        # Find event
+        event = None
+        event_index = None
+        for i, e in enumerate(events):
+            if e.get('id') == event_id:
+                event = e
+                event_index = i
+                break
+        
+        if not event:
+            print(f"✗ Event '{event_id}' not found in pending queue")
+            failed_count += 1
+            failed_ids.append(event_id)
+            continue
+        
+        try:
+            # Publish event
+            event['status'] = 'published'
+            event['published_at'] = datetime.now().isoformat()
+            
+            # Backup the published event
+            from modules.utils import backup_published_event
+            backup_path = backup_published_event(base_path, event)
+            
+            # Add to published events
+            events_data['events'].append(event)
+            
+            # Remove from pending
+            events.pop(event_index)
+            
+            print(f"✓ Published: {event.get('title')} (ID: {event_id})")
+            published_count += 1
+        except Exception as e:
+            print(f"✗ Failed to publish '{event_id}': {e}")
+            failed_count += 1
+            failed_ids.append(event_id)
+    
+    # Save changes
+    if published_count > 0:
+        save_events(base_path, events_data)
+        save_pending_events(base_path, pending_data)
+    
+    # Summary
+    print("-" * 80)
+    print(f"✓ Successfully published: {published_count} event(s)")
+    if failed_count > 0:
+        print(f"✗ Failed: {failed_count} event(s)")
+        print(f"  Failed IDs: {', '.join(failed_ids)}")
+        return 1
+    
+    return 0
+
+
+def cli_bulk_reject_events(base_path, event_ids_str):
+    """CLI: Bulk reject pending events"""
+    # Parse comma-separated event IDs
+    event_ids = [eid.strip() for eid in event_ids_str.split(',')]
+    
+    if not event_ids:
+        print("Error: No event IDs provided")
+        return 1
+    
+    pending_data = load_pending_events(base_path)
+    events = pending_data.get('pending_events', [])
+    
+    rejected_count = 0
+    failed_count = 0
+    failed_ids = []
+    
+    print(f"Bulk rejecting {len(event_ids)} event(s)...")
+    print("-" * 80)
+    
+    # Process events in reverse order to handle index changes correctly
+    for event_id in event_ids:
+        # Find event
+        event_index = None
+        event_title = None
+        for i, e in enumerate(events):
+            if e.get('id') == event_id:
+                event_index = i
+                event_title = e.get('title')
+                break
+        
+        if event_index is None:
+            print(f"✗ Event '{event_id}' not found in pending queue")
+            failed_count += 1
+            failed_ids.append(event_id)
+            continue
+        
+        try:
+            # Remove from pending
+            events.pop(event_index)
+            print(f"✓ Rejected: {event_title} (ID: {event_id})")
+            rejected_count += 1
+        except Exception as e:
+            print(f"✗ Failed to reject '{event_id}': {e}")
+            failed_count += 1
+            failed_ids.append(event_id)
+    
+    # Save changes
+    if rejected_count > 0:
+        save_pending_events(base_path, pending_data)
+    
+    # Summary
+    print("-" * 80)
+    print(f"✓ Successfully rejected: {rejected_count} event(s)")
+    if failed_count > 0:
+        print(f"✗ Failed: {failed_count} event(s)")
+        print(f"  Failed IDs: {', '.join(failed_ids)}")
+        return 1
+    
     return 0
 
 
@@ -1017,6 +1163,22 @@ def main():
                 print("Usage: python3 main.py reject EVENT_ID")
                 return 1
             return cli_reject_event(base_path, args.args[0])
+        
+        elif args.command == 'bulk-publish':
+            if not args.args:
+                print("Error: Missing event IDs")
+                print("Usage: python3 main.py bulk-publish EVENT_ID1,EVENT_ID2,...")
+                print("Example: python3 main.py bulk-publish pending_1,pending_2,pending_3")
+                return 1
+            return cli_bulk_publish_events(base_path, args.args[0])
+        
+        elif args.command == 'bulk-reject':
+            if not args.args:
+                print("Error: Missing event IDs")
+                print("Usage: python3 main.py bulk-reject EVENT_ID1,EVENT_ID2,...")
+                print("Example: python3 main.py bulk-reject pending_1,pending_2,pending_3")
+                return 1
+            return cli_bulk_reject_events(base_path, args.args[0])
         
         elif args.command == 'generate':
             return cli_generate(base_path, config)

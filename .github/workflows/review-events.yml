@@ -11,8 +11,14 @@ on:
           - 'list'
           - 'approve'
           - 'reject'
+          - 'bulk-approve'
+          - 'bulk-reject'
       event_id:
-        description: 'Event ID (required for approve/reject)'
+        description: 'Event ID (for single approve/reject) - leave empty for bulk operations'
+        required: false
+        type: string
+      event_ids:
+        description: 'Event IDs (comma-separated, for bulk operations) - e.g., pending_1,pending_2,pending_3'
         required: false
         type: string
 
@@ -66,10 +72,18 @@ jobs:
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "### How to Approve/Reject:" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
+            echo "#### Single Event:" >> $GITHUB_STEP_SUMMARY
             echo "1. Go to **Actions** → **Review Events (GitHub UI)**" >> $GITHUB_STEP_SUMMARY
             echo "2. Click **Run workflow**" >> $GITHUB_STEP_SUMMARY
             echo "3. Select action: **approve** or **reject**" >> $GITHUB_STEP_SUMMARY
             echo "4. Enter the **Event ID** from the list above" >> $GITHUB_STEP_SUMMARY
+            echo "5. Click **Run workflow**" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "#### Bulk Operations:" >> $GITHUB_STEP_SUMMARY
+            echo "1. Go to **Actions** → **Review Events (GitHub UI)**" >> $GITHUB_STEP_SUMMARY
+            echo "2. Click **Run workflow**" >> $GITHUB_STEP_SUMMARY
+            echo "3. Select action: **bulk-approve** or **bulk-reject**" >> $GITHUB_STEP_SUMMARY
+            echo "4. Enter **comma-separated Event IDs** (e.g., \`pending_1,pending_2,pending_3\`)" >> $GITHUB_STEP_SUMMARY
             echo "5. Click **Run workflow**" >> $GITHUB_STEP_SUMMARY
           fi
           
@@ -131,6 +145,68 @@ jobs:
             exit 1
           fi
 
+      - name: Bulk Approve Events
+        if: github.event.inputs.action == 'bulk-approve'
+        run: |
+          if [ -z "${{ github.event.inputs.event_ids }}" ]; then
+            echo "❌ Error: Event IDs are required for bulk-approve action"
+            echo "## ❌ Bulk Approval Failed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Error:** Event IDs (comma-separated) are required for bulk-approve action" >> $GITHUB_STEP_SUMMARY
+            echo "**Example:** pending_1,pending_2,pending_3" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+          
+          echo "Bulk approving events: ${{ github.event.inputs.event_ids }}"
+          cd src
+          
+          # Use the new bulk-publish command
+          if python3 main.py bulk-publish "${{ github.event.inputs.event_ids }}"; then
+            echo "## ✅ Events Approved Successfully" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Event IDs:** ${{ github.event.inputs.event_ids }}" >> $GITHUB_STEP_SUMMARY
+            echo "**Published at:** $(date -u +"%Y-%m-%d %H:%M UTC")" >> $GITHUB_STEP_SUMMARY
+            echo "**Published by:** @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## ❌ Bulk Approval Failed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Event IDs:** ${{ github.event.inputs.event_ids }}" >> $GITHUB_STEP_SUMMARY
+            echo "**Error:** One or more events not found or could not be published" >> $GITHUB_STEP_SUMMARY
+            echo "**Note:** Successfully published events (if any) have been committed" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+      - name: Bulk Reject Events
+        if: github.event.inputs.action == 'bulk-reject'
+        run: |
+          if [ -z "${{ github.event.inputs.event_ids }}" ]; then
+            echo "❌ Error: Event IDs are required for bulk-reject action"
+            echo "## ❌ Bulk Rejection Failed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Error:** Event IDs (comma-separated) are required for bulk-reject action" >> $GITHUB_STEP_SUMMARY
+            echo "**Example:** pending_1,pending_2,pending_3" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+          
+          echo "Bulk rejecting events: ${{ github.event.inputs.event_ids }}"
+          cd src
+          
+          # Use the new bulk-reject command
+          if python3 main.py bulk-reject "${{ github.event.inputs.event_ids }}"; then
+            echo "## 🗑️ Events Rejected Successfully" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Event IDs:** ${{ github.event.inputs.event_ids }}" >> $GITHUB_STEP_SUMMARY
+            echo "**Rejected at:** $(date -u +"%Y-%m-%d %H:%M UTC")" >> $GITHUB_STEP_SUMMARY
+            echo "**Rejected by:** @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## ❌ Bulk Rejection Failed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Event IDs:** ${{ github.event.inputs.event_ids }}" >> $GITHUB_STEP_SUMMARY
+            echo "**Error:** One or more events not found or could not be rejected" >> $GITHUB_STEP_SUMMARY
+            echo "**Note:** Successfully rejected events (if any) have been committed" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
       - name: Check for changes
         id: check_changes
         if: github.event.inputs.action != 'list'
@@ -151,8 +227,12 @@ jobs:
           
           if [ "${{ github.event.inputs.action }}" == "approve" ]; then
             git commit -m "editorial: approve event ${{ github.event.inputs.event_id }} via GitHub UI by @${{ github.actor }}"
-          else
+          elif [ "${{ github.event.inputs.action }}" == "reject" ]; then
             git commit -m "editorial: reject event ${{ github.event.inputs.event_id }} via GitHub UI by @${{ github.actor }}"
+          elif [ "${{ github.event.inputs.action }}" == "bulk-approve" ]; then
+            git commit -m "editorial: bulk approve events (${{ github.event.inputs.event_ids }}) via GitHub UI by @${{ github.actor }}"
+          elif [ "${{ github.event.inputs.action }}" == "bulk-reject" ]; then
+            git commit -m "editorial: bulk reject events (${{ github.event.inputs.event_ids }}) via GitHub UI by @${{ github.actor }}"
           fi
           
           echo "✓ Changes committed"
@@ -175,5 +255,13 @@ jobs:
           elif [ "${{ github.event.inputs.action }}" == "reject" ]; then
             if [ "${{ steps.check_changes.outputs.changes }}" == "true" ]; then
               echo "🗑️ Event ${{ github.event.inputs.event_id }} rejected"
+            fi
+          elif [ "${{ github.event.inputs.action }}" == "bulk-approve" ]; then
+            if [ "${{ steps.check_changes.outputs.changes }}" == "true" ]; then
+              echo "✅ Events approved and published: ${{ github.event.inputs.event_ids }}"
+            fi
+          elif [ "${{ github.event.inputs.action }}" == "bulk-reject" ]; then
+            if [ "${{ steps.check_changes.outputs.changes }}" == "true" ]; then
+              echo "🗑️ Events rejected: ${{ github.event.inputs.event_ids }}"
             fi
           fi
