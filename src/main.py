@@ -661,7 +661,7 @@ WILDCARD PATTERNS:
     pending_*              Match all events with IDs starting with 'pending_'
     html_frankenpost_*     Match all events from the Frankenpost source
     *AUCHEVENT*            Match any event with 'AUCHEVENT' in the ID
-    pending_[1-3]          Match pending_1, pending_2, pending_3 (not supported by fnmatch)
+    pending_[1-3]          Match pending_1, pending_2, pending_3
     
 DOCUMENTATION:
     Full documentation available in README.txt or via the TUI
@@ -782,18 +782,18 @@ def expand_wildcard_patterns(patterns, pending_events):
             continue
             
         # Check if pattern contains wildcards
-        if '*' in pattern or '?' in pattern:
+        if '*' in pattern or '?' in pattern or '[' in pattern:
             # Match against all pending event IDs
-            matched = False
+            matches_found = False
             for event in pending_events:
                 event_id = event.get('id', '')
                 if fnmatch.fnmatch(event_id, pattern):
                     if event_id not in seen_ids:
                         expanded_ids.append(event_id)
                         seen_ids.add(event_id)
-                        matched = True
+                        matches_found = True
             
-            if not matched:
+            if not matches_found:
                 print(f"⚠ Warning: Pattern '{pattern}' matched no events")
         else:
             # Exact ID - add if not already seen
@@ -858,6 +858,8 @@ def cli_bulk_publish_events(base_path, event_ids_str):
     print(f"Bulk publishing {len(event_ids)} event(s)...")
     print("-" * 80)
     
+    # Collect events and indices first
+    events_to_publish = []
     for event_id in event_ids:
         # Find event
         event = None
@@ -872,8 +874,13 @@ def cli_bulk_publish_events(base_path, event_ids_str):
             print(f"✗ Event '{event_id}' not found in pending queue")
             failed_count += 1
             failed_ids.append(event_id)
-            continue
-        
+        else:
+            events_to_publish.append((event_index, event_id, event))
+    
+    # Sort by index in reverse order to safely remove from pending list
+    events_to_publish.sort(key=lambda x: x[0], reverse=True)
+    
+    for event_index, event_id, event in events_to_publish:
         try:
             # Publish event
             event['status'] = 'published'
@@ -886,7 +893,7 @@ def cli_bulk_publish_events(base_path, event_ids_str):
             # Add to published events
             events_data['events'].append(event)
             
-            # Remove from pending
+            # Remove from pending (safe because we're removing in reverse order)
             events.pop(event_index)
             
             print(f"✓ Published: {event.get('title')} (ID: {event_id})")
@@ -938,7 +945,8 @@ def cli_bulk_reject_events(base_path, event_ids_str):
     print(f"Bulk rejecting {len(event_ids)} event(s)...")
     print("-" * 80)
     
-    # Process events in reverse order to handle index changes correctly
+    # Collect indices first to avoid shifting issues during removal
+    indices_to_remove = []
     for event_id in event_ids:
         # Find event
         event_index = None
@@ -953,10 +961,15 @@ def cli_bulk_reject_events(base_path, event_ids_str):
             print(f"✗ Event '{event_id}' not found in pending queue")
             failed_count += 1
             failed_ids.append(event_id)
-            continue
-        
+        else:
+            indices_to_remove.append((event_index, event_id, event_title))
+    
+    # Sort by index in reverse order and remove
+    indices_to_remove.sort(key=lambda x: x[0], reverse=True)
+    
+    for event_index, event_id, event_title in indices_to_remove:
         try:
-            # Remove from pending
+            # Remove from pending (safe because we're removing in reverse order)
             events.pop(event_index)
             print(f"✓ Rejected: {event_title} (ID: {event_id})")
             rejected_count += 1

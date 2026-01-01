@@ -99,6 +99,13 @@ def test_expand_wildcard_patterns():
     assert result == expected, f"Test 10 failed: expected {expected}, got {result}"
     print("✓ Test 10: Whitespace handling")
     
+    # Test 11: Character ranges in brackets
+    patterns = ['pending_[1-2]']
+    result = expand_wildcard_patterns(patterns, events)
+    expected = ['pending_1', 'pending_2']
+    assert result == expected, f"Test 11 failed: expected {expected}, got {result}"
+    print("✓ Test 11: Character ranges in brackets")
+    
     print("\n✅ All wildcard pattern expansion tests passed!")
 
 
