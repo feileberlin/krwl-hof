@@ -76,6 +76,34 @@ event_ids: "pending_1,pending_2" # For bulk operations
 
 **Creates PR**: preview → main (requires manual merge)
 
+#### D. Commit and Push Everything
+**File**: `.github/workflows/commit-and-push.yml`
+
+**Trigger**: Actions → Commit and Push Everything → Run workflow
+
+**Inputs**:
+```yaml
+commit_message: "Required commit message"
+path_filter: "." # Optional: e.g., "static/", "*.json", or leave as "." for all
+```
+
+**Purpose**: Manual utility to commit and push all pending changes (or filtered paths) with a custom commit message. Useful for maintenance tasks, bulk updates, or repository cleanup.
+
+**Examples**:
+1. **Commit all changes**:
+   - Commit message: `chore: update configuration files`
+   - Path filter: `.` (or leave as default)
+
+2. **Commit specific directory**:
+   - Commit message: `fix: update static assets`
+   - Path filter: `static/`
+
+3. **Commit specific file types**:
+   - Commit message: `docs: update markdown files`
+   - Path filter: `*.md`
+
+⚠️ **Warning**: Use with caution on protected branches. Always verify changes before running.
+
 ### Advantages
 ✅ No local setup required  
 ✅ Works from any device with browser  
