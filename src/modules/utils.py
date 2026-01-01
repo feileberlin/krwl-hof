@@ -335,3 +335,63 @@ def load_historical_events(base_path):
             continue
     
     return historical_events
+
+
+def update_events_in_html(base_path):
+    """
+    Update the EVENTS array in index.html with current events from events.json.
+    This is called automatically after approving/publishing events.
+    
+    Uses regex to replace 'const EVENTS = [...];' with current event data.
+    
+    Args:
+        base_path: Root path of the repository
+        
+    Returns:
+        True if successful, False otherwise
+    """
+    import re
+    
+    try:
+        # Load current events
+        events_data = load_events(base_path)
+        events = events_data.get('events', [])
+        
+        # Read index.html
+        index_path = base_path / 'static' / 'index.html'
+        if not index_path.exists():
+            print(f"Error: {index_path} does not exist")
+            return False
+        
+        with open(index_path, 'r', encoding='utf-8') as f:
+            html_content = f.read()
+        
+        # Convert events to JSON string with proper formatting
+        # Use ensure_ascii=False to handle unicode characters properly
+        events_json = json.dumps(events, indent=2, ensure_ascii=False)
+        
+        # Replace EVENTS array using regex
+        # Match: const EVENTS = [...]; (with any content between brackets)
+        pattern = r'const EVENTS = \[.*?\];'
+        replacement = f'const EVENTS = {events_json};'
+        
+        # Use DOTALL flag to match across newlines
+        updated_html = re.sub(pattern, replacement, html_content, flags=re.DOTALL)
+        
+        # Verify the replacement worked
+        if updated_html == html_content:
+            print("Warning: EVENTS array not found or not replaced in index.html")
+            return False
+        
+        # Write updated HTML
+        with open(index_path, 'w', encoding='utf-8') as f:
+            f.write(updated_html)
+        
+        print(f"✓ Updated {len(events)} event(s) in index.html")
+        return True
+        
+    except Exception as e:
+        import traceback
+        print(f"Error updating events in HTML: {e}")
+        traceback.print_exc()
+        return False
