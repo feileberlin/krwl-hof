@@ -1,4 +1,4 @@
-# Promote Preview Workflow Guide
+# Promote Debug Workflow Guide
 
 Complete guide to promoting preview changes to production safely.
 
@@ -14,9 +14,9 @@ The workflow has been completely reworked with the following improvements:
 ✨ **Updated GitHub Script**: Now uses `actions/github-script@v7` for better performance
 ✨ **Smart Skip Logic**: Won't create PRs when branches are identical
 
-## What is the Promote Preview Workflow?
+## What is the Promote Debug Workflow?
 
-The **Promote Preview** workflow is an automated tool that creates a Pull Request from the `preview` branch to `main` (production). This ensures all changes are reviewed before going live.
+The **Promote Debug** workflow is an automated tool that creates a Pull Request from the `preview` branch to `main` (production). This ensures all changes are reviewed before going live.
 
 **New Feature**: If the `preview` branch doesn't exist, the workflow can create it for you automatically!
 
@@ -30,7 +30,7 @@ The **Promote Preview** workflow is an automated tool that creates a Pull Reques
 
 ## When to Use It
 
-Use the Promote Preview workflow when:
+Use the Promote Debug workflow when:
 
 - ✓ You've tested changes in the preview environment
 - ✓ All features work correctly at `/preview/` path
@@ -160,7 +160,7 @@ Use the Promote Preview workflow when:
    - Click "Actions" tab at top
 
 2. **Select the workflow**
-   - Find "Promote Preview to Production" in left sidebar
+   - Find "Promote Debug to Production" in left sidebar
    - Click on it
 
 3. **Run workflow**
@@ -184,13 +184,13 @@ Use the Promote Preview workflow when:
 
 ```bash
 # Create PR (manual merge, auto-create preview if missing)
-gh workflow run promote-preview.yml
+gh workflow run promote-debug.yml
 
 # Create PR and attempt auto-merge
-gh workflow run promote-preview.yml -f auto_merge=true
+gh workflow run promote-debug.yml -f auto_merge=true
 
 # Fail if preview branch doesn't exist
-gh workflow run promote-preview.yml -f create_preview_if_missing=false
+gh workflow run promote-debug.yml -f create_preview_if_missing=false
 ```
 
 ### Method 3: GitHub API
@@ -199,7 +199,7 @@ gh workflow run promote-preview.yml -f create_preview_if_missing=false
 curl -X POST \
   -H "Authorization: token YOUR_GITHUB_TOKEN" \
   -H "Accept: application/vnd.github.v3+json" \
-  https://api.github.com/repos/OWNER/REPO/actions/workflows/promote-preview.yml/dispatches \
+  https://api.github.com/repos/OWNER/REPO/actions/workflows/promote-debug.yml/dispatches \
   -d '{"ref":"main","inputs":{"auto_merge":"false","create_preview_if_missing":"true"}}'
 ```
 
@@ -275,7 +275,7 @@ The PR body includes:
 ### Example PR Body
 
 ```markdown
-## 🚀 Promote Preview to Production
+## 🚀 Promote Debug to Production
 
 This PR promotes changes from the `preview` branch to `main` (production).
 
@@ -337,7 +337,7 @@ This PR promotes changes from the `preview` branch to `main` (production).
 ### View Workflow Run
 
 1. Go to Actions tab
-2. Click "Promote Preview to Production"
+2. Click "Promote Debug to Production"
 3. Click on the latest run
 4. Check the **Summary** tab for:
    - 🆕 Beautiful formatted summary showing what happened
@@ -500,7 +500,7 @@ Please merge the PR manually.
 **Problem**: Workflow file missing or renamed
 
 **Solution**:
-- Check `.github/workflows/promote-preview.yml` exists
+- Check `.github/workflows/promote-debug.yml` exists
 - Verify workflow is on `main` branch
 - Push workflow file if missing
 
@@ -574,7 +574,7 @@ With these rules:
 2. Dev merges to preview branch
 3. Preview deploys automatically with debug
 4. Team tests at /preview/
-5. Dev runs: Promote Preview (auto_merge=false)
+5. Dev runs: Promote Debug (auto_merge=false)
 6. Team reviews PR, approves
 7. Dev merges PR
 8. Production deploys automatically
@@ -586,7 +586,7 @@ With these rules:
 1. Make changes on preview branch
 2. Preview deploys with debug
 3. Test thoroughly at /preview/
-4. Run: Promote Preview (auto_merge=false)
+4. Run: Promote Debug (auto_merge=false)
 5. Review your own PR one last time
 6. Merge PR
 7. Production deploys
@@ -597,7 +597,7 @@ With these rules:
 ```
 1. Make changes on preview branch
 2. Quick test at /preview/
-3. Run: Promote Preview (auto_merge=true)
+3. Run: Promote Debug (auto_merge=true)
 4. PR created and merged automatically
 5. Production deploys
 6. Monitor for issues
@@ -608,7 +608,7 @@ With these rules:
 ```
 1. Create hotfix on preview
 2. Minimal testing (urgent!)
-3. Run: Promote Preview (auto_merge=true)
+3. Run: Promote Debug (auto_merge=true)
 4. If blocked by protection: manual merge ASAP
 5. Monitor production closely
 6. Create follow-up PR if needed
@@ -678,7 +678,7 @@ permissions:
 
 ## Summary
 
-The Promote Preview workflow is a **simple, safe tool** for moving changes from testing to production:
+The Promote Debug workflow is a **simple, safe tool** for moving changes from testing to production:
 
 1. **Run workflow** (one click)
 2. **Review PR** (or auto-merge)

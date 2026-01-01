@@ -1,4 +1,4 @@
-name: 📦 Promote Preview to Production
+name: 🚀 Promote Debug to Production
 
 on:
   workflow_dispatch:
