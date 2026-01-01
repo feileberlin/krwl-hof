@@ -1,22 +1,16 @@
-name: 👁️ Deploy Preview Environment
+name: 👁️ Generate Preview
 
 on:
   push:
     branches:
-      - preview  # Technical branch name (kept for compatibility)
+      - preview
   workflow_dispatch:
-    inputs:
-      reason:
-        description: 'Reason for manual preview deployment'
-        required: false
-        default: 'Manual preview deployment triggered'
-        type: string
 
 permissions:
   contents: write
 
 jobs:
-  deploy:
+  generate:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -35,11 +29,20 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add preview/index.html
+          git add preview/index.html static/events.demo.json
           if git diff --staged --quiet; then
             echo "No changes to preview"
           else
-            git commit -m "Update preview/index.html"
+            git commit -m "Update preview/index.html [skip ci]"
             git push
-            echo "✓ Preview updated at /preview/"
+            echo ""
+            echo "✓ Preview updated!"
+            echo ""
+            echo "To view the preview:"
+            echo "  1. Open: https://github.com/${{ github.repository }}/blob/preview/preview/index.html"
+            echo "  2. Click 'Raw' or 'Download' to view the self-contained HTML"
+            echo ""
+            echo "To deploy preview to production site at /preview/:"
+            echo "  1. Merge preview branch into main"
+            echo "  2. The preview/index.html will be accessible at yoursite.com/preview/"
           fi

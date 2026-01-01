@@ -6,8 +6,8 @@ Simple two-step deployment workflow: **preview** → **production**
 
 This repository uses a safe two-step deployment process:
 
-- **`main` branch** = Production site (fast, optimized, no debugging)
-- **`preview` branch** = Shared preview environment (debugging enabled, published at `/preview/`)
+- **`main` branch** = Production site (deployed to root via GitHub Pages)
+- **`preview` branch** = Preview environment (self-contained HTML file)
 
 ## Quick Start
 
@@ -16,10 +16,10 @@ This repository uses a safe two-step deployment process:
 1. **Create feature branch** from `preview`
 2. **Make your changes** and test locally
 3. **Submit PR to `preview`** branch
-4. **Merge to preview** → auto-deploys to `/preview/` path
-5. **Test preview site** thoroughly
+4. **Merge to preview** → auto-generates `preview/index.html`
+5. **Download and test** `preview/index.html` locally
 6. **Run "Promote Preview"** workflow → creates PR to `main`
-7. **Merge to main** → deploys to production
+7. **Merge to main** → deploys production + makes preview available at `/preview/`
 
 ## Configuration Files
 
@@ -28,51 +28,54 @@ This repository uses a safe two-step deployment process:
 - **Performance**: Maximum speed
 - **Caching**: Enabled
 - **Data source**: Real events only
-- **Used by**: `main` branch
+- **Used by**: `main` branch static files
 - **Domain**: Custom domain via CNAME
 
-### Development (`config.dev.json`)
+### Preview (`config.preview.json`)
 - **Debug mode**: ON (console logging)
 - **Performance**: Caching disabled for testing
 - **Data source**: Both real and demo events
-- **Used by**: `preview` branch
-- **Domain**: GitHub Pages `/preview/` path (no CNAME)
+- **Used by**: Embedded in `preview/index.html`
+- **Deployment**: Self-contained single HTML file
 
-### Data Source Options (Dev Mode Only)
+### Data Source Options (Preview Only)
 
-Development mode supports three data source configurations:
+Preview mode supports three data source configurations:
 
 1. **`"source": "real"`** - Load only real scraped events
 2. **`"source": "demo"`** - Load only demo events with current timestamps
-3. **`"source": "both"`** - Load both real and demo events (default for dev)
+3. **`"source": "both"`** - Load both real and demo events (default for preview)
 
 Demo events are automatically generated from real event templates with fresh timestamps, making them perfect for testing time-based features.
 
 ## Workflows
 
-### 1. Production Deploy (`deploy-pages.yml`)
-**Triggers**: Push to `main`, manual dispatch
+### 1. Production Deploy
+**Method**: GitHub Pages configured to deploy from `main` branch
 
 **What it does**:
-- Copies `static/` → `publish/`
+- Serves `static/` directory at root
 - Uses `config.prod.json` (optimized, no debug)
 - Includes CNAME for custom domain
-- Deploys to GitHub Pages root
+- Serves `preview/index.html` at `/preview/` (if present)
 
-**Result**: Fast production site at custom domain
+**Result**: Fast production site at `krwl.in` + preview at `krwl.in/preview/`
 
-### 2. Preview Deploy (`deploy-preview.yml`)
-**Triggers**: Push to `preview`, manual dispatch
+### 2. Preview Generation (`deploy-preview.yml`)
+**Triggers**: Push to `preview` branch, manual dispatch
 
 **What it does**:
-- Copies `static/` → `publish/preview/`
-- **Generates fresh demo events** from real event templates
-- Uses `config.dev.json` (debug enabled, real+demo data)
-- NO CNAME (avoids domain conflict)
-- Injects `<base href="/preview/">` tag
-- Deploys to GitHub Pages `/preview/` path
+- Generates fresh demo events from real event templates
+- Runs `scripts/generate_preview.py` to create self-contained HTML
+- Inlines all CSS, JavaScript, config, and event data
+- Commits `preview/index.html` to preview branch (single file, ~260KB)
 
-**Result**: Debug-enabled preview at `yourdomain.com/preview/` with fresh demo events
+**Result**: Self-contained HTML file you can download and test locally
+
+**To view preview**:
+1. Download `preview/index.html` from preview branch
+2. Open in browser (works completely offline)
+3. OR merge to main to make it available at `krwl.in/preview/`
 
 ### 3. Promote Preview (`promote-preview.yml`)
 **Triggers**: Manual dispatch only
