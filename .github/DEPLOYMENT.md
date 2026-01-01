@@ -50,30 +50,24 @@ Demo events are automatically generated from real event templates with fresh tim
 
 ## Workflows
 
-### 1. Production Generation (`generate-production.yml`)
-**Triggers**: Push to `main` branch, manual dispatch
+### Unified HTML Generation (`generate-html.yml`)
+**Triggers**: Push to `main` or `preview` branch, manual dispatch
 
 **What it does**:
-- Runs `scripts/generate_html.py production`
-- Inlines all CSS, JavaScript, config, event data, and icons
-- Commits `static/index.html` to main branch (~247KB, production events only)
+- **On main branch**: Generates production HTML (`static/index.html`)
+  - Uses `config.prod.json` (optimized, real events only)
+  - ~247KB, deployed via GitHub Pages at root
+  
+- **On preview branch**: Generates preview HTML (`preview/index.html`)
+  - Generates fresh demo events first
+  - Uses `config.preview.json` (debug enabled, real + demo events)
+  - ~260KB, self-contained file
 
-**Result**: Production HTML automatically deployed via GitHub Pages at root
+**One script, one workflow, two modes** - automatically detects branch
 
-### 2. Preview Generation (`generate-html.yml`)
-**Triggers**: Push to `preview` branch, manual dispatch
-
-**What it does**:
-- Generates fresh demo events from real event templates
-- Runs `scripts/generate_html.py preview` to create self-contained HTML
-- Inlines all CSS, JavaScript, config, event data, and icons
-- Commits `preview/index.html` to preview branch (single file, ~260KB)
-
-**Result**: Self-contained HTML file - NO DEPLOYMENT, just download and open
-
-**To test**:
+**To test preview**:
 1. Download `preview/index.html` from preview branch
-2. Open in browser (works completely offline, no server needed)
+2. Open in browser (works completely offline)
 3. OR merge to main to make it available at `krwl.in/preview/`
 
 ### 3. Promote Preview (`promote-preview.yml`)
