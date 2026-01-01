@@ -1,22 +1,6 @@
 {
   "pending_events": [
     {
-      "id": "html_frankenpost_1448294781375707784",
-      "title": "AUCHEVENTMELDERWERDEN?",
-      "description": "Jetzt ganz einfach dabei sein.",
-      "location": {
-        "name": "Regionalzeitung",
-        "lat": 50.3167,
-        "lon": 11.9167
-      },
-      "start_time": "2026-01-08T18:00:18.682667",
-      "end_time": null,
-      "url": "https://www.eventmelder-online.de",
-      "source": "Frankenpost",
-      "scraped_at": "2026-01-01T13:27:18.682689",
-      "status": "pending"
-    },
-    {
       "id": "html_frankenpost_6710371282043762830",
       "title": "F\u00fchrung durch die Wohnr\u00e4ume der Sommerresidenz der Markgr\u00e4fin Caroline",
       "description": "01.Januar",
@@ -65,5 +49,5 @@
       "status": "pending"
     }
   ],
-  "last_scraped": "2026-01-01T13:27:18.685666"
+  "last_scraped": "2026-01-01T13:40:55.677138"
 }
