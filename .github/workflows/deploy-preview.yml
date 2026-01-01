@@ -1,4 +1,4 @@
-name: 🐛 Deploy Debug Environment
+name: 👁️ Deploy Preview Environment
 
 on:
   push:
@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
     inputs:
       reason:
-        description: 'Reason for manual debug deployment'
+        description: 'Reason for manual preview deployment'
         required: false
-        default: 'Manual debug deployment triggered'
+        default: 'Manual preview deployment triggered'
         type: string
 
 permissions:
@@ -21,8 +21,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     environment:
-      name: debug
-      url: ${{ steps.deployment.outputs.page_url }}debug/
+      name: preview
+      url: ${{ steps.deployment.outputs.page_url }}preview/
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -34,41 +34,38 @@ jobs:
           ./download-libs.sh
           echo "✓ Leaflet library downloaded"
 
-      - name: Prepare debug publish directory
+      - name: Prepare preview publish directory
         run: |
           set -euo pipefail
           rm -rf publish
-          mkdir -p publish/debug
+          mkdir -p publish/preview
           
           if [ -d static ]; then
-            # Copy everything from static into publish/debug
-            cp -a static/. publish/debug/
-            echo "✓ Static files copied to /debug/ path"
+            # Copy everything from static into publish/preview
+            cp -a static/. publish/preview/
+            echo "✓ Static files copied to /preview/ path"
           fi
           
           # Generate fresh demo events with current timestamps
           if [ -f generate_demo_events.py ]; then
-            python3 generate_demo_events.py > publish/debug/events.demo.json
+            python3 generate_demo_events.py > publish/preview/events.demo.json
             echo "✓ Generated fresh demo events with current timestamps"
           fi
           
-          # Use debug config (debugging enabled, caching disabled, real events only)
-          if [ -f config.debug.json ]; then
-            cp config.debug.json publish/debug/config.json
-            echo "✓ Using debug config (debug mode enabled, real events only)"
-          elif [ -f config.preview.json ]; then
-            cp config.preview.json publish/debug/config.json
+          # Use preview config (debugging enabled, caching disabled, real events only)
+          if [ -f config.preview.json ]; then
+            cp config.preview.json publish/preview/config.json
             echo "✓ Using preview config (debug mode enabled, real events only)"
           elif [ -f config.dev.json ]; then
-            cp config.dev.json publish/debug/config.json
+            cp config.dev.json publish/preview/config.json
             echo "✓ Using development config (fallback)"
           elif [ -f config.sample.json ]; then
-            cp config.sample.json publish/debug/config.json
+            cp config.sample.json publish/preview/config.json
             echo "✓ Using sample config"
           fi
           
           # Inject build metadata (commit SHA, PR number) into config
-          if [ -f publish/debug/config.json ]; then
+          if [ -f publish/preview/config.json ]; then
             COMMIT_SHORT="${GITHUB_SHA:0:7}"
             
             # Try to get PR number from various sources
@@ -99,8 +96,8 @@ jobs:
               
               # Merge build_info into config.json
               jq --argjson build_info "$BUILD_INFO" '. + {build_info: $build_info}' \
-                publish/debug/config.json > publish/debug/config.json.tmp
-              mv publish/debug/config.json.tmp publish/debug/config.json
+                publish/preview/config.json > publish/preview/config.json.tmp
+              mv publish/preview/config.json.tmp publish/preview/config.json
               
               echo "✓ Injected build metadata: commit $COMMIT_SHORT, PR #$PR_NUMBER"
             else
@@ -108,40 +105,40 @@ jobs:
             fi
           fi
           
-          # DO NOT copy CNAME for debug environment (prevents custom domain conflict)
-          rm -f publish/debug/CNAME
+          # DO NOT copy CNAME for preview environment (prevents custom domain conflict)
+          rm -f publish/preview/CNAME
           
           # Prevent Jekyll processing
-          touch publish/debug/.nojekyll
+          touch publish/preview/.nojekyll
           
-          # Dynamically determine base URL for debug environment
+          # Dynamically determine base URL for preview environment
           # Support both GitHub Pages default URLs and custom domains
           if [ -f CNAME ]; then
             CUSTOM_DOMAIN=$(cat CNAME | tr -d '[:space:]')
-            BASE_URL="https://${CUSTOM_DOMAIN}/debug/"
+            BASE_URL="https://${CUSTOM_DOMAIN}/preview/"
             echo "✓ Custom domain detected: ${CUSTOM_DOMAIN}"
-            echo "  Debug environment will be available at: ${BASE_URL}"
+            echo "  Preview environment will be available at: ${BASE_URL}"
           else
             # Use GitHub Pages default URL format
             REPO_NAME="${GITHUB_REPOSITORY#*/}"
-            BASE_URL="/${REPO_NAME}/debug/"
+            BASE_URL="/${REPO_NAME}/preview/"
             echo "✓ Using GitHub Pages default URL"
-            echo "  Debug environment will be available at: https://${GITHUB_REPOSITORY_OWNER}.github.io${BASE_URL}"
+            echo "  Preview environment will be available at: https://${GITHUB_REPOSITORY_OWNER}.github.io${BASE_URL}"
           fi
           
-          # Inject base tag for debug path if not present
-          if [ -f publish/debug/index.html ]; then
-            if ! grep -q '<base' publish/debug/index.html; then
+          # Inject base tag for preview path if not present
+          if [ -f publish/preview/index.html ]; then
+            if ! grep -q '<base' publish/preview/index.html; then
               # Use relative path for base href (works with both custom domains and github.io)
-              sed -i '/<head>/a\    <base href="/debug/">' publish/debug/index.html
-              echo "✓ Base tag injected: <base href=\"/debug/\">"
+              sed -i '/<head>/a\    <base href="/preview/">' publish/preview/index.html
+              echo "✓ Base tag injected: <base href=\"/preview/\">"
               echo "  This works with both custom domains and GitHub Pages URLs"
             fi
           fi
           
           echo ""
-          echo "Debug environment publish directory contents:"
-          ls -la publish/debug
+          echo "Preview environment publish directory contents:"
+          ls -la publish/preview
         env:
           GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
 

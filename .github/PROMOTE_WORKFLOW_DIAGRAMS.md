@@ -425,7 +425,7 @@ Exit (FAILURE)
                 │
                 ▼
 ┌──────────────────────────────────┐
-│  deploy-debug.yml triggers     │
+│  deploy-preview.yml triggers     │
 │  (automatic)                     │
 └───────────────┬──────────────────┘
                 │

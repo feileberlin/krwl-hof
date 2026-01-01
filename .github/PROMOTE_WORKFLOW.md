@@ -1,4 +1,4 @@
-# Promote Debug Workflow Guide
+# Promote Preview Workflow Guide
 
 Complete guide to promoting preview changes to production safely.
 
@@ -14,9 +14,9 @@ The workflow has been completely reworked with the following improvements:
 ✨ **Updated GitHub Script**: Now uses `actions/github-script@v7` for better performance
 ✨ **Smart Skip Logic**: Won't create PRs when branches are identical
 
-## What is the Promote Debug Workflow?
+## What is the Promote Preview Workflow?
 
-The **Promote Debug** workflow is an automated tool that creates a Pull Request from the `preview` branch to `main` (production). This ensures all changes are reviewed before going live.
+The **Promote Preview** workflow is an automated tool that creates a Pull Request from the `preview` branch to `main` (production). This ensures all changes are reviewed before going live.
 
 **New Feature**: If the `preview` branch doesn't exist, the workflow can create it for you automatically!
 
@@ -30,7 +30,7 @@ The **Promote Debug** workflow is an automated tool that creates a Pull Request 
 
 ## When to Use It
 
-Use the Promote Debug workflow when:
+Use the Promote Preview workflow when:
 
 - ✓ You've tested changes in the preview environment
 - ✓ All features work correctly at `/preview/` path
@@ -184,13 +184,13 @@ Use the Promote Debug workflow when:
 
 ```bash
 # Create PR (manual merge, auto-create preview if missing)
-gh workflow run promote-debug.yml
+gh workflow run promote-preview.yml
 
 # Create PR and attempt auto-merge
-gh workflow run promote-debug.yml -f auto_merge=true
+gh workflow run promote-preview.yml -f auto_merge=true
 
 # Fail if preview branch doesn't exist
-gh workflow run promote-debug.yml -f create_preview_if_missing=false
+gh workflow run promote-preview.yml -f create_preview_if_missing=false
 ```
 
 ### Method 3: GitHub API
@@ -199,7 +199,7 @@ gh workflow run promote-debug.yml -f create_preview_if_missing=false
 curl -X POST \
   -H "Authorization: token YOUR_GITHUB_TOKEN" \
   -H "Accept: application/vnd.github.v3+json" \
-  https://api.github.com/repos/OWNER/REPO/actions/workflows/promote-debug.yml/dispatches \
+  https://api.github.com/repos/OWNER/REPO/actions/workflows/promote-preview.yml/dispatches \
   -d '{"ref":"main","inputs":{"auto_merge":"false","create_preview_if_missing":"true"}}'
 ```
 
@@ -500,7 +500,7 @@ Please merge the PR manually.
 **Problem**: Workflow file missing or renamed
 
 **Solution**:
-- Check `.github/workflows/promote-debug.yml` exists
+- Check `.github/workflows/promote-preview.yml` exists
 - Verify workflow is on `main` branch
 - Push workflow file if missing
 

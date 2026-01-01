@@ -192,12 +192,12 @@ When adding features:
 ## Deployment Workflow
 
 1. **Feature branch** → PR to `preview` branch (technical name, kept for compatibility)
-2. **Debug environment** → Auto-deploys to `/debug/` path (uses `config.debug.json` or `config.preview.json`)
-3. **Test debug environment thoroughly**
-4. **Promote to main** → Manually run "Promote Debug to Production" workflow (creates PR to `main`)
+2. **Preview environment** → Auto-deploys to `/preview/` path (uses `config.preview.json`)
+3. **Test preview environment thoroughly**
+4. **Promote to main** → Manually run "Promote Preview to Production" workflow (creates PR to `main`)
 5. **Main branch** → Auto-deploys to production (uses `config.prod.json`)
 
-The "Promote Debug to Production" workflow is **manually triggered** via GitHub Actions workflow_dispatch.
+The "Promote Preview to Production" workflow is **manually triggered** via GitHub Actions workflow_dispatch.
 
 GitHub Pages serves the `static/` directory directly - no separate deployment workflow needed.
 
@@ -312,7 +312,7 @@ See `.github/DEPLOYMENT.md` and `.github/PROMOTE_WORKFLOW.md` for details.
 - Provide clear description
 - Link related issues
 - Ensure CI passes
-- Test the debug deployment at `/debug/` path before promoting
+- Test the preview deployment at `/preview/` path before promoting
 
 ## Questions or Issues?
 
