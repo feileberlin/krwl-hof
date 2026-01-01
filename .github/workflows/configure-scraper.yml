@@ -1,4 +1,4 @@
-name: Configure Scraper (GitHub UI)
+name: ⚙️ Configure Scraper (GitHub UI)
 
 on:
   workflow_dispatch:
