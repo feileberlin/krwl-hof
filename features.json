@@ -628,7 +628,7 @@
         {
             "id": "github-environments",
             "name": "GitHub Environments UI Integration",
-            "description": "Configure GitHub Actions workflows to use environments, making deployments visible in GitHub UI with direct links to preview and production sites",
+            "description": "Configure GitHub Actions workflows to use environments for preview deployments, making them visible in GitHub UI with direct links",
             "category": "infrastructure",
             "implemented": true,
             "files": [
