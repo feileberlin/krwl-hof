@@ -13,7 +13,7 @@ from .utils import (
 )
 from .scraper import EventScraper
 from .editor import EventEditor
-from .generator import StaticSiteGenerator
+from .cdn_inliner import CDNInliner
 from .scheduler import ScheduleConfig
 
 __all__ = [
@@ -28,6 +28,6 @@ __all__ = [
     'filter_events_by_time',
     'EventScraper',
     'EventEditor',
-    'StaticSiteGenerator',
+    'CDNInliner',
     'ScheduleConfig'
 ]

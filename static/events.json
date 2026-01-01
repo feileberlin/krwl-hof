@@ -50,7 +50,24 @@
       "scraped_at": "2026-01-01T13:27:18.683791",
       "status": "published",
       "published_at": "2026-01-01T13:42:00.700343"
+    },
+    {
+      "id": "test_event_001",
+      "title": "Test Community Gathering",
+      "description": "A test event for approval flow testing",
+      "location": {
+        "name": "Test Venue Berlin",
+        "lat": 52.52,
+        "lon": 13.405
+      },
+      "start_time": "2026-01-15T19:00:00",
+      "end_time": null,
+      "url": "https://example.com/test-event",
+      "source": "manual_test",
+      "scraped_at": "2026-01-01T14:45:00",
+      "status": "published",
+      "published_at": "2026-01-01T14:45:54.237616"
     }
   ],
-  "last_updated": "2026-01-01T13:42:00.700443"
+  "last_updated": "2026-01-01T14:50:07.723540"
 }

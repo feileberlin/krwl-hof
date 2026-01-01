@@ -17,9 +17,14 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from modules.scraper import EventScraper
 from modules.editor import EventEditor
-from modules.generator import StaticSiteGenerator
+from modules.cdn_inliner import CDNInliner
 from modules.workflow_launcher import WorkflowLauncher
-from modules.utils import load_config, load_events, save_events, load_pending_events, save_pending_events, backup_published_event
+from modules.utils import (
+    load_config, load_events, save_events, 
+    load_pending_events, save_pending_events, 
+    backup_published_event, update_events_in_html,
+    add_rejected_event
+)
 
 
 class EventManagerTUI:
@@ -126,12 +131,17 @@ class EventManagerTUI:
         print("Generating Static Site...")
         print("-" * 60)
         
-        generator = StaticSiteGenerator(self.config, self.base_path)
-        success = generator.generate_all()
+        inliner = CDNInliner(self.config, self.base_path)
+        success = inliner.generate_all()
         
         if success:
             print("\nStatic site generated successfully!")
             print(f"Files saved to: {self.base_path / 'static'}")
+            
+            # Update events in HTML
+            print("\nUpdating events data in HTML...")
+            update_events_in_html(self.base_path)
+        
         self.print_footer("generate")
         input("\nPress Enter to continue...")
         
@@ -758,6 +768,11 @@ def cli_publish_event(base_path, event_id):
     save_pending_events(base_path, pending_data)
     
     print(f"✓ Published event: {event.get('title')}")
+    
+    # Update events in HTML
+    print("Updating events in HTML...")
+    update_events_in_html(base_path)
+    
     return 0
 
 
@@ -811,21 +826,27 @@ def cli_reject_event(base_path, event_id):
     # Find event
     event_index = None
     event_title = None
+    event_source = None
     for i, e in enumerate(events):
         if e.get('id') == event_id:
             event_index = i
             event_title = e.get('title')
+            event_source = e.get('source', 'unknown')
             break
     
     if event_index is None:
         print(f"Error: Event with ID '{event_id}' not found in pending queue.")
         return 1
     
+    # Add to rejected events list
+    add_rejected_event(base_path, event_title, event_source)
+    
     # Remove from pending
     events.pop(event_index)
     save_pending_events(base_path, pending_data)
     
     print(f"✓ Rejected event: {event_title}")
+    print(f"✓ Added to rejected_events.json")
     return 0
 
 
@@ -905,6 +926,10 @@ def cli_bulk_publish_events(base_path, event_ids_str):
     if published_count > 0:
         save_events(base_path, events_data)
         save_pending_events(base_path, pending_data)
+        
+        # Update events in HTML
+        print("\nUpdating events in HTML...")
+        update_events_in_html(base_path)
     
     # Summary
     print("-" * 80)
@@ -949,10 +974,12 @@ def cli_bulk_reject_events(base_path, event_ids_str):
         # Find event
         event_index = None
         event_title = None
+        event_source = None
         for i, e in enumerate(events):
             if e.get('id') == event_id:
                 event_index = i
                 event_title = e.get('title')
+                event_source = e.get('source', 'unknown')
                 break
         
         if event_index is None:
@@ -960,13 +987,16 @@ def cli_bulk_reject_events(base_path, event_ids_str):
             failed_count += 1
             failed_ids.append(event_id)
         else:
-            indices_to_remove.append((event_index, event_id, event_title))
+            indices_to_remove.append((event_index, event_id, event_title, event_source))
     
     # Sort by index in reverse order and remove
     indices_to_remove.sort(key=lambda x: x[0], reverse=True)
     
-    for event_index, event_id, event_title in indices_to_remove:
+    for event_index, event_id, event_title, event_source in indices_to_remove:
         try:
+            # Add to rejected events list
+            add_rejected_event(base_path, event_title, event_source)
+            
             # Remove from pending (safe because we're removing in reverse order)
             events.pop(event_index)
             print(f"✓ Rejected: {event_title} (ID: {event_id})")
@@ -979,6 +1009,7 @@ def cli_bulk_reject_events(base_path, event_ids_str):
     # Save changes
     if rejected_count > 0:
         save_pending_events(base_path, pending_data)
+        print(f"\n✓ Added {rejected_count} event(s) to rejected_events.json")
     
     # Summary
     print("-" * 80)
@@ -994,11 +1025,15 @@ def cli_bulk_reject_events(base_path, event_ids_str):
 def cli_generate(base_path, config):
     """CLI: Generate static site"""
     print("Generating static site files...")
-    generator = StaticSiteGenerator(config, base_path)
-    success = generator.generate_all()
+    inliner = CDNInliner(config, base_path)
+    success = inliner.generate_all()
     if success:
         print(f"✓ Static site generated successfully!")
         print(f"  Files saved to: {base_path / 'static'}")
+        
+        # Update events in HTML
+        print("\nUpdating events data in HTML...")
+        update_events_in_html(base_path)
         return 0
     return 1
 

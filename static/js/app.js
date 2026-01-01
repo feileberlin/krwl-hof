@@ -1,7 +1,3 @@
-// AUTO-GENERATED: This file is generated from src/modules/generator.py
-// DO NOT EDIT: Manual changes will be overwritten on next build
-// To modify: Edit templates in src/modules/generator.py, then run: python3 src/main.py generate
-
 // KRWL HOF Community Events App
 class EventsApp {
     constructor() {

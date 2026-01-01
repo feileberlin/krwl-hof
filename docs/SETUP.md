@@ -164,20 +164,23 @@ Available debug configurations (press `F5`):
 
 ## Auto-Generated File Protection
 
-The following files are protected from accidental edits:
-- `static/index.html`
-- `static/js/app.js`
-- `static/css/style.css`
+The following file is protected from accidental edits:
+- `static/index.html` (auto-generated, everything inlined)
 
-These files have:
-- Read-only markers in VS Code
-- Warning comments at the top
-- Protection in the generator
+The following files are SOURCE files (edit directly):
+- `static/js/app.js` (application logic)
+- `static/css/style.css` (application styles)
 
-**To modify these files:**
-1. Edit templates in `src/modules/generator.py`
+**To modify the generated index.html:**
+1. Edit source files: `static/js/app.js` or `static/css/style.css`
 2. Run: `python3 src/main.py generate`
-3. Commit both template and generated files
+3. Commit both source and generated files
+
+**Architecture:**
+- New simplified approach using `src/modules/cdn_inliner.py` (~300 lines)
+- Replaces old `src/modules/generator.py` (2185 lines - deleted!)
+- Single index.html with all resources inlined (~66KB)
+- Events auto-updated via `update_events_in_html()` on approve/publish
 
 ## Testing the Setup
 

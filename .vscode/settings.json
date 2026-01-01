@@ -80,9 +80,7 @@
     "editor.formatOnSave": false
   },
   "files.readonlyInclude": {
-    "static/index.html": true,
-    "static/js/app.js": true,
-    "static/css/style.css": true
+    "static/index.html": true
   },
   "task.autoDetect": "on"
 }

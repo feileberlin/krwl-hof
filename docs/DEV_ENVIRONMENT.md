@@ -195,15 +195,19 @@ When using MCP-compatible AI tools:
 
 ### Auto-Generated Files
 
-The following files are marked as read-only in VS Code settings:
-- `static/index.html`
-- `static/js/app.js`
-- `static/css/style.css`
+**Generated file (marked as read-only)**:
+- `static/index.html` (auto-generated with all resources inlined)
 
-**To modify these files**:
-1. Edit templates in `src/modules/generator.py`
+**Source files (edit these directly)**:
+- `static/js/app.js` (application logic)
+- `static/css/style.css` (application styles)
+
+**To update the generated index.html**:
+1. Edit source files: `static/js/app.js` or `static/css/style.css`
 2. Run: `python3 src/main.py generate`
-3. Commit both template changes and generated files
+3. Commit both source and generated files
+
+**Architecture**: Uses `src/modules/cdn_inliner.py` (~300 lines) to create single-file HTML.
 
 ## Customization
 

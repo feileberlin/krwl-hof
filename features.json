@@ -147,12 +147,12 @@
         },
         {
             "id": "static-site-generation",
-            "name": "Static Site Generation",
-            "description": "Generates static files for GitHub Pages deployment",
+            "name": "Static Site Generation (CDN Inliner)",
+            "description": "Generates single-file static HTML with all resources inlined from CDN or local fallback",
             "category": "backend",
             "implemented": true,
             "files": [
-                "src/modules/generator.py"
+                "src/modules/cdn_inliner.py"
             ],
             "test_method": "check_files_exist"
         },
@@ -604,7 +604,7 @@
             "category": "frontend",
             "implemented": true,
             "files": [
-                "src/modules/generator.py",
+                "src/modules/cdn_inliner.py",
                 "config.prod.json",
                 "config.preview.json",
                 "config.dev.json",
@@ -617,7 +617,7 @@
             ],
             "code_patterns": [
                 {
-                    "file": "src/modules/generator.py",
+                    "file": "static/js/app.js",
                     "pattern": "#env-watermark|displayEnvironmentWatermark",
                     "description": "Watermark HTML element and JavaScript display function"
                 }
