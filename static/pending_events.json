@@ -1,21 +1,4 @@
 {
-  "pending_events": [
-    {
-      "id": "html_frankenpost_-3101687051418339702",
-      "title": "AUCHEVENTMELDERWERDEN?",
-      "description": "Jetzt ganz einfach dabei sein.",
-      "location": {
-        "name": "Regionalzeitung",
-        "lat": 50.3167,
-        "lon": 11.9167
-      },
-      "start_time": "2026-01-08T18:00:07.773620",
-      "end_time": null,
-      "url": "https://www.eventmelder-online.de",
-      "source": "Frankenpost",
-      "scraped_at": "2026-01-01T15:14:07.773651",
-      "status": "pending"
-    }
-  ],
-  "last_scraped": "2026-01-01T15:14:07.776999"
+  "pending_events": [],
+  "last_scraped": "2026-01-01T15:26:30.310252"
 }
