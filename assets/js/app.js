@@ -523,6 +523,12 @@ class EventsApp {
         // Update count with descriptive sentence
         this.updateFilterDescription(filteredEvents.length);
         
+        // Show main content after events are loaded and filter description is updated
+        const mainContent = document.getElementById('main-content');
+        if (mainContent) {
+            mainContent.style.display = 'block';
+        }
+        
         // Clear existing markers
         this.markers.forEach(marker => marker.remove());
         this.markers = [];
