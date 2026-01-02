@@ -602,7 +602,11 @@ COMMANDS:
     bulk-reject IDS           Bulk reject pending events (comma-separated IDs/patterns)
     list                      List all published events
     list-pending              List all pending events
-    generate                  Generate static site files
+    
+    build [MODE]              Generate HTML (production or development mode)
+    events                    Update events in HTML (fast, no regeneration)
+    libs [--verify]           Download or verify CDN libraries
+    generate                  Generate static site files (legacy, use 'build')
     archive                   Archive past events (automatic on generate)
     load-examples             Load example data for development
     clear-data                Clear all event data
@@ -619,6 +623,21 @@ OPTIONS:
 EXAMPLES:
     # Launch interactive TUI
     python3 main.py
+    
+    # Build HTML (production mode)
+    python3 main.py build production
+    
+    # Build HTML (development mode with demo events and DEV badge)
+    python3 main.py build development
+    
+    # Fast event update (after scraping or publishing)
+    python3 main.py events
+    
+    # Download CDN libraries
+    python3 main.py libs
+    
+    # Verify libraries are present
+    python3 main.py libs --verify
     
     # Scrape events from sources
     python3 main.py scrape
@@ -642,17 +661,8 @@ EXAMPLES:
     # Reject all events with specific pattern in title/ID
     python3 main.py bulk-reject "*AUCHEVENTMELDERWERDEN*"
     
-    # Generate static site
-    python3 main.py generate
-    
     # List available workflows
     python3 main.py workflow list
-    
-    # Trigger a workflow
-    python3 main.py workflow run scrape-events --branch preview
-    
-    # Promote preview with auto-merge
-    python3 main.py workflow run promote-preview --input auto_merge=true
     
     # Load example data for testing
     python3 main.py load-examples
@@ -1306,6 +1316,28 @@ def main():
         
         elif args.command == 'generate':
             return cli_generate(base_path, config)
+        
+        elif args.command == 'build':
+            mode = args.args[0] if args.args else 'production'
+            if mode not in ['production', 'development']:
+                print(f"Error: Invalid mode '{mode}'")
+                print("Usage: python3 main.py build [production|development]")
+                return 1
+            from modules.builder import Builder
+            builder = Builder(base_path)
+            return 0 if builder.build_html(mode) else 1
+        
+        elif args.command == 'events':
+            from modules.builder import Builder
+            builder = Builder(base_path)
+            return 0 if builder.update_events() else 1
+        
+        elif args.command == 'libs':
+            from modules.builder import Builder
+            builder = Builder(base_path)
+            if 'verify' in args.args or '--verify' in args.args:
+                return 0 if builder.verify_libs() else 1
+            return 0 if builder.download_libs() else 1
         
         elif args.command == 'archive':
             return cli_archive_old_events(base_path)
