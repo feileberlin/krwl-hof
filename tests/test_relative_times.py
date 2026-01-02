@@ -7,7 +7,6 @@ Verifies that demo events with relative_time specifications are generated correc
 import json
 import sys
 from pathlib import Path
-from datetime import datetime, timedelta
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))

@@ -286,6 +286,7 @@ class EventsApp {
         /**
          * Process events with relative_time specifications to calculate actual timestamps.
          * This allows demo events to always have fresh timestamps on every page load.
+         * Creates copies of events to avoid mutation.
          */
         const now = new Date();
         
@@ -295,6 +296,8 @@ class EventsApp {
                 return event;
             }
             
+            // Create a copy of the event to avoid mutation
+            const processedEvent = { ...event };
             const spec = event.relative_time;
             const type = spec.type;
             
@@ -327,11 +330,11 @@ class EventsApp {
                     const minutes = Math.abs((tzOffset % 1) * 60);
                     const tzString = `${sign}${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
                     
-                    event.start_time = this.formatDateTimeWithTZ(startTime, tzString);
-                    event.end_time = this.formatDateTimeWithTZ(endTime, tzString);
+                    processedEvent.start_time = this.formatDateTimeWithTZ(startTime, tzString);
+                    processedEvent.end_time = this.formatDateTimeWithTZ(endTime, tzString);
                 } else {
-                    event.start_time = this.formatDateTime(startTime);
-                    event.end_time = this.formatDateTime(endTime);
+                    processedEvent.start_time = this.formatDateTime(startTime);
+                    processedEvent.end_time = this.formatDateTime(endTime);
                 }
                 
             } else if (type === 'sunrise_relative') {
@@ -356,14 +359,14 @@ class EventsApp {
                     endTime.setMinutes(endTime.getMinutes() + spec.end_offset_minutes);
                 }
                 
-                event.start_time = this.formatDateTime(startTime);
-                event.end_time = this.formatDateTime(endTime);
+                processedEvent.start_time = this.formatDateTime(startTime);
+                processedEvent.end_time = this.formatDateTime(endTime);
             }
             
             // Update published_at to current time
-            event.published_at = this.formatDateTime(now);
+            processedEvent.published_at = this.formatDateTime(now);
             
-            return event;
+            return processedEvent;
         });
     }
     

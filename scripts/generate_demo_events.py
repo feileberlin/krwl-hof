@@ -330,7 +330,12 @@ def generate_demo_events_from_templates(real_events, now):
         "url": far_template.get('url', 'https://example.com/demo'),
         "source": "demo",
         "status": "published",
-        "published_at": fmt(now)
+        "published_at": fmt(now),
+        "relative_time": {
+            "type": "offset",
+            "hours": 2,
+            "duration_hours": 2
+        }
     }
     demo_events.append(far_event)
     
