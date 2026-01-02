@@ -1,6 +1,71 @@
-# KRWL HOF Community Events
+#!/usr/bin/env python3
+"""
+Simplified README Generator for KRWL HOF Community Events
 
-> Community events scraper and viewer with geolocation filtering
+Philosophy: All documentation should be:
+- Code comments (in the source files)
+- CLI --help text (from argparse)
+- Inline TUI hints (contextual tooltips)
+- One consolidated README.md (this generates it)
+
+No complex validation. No multiple documentation files.
+Keep it simple, stupid (KISS).
+
+Usage:
+    python3 scripts/generate_readme.py
+"""
+
+import json
+import subprocess
+import sys
+from datetime import datetime
+from pathlib import Path
+
+
+def get_cli_help(script_path):
+    """Extract CLI help from a Python script"""
+    try:
+        result = subprocess.run(
+            [sys.executable, str(script_path), '--help'],
+            capture_output=True,
+            text=True,
+            timeout=5
+        )
+        if result.returncode == 0:
+            return result.stdout
+        return None
+    except Exception as e:
+        print(f"⚠️  Warning: Could not extract help from {script_path}: {e}")
+        return None
+
+
+def load_config():
+    """Load configuration from config.prod.json in root"""
+    config_path = Path('config.prod.json')
+    if not config_path.exists():
+        print("❌ Error: config.prod.json not found")
+        sys.exit(1)
+    
+    with open(config_path, 'r', encoding='utf-8') as f:
+        return json.load(f)
+
+
+def generate_readme():
+    """Generate comprehensive README.md from code and config"""
+    
+    config = load_config()
+    
+    # Extract app info from config
+    app_name = config.get('app', {}).get('name', 'KRWL HOF Community Events')
+    app_description = config.get('app', {}).get('description', 'Community events viewer')
+    
+    # Get CLI help from main scripts
+    event_manager_help = get_cli_help('src/event_manager.py')
+    
+    # Build README content
+    readme = f"""# {app_name}
+
+> {app_description}
 
 [![PWA Ready](https://img.shields.io/badge/PWA-Ready-success)](https://web.dev/progressive-web_apps/)
 [![Accessibility](https://img.shields.io/badge/A11y-Compliant-blue)](https://www.w3.org/WAI/WCAG21/quickref/)
@@ -14,8 +79,8 @@ A **grassroots, mobile-first** Progressive Web App (PWA) for discovering local c
 
 - 📱 **PWA**: Installable as native app on mobile and desktop
 - 🗺️ **Interactive Map**: Leaflet.js with event markers and clustering
-- 📍 **Geolocation Filtering**: Shows events within 5.0km radius
-- 🌅 **Time-based Filtering**: Shows events until next_sunrise
+- 📍 **Geolocation Filtering**: Shows events within {config.get('filtering', {}).get('max_distance_km', 5.0)}km radius
+- 🌅 **Time-based Filtering**: Shows events until {config.get('filtering', {}).get('show_until', 'next sunrise')}
 - 🌐 **Bilingual**: English and German (i18n support)
 - ♿ **Accessible**: WCAG 2.1 Level AA compliant
 - 📱 **Responsive**: Mobile-first design, works on all screen sizes
@@ -73,125 +138,42 @@ python3 src/event_manager.py              # Launch interactive TUI
 python3 src/event_manager.py --help       # Show all commands
 ```
 
-#### Full CLI Help
+"""
+
+    # Add CLI help if available
+    if event_manager_help:
+        readme += f"""#### Full CLI Help
 
 ```
-
-KRWL HOF Community Events Manager
-==================================
-
-A modular Python TUI for managing community events with geolocation
-and sunrise filtering.
-
-USAGE:
-    python3 event_manager.py [COMMAND] [OPTIONS]
-
-COMMANDS:
-    (no command)              Launch interactive TUI (default)
-    setup                     Show detailed setup instructions for your own site
-    scrape                    Scrape events from configured sources
-    review                    Review pending events interactively
-    publish EVENT_ID          Publish a specific pending event
-    reject EVENT_ID           Reject a specific pending event
-    bulk-publish IDS          Bulk publish pending events (comma-separated IDs/patterns)
-    bulk-reject IDS           Bulk reject pending events (comma-separated IDs/patterns)
-    list                      List all published events
-    list-pending              List all pending events
-    
-    generate                  Generate static site (runtime-configurable)
-    update                    Update events data in existing site (fast)
-    dependencies fetch        Fetch third-party dependencies
-    dependencies check        Check if dependencies are present
-    
-    archive                   Archive past events (automatic on generate)
-    load-examples             Load example data for development
-    clear-data                Clear all event data
-    
-OPTIONS:
-    -h, --help               Show this help message
-    -v, --version            Show version information
-    -c, --config PATH        Use custom config file
-    
-EXAMPLES:
-    # Launch interactive TUI
-    python3 event_manager.py
-    
-    # Generate static site (runtime-configurable)
-    python3 event_manager.py generate
-    
-    # Fast content update
-    python3 event_manager.py update
-    
-    # Fetch dependencies
-    python3 event_manager.py dependencies fetch
-    
-    # Check dependencies
-    python3 event_manager.py dependencies check
-    
-    # Scrape events from sources
-    python3 event_manager.py scrape
-    
-    # List all published events
-    python3 event_manager.py list
-    
-    # Publish a single event
-    python3 event_manager.py publish pending_1
-    
-    # Bulk publish using wildcards
-    python3 event_manager.py bulk-publish "pending_*"
-    
-    # Load example data for testing
-    python3 event_manager.py load-examples
-    
-    # Get help
-    python3 event_manager.py --help
-
-WILDCARD PATTERNS:
-    Bulk operations support Unix-style wildcards:
-    *       Matches any characters (including none)
-    ?       Matches exactly one character
-    [seq]   Matches any character in seq
-    [!seq]  Matches any character not in seq
-    
-    Examples:
-    pending_*              Match all events with IDs starting with 'pending_'
-    html_frankenpost_*     Match all events from the Frankenpost source
-    *AUCHEVENT*            Match any event with 'AUCHEVENT' in the ID
-    pending_[1-3]          Match pending_1, pending_2, pending_3
-    
-DOCUMENTATION:
-    Full documentation available in README.txt or via the TUI
-    (Main Menu → View Documentation)
-
-For more information, visit:
-    https://github.com/feileberlin/krwl-hof
-
-
+{event_manager_help}
 ```
 
-## ⚙️ Configuration
+"""
+
+    # Add configuration section
+    readme += f"""## ⚙️ Configuration
 
 All configuration lives in `config.prod.json`:
 
 ```json
-{
-  "app": {
-    "name": "KRWL HOF Community Events",
-    "description": "Community events scraper and viewer with geolocation filtering"
-  },
-  "map": {
-    "default_center": {"lat": 50.3167, "lon": 11.9167},
-    "default_zoom": 13
-  },
-  "filtering": {
-    "max_distance_km": 5.0,
-    "show_until": "next_sunrise"
-  },
-  "scraping": {
-    "schedule": {"timezone": "Europe/Berlin", "times": ["04:00", "16:00"]},
-    "sources": [...12 configured sources]
-  }
-}
+{{
+  "app": {{
+    "name": "{config.get('app', {}).get('name', 'KRWL HOF')}",
+    "description": "{config.get('app', {}).get('description', 'Community events')}"
+  }},
+  "map": {{
+    "default_center": {json.dumps(config.get('map', {}).get('default_center', {}))},
+    "default_zoom": {config.get('map', {}).get('default_zoom', 13)}
+  }},
+  "filtering": {{
+    "max_distance_km": {config.get('filtering', {}).get('max_distance_km', 5.0)},
+    "show_until": "{config.get('filtering', {}).get('show_until', 'next_sunrise')}"
+  }},
+  "scraping": {{
+    "schedule": {json.dumps(config.get('scraping', {}).get('schedule', {}))},
+    "sources": [...{len(config.get('scraping', {}).get('sources', []))} configured sources]
+  }}
+}}
 ```
 
 ### What You Can Customize
@@ -308,19 +290,19 @@ Output: `static/index.html` (single-file HTML with everything inlined)
 Edit `config.prod.json`:
 
 ```json
-{
-  "scraping": {
+{{
+  "scraping": {{
     "sources": [
-      {
+      {{
         "name": "Your Event Source",
         "url": "https://example.com/events",
         "type": "rss",  // or "html", "api"
         "enabled": true,
         "notes": "Description of the source"
-      }
+      }}
     ]
-  }
-}
+  }}
+}}
 ```
 
 Test the scraper:
@@ -338,11 +320,11 @@ The app supports English and German:
 
 Add translations using the key path format:
 ```json
-{
-  "section": {
+{{
+  "section": {{
     "key": "Translation text"
-  }
-}
+  }}
+}}
 ```
 
 In code: `i18n.t('section.key')`
@@ -388,5 +370,34 @@ Built with love for the Hof community. Special thanks to all the local venues an
 
 ---
 
-*Last updated: 2026-01-02 08:12:27*  
+*Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}*  
 *Auto-generated by `scripts/generate_readme.py` • Documentation philosophy: Code comments + CLI help + TUI hints + README*
+"""
+
+    return readme
+
+
+def main():
+    """Main entry point"""
+    print("📝 Generating README.md...")
+    
+    try:
+        readme_content = generate_readme()
+        
+        # Write README
+        readme_path = Path('README.md')
+        with open(readme_path, 'w', encoding='utf-8') as f:
+            f.write(readme_content)
+        
+        print(f"✅ README.md generated successfully ({len(readme_content)} bytes)")
+        print(f"📍 Location: {readme_path.absolute()}")
+        
+    except Exception as e:
+        print(f"❌ Error generating README: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
+
+
+if __name__ == '__main__':
+    main()

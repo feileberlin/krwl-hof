@@ -6,22 +6,22 @@ from datetime import datetime
 
 
 def load_config(base_path):
-    """Load configuration from config.json"""
-    config_path = base_path / 'config' / 'config.json'
+    """Load configuration from config.prod.json"""
+    config_path = base_path / 'config.prod.json'
     with open(config_path, 'r') as f:
         return json.load(f)
 
 
 def load_events(base_path):
     """Load published events from events.json"""
-    events_path = base_path / 'static' / 'events.json'
+    events_path = base_path / 'event-data' / 'events.json'
     with open(events_path, 'r') as f:
         return json.load(f)
 
 
 def save_events(base_path, events_data):
     """Save published events to events.json"""
-    events_path = base_path / 'static' / 'events.json'
+    events_path = base_path / 'event-data' / 'events.json'
     events_data['last_updated'] = datetime.now().isoformat()
     with open(events_path, 'w') as f:
         json.dump(events_data, f, indent=2)
@@ -29,14 +29,14 @@ def save_events(base_path, events_data):
 
 def load_pending_events(base_path):
     """Load pending events from pending_events.json"""
-    pending_path = base_path / 'static' / 'pending_events.json'
+    pending_path = base_path / 'event-data' / 'pending_events.json'
     with open(pending_path, 'r') as f:
         return json.load(f)
 
 
 def save_pending_events(base_path, pending_data):
     """Save pending events to pending_events.json"""
-    pending_path = base_path / 'static' / 'pending_events.json'
+    pending_path = base_path / 'event-data' / 'pending_events.json'
     pending_data['last_scraped'] = datetime.now().isoformat()
     with open(pending_path, 'w') as f:
         json.dump(pending_data, f, indent=2)
@@ -44,7 +44,7 @@ def save_pending_events(base_path, pending_data):
 
 def load_rejected_events(base_path):
     """Load rejected events from rejected_events.json"""
-    rejected_path = base_path / 'static' / 'rejected_events.json'
+    rejected_path = base_path / 'event-data' / 'rejected_events.json'
     try:
         with open(rejected_path, 'r') as f:
             return json.load(f)
@@ -57,7 +57,7 @@ def load_rejected_events(base_path):
 
 def save_rejected_events(base_path, rejected_data):
     """Save rejected events to rejected_events.json"""
-    rejected_path = base_path / 'static' / 'rejected_events.json'
+    rejected_path = base_path / 'event-data' / 'rejected_events.json'
     rejected_data['last_updated'] = datetime.now().isoformat()
     with open(rejected_path, 'w') as f:
         json.dump(rejected_data, f, indent=2)
@@ -264,7 +264,7 @@ def filter_events_by_time(events, config):
 
 def backup_published_event(base_path, event):
     """
-    Backup a single published event to backups/events/ folder.
+    Backup a single published event to data/old/ folder.
     Each event is saved as a separate JSON file named by event ID.
     
     Args:
@@ -276,16 +276,16 @@ def backup_published_event(base_path, event):
     """
     import os
     
-    # Create backups directory structure
-    backups_dir = base_path / 'backups' / 'events'
-    backups_dir.mkdir(parents=True, exist_ok=True)
+    # Create old directory structure
+    old_dir = base_path / 'event-data' / 'old'
+    old_dir.mkdir(parents=True, exist_ok=True)
     
     # Generate filename from event ID and timestamp
     event_id = event.get('id', 'unknown')
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     filename = f"{event_id}_{timestamp}.json"
     
-    backup_path = backups_dir / filename
+    backup_path = old_dir / filename
     
     # Add backup metadata
     backup_data = {
@@ -302,7 +302,7 @@ def backup_published_event(base_path, event):
 
 def load_historical_events(base_path):
     """
-    Load all historical events from backups/events/ folder.
+    Load all historical events from data/old/ folder.
     Returns a list of event dictionaries from all backup files.
     
     This is used by the scraper to check against historical data
@@ -314,14 +314,14 @@ def load_historical_events(base_path):
     Returns:
         List of event dictionaries
     """
-    backups_dir = base_path / 'backups' / 'events'
+    old_dir = base_path / 'event-data' / 'old'
     historical_events = []
     
-    if not backups_dir.exists():
+    if not old_dir.exists():
         return historical_events
     
     # Load all backup files
-    for backup_file in backups_dir.glob('*.json'):
+    for backup_file in old_dir.glob('*.json'):
         try:
             with open(backup_file, 'r') as f:
                 backup_data = json.load(f)
