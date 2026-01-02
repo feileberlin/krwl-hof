@@ -329,7 +329,7 @@ class SiteGenerator:
 <span id="event-count-category-text" class="filter-part">0 events</span>
 <span id="time-text" class="filter-part">till sunrise</span>
 <span id="distance-text" class="filter-part">within 5 km</span>
-<span id="location-text" class="filter-part">from your location</span>
+<span id="location-text" class="filter-part">from here</span>
 </div>
 <div id="location-status"></div>
 <div id="map"></div>

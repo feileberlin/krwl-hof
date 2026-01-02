@@ -516,7 +516,7 @@ class EventsApp {
         
         // Location description
         if (locationText) {
-            let locDescription = 'from your location';
+            let locDescription = 'from here';
             if (this.filters.useCustomLocation && this.filters.customLat && this.filters.customLon) {
                 locDescription = 'from custom location';
             } else if (!this.userLocation) {

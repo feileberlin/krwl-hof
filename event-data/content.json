@@ -38,7 +38,7 @@
       "11.25": "45 minutes max. distance by public transport"
     },
     "locations": {
-      "geolocation": "from your current location",
+      "geolocation": "from here",
       "prefix": "from"
     },
     "predefined_locations": {
