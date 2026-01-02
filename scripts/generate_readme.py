@@ -340,6 +340,151 @@ Add translations using the key path format:
 
 In code: `i18n.t('section.key')`
 
+## 🧪 Advanced Features
+
+### Dynamic Event Templates with Relative Times
+
+The app supports **dynamic event templates** with relative time specifications. This feature allows demo events to always display accurate relative times like "happening now" or "starting in 5 minutes" on every page reload, without requiring manual timestamp updates.
+
+#### How It Works
+
+Demo events can include a `relative_time` field that specifies how to calculate actual timestamps dynamically:
+
+```json
+{{
+  "id": "demo_happening_now",
+  "title": "[DEMO] Event Happening Now",
+  "relative_time": {{
+    "type": "offset",
+    "minutes": -30,
+    "duration_hours": 2
+  }}
+}}
+```
+
+When the app loads, the `processTemplateEvents()` method in `assets/js/app.js` detects events with `relative_time` specifications and calculates actual timestamps based on the current browser time.
+
+#### Relative Time Specifications
+
+**Type 1: Offset (Relative to Current Time)**
+
+Events that occur relative to the current moment:
+
+```json
+{{
+  "type": "offset",
+  "hours": 1,           // Optional: hours offset from now
+  "minutes": 5,         // Optional: minutes offset from now
+  "duration_hours": 2,  // Event duration in hours
+  "timezone_offset": 0  // Optional: timezone offset for testing
+}}
+```
+
+Examples:
+- `{{"type": "offset", "minutes": -30, "duration_hours": 2}}` - Started 30 minutes ago
+- `{{"type": "offset", "minutes": 5, "duration_hours": 2}}` - Starts in 5 minutes
+- `{{"type": "offset", "hours": 1, "duration_hours": 3}}` - Starts in 1 hour, lasts 3 hours
+
+**Type 2: Sunrise Relative (Relative to Next Sunrise)**
+
+Events that occur relative to the next sunrise (simplified as 6:00 AM):
+
+```json
+{{
+  "type": "sunrise_relative",
+  "start_offset_hours": -2,    // Optional: hours offset for start time
+  "start_offset_minutes": 0,   // Optional: minutes offset for start time
+  "end_offset_hours": 0,       // Optional: hours offset for end time
+  "end_offset_minutes": -5     // Optional: minutes offset for end time
+}}
+```
+
+Examples:
+- `{{"type": "sunrise_relative", "end_offset_minutes": -5, "start_offset_hours": -2}}` - Ends 5 minutes before sunrise
+- `{{"type": "sunrise_relative", "start_offset_hours": -2, "end_offset_hours": 1}}` - Starts 2 hours before sunrise, ends 1 hour after
+
+#### Generating Demo Events
+
+Run the demo event generator script:
+
+```bash
+python3 scripts/generate_demo_events.py > event-data/events.demo.json
+```
+
+This creates template events with `relative_time` specifications. See inline comments in `scripts/generate_demo_events.py` for implementation details.
+
+#### Benefits
+
+- **Always Fresh**: Demo events always show accurate relative times
+- **Filter Testing**: Test time-based filters (sunrise, 6h, 12h) with realistic data
+- **Timezone Testing**: Verify international time handling
+- **No Maintenance**: No need to manually update demo event timestamps
+- **Backward Compatible**: Real events without `relative_time` work unchanged
+
+For technical implementation details, see inline comments in:
+- `scripts/generate_demo_events.py` - Template generation logic
+- `assets/js/app.js` - `processTemplateEvents()` method
+
+### Screenshot Generation
+
+The app includes a **ready signal** that indicates when the page is fully loaded and ready for screenshot capture. This solves the problem of screenshots being taken before the map and event data have finished loading.
+
+#### The Ready Signal
+
+When ready, the app:
+1. Sets a body attribute: `<body data-app-ready="true">`
+2. Dispatches a custom event on the `window` object with metadata
+
+#### Quick Usage Example (Playwright)
+
+```python
+from playwright.sync_api import sync_playwright
+
+with sync_playwright() as p:
+    browser = p.chromium.launch()
+    page = browser.new_page()
+    
+    # Set viewport for desired screenshot size
+    page.set_viewport_size({{"width": 1280, "height": 800}})
+    
+    # Navigate to the page
+    page.goto('http://localhost:8000')
+    
+    # Wait for app to be ready (max 30 seconds)
+    page.wait_for_selector('body[data-app-ready="true"]', timeout=30000)
+    
+    # Optional: Wait a bit more for map tiles to fully render
+    page.wait_for_timeout(2000)
+    
+    # Take screenshot
+    page.screenshot(path='screenshot.png', full_page=True)
+    
+    browser.close()
+```
+
+#### Complete Screenshot Script
+
+For a full example that generates both mobile and desktop screenshots, see `scripts/generate_screenshots.py`:
+
+```bash
+# Generate PWA screenshots
+python3 scripts/generate_screenshots.py
+```
+
+This generates:
+- `assets/screenshot-mobile.png` (640×1136)
+- `assets/screenshot-desktop.png` (1280×800)
+
+#### Recommended Screenshot Sizes
+
+For PWA manifest compliance:
+- **Mobile**: 640×1136 (narrow form factor)
+- **Desktop**: 1280×800 (wide form factor)
+
+For technical implementation details and other automation tools (Puppeteer, Selenium), see inline comments in:
+- `assets/js/app.js` - `markAppAsReady()` method
+- `scripts/generate_screenshots.py` - Complete implementation
+
 ## 🤝 Contributing
 
 We welcome contributions! Found a bug? Know a venue that should be included? Want to improve the UI?
