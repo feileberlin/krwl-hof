@@ -190,6 +190,9 @@ class SiteGenerator:
             ),
             'app_css': self.read_text_file(
                 self.static_path / 'css' / 'style.css'
+            ),
+            'time_drawer_css': self.read_text_file(
+                self.static_path / 'css' / 'time-drawer.css'
             )
         }
     
@@ -202,6 +205,9 @@ class SiteGenerator:
             'i18n_js': self.read_text_file(
                 self.static_path / 'js' / 'i18n.js'
             ),
+            'time_drawer_js': self.read_text_file(
+                self.static_path / 'js' / 'time-drawer.js'
+            ),
             'app_js': self.read_text_file(
                 self.static_path / 'js' / 'app.js'
             )
@@ -209,9 +215,10 @@ class SiteGenerator:
     
     def load_translation_data(self) -> Tuple[Dict, Dict]:
         """Load translation files for all languages"""
-        with open(self.static_path / 'content.json', 'r') as f:
+        event_data_path = self.base_path / 'event-data'
+        with open(event_data_path / 'content.json', 'r') as f:
             content_en = json.load(f)
-        with open(self.static_path / 'content.de.json', 'r') as f:
+        with open(event_data_path / 'content.de.json', 'r') as f:
             content_de = json.load(f)
         return content_en, content_de
     
@@ -293,6 +300,7 @@ class SiteGenerator:
 <link rel="icon" href="{favicon}">
 <style>{stylesheets['leaflet_css']}</style>
 <style>{stylesheets['app_css']}</style>
+<style>{stylesheets['time_drawer_css']}</style>
 </head>
 <body>
 <div id="app">
@@ -363,6 +371,7 @@ window.EMBEDDED_CONTENT_DE = {json.dumps(content_de)};
 
 {scripts['leaflet_js']}
 {scripts['i18n_js']}
+{scripts['time_drawer_js']}
 {scripts['app_js']}
 
 document.getElementById('main-content').style.display = 'block';
