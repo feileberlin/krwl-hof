@@ -593,7 +593,7 @@
             "category": "infrastructure",
             "implemented": true,
             "files": [
-                "docs/DEV_ENVIRONMENT.md"
+                "README.md"
             ],
             "test_method": "check_files_exist"
         },
@@ -607,8 +607,7 @@
                 "src/modules/cdn_inliner.py",
                 "config.prod.json",
                 "config.preview.json",
-                "config.dev.json",
-                "docs/CONFIGURATION.md"
+                "config.dev.json"
             ],
             "config_keys": [
                 "app.environment",

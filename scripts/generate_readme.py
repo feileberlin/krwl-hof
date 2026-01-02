@@ -227,9 +227,7 @@ krwl-hof/
 │   └── modules/         # Modular components
 ├── scripts/             # Utility scripts
 ├── tests/               # Test suite
-├── docs/                # Additional documentation
 ├── backups/             # Individual event backups
-├── examples/            # Example event data
 └── README.md            # This file (auto-generated)
 ```
 
