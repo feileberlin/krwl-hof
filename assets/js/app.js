@@ -582,23 +582,21 @@ class EventsApp {
     
     updateFilterDescription(count) {
         // Update individual parts of the filter sentence
-        const eventCountText = document.getElementById('event-count-text');
-        const categoryText = document.getElementById('category-text');
+        const eventCountCategoryText = document.getElementById('event-count-category-text');
         const timeText = document.getElementById('time-text');
         const distanceText = document.getElementById('distance-text');
         const locationText = document.getElementById('location-text');
         
-        // Event count
-        if (eventCountText) {
-            eventCountText.textContent = `${count} event${count !== 1 ? 's' : ''}`;
-        }
-        
-        // Category description
-        if (categoryText) {
-            if (this.filters.category !== 'all') {
-                categoryText.textContent = `in ${this.filters.category}`;
+        // Combined event count and category (KISS principle)
+        if (eventCountCategoryText) {
+            let categoryName = this.filters.category;
+            
+            if (this.filters.category === 'all') {
+                // "0 events" or "5 events"
+                eventCountCategoryText.textContent = `${count} event${count !== 1 ? 's' : ''}`;
             } else {
-                categoryText.textContent = 'in all categories';
+                // "0 music events" or "5 music events"
+                eventCountCategoryText.textContent = `${count} ${categoryName} event${count !== 1 ? 's' : ''}`;
             }
         }
         
@@ -648,7 +646,7 @@ class EventsApp {
         
         // Location description
         if (locationText) {
-            let locDescription = 'from your location';
+            let locDescription = 'from here';
             if (this.filters.useCustomLocation && this.filters.customLat && this.filters.customLon) {
                 locDescription = 'from custom location';
             } else if (!this.userLocation) {

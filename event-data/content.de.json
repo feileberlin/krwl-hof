@@ -38,7 +38,7 @@
       "11.25": "45 minuten maximalentfernung mit öffentlichen verkehrsmitteln"
     },
     "locations": {
-      "geolocation": "von deinem aktuellen standort",
+      "geolocation": "von hier",
       "prefix": "von"
     },
     "predefined_locations": {

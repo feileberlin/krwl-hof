@@ -243,6 +243,18 @@ class SiteGenerator:
         b64_data = base64.b64encode(svg_content.encode()).decode()
         return f"data:image/svg+xml;base64,{b64_data}"
     
+    def read_logo_svg(self) -> str:
+        """Read logo SVG content for inline use"""
+        # Try assets directory first, then static
+        logo_path = self.base_path / 'assets' / 'logo.svg'
+        if not logo_path.exists():
+            logo_path = self.static_path / 'logo.svg'
+        if not logo_path.exists():
+            return '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"></svg>'
+        
+        svg_content = self.read_text_file(logo_path)
+        return svg_content
+    
     def build_html_structure(
         self, 
         configs: List[Dict],
@@ -258,6 +270,7 @@ class SiteGenerator:
         primary_config = configs[0] if configs else {}
         app_name = primary_config.get('app', {}).get('name', 'KRWL HOF Community Events')
         favicon = self.generate_favicon_dataurl()
+        logo_svg = self.read_logo_svg()
         
         # Runtime config selection script
         config_loader = '''
@@ -312,11 +325,11 @@ class SiteGenerator:
 </noscript>
 <div id="main-content" style="display:none">
 <div id="filter-sentence">
-<span id="event-count-text">0 events</span>
-<span id="category-text" class="filter-part">in all categories</span>
+<span id="filter-logo" class="filter-logo" aria-hidden="true">{logo_svg}</span>
+<span id="event-count-category-text" class="filter-part">0 events</span>
 <span id="time-text" class="filter-part">till sunrise</span>
 <span id="distance-text" class="filter-part">within 5 km</span>
-<span id="location-text" class="filter-part">from your location</span>
+<span id="location-text" class="filter-part">from here</span>
 </div>
 <div id="location-status"></div>
 <div id="map"></div>

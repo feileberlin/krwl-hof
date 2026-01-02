@@ -193,6 +193,20 @@ header {
     text-align: center;
 }
 
+/* Filter logo */
+#filter-sentence .filter-logo {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 0.5rem;
+    vertical-align: middle;
+}
+
+#filter-sentence .filter-logo svg {
+    width: 20px;
+    height: 20px;
+    filter: drop-shadow(0 0 5px rgba(255, 105, 180, 0.6));
+}
+
 /* Filter dropdowns */
 .filter-dropdown {
     position: fixed;
