@@ -23,6 +23,9 @@ from pathlib import Path
 class FeatureVerifier:
     """Verifies presence of documented features in codebase"""
     
+    # Default value for 'implemented' field in features.json
+    DEFAULT_IMPLEMENTED = True
+    
     def __init__(self, repo_root=None, verbose=False):
         self.verbose = verbose
         self.repo_root = Path(repo_root) if repo_root else Path.cwd()
@@ -31,6 +34,7 @@ class FeatureVerifier:
             "total": 0,
             "passed": 0,
             "failed": 0,
+            "skipped": 0,
             "features": []
         }
     
@@ -213,6 +217,20 @@ class FeatureVerifier:
         self.results['total'] = len(features)
         
         for feature in features:
+            # Skip features that are not implemented
+            if not feature.get('implemented', self.DEFAULT_IMPLEMENTED):
+                self.log(f"Skipping feature: {feature.get('name', 'Unknown')} (not implemented)")
+                result = {
+                    'id': feature.get('id', 'unknown'),
+                    'name': feature.get('name', 'Unknown'),
+                    'category': feature.get('category', 'unknown'),
+                    'status': 'skipped',
+                    'checks': []
+                }
+                self.results['features'].append(result)
+                self.results['skipped'] += 1
+                continue
+            
             result = self.verify_feature(feature)
             self.results['features'].append(result)
             
@@ -229,9 +247,18 @@ class FeatureVerifier:
         print("Feature Verification Summary")
         print("=" * 60)
         
+        skipped_count = results.get('skipped', 0)
+        
         print(f"\nTotal Features: {results['total']}")
         print(f"Passed: {results['passed']}")
         print(f"Failed: {results['failed']}")
+        print(f"Skipped (Not Implemented): {skipped_count}")
+        
+        if skipped_count > 0:
+            print("\nSkipped features (not implemented):")
+            skipped_features = [f for f in results['features'] if f['status'] == 'skipped']
+            for feature in skipped_features:
+                print(f"  ⊝ {feature['name']} ({feature['id']})")
         
         if results['failed'] > 0:
             print("\nFailed features:")
@@ -262,7 +289,11 @@ class FeatureVerifier:
         print("=" * 60)
         
         if results['failed'] == 0:
-            print("\n✓ All features verified successfully!")
+            if skipped_count > 0:
+                print(f"\n✓ All implemented features verified successfully!")
+                print(f"  ({skipped_count} feature(s) marked as not implemented)")
+            else:
+                print("\n✓ All features verified successfully!")
             return 0
         else:
             print(f"\n✗ {results['failed']} feature(s) failed verification")

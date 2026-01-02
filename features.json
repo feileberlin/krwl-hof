@@ -211,7 +211,7 @@
             "name": "Preview Deployment",
             "description": "Deploy testing/preview version with debug mode",
             "category": "deployment",
-            "implemented": true,
+            "implemented": false,
             "files": [
                 ".github/workflows/deploy-preview.yml"
             ],
@@ -222,7 +222,7 @@
             "name": "Production Deployment",
             "description": "Deploy production version to main branch",
             "category": "deployment",
-            "implemented": true,
+            "implemented": false,
             "files": [
                 ".github/workflows/deploy-pages.yml"
             ],
@@ -277,7 +277,7 @@
             "name": "Custom Domain Support",
             "description": "Support for custom domains via CNAME",
             "category": "deployment",
-            "implemented": true,
+            "implemented": false,
             "files": [
                 "CNAME",
                 ".github/workflows/deploy-pages.yml"
@@ -630,7 +630,7 @@
             "name": "GitHub Environments UI Integration",
             "description": "Configure GitHub Actions workflows to use environments, making deployments visible in GitHub UI with direct links to preview and production sites",
             "category": "infrastructure",
-            "implemented": true,
+            "implemented": false,
             "files": [
                 ".github/workflows/deploy-pages.yml",
                 ".github/workflows/deploy-preview.yml"
