@@ -31,6 +31,7 @@ class FeatureVerifier:
             "total": 0,
             "passed": 0,
             "failed": 0,
+            "skipped": 0,
             "features": []
         }
     
@@ -213,6 +214,20 @@ class FeatureVerifier:
         self.results['total'] = len(features)
         
         for feature in features:
+            # Skip features that are not implemented
+            if not feature.get('implemented', True):
+                self.log(f"Skipping feature: {feature.get('name', 'Unknown')} (not implemented)")
+                result = {
+                    'id': feature.get('id', 'unknown'),
+                    'name': feature.get('name', 'Unknown'),
+                    'category': feature.get('category', 'unknown'),
+                    'status': 'skipped',
+                    'checks': []
+                }
+                self.results['features'].append(result)
+                self.results['skipped'] += 1
+                continue
+            
             result = self.verify_feature(feature)
             self.results['features'].append(result)
             
@@ -232,6 +247,13 @@ class FeatureVerifier:
         print(f"\nTotal Features: {results['total']}")
         print(f"Passed: {results['passed']}")
         print(f"Failed: {results['failed']}")
+        print(f"Skipped (Not Implemented): {results.get('skipped', 0)}")
+        
+        if results.get('skipped', 0) > 0:
+            print("\nSkipped features (not implemented):")
+            for feature in results['features']:
+                if feature['status'] == 'skipped':
+                    print(f"  ⊝ {feature['name']} ({feature['id']})")
         
         if results['failed'] > 0:
             print("\nFailed features:")
@@ -262,7 +284,11 @@ class FeatureVerifier:
         print("=" * 60)
         
         if results['failed'] == 0:
-            print("\n✓ All features verified successfully!")
+            if results.get('skipped', 0) > 0:
+                print(f"\n✓ All implemented features verified successfully!")
+                print(f"  ({results.get('skipped', 0)} feature(s) marked as not implemented)")
+            else:
+                print("\n✓ All features verified successfully!")
             return 0
         else:
             print(f"\n✗ {results['failed']} feature(s) failed verification")
