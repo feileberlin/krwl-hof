@@ -31,9 +31,7 @@
   "_comment_debug": "Auto-detected: true in development (local), false in CI/production. Enables verbose logging and debug features.",
   
   "watermark": {
-    "enabled": true,
-    "text": "PRODUCTION",
-    "_comment_text": "Auto-detected: 'DEV' in development, 'PRODUCTION' in CI/production. Displayed in app UI."
+    "text": "PRODUCTION"
   },
   
   "performance": {

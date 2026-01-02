@@ -34,8 +34,8 @@ class EventsApp {
         
         this.log('App initialized', 'Config:', this.config);
         
-        // Display environment watermark if configured
-        this.displayEnvironmentWatermark();
+        // Display environment watermark
+        this.updateWatermark();
         
         // Show main content early with error handling
         this.showMainContent();
@@ -120,66 +120,31 @@ class EventsApp {
         }
     }
     
-    displayEnvironmentWatermark() {
+    updateWatermark() {
         const watermark = document.getElementById('env-watermark');
         if (!watermark) return;
         
-        // Check if watermark is enabled in config
-        const watermarkConfig = this.config.watermark || {};
-        const enabled = watermarkConfig.enabled !== undefined ? watermarkConfig.enabled : false;
+        // Get environment from config
+        const environment = this.config?.watermark?.text || this.config?.app?.environment || 'UNKNOWN';
         
-        if (!enabled) {
-            watermark.classList.add('hidden');
-            return;
+        // Get event stats
+        const totalEvents = this.events.length;
+        const visibleEvents = this.filterEvents().length;
+        
+        // Determine localized word for "event(s)" using i18n with fallback
+        const isSingular = visibleEvents === 1;
+        let eventWord = isSingular ? 'event' : 'events';
+        if (window.i18n && typeof window.i18n.t === 'function') {
+            const eventWordKey = isSingular ? 'filters.event_word.singular' : 'filters.event_word.plural';
+            const translated = window.i18n.t(eventWordKey);
+            // Only use translation if it's not the key itself (which means it wasn't found)
+            if (translated && translated !== eventWordKey) {
+                eventWord = translated;
+            }
         }
         
-        // Get environment info
-        const environment = this.config.app?.environment || 'unknown';
-        const envText = watermarkConfig.text || environment.toUpperCase();
-        
-        // Get build info (commit, PR)
-        const buildInfo = this.config.build_info || {};
-        let text = envText;
-        
-        // Add commit info if available
-        if (buildInfo.commit_short) {
-            text += ` • ${buildInfo.commit_short}`;
-        }
-        
-        // Add PR number if available
-        if (buildInfo.pr_number && buildInfo.pr_number !== '') {
-            text += ` • PR#${buildInfo.pr_number}`;
-        }
-        
-        // Get or create environment span for consistent DOM structure
-        let envSpan = watermark.querySelector('.env-text');
-        if (!envSpan) {
-            envSpan = document.createElement('span');
-            envSpan.className = 'env-text';
-            watermark.appendChild(envSpan);
-        }
-        
-        // Set watermark text and style
-        envSpan.textContent = text;
-        watermark.classList.remove('hidden', 'production', 'preview', 'testing', 'development');
-        watermark.classList.add(environment.toLowerCase());
-        
-        // Make watermark clickable to show more details if available
-        if (buildInfo.commit_sha) {
-            watermark.style.cursor = 'pointer';
-            watermark.title = `Click for build details\nCommit: ${buildInfo.commit_sha}\nDeployed: ${buildInfo.deployed_at || 'N/A'}\nDeployed by: ${buildInfo.deployed_by || 'N/A'}`;
-            watermark.onclick = () => {
-                const details = [
-                    `Environment: ${environment}`,
-                    `Commit: ${buildInfo.commit_sha}`,
-                    buildInfo.pr_number ? `PR: #${buildInfo.pr_number}` : null,
-                    `Deployed: ${buildInfo.deployed_at || 'N/A'}`,
-                    `Deployed by: ${buildInfo.deployed_by || 'N/A'}`,
-                    `Ref: ${buildInfo.ref || 'N/A'}`
-                ].filter(Boolean).join('\n');
-                alert(details);
-            };
-        }
+        // Simple format: "DEV | 5/10 events" (with localized event word)
+        watermark.textContent = `${environment.toUpperCase()} | ${visibleEvents}/${totalEvents} ${eventWord}`;
     }
     
     async loadConfig() {
@@ -216,24 +181,7 @@ class EventsApp {
     }
     
     getUserLocation() {
-        // Update watermark with location status
-        const updateLocationStatus = (status) => {
-            const watermark = document.getElementById('env-watermark');
-            if (!watermark) return;
-            
-            // Get or create location status span
-            let statusSpan = watermark.querySelector('.location-status');
-            if (!statusSpan) {
-                statusSpan = document.createElement('span');
-                statusSpan.className = 'location-status';
-                watermark.appendChild(statusSpan);
-            }
-            statusSpan.textContent = status;
-        };
-        
         if ('geolocation' in navigator) {
-            updateLocationStatus('Getting your location...');
-            
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     this.userLocation = {
@@ -265,14 +213,11 @@ class EventsApp {
                         }).addTo(this.map).bindPopup('You are here');
                     }
                     
-                    updateLocationStatus('📍 Location found');
-                    
                     // Update events display
                     this.displayEvents();
                 },
                 (error) => {
                     console.error('Location error:', error);
-                    updateLocationStatus('⚠️ Location unavailable - using default location');
                     
                     // Use config default location as fallback
                     const defaultCenter = this.config.map.default_center;
@@ -291,8 +236,6 @@ class EventsApp {
                 }
             );
         } else {
-            updateLocationStatus('⚠️ Geolocation not supported - using default location');
-            
             // Use config default location as fallback
             const defaultCenter = this.config.map.default_center;
             this.userLocation = {
@@ -354,6 +297,9 @@ class EventsApp {
             
             // Process template events with relative times
             this.events = this.processTemplateEvents(allEvents);
+            
+            // Update watermark with event count
+            this.updateWatermark();
         } catch (error) {
             console.error('Error loading events:', error);
             this.events = [];
@@ -600,8 +546,8 @@ class EventsApp {
         // Update count with descriptive sentence
         this.updateFilterDescription(filteredEvents.length);
         
-        // Update watermark with filter statistics
-        this.updateWatermarkFilterStats(filteredEvents.length);
+        // Update watermark with event stats
+        this.updateWatermark();
         
         // Ensure main content is visible (with error handling)
         this.showMainContent();
@@ -714,39 +660,6 @@ class EventsApp {
                 locDescription = 'from default location';
             }
             locationText.textContent = locDescription;
-        }
-    }
-    
-    updateWatermarkFilterStats(visibleCount) {
-        const watermark = document.getElementById('env-watermark');
-        if (!watermark) return;
-        
-        const totalEvents = this.events.length;
-        const filteredCount = totalEvents - visibleCount;
-        
-        // Get or create filter stats span
-        let statsSpan = watermark.querySelector('.filter-stats');
-        if (!statsSpan) {
-            statsSpan = document.createElement('span');
-            statsSpan.className = 'filter-stats';
-            watermark.appendChild(statsSpan);
-        }
-        
-        // Helper to get proper singular/plural form
-        const getEventWord = (count) => {
-            // Use i18n translations when available, fall back to English
-            if (window.i18n && typeof window.i18n.t === 'function') {
-                const key = count === 1 ? 'filters.event_word.singular' : 'filters.event_word.plural';
-                return window.i18n.t(key);
-            }
-            return count === 1 ? 'event' : 'events';
-        };
-        
-        // Create descriptive text about filtering
-        if (filteredCount === 0) {
-            statsSpan.textContent = `Showing all ${totalEvents} ${getEventWord(totalEvents)}`;
-        } else {
-            statsSpan.textContent = `${visibleCount}/${totalEvents} ${getEventWord(totalEvents)} (${filteredCount} filtered)`;
         }
     }
     
