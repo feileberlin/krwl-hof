@@ -23,6 +23,9 @@ from pathlib import Path
 class FeatureVerifier:
     """Verifies presence of documented features in codebase"""
     
+    # Default value for 'implemented' field in features.json
+    DEFAULT_IMPLEMENTED = True
+    
     def __init__(self, repo_root=None, verbose=False):
         self.verbose = verbose
         self.repo_root = Path(repo_root) if repo_root else Path.cwd()
@@ -215,7 +218,7 @@ class FeatureVerifier:
         
         for feature in features:
             # Skip features that are not implemented
-            if not feature.get('implemented', True):
+            if not feature.get('implemented', self.DEFAULT_IMPLEMENTED):
                 self.log(f"Skipping feature: {feature.get('name', 'Unknown')} (not implemented)")
                 result = {
                     'id': feature.get('id', 'unknown'),
@@ -244,16 +247,18 @@ class FeatureVerifier:
         print("Feature Verification Summary")
         print("=" * 60)
         
+        skipped_count = results.get('skipped', 0)
+        
         print(f"\nTotal Features: {results['total']}")
         print(f"Passed: {results['passed']}")
         print(f"Failed: {results['failed']}")
-        print(f"Skipped (Not Implemented): {results.get('skipped', 0)}")
+        print(f"Skipped (Not Implemented): {skipped_count}")
         
-        if results.get('skipped', 0) > 0:
+        if skipped_count > 0:
             print("\nSkipped features (not implemented):")
-            for feature in results['features']:
-                if feature['status'] == 'skipped':
-                    print(f"  ⊝ {feature['name']} ({feature['id']})")
+            skipped_features = [f for f in results['features'] if f['status'] == 'skipped']
+            for feature in skipped_features:
+                print(f"  ⊝ {feature['name']} ({feature['id']})")
         
         if results['failed'] > 0:
             print("\nFailed features:")
@@ -284,9 +289,9 @@ class FeatureVerifier:
         print("=" * 60)
         
         if results['failed'] == 0:
-            if results.get('skipped', 0) > 0:
+            if skipped_count > 0:
                 print(f"\n✓ All implemented features verified successfully!")
-                print(f"  ({results.get('skipped', 0)} feature(s) marked as not implemented)")
+                print(f"  ({skipped_count} feature(s) marked as not implemented)")
             else:
                 print("\n✓ All features verified successfully!")
             return 0
