@@ -234,32 +234,54 @@ class SiteGenerator:
             print()
         return True
     
+    def inline_svg_file(self, filename: str, as_data_url: bool = False) -> str:
+        """
+        Generic function to inline any SVG file from assets or static directory.
+        Automatically finds and inlines new SVG files for the map or other uses.
+        
+        Args:
+            filename: Name of the SVG file (e.g., 'favicon.svg', 'logo.svg', 'marker-festivals.svg')
+            as_data_url: If True, return as base64 data URL; if False, return raw SVG content
+            
+        Returns:
+            SVG content as string or data URL, or fallback empty SVG if file not found
+        """
+        # Try assets directory first, then static, then assets/markers subdirectory
+        search_paths = [
+            self.base_path / 'assets' / filename,
+            self.static_path / filename,
+            self.base_path / 'assets' / 'markers' / filename
+        ]
+        
+        svg_path = None
+        for path in search_paths:
+            if path.exists():
+                svg_path = path
+                break
+        
+        if not svg_path:
+            # Return fallback empty SVG
+            fallback = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"></svg>'
+            if as_data_url:
+                return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E"
+            return fallback
+        
+        svg_content = self.read_text_file(svg_path)
+        
+        if as_data_url:
+            import base64
+            base64_data = base64.b64encode(svg_content.encode()).decode()
+            return f"data:image/svg+xml;base64,{base64_data}"
+        
+        return svg_content
+    
     def create_favicon_data_url(self) -> str:
         """Create base64 data URL for favicon"""
-        # Try assets directory first, then static
-        favicon_path = self.base_path / 'assets' / 'favicon.svg'
-        if not favicon_path.exists():
-            favicon_path = self.static_path / 'favicon.svg'
-        if not favicon_path.exists():
-            # Return fallback - browser will handle missing favicon
-            return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E"
-        
-        import base64
-        svg_content = self.read_text_file(favicon_path)
-        base64_data = base64.b64encode(svg_content.encode()).decode()
-        return f"data:image/svg+xml;base64,{base64_data}"
+        return self.inline_svg_file('favicon.svg', as_data_url=True)
     
     def read_logo_svg(self) -> str:
         """Read logo SVG content for inline use"""
-        # Try assets directory first, then static
-        logo_path = self.base_path / 'assets' / 'logo.svg'
-        if not logo_path.exists():
-            logo_path = self.static_path / 'logo.svg'
-        if not logo_path.exists():
-            return '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"></svg>'
-        
-        svg_content = self.read_text_file(logo_path)
-        return svg_content
+        return self.inline_svg_file('logo.svg', as_data_url=False)
     
     def filter_and_sort_future_events(self, events: List[Dict]) -> List[Dict]:
         """Filter out past events and sort (running events first, then chronological)."""
