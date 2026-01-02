@@ -46,7 +46,7 @@ This project uses a **single unified config file** (`config.json`) with automati
 **How It Works:**
 - Environment is detected automatically using `os.environ` checks in Python
 - **CI Detection**: Automatically detects GitHub Actions, GitLab CI, Travis CI, CircleCI, Jenkins, Bitbucket Pipelines, Azure Pipelines, AWS CodeBuild
-- **Production Detection**: Automatically detects Vercel, Netlify, Heroku, Railway, Render, Fly.io, Google Cloud Run, AWS, or explicit `NODE_ENV=production`
+- **Production Detection**: Automatically detects Vercel, Netlify, Heroku, Railway, Render, Fly.io, Google Cloud Run, AWS, or explicit `ENVIRONMENT=production` (legacy: `NODE_ENV=production`)
 - **Development**: Default when NOT in CI and NOT in production (typical for local developers)
 
 **Supported Hosting Platforms:**
@@ -59,7 +59,7 @@ This project uses a **single unified config file** (`config.json`) with automati
 - ✅ Fly.io (via FLY_APP_NAME)
 - ✅ Google Cloud Run (via K_SERVICE)
 - ✅ AWS (via AWS_EXECUTION_ENV)
-- ✅ Any platform with NODE_ENV=production
+- ✅ Any platform with ENVIRONMENT=production or NODE_ENV=production (backward compatibility)
 
 **NO MANUAL SWITCHING NEEDED** - Deploy to any platform and it automatically adapts!
 
@@ -543,7 +543,8 @@ The configuration system uses Python's `os.environ` to automatically detect the 
 - `CODEBUILD_BUILD_ID` - AWS CodeBuild
 
 **Production Detection** - Checks for these environment variables:
-- `NODE_ENV=production` - Explicit production setting
+- `ENVIRONMENT=production` - Explicit production setting (preferred for Python apps)
+- `NODE_ENV=production` - Legacy explicit production setting (backward compatibility)
 - `VERCEL_ENV=production` - Vercel
 - `NETLIFY=true` + `CONTEXT=production` - Netlify
 - `DYNO` - Heroku
@@ -569,8 +570,8 @@ def is_ci():
 
 def is_production():
     """Detect if running in production"""
-    # Checks for Vercel, Netlify, Heroku, Railway, Render, 
-    # Fly.io, Google Cloud Run, AWS, or NODE_ENV=production
+    # Checks for ENVIRONMENT=production (preferred) or NODE_ENV=production (legacy),
+    # Vercel, Netlify, Heroku, Railway, Render, Fly.io, Google Cloud Run, AWS
     # See full implementation in src/modules/utils.py
     ...
 
@@ -618,10 +619,15 @@ The unified `config.json` contains:
 Optional `.env` file (gitignored) can be used to force specific environment:
 ```bash
 # Force production mode locally (rarely needed)
+ENVIRONMENT=production
+
+# Legacy support (still works for backward compatibility)
 NODE_ENV=production
 
-# Force development mode in CI (rarely needed)
-# Leave empty or unset for automatic detection
+# Force development mode (default when not in CI/production)
+ENVIRONMENT=development
+
+# Leave empty or unset for automatic detection (recommended)
 ```
 
 See `.env.example` for the template.

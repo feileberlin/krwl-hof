@@ -1,1 +1,0 @@
-web: pip install -r requirements.txt && python3 src/event_manager.py generate && cd static && python3 -m http.server $PORT
