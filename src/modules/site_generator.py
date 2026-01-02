@@ -234,10 +234,34 @@ class SiteGenerator:
             print()
         return True
     
+    def sanitize_svg_content(self, svg_content: str) -> str:
+        """
+        Sanitize SVG content by removing potentially dangerous elements and attributes.
+        Removes script tags, event handlers, and external references for security.
+        """
+        import re
+        
+        # Remove script tags and their content
+        svg_content = re.sub(r'<script[^>]*>.*?</script>', '', svg_content, flags=re.DOTALL | re.IGNORECASE)
+        
+        # Remove event handler attributes (onclick, onload, onerror, etc.)
+        event_handlers = ['onclick', 'onload', 'onerror', 'onmouseover', 'onmouseout', 
+                         'onmousemove', 'onmouseenter', 'onmouseleave', 'onfocus', 
+                         'onblur', 'onchange', 'onsubmit', 'onkeydown', 'onkeyup', 'onkeypress']
+        for handler in event_handlers:
+            svg_content = re.sub(f'{handler}\\s*=\\s*["\'][^"\']*["\']', '', svg_content, flags=re.IGNORECASE)
+        
+        # Remove external references (use, image with external href)
+        svg_content = re.sub(r'xlink:href\\s*=\\s*["\']https?://[^"\']*["\']', '', svg_content, flags=re.IGNORECASE)
+        svg_content = re.sub(r'href\\s*=\\s*["\']https?://[^"\']*["\']', '', svg_content, flags=re.IGNORECASE)
+        
+        return svg_content
+    
     def inline_svg_file(self, filename: str, as_data_url: bool = False) -> str:
         """
         Generic function to inline any SVG file from assets or static directory.
         Automatically finds and inlines new SVG files for the map or other uses.
+        SVG content is sanitized to remove scripts and external references.
         
         Args:
             filename: Name of the SVG file (e.g., 'favicon.svg', 'logo.svg', 'marker-festivals.svg')
@@ -268,6 +292,9 @@ class SiteGenerator:
         
         svg_content = self.read_text_file(svg_path)
         
+        # Sanitize SVG content to remove potentially dangerous elements
+        svg_content = self.sanitize_svg_content(svg_content)
+        
         if as_data_url:
             import base64
             base64_data = base64.b64encode(svg_content.encode()).decode()
@@ -285,29 +312,43 @@ class SiteGenerator:
     
     def filter_and_sort_future_events(self, events: List[Dict]) -> List[Dict]:
         """Filter out past events and sort (running events first, then chronological)."""
-        current_time = datetime.now()
+        from datetime import timezone
+        current_time = datetime.now(timezone.utc)
+        # Make current_time timezone-naive for comparison with parsed event times
+        current_time = current_time.replace(tzinfo=None)
         future_events = []
         
         for event in events:
             try:
                 # Parse times (remove timezone suffix)
-                start_time_str = event.get('start_time', '').split('+')[0].rstrip('Z')
+                start_time_str = event.get('start_time', '')
                 if not start_time_str:
                     continue
+                start_time_str = start_time_str.split('+')[0].rstrip('Z')
                 start_time = datetime.fromisoformat(start_time_str)
                 
-                # Get or estimate end time
-                end_time_str = event.get('end_time', '').split('+')[0].rstrip('Z')
-                end_time = datetime.fromisoformat(end_time_str) if end_time_str else start_time.replace(hour=start_time.hour + 2)
+                # Get or estimate end time (do not assume a fixed duration)
+                end_time_str = event.get('end_time', '')
+                if end_time_str:
+                    end_time_str = end_time_str.split('+')[0].rstrip('Z')
+                    end_time = datetime.fromisoformat(end_time_str)
+                    is_running = start_time <= current_time <= end_time
+                    is_past = end_time < current_time
+                else:
+                    # If no end_time is provided, treat the event as non-running
+                    # and consider it past only if its start_time is in the past.
+                    end_time = None
+                    is_running = False
+                    is_past = start_time < current_time
                 
                 # Include if not past
-                if end_time >= current_time:
+                if not is_past:
                     future_events.append({
                         'event': event,
                         'start_time': start_time,
-                        'is_running': start_time <= current_time <= end_time
+                        'is_running': is_running
                     })
-            except:
+            except (ValueError, TypeError):
                 continue
         
         # Sort: running first, then chronological
@@ -316,8 +357,19 @@ class SiteGenerator:
     
     def build_noscript_html(self, events: List[Dict], content_en: Dict, app_name: str) -> str:
         """Build complete noscript HTML with event list."""
+        import locale
+        
         future_events = self.filter_and_sort_future_events(events)
         translations = content_en.get('noscript', {})
+        
+        # Set locale to English for consistent date formatting
+        try:
+            locale.setlocale(locale.LC_TIME, 'en_US.UTF-8')
+        except locale.Error:
+            try:
+                locale.setlocale(locale.LC_TIME, 'C')
+            except locale.Error:
+                pass  # Use system default if neither works
         
         # Header
         html_parts = [
@@ -341,8 +393,12 @@ class SiteGenerator:
                 event_start_time = event_item['start_time']
                 event_is_running = event_item['is_running']
                 
-                running_badge = '<span style="background:#4CAF50;color:#fff;padding:0.25rem 0.75rem;border-radius:4px;font-size:0.85rem;font-weight:600;margin-left:0.5rem">HAPPENING NOW</span>' if event_is_running else ''
-                event_link = f'<a href="{html.escape(event_data.get("url", ""))}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background:#FF69B4;color:#fff;padding:0.5rem 1rem;border-radius:5px;text-decoration:none;font-weight:600">View Event Details →</a>' if event_data.get('url') else ''
+                # Use translations for badge and link text
+                badge_text = html.escape(translations.get("happening_now", "HAPPENING NOW"))
+                running_badge = f'<span style="background:#4CAF50;color:#fff;padding:0.25rem 0.75rem;border-radius:4px;font-size:0.85rem;font-weight:600;margin-left:0.5rem">{badge_text}</span>' if event_is_running else ''
+                
+                view_details_text = html.escape(translations.get("view_details", "View Event Details →"))
+                event_link = f'<a href="{html.escape(event_data.get("url", ""))}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background:#FF69B4;color:#fff;padding:0.5rem 1rem;border-radius:5px;text-decoration:none;font-weight:600">{view_details_text}</a>' if event_data.get('url') else ''
                 
                 html_parts.append(f'''<article style="background:#2a2a2a;border-radius:8px;padding:1.5rem;border-left:4px solid #FF69B4">
 <h3 style="color:#FF69B4;margin:0 0 0.75rem 0;font-size:1.25rem">{html.escape(event_data.get('title', 'Untitled'))}{running_badge}</h3>

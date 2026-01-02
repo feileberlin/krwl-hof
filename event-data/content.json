@@ -163,7 +163,9 @@
     "upcoming_events": "Upcoming Events",
     "loading": "Loading events...",
     "no_events": "No upcoming events found.",
-    "footer": "For the best experience, please enable JavaScript to access the interactive map."
+    "footer": "For the best experience, please enable JavaScript to access the interactive map.",
+    "happening_now": "HAPPENING NOW",
+    "view_details": "View Event Details →"
   },
   "event_list": {
     "date_format": "{date}",

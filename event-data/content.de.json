@@ -163,7 +163,9 @@
     "upcoming_events": "Kommende Veranstaltungen",
     "loading": "Lade Veranstaltungen...",
     "no_events": "Keine kommenden Veranstaltungen gefunden.",
-    "footer": "Für die beste Erfahrung aktiviere bitte JavaScript, um auf die interaktive Karte zuzugreifen."
+    "footer": "Für die beste Erfahrung aktiviere bitte JavaScript, um auf die interaktive Karte zuzugreifen.",
+    "happening_now": "LÄUFT JETZT",
+    "view_details": "Veranstaltungsdetails ansehen →"
   },
   "event_list": {
     "date_format": "{date}",
