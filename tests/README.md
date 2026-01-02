@@ -6,6 +6,8 @@ This directory contains test scripts for the KRWL HOF project.
 
 ### Core Functionality Tests
 - **test_scraper.py** - Event scraper functionality (manual events, deduplication, source handling)
+- **test_scrape_status.py** - Scraper status file generation and workflow compatibility
+- **test_timestamp_update.py** - Timestamp update behavior for event files
 - **test_filters.py** - Event filtering logic (distance, time, category filters)
 - **test_event_schema.py** - Event schema validation and filter stringency testing
 
