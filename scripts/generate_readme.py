@@ -234,8 +234,7 @@ krwl-hof/
 │   ├── events.demo.json # Demo events for testing
 │   ├── content.json     # English translations
 │   ├── content.de.json  # German translations
-│   └── backups/         # Individual event backups
-│       └── events/      # Timestamped event backup files
+│   └── old/             # Historical event archives
 ├── src/                 # Python backend
 │   ├── event_manager.py # Main CLI/TUI entry point
 │   └── modules/         # Modular components
