@@ -34,9 +34,6 @@ class EventsApp {
         
         this.log('App initialized', 'Config:', this.config);
         
-        // Display environment watermark
-        this.updateWatermark();
-        
         // Show main content early with error handling
         this.showMainContent();
         
@@ -158,31 +155,47 @@ class EventsApp {
         }
     }
     
-    updateWatermark() {
-        const watermark = document.getElementById('environment-badge');
-        if (!watermark) return;
+    updateDashboard() {
+        // Update dashboard debug info with current state
+        const debugEnvironment = document.getElementById('debug-environment');
+        const debugEventCount = document.getElementById('debug-event-count');
+        const debugDataSource = document.getElementById('debug-data-source');
+        const debugMode = document.getElementById('debug-mode');
         
-        // Get environment from config
-        const environment = this.config?.watermark?.text || this.config?.app?.environment || 'UNKNOWN';
-        
-        // Get event stats
-        const totalEvents = this.events.length;
-        const visibleEvents = this.filterEvents().length;
-        
-        // Determine localized word for "event(s)" using i18n with fallback
-        const isSingular = visibleEvents === 1;
-        let eventWord = isSingular ? 'event' : 'events';
-        if (window.i18n && typeof window.i18n.t === 'function') {
-            const eventWordKey = isSingular ? 'filters.event_word.singular' : 'filters.event_word.plural';
-            const translated = window.i18n.t(eventWordKey);
-            // Only use translation if it's not the key itself (which means it wasn't found)
-            if (translated && translated !== eventWordKey) {
-                eventWord = translated;
+        if (debugEnvironment) {
+            const environment = this.config?.watermark?.text || this.config?.app?.environment || 'UNKNOWN';
+            debugEnvironment.textContent = environment.toUpperCase();
+            // Add color coding based on environment using CSS classes
+            debugEnvironment.className = ''; // Clear existing classes
+            if (environment.toLowerCase().includes('dev')) {
+                debugEnvironment.classList.add('env-dev');
+            } else if (environment.toLowerCase().includes('production')) {
+                debugEnvironment.classList.add('env-production');
             }
         }
         
-        // Simple format: "DEV | 5/10 events" (with localized event word)
-        watermark.textContent = `${environment.toUpperCase()} | ${visibleEvents}/${totalEvents} ${eventWord}`;
+        if (debugEventCount) {
+            const totalEvents = this.events.length;
+            const visibleEvents = this.filterEvents().length;
+            debugEventCount.textContent = `${visibleEvents}/${totalEvents}`;
+        }
+        
+        if (debugDataSource) {
+            const dataSource = this.config?.data?.source || 'unknown';
+            debugDataSource.textContent = dataSource;
+        }
+        
+        if (debugMode) {
+            const debugEnabled = this.config?.debug || false;
+            debugMode.textContent = debugEnabled ? 'Enabled' : 'Disabled';
+            // Use CSS classes instead of inline styles
+            debugMode.className = ''; // Clear existing classes
+            if (debugEnabled) {
+                debugMode.classList.add('debug-enabled');
+            } else {
+                debugMode.classList.add('debug-disabled');
+            }
+        }
     }
     
     async loadConfig() {
@@ -338,8 +351,8 @@ class EventsApp {
             // Process template events with relative times
             this.events = this.processTemplateEvents(allEvents);
             
-            // Update watermark with event count
-            this.updateWatermark();
+            // Update dashboard with event count
+            this.updateDashboard();
         } catch (error) {
             console.error('Error loading events:', error);
             this.events = [];
@@ -610,8 +623,8 @@ class EventsApp {
         // Update count with descriptive sentence
         this.updateFilterDescription(filteredEvents.length);
         
-        // Update watermark with event stats
-        this.updateWatermark();
+        // Update dashboard with event stats
+        this.updateDashboard();
         
         // Ensure main content is visible (with error handling)
         this.showMainContent();
@@ -652,13 +665,14 @@ class EventsApp {
     }
     
     updateFilterDescription(count) {
-        // Filter Bar Structure:
-        // #event-filter-bar - Main container for all filter controls
-        //   .filter-bar-logo - Logo/icon for visual identity
-        //   #filter-bar-event-count - Shows "X events" with category
-        //   #filter-bar-time-range - Time filter (sunrise, 6h, 12h, etc.)
-        //   #filter-bar-distance - Distance filter (km radius)
-        //   #filter-bar-location - Location source (here/custom)
+        // Filter Bar Structure (Semantic Header):
+        // <header id="event-filter-bar"> - Page header/banner with filters
+        //   <button .filter-bar-logo> - Project menu button
+        //   <div role="status"> - Live region for event count updates
+        //     #filter-bar-event-count - Shows "X events" with category
+        //   #filter-bar-time-range - Time filter button (sunrise, 6h, 12h, etc.)
+        //   #filter-bar-distance - Distance filter button (km radius)
+        //   #filter-bar-location - Location filter button (here/custom)
         
         // Update individual parts of the filter sentence
         const eventCountCategoryText = document.getElementById('filter-bar-event-count');
@@ -1211,6 +1225,101 @@ class EventsApp {
     }
     
     setupEventListeners() {
+        // Dashboard menu with focus management
+        const dashboardLogo = document.getElementById('filter-bar-logo');
+        const dashboardMenu = document.getElementById('dashboard-menu');
+        const closeDashboard = document.getElementById('close-dashboard');
+        
+        // Store last focused element and focus trap function in class properties for ESC handler access
+        this.dashboardLastFocusedElement = null;
+        
+        // Focus trap helper
+        this.dashboardTrapFocus = (e) => {
+            if (e.key !== 'Tab') return;
+            if (dashboardMenu.classList.contains('hidden')) return;
+            
+            const focusableElements = dashboardMenu.querySelectorAll(
+                'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+            );
+            const firstElement = focusableElements[0];
+            const lastElement = focusableElements[focusableElements.length - 1];
+            
+            if (e.shiftKey && document.activeElement === firstElement) {
+                e.preventDefault();
+                lastElement.focus();
+            } else if (!e.shiftKey && document.activeElement === lastElement) {
+                e.preventDefault();
+                firstElement.focus();
+            }
+        };
+        
+        if (dashboardLogo && dashboardMenu) {
+            // Open dashboard on logo click
+            dashboardLogo.addEventListener('click', () => {
+                this.dashboardLastFocusedElement = document.activeElement;
+                dashboardMenu.classList.remove('hidden');
+                dashboardLogo.setAttribute('aria-expanded', 'true');
+                this.updateDashboard(); // Refresh data when opening
+                // Move focus to close button
+                if (closeDashboard) {
+                    closeDashboard.focus();
+                }
+                // Add focus trap
+                document.addEventListener('keydown', this.dashboardTrapFocus);
+            });
+            
+            // Open dashboard on Enter/Space key
+            dashboardLogo.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.dashboardLastFocusedElement = document.activeElement;
+                    dashboardMenu.classList.remove('hidden');
+                    dashboardLogo.setAttribute('aria-expanded', 'true');
+                    this.updateDashboard();
+                    // Move focus to close button
+                    if (closeDashboard) {
+                        closeDashboard.focus();
+                    }
+                    // Add focus trap
+                    document.addEventListener('keydown', this.dashboardTrapFocus);
+                }
+            });
+        }
+        
+        if (closeDashboard && dashboardMenu) {
+            // Close dashboard on close button
+            closeDashboard.addEventListener('click', () => {
+                dashboardMenu.classList.add('hidden');
+                if (dashboardLogo) {
+                    dashboardLogo.setAttribute('aria-expanded', 'false');
+                }
+                // Remove focus trap
+                document.removeEventListener('keydown', this.dashboardTrapFocus);
+                // Return focus to logo
+                if (this.dashboardLastFocusedElement) {
+                    this.dashboardLastFocusedElement.focus();
+                }
+            });
+        }
+        
+        if (dashboardMenu) {
+            // Close dashboard on background click (more reliable detection)
+            dashboardMenu.addEventListener('click', (e) => {
+                if (e.target === e.currentTarget) {
+                    dashboardMenu.classList.add('hidden');
+                    if (dashboardLogo) {
+                        dashboardLogo.setAttribute('aria-expanded', 'false');
+                    }
+                    // Remove focus trap
+                    document.removeEventListener('keydown', this.dashboardTrapFocus);
+                    // Return focus to logo
+                    if (this.dashboardLastFocusedElement) {
+                        this.dashboardLastFocusedElement.focus();
+                    }
+                }
+            });
+        }
+        
         // Custom dropdown helper class
         class CustomDropdown {
             constructor(triggerEl, items, currentValue, onSelect, app) {
@@ -1540,11 +1649,27 @@ class EventsApp {
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             const eventDetail = document.getElementById('event-detail');
+            const dashboardMenu = document.getElementById('dashboard-menu');
+            const dashboardLogo = document.getElementById('filter-bar-logo');
             
-            // ESC: Close event detail popup and dropdowns
+            // ESC: Close event detail popup, dashboard, and dropdowns
             if (e.key === 'Escape') {
                 if (eventDetail && !eventDetail.classList.contains('hidden')) {
                     eventDetail.classList.add('hidden');
+                    e.preventDefault();
+                } else if (dashboardMenu && !dashboardMenu.classList.contains('hidden')) {
+                    dashboardMenu.classList.add('hidden');
+                    if (dashboardLogo) {
+                        dashboardLogo.setAttribute('aria-expanded', 'false');
+                    }
+                    // Remove focus trap
+                    if (this.dashboardTrapFocus) {
+                        document.removeEventListener('keydown', this.dashboardTrapFocus);
+                    }
+                    // Return focus to logo
+                    if (this.dashboardLastFocusedElement) {
+                        this.dashboardLastFocusedElement.focus();
+                    }
                     e.preventDefault();
                 }
                 hideAllDropdowns();

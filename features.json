@@ -598,29 +598,59 @@
       "test_method": "check_files_exist"
     },
     {
-      "id": "environment-watermark",
-      "name": "Environment Watermark with Build Info",
-      "description": "Visual watermark in bottom-left corner showing environment (production/preview/testing), commit SHA, and PR number. Configurable per environment with automatic detection.",
+      "id": "dashboard-menu",
+      "name": "Dashboard Menu with Project Information",
+      "description": "Clickable logo opens dashboard menu showing About, Debug Info, Maintainer, Documentation links, and Credits. Replaces watermark functionality with better UX. Mobile-first responsive design with keyboard accessibility.",
       "category": "frontend",
       "implemented": true,
       "files": [
-        "src/modules/cdn_inliner.py",
+        "src/templates/index.html",
+        "assets/css/style.css",
+        "assets/js/app.js",
         "config.json"
       ],
       "config_keys": [
         "app.environment",
-        "watermark.enabled",
-        "watermark.text"
+        "watermark.text",
+        "debug",
+        "data.source"
       ],
       "code_patterns": [
         {
-          "file": "static/js/app.js",
-          "pattern": "#env-watermark|displayEnvironmentWatermark",
-          "description": "Watermark HTML element and JavaScript display function"
+          "file": "assets/js/app.js",
+          "pattern": "updateDashboard|dashboard-menu|dashboardLogo",
+          "description": "Dashboard update function and menu toggle logic"
+        },
+        {
+          "file": "assets/css/style.css",
+          "pattern": "#dashboard-menu|.dashboard-content",
+          "description": "Dashboard CSS styles"
+        },
+        {
+          "file": "src/templates/index.html",
+          "pattern": "dashboard-menu|dashboard-content|close-dashboard",
+          "description": "Dashboard HTML structure"
         }
       ],
-      "test_method": "manual",
-      "test_instructions": "1. Start local server: cd static && python3 -m http.server 8000\n2. Edit static/config.json to set watermark.enabled=true\n3. Open http://localhost:8000\n4. Verify watermark appears in bottom-left corner\n5. Click watermark to see build details popup"
+      "test_method": "automated",
+      "test_file": "tests/test_watermark_simplification.py",
+      "test_instructions": "Run: python3 tests/test_watermark_simplification.py"
+    },
+    {
+      "id": "environment-watermark",
+      "name": "Environment Watermark (REPLACED by dashboard-menu)",
+      "description": "DEPRECATED: This feature has been replaced by the dashboard menu. The watermark has been removed from the UI. Environment and debug information is now shown in the dashboard menu accessible by clicking the logo.",
+      "category": "frontend",
+      "implemented": false,
+      "deprecated": true,
+      "replaced_by": "dashboard-menu",
+      "files": [],
+      "config_keys": [
+        "watermark.text"
+      ],
+      "code_patterns": [],
+      "test_method": "none",
+      "test_instructions": "This feature has been replaced by dashboard-menu. See dashboard-menu for testing."
     },
     {
       "id": "github-environments",

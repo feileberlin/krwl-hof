@@ -1,27 +1,29 @@
 #!/usr/bin/env python3
 """
-Test Watermark Simplification - KISS Principles
+Test Dashboard Implementation - KISS Principles
 
-This test verifies that the watermark implementation follows KISS principles:
-- Single function responsible for watermark updates
+This test verifies that the dashboard implementation follows KISS principles:
+- Replaces watermark with dashboard menu
+- Single function responsible for dashboard updates
 - No complex conditional logic
-- Always visible (no hiding)
 - Simple, predictable format
+- Mobile-first and responsive
 """
 
 import re
 import sys
 from pathlib import Path
 
-def test_watermark_simplification():
-    """Verify watermark implementation follows KISS principles"""
+def test_dashboard_implementation():
+    """Verify dashboard implementation follows KISS principles and replaces watermark"""
     
     base_path = Path(__file__).parent.parent
     app_js_path = base_path / 'assets' / 'js' / 'app.js'
     style_css_path = base_path / 'assets' / 'css' / 'style.css'
+    template_path = base_path / 'src' / 'templates' / 'index.html'
     
     print("=" * 60)
-    print("Watermark Simplification Tests")
+    print("Dashboard Implementation Tests")
     print("=" * 60)
     print()
     
@@ -32,79 +34,111 @@ def test_watermark_simplification():
     with open(style_css_path, 'r') as f:
         style_css = f.read()
     
+    with open(template_path, 'r') as f:
+        template_html = f.read()
+    
     tests_passed = 0
     tests_failed = 0
     
-    # Test 1: updateWatermark function exists
-    print("Test 1: updateWatermark() function exists")
-    if 'updateWatermark()' in app_js and 'watermark.textContent' in app_js:
-        print("✓ PASS: updateWatermark() function found")
+    # Test 1: updateDashboard function exists (replaces updateWatermark)
+    print("Test 1: updateDashboard() function exists")
+    if 'updateDashboard()' in app_js and 'debug-environment' in app_js:
+        print("✓ PASS: updateDashboard() function found")
         tests_passed += 1
     else:
-        print("✗ FAIL: updateWatermark() function not found")
+        print("✗ FAIL: updateDashboard() function not found")
         tests_failed += 1
     print()
     
-    # Test 2: Old complex functions removed
-    print("Test 2: Old complex functions removed")
-    old_functions = ['displayEnvironmentWatermark', 'updateWatermarkFilterStats', 'updateLocationStatus']
-    found_old = [fn for fn in old_functions if fn in app_js]
-    if not found_old:
-        print("✓ PASS: All old functions removed")
+    # Test 2: Old watermark functions removed
+    print("Test 2: Old watermark functions removed")
+    watermark_func_pattern = re.compile(r'\bfunction\s+updateWatermark\s*\(|\bupdateWatermark\s*\(')
+    has_old_watermark_function = bool(watermark_func_pattern.search(app_js))
+    has_old_watermark_reference = 'environment-badge' in app_js
+    if not has_old_watermark_function and not has_old_watermark_reference:
+        print("✓ PASS: Old watermark functions removed")
         tests_passed += 1
     else:
-        print(f"✗ FAIL: Found old functions: {', '.join(found_old)}")
+        print("✗ FAIL: Old watermark functions still present")
         tests_failed += 1
     print()
     
-    # Test 3: CSS simplified (no complex classes)
-    print("Test 3: CSS simplified (no watermark-specific helper classes)")
-    old_classes = ['.location-status', '.env-text', '.filter-stats', '#env-watermark.hidden', 
-                   '#env-watermark.production', '#env-watermark.development']
-    found_old_css = [cls for cls in old_classes if cls in style_css]
-    if not found_old_css:
-        print("✓ PASS: Old CSS classes removed")
+    # Test 3: Dashboard HTML structure exists
+    print("Test 3: Dashboard HTML structure in template")
+    required_elements = ['id="dashboard-menu"', 'dashboard-content', 'close-dashboard']
+    missing_elements = [elem for elem in required_elements if elem not in template_html]
+    if not missing_elements:
+        print("✓ PASS: Dashboard HTML structure found")
         tests_passed += 1
     else:
-        print(f"✗ FAIL: Found old CSS classes: {', '.join(found_old_css)}")
+        print(f"✗ FAIL: Missing elements: {', '.join(missing_elements)}")
         tests_failed += 1
     print()
     
-    # Test 4: Simple watermark format with i18n support
-    print("Test 4: Simple watermark format (ENVIRONMENT | X/Y eventWord) with i18n")
-    # Check for the format pattern with eventWord variable (supports i18n)
-    format_pattern = r'`\$\{.*\}\s*\|\s*\$\{.*\}/\$\{.*\}\s*\$\{.*\}`'
-    has_format = re.search(format_pattern, app_js)
-    # Also check for i18n usage
-    has_i18n = 'window.i18n' in app_js and 'event_word' in app_js
-    if has_format and has_i18n:
-        print("✓ PASS: Simple format with i18n support found")
+    # Test 4: Dashboard CSS exists and watermark CSS removed
+    print("Test 4: Dashboard CSS exists, watermark CSS removed")
+    has_dashboard_css = '#dashboard-menu' in style_css and '.dashboard-content' in style_css
+    no_watermark_css = '#environment-badge' not in style_css
+    if has_dashboard_css and no_watermark_css:
+        print("✓ PASS: Dashboard CSS present, watermark CSS removed")
         tests_passed += 1
     else:
-        print("✗ FAIL: Simple format with i18n support not found")
+        print("✗ FAIL: CSS not properly updated")
         tests_failed += 1
     print()
     
-    # Test 5: Single watermark CSS rule (simplified)
-    print("Test 5: Single simplified CSS rule for #env-watermark")
-    # Count occurrences of #env-watermark in CSS (should be just 1 main rule)
-    watermark_rules = style_css.count('#env-watermark')
-    if watermark_rules <= 2:  # Allow for potential media query
-        print(f"✓ PASS: Simplified CSS (found {watermark_rules} rule(s))")
+    # Test 5: Logo is clickable
+    print("Test 5: Logo has click handler")
+    if 'dashboardLogo.addEventListener' in app_js and 'dashboard-menu' in app_js:
+        print("✓ PASS: Logo click handler found")
         tests_passed += 1
     else:
-        print(f"✗ FAIL: CSS not simplified (found {watermark_rules} rules)")
+        print("✗ FAIL: Logo click handler not found")
         tests_failed += 1
     print()
     
-    # Test 6: No dynamic DOM manipulation for watermark
-    print("Test 6: No dynamic DOM creation (createElement, appendChild)")
-    watermark_section = app_js[app_js.find('updateWatermark'):app_js.find('updateWatermark') + 500]
-    if 'createElement' not in watermark_section and 'appendChild' not in watermark_section:
-        print("✓ PASS: No dynamic DOM manipulation")
+    # Test 6: Mobile-first responsive CSS
+    print("Test 6: Mobile-first responsive design")
+    has_mobile_query = '@media (max-width: 768px)' in style_css or '@media (max-width: 480px)' in style_css
+    if has_mobile_query:
+        print("✓ PASS: Mobile media queries found")
         tests_passed += 1
     else:
-        print("✗ FAIL: Dynamic DOM manipulation found")
+        print("✗ FAIL: Mobile media queries not found")
+        tests_failed += 1
+    print()
+    
+    # Test 7: Keyboard accessibility
+    print("Test 7: Keyboard accessibility (ESC, Enter, Space)")
+    has_esc = 'Escape' in app_js and 'dashboard-menu' in app_js
+    has_enter_space = 'Enter' in app_js or 'Space' in app_js
+    if has_esc and has_enter_space:
+        print("✓ PASS: Keyboard accessibility implemented")
+        tests_passed += 1
+    else:
+        print("✗ FAIL: Keyboard accessibility incomplete")
+        tests_failed += 1
+    print()
+    
+    # Test 8: Dashboard sections present
+    print("Test 8: Dashboard sections (About, Debug, Maintainer, Docs, Thanks)")
+    sections = ['About', 'Debug Info', 'Maintainer', 'Documentation', 'Thanks To']
+    missing_sections = [sec for sec in sections if sec not in template_html]
+    if not missing_sections:
+        print("✓ PASS: All dashboard sections found")
+        tests_passed += 1
+    else:
+        print(f"✗ FAIL: Missing sections: {', '.join(missing_sections)}")
+        tests_failed += 1
+    print()
+    
+    # Test 9: No watermark in template
+    print("Test 9: Watermark element removed from template")
+    if 'environment-badge' not in template_html:
+        print("✓ PASS: Watermark element removed")
+        tests_passed += 1
+    else:
+        print("✗ FAIL: Watermark element still in template")
         tests_failed += 1
     print()
     
@@ -125,4 +159,5 @@ def test_watermark_simplification():
         sys.exit(0)
 
 if __name__ == '__main__':
-    test_watermark_simplification()
+    test_dashboard_implementation()
+
