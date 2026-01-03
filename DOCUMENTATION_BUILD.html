@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation Build System</title>
+    <style>
+        /* GitHub Dark Theme with Barbie Pink Accents */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: #0d1117;
+            color: #c9d1d9;
+        }
+        
+        /* Headers */
+        h1, h2, h3, h4, h5, h6 {
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            line-height: 1.25;
+            color: #FF69B4;
+        }
+        
+        h1 { 
+            font-size: 2.5em; 
+            border-bottom: 2px solid #FF69B4; 
+            padding-bottom: 0.3em;
+            margin-bottom: 1.5rem;
+        }
+        
+        h2 { 
+            font-size: 1.75em; 
+            border-bottom: 1px solid #21262d; 
+            padding-bottom: 0.3em; 
+        }
+        
+        h3 { font-size: 1.5em; }
+        h4 { font-size: 1.25em; }
+        h5 { font-size: 1.1em; }
+        h6 { font-size: 1em; }
+        
+        /* Links */
+        a { 
+            color: #58a6ff; 
+            text-decoration: none; 
+        }
+        
+        a:hover { 
+            text-decoration: underline; 
+        }
+        
+        /* Navigation */
+        .nav {
+            background: #161b22;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            border-left: 4px solid #FF69B4;
+        }
+        
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .nav-links a {
+            padding: 0.5rem 1rem;
+            background: #21262d;
+            border-radius: 6px;
+            border: 1px solid #30363d;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        
+        .nav-links a:hover {
+            background: #30363d;
+            border-color: #FF69B4;
+            transform: translateY(-2px);
+            text-decoration: none;
+        }
+        
+        /* Code */
+        code {
+            background: #161b22;
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 85%;
+            color: #79c0ff;
+        }
+        
+        pre {
+            background: #161b22;
+            padding: 1rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            border: 1px solid #30363d;
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+            color: #c9d1d9;
+        }
+        
+        /* Tables */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1rem 0;
+            overflow-x: auto;
+            display: block;
+        }
+        
+        thead {
+            background: #161b22;
+        }
+        
+        th {
+            color: #FF69B4;
+            font-weight: 600;
+            text-align: left;
+            padding: 0.75rem;
+            border: 1px solid #30363d;
+        }
+        
+        td {
+            padding: 0.75rem;
+            border: 1px solid #30363d;
+        }
+        
+        tr:nth-child(even) {
+            background: #0d1117;
+        }
+        
+        tr:hover {
+            background: #161b22;
+        }
+        
+        /* Lists */
+        ul, ol {
+            margin: 1rem 0;
+            padding-left: 2rem;
+        }
+        
+        li {
+            margin: 0.5rem 0;
+        }
+        
+        /* Blockquotes */
+        blockquote {
+            border-left: 4px solid #FF69B4;
+            padding-left: 1rem;
+            margin: 1rem 0;
+            color: #8b949e;
+            font-style: italic;
+        }
+        
+        /* Horizontal Rule */
+        hr {
+            border: none;
+            border-top: 1px solid #21262d;
+            margin: 2rem 0;
+        }
+        
+        /* Paragraphs */
+        p {
+            margin: 1rem 0;
+        }
+        
+        /* Images */
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+            margin: 1rem 0;
+        }
+        
+        /* Source Info */
+        .source-info {
+            background: #161b22;
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1.5rem 0;
+            font-size: 0.9em;
+            color: #8b949e;
+            border-left: 4px solid #30363d;
+        }
+        
+        .source-info strong {
+            color: #c9d1d9;
+        }
+        
+        /* Footer */
+        .footer {
+            margin-top: 3rem;
+            padding-top: 1rem;
+            border-top: 1px solid #30363d;
+            color: #8b949e;
+            font-size: 0.9em;
+            text-align: center;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            h2 {
+                font-size: 1.5em;
+            }
+            
+            .nav-links {
+                flex-direction: column;
+            }
+            
+            .nav-links a {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-links">
+            <a href="README.html">🏠 Home</a>
+            <a href="docs/index.html">📖 Docs Index</a>
+            <a href="static/index.html">🗺️ Map App</a>
+            <a href="docs/README.html">📖 README</a>
+            <a href="docs/CHANGELOG.html">📝 Changelog</a>
+            <a href="docs/QUICK_REFERENCE.html">⚡ Quick Ref</a>
+        </div>
+    </nav>
+    
+    <main>
+        <h1 id="documentation-build-system">Documentation Build System</h1>
+<h2 id="overview">Overview</h2>
+<p>The KRWL HOF project uses an automated Markdown-to-HTML build system that converts all documentation files to styled HTML with a consistent GitHub-style dark theme and Barbie Pink accents. This ensures documentation is browsable on any platform, including static hosting, GitHub Pages, and local file systems (file:// protocol).</p>
+<h2 id="why-this-system-exists">Why This System Exists</h2>
+<h3 id="the-problem">The Problem</h3>
+<ul>
+<li><strong>Limited Markdown rendering</strong>: Many hosting platforms (static servers, file:// protocol) don't render Markdown</li>
+<li><strong>Inconsistent styling</strong>: Raw Markdown varies between viewers</li>
+<li><strong>Navigation difficulties</strong>: No easy way to browse between documents</li>
+<li><strong>Accessibility</strong>: Command-line tools can't read Markdown files easily</li>
+</ul>
+<h3 id="the-solution">The Solution</h3>
+<ul>
+<li><strong>Universal HTML</strong>: Works everywhere - browsers, file systems, any hosting platform</li>
+<li><strong>Consistent styling</strong>: GitHub-style dark theme with Barbie Pink (#FF69B4) accents</li>
+<li><strong>Easy navigation</strong>: Every page has links to key documents and the documentation index</li>
+<li><strong>Professional appearance</strong>: Syntax highlighting, responsive design, mobile-friendly</li>
+<li><strong>No server required</strong>: Pure HTML/CSS, works with file:// protocol</li>
+</ul>
+<h2 id="directory-structure">Directory Structure</h2>
+<p>After building documentation, the structure looks like this:</p>
+<div class="codehilite"><pre><span></span><code>krwl-hof/
+├── README.md                      # Stays in root (for GitHub)
+├── README.html                    # Stays in root (web landing page)
+├── DOCUMENTATION_BUILD.md         # This guide (stays in root)
+│
+├── docs/                          # All other documentation
+│   ├── index.html                 # Auto-generated navigation index
+│   ├── CHANGELOG.md               # Documentation markdown files
+│   ├── CHANGELOG.html             # Generated HTML files
+│   ├── QUICK_REFERENCE.md
+│   ├── QUICK_REFERENCE.html
+│   ├── MARKER_DESIGN_AUDIT.md
+│   ├── MARKER_DESIGN_AUDIT.html
+│   └── ...                        # Other documentation
+│
+├── scripts/
+│   ├── build_markdown_docs.py     # Main build script
+│   └── cleanup_old_docs.py        # Remove obsolete files
+│
+└── requirements.txt               # Includes markdown&gt;=3.5.0, Pygments&gt;=2.17.0
+</code></pre></div>
+
+<h3 id="file-organization-rules">File Organization Rules</h3>
+<p><strong>Stays in Root:</strong><br />
+- <code>README.md</code> / <code>README.html</code> - GitHub compatibility and web landing page<br />
+- <code>DOCUMENTATION_BUILD.md</code> - This build guide</p>
+<p><strong>Goes to docs/:</strong><br />
+- All other <code>.md</code> and <code>.html</code> documentation files<br />
+- <code>CHANGELOG.md</code>, <code>QUICK_REFERENCE.md</code>, design documents, etc.<br />
+- Subdirectory documentation (tests/README.md, scripts/README.md, etc.)</p>
+<h2 id="quick-start">Quick Start</h2>
+<h3 id="1-install-dependencies">1. Install Dependencies</h3>
+<div class="codehilite"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>markdown&gt;<span class="o">=</span><span class="m">3</span>.5.0<span class="w"> </span>Pygments&gt;<span class="o">=</span><span class="m">2</span>.17.0
+</code></pre></div>
+
+<p>Dependencies are listed in <code>requirements.txt</code>.</p>
+<h3 id="2-build-documentation">2. Build Documentation</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Basic build - convert all .md files to .html in place</span>
+python3<span class="w"> </span>scripts/build_markdown_docs.py<span class="w"> </span>--verbose
+
+<span class="c1"># Build and organize - move docs to docs/ directory (recommended)</span>
+python3<span class="w"> </span>scripts/build_markdown_docs.py<span class="w"> </span>--organize<span class="w"> </span>--verbose
+
+<span class="c1"># Clean rebuild - remove old HTML and rebuild everything</span>
+python3<span class="w"> </span>scripts/build_markdown_docs.py<span class="w"> </span>--clean<span class="w"> </span>--organize<span class="w"> </span>--verbose
+</code></pre></div>
+
+<h3 id="3-view-documentation">3. View Documentation</h3>
+<p>Open in your browser:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># macOS</span>
+open<span class="w"> </span>docs/index.html
+
+<span class="c1"># Linux</span>
+xdg-open<span class="w"> </span>docs/index.html
+
+<span class="c1"># Windows</span>
+start<span class="w"> </span>docs/index.html
+</code></pre></div>
+
+<p>Or simply double-click <code>docs/index.html</code> in your file manager.</p>
+<h2 id="build-workflow">Build Workflow</h2>
+<h3 id="typical-development-workflow">Typical Development Workflow</h3>
+<div class="codehilite"><pre><span></span><code>┌─────────────────┐
+│  Edit README.md │  1. Edit Markdown files
+│  Edit DOCS/*.md │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│  Build HTML     │  2. Run build script
+│  python3 build  │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│  View in        │  3. Review in browser
+│  Browser        │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│  Commit Both    │  4. Commit .md and .html
+│  .md and .html  │
+└─────────────────┘
+</code></pre></div>
+
+<h3 id="commands-summary">Commands Summary</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Full rebuild with organization</span>
+python3<span class="w"> </span>scripts/build_markdown_docs.py<span class="w"> </span>--clean<span class="w"> </span>--organize<span class="w"> </span>--verbose
+
+<span class="c1"># Quick rebuild (no reorganization)</span>
+python3<span class="w"> </span>scripts/build_markdown_docs.py<span class="w"> </span>--verbose
+
+<span class="c1"># Just organize existing files</span>
+python3<span class="w"> </span>scripts/build_markdown_docs.py<span class="w"> </span>--organize
+
+<span class="c1"># Clean old HTML files</span>
+python3<span class="w"> </span>scripts/build_markdown_docs.py<span class="w"> </span>--clean
+</code></pre></div>
+
+<h2 id="build-options">Build Options</h2>
+<h3 id="main-script-build_markdown_docspy">Main Script: <code>build_markdown_docs.py</code></h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--verbose</code>, <code>-v</code></td>
+<td>Show detailed output with file-by-file conversion</td>
+</tr>
+<tr>
+<td><code>--organize</code></td>
+<td>Move documentation files to docs/ (keep README in root)</td>
+</tr>
+<tr>
+<td><code>--clean</code></td>
+<td>Remove all HTML files before building</td>
+</tr>
+<tr>
+<td><code>--output-dir DIR</code></td>
+<td>Change base output directory (default: repository root)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="cleanup-script-cleanup_old_docspy">Cleanup Script: <code>cleanup_old_docs.py</code></h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--dry-run</code></td>
+<td>Preview what would be removed (safe, default)</td>
+</tr>
+<tr>
+<td><code>--verbose</code>, <code>-v</code></td>
+<td>Show detailed output with file sizes</td>
+</tr>
+</tbody>
+</table>
+<p>Removes obsolete HTML files with old naming conventions:<br />
+- <code>docs/README_README.md.html</code> → now just <code>README.html</code><br />
+- <code>docs/CHANGELOG_CHANGELOG.md.html</code> → now just <code>CHANGELOG.html</code><br />
+- etc.</p>
+<h2 id="features">Features</h2>
+<h3 id="html-styling">HTML Styling</h3>
+<p>Every generated HTML page includes:</p>
+<ul>
+<li><strong>GitHub Dark Theme</strong>: <code>#0d1117</code> background, <code>#c9d1d9</code> text</li>
+<li><strong>Barbie Pink Accents</strong>: <code>#FF69B4</code> for headings, borders, highlights</li>
+<li><strong>Responsive Design</strong>: Mobile-first, adapts to all screen sizes</li>
+<li><strong>Syntax Highlighting</strong>: Code blocks with Pygments (Python, JS, Shell, etc.)</li>
+<li><strong>Navigation Bar</strong>: Links to Home, Docs Index, Map App, Related Docs</li>
+<li><strong>Source Information</strong>: Shows source .md file and generation timestamp</li>
+<li><strong>Professional Layout</strong>: Consistent spacing, typography, and structure</li>
+</ul>
+<h3 id="automatic-link-conversion">Automatic Link Conversion</h3>
+<p>The build system automatically converts Markdown links to HTML:<br />
+- <code>[Text](file.html)</code> → <code>[Text](file.html)</code><br />
+- <code>[Text](../path/file.html)</code> → <code>[Text](../path/file.html)</code></p>
+<h3 id="documentation-index">Documentation Index</h3>
+<p>The <code>docs/index.html</code> file is auto-generated with:<br />
+- <strong>Categorized navigation</strong>: Main docs, design docs, development docs<br />
+- <strong>Emoji icons</strong>: Visual distinction between document types<br />
+- <strong>Alphabetical sorting</strong>: Easy to find specific documents<br />
+- <strong>Smart categorization</strong>: Based on filename patterns</p>
+<p>Categories:<br />
+- 📖 <strong>Main Documentation</strong>: README, CHANGELOG, QUICK_REFERENCE<br />
+- 🎨 <strong>Marker &amp; Icon Design</strong>: Design system, icon docs<br />
+- 🛠️ <strong>Development</strong>: Tests, scripts, templates<br />
+- 📄 <strong>Other</strong>: Everything else</p>
+<h2 id="cicd-integration">CI/CD Integration</h2>
+<h3 id="github-actions-example">GitHub Actions Example</h3>
+<div class="codehilite"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Build Documentation</span>
+
+<span class="nt">on</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">push</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">branches</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">main</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">paths</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;**.md&#39;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;scripts/build_markdown_docs.py&#39;</span>
+
+<span class="nt">jobs</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">build-docs</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu-latest</span>
+
+<span class="w">    </span><span class="nt">steps</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/checkout@v3</span>
+
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Set up Python</span>
+<span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/setup-python@v4</span>
+<span class="w">        </span><span class="nt">with</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">python-version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;3.x&#39;</span>
+
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Install dependencies</span>
+<span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">          </span><span class="no">pip install markdown&gt;=3.5.0 Pygments&gt;=2.17.0</span>
+
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Build documentation</span>
+<span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">          </span><span class="no">python3 scripts/build_markdown_docs.py --organize --verbose</span>
+
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Commit changes</span>
+<span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">          </span><span class="no">git config --local user.name &quot;GitHub Actions&quot;</span>
+<span class="w">          </span><span class="no">git config --local user.email &quot;actions@github.com&quot;</span>
+<span class="w">          </span><span class="no">git add docs/ README.html</span>
+<span class="w">          </span><span class="no">git diff --quiet &amp;&amp; git diff --staged --quiet || git commit -m &quot;📄 Update documentation HTML&quot;</span>
+<span class="w">          </span><span class="no">git push</span>
+</code></pre></div>
+
+<h3 id="manual-build-before-push">Manual Build Before Push</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Before committing Markdown changes</span>
+python3<span class="w"> </span>scripts/build_markdown_docs.py<span class="w"> </span>--organize<span class="w"> </span>--verbose
+
+<span class="c1"># Stage both .md and .html files</span>
+git<span class="w"> </span>add<span class="w"> </span>docs/*.md<span class="w"> </span>docs/*.html<span class="w"> </span>README.html
+
+<span class="c1"># Commit</span>
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;📄 Update documentation&quot;</span>
+git<span class="w"> </span>push
+</code></pre></div>
+
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="issue-missing-dependencies">Issue: Missing Dependencies</h3>
+<p><strong>Error:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="err">❌</span><span class="w"> </span><span class="nx">Error</span><span class="p">:</span><span class="w"> </span><span class="nx">Required</span><span class="w"> </span><span class="nx">packages</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="nx">installed</span>
+</code></pre></div>
+
+<p><strong>Solution:</strong></p>
+<div class="codehilite"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>markdown&gt;<span class="o">=</span><span class="m">3</span>.5.0<span class="w"> </span>Pygments&gt;<span class="o">=</span><span class="m">2</span>.17.0
+</code></pre></div>
+
+<h3 id="issue-files-not-moving-to-docs">Issue: Files Not Moving to docs/</h3>
+<p><strong>Problem:</strong> Files stay in root after <code>--organize</code></p>
+<p><strong>Solution:</strong> <br />
+- README.md and README.html intentionally stay in root<br />
+- DOCUMENTATION_BUILD.md stays in root<br />
+- All other files should move<br />
+- Check output with <code>--verbose</code> flag</p>
+<h3 id="issue-links-broken-after-organization">Issue: Links Broken After Organization</h3>
+<p><strong>Problem:</strong> Links between documents don't work</p>
+<p><strong>Solution:</strong><br />
+- Use relative paths in Markdown: <code>[link](file.html)</code> not <code>/file.md</code><br />
+- The build script automatically converts <code>.md</code> → <code>.html</code><br />
+- Navigation links are automatically adjusted based on file location</p>
+<h3 id="issue-syntax-highlighting-not-working">Issue: Syntax Highlighting Not Working</h3>
+<p><strong>Problem:</strong> Code blocks appear as plain text</p>
+<p><strong>Solution:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Ensure Pygments is installed</span>
+pip<span class="w"> </span>install<span class="w"> </span>Pygments&gt;<span class="o">=</span><span class="m">2</span>.17.0
+
+<span class="c1"># Rebuild</span>
+python3<span class="w"> </span>scripts/build_markdown_docs.py<span class="w"> </span>--clean<span class="w"> </span>--verbose
+</code></pre></div>
+
+<h3 id="issue-old-html-files-remain">Issue: Old HTML Files Remain</h3>
+<p><strong>Problem:</strong> Obsolete HTML files with old naming</p>
+<p><strong>Solution:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Preview what would be removed</span>
+python3<span class="w"> </span>scripts/cleanup_old_docs.py<span class="w"> </span>--dry-run<span class="w"> </span>--verbose
+
+<span class="c1"># Remove obsolete files</span>
+python3<span class="w"> </span>scripts/cleanup_old_docs.py
+</code></pre></div>
+
+<h2 id="benefits">Benefits</h2>
+<h3 id="universal-compatibility">✅ Universal Compatibility</h3>
+<ul>
+<li>Works on any platform (macOS, Linux, Windows)</li>
+<li>No server required (file:// protocol works)</li>
+<li>Compatible with all hosting (GitHub Pages, Netlify, Vercel, etc.)</li>
+</ul>
+<h3 id="professional-appearance">✅ Professional Appearance</h3>
+<ul>
+<li>Consistent GitHub-style dark theme</li>
+<li>Beautiful syntax highlighting</li>
+<li>Responsive mobile design</li>
+<li>Professional typography</li>
+</ul>
+<h3 id="easy-navigation">✅ Easy Navigation</h3>
+<ul>
+<li>Every page links to key documents</li>
+<li>Auto-generated documentation index</li>
+<li>Breadcrumb navigation</li>
+<li>Related document suggestions</li>
+</ul>
+<h3 id="low-maintenance">✅ Low Maintenance</h3>
+<ul>
+<li>Single command to rebuild all docs</li>
+<li>Automatic link conversion</li>
+<li>Auto-generated index</li>
+<li>No manual HTML editing needed</li>
+</ul>
+<h3 id="developer-friendly">✅ Developer Friendly</h3>
+<ul>
+<li>Edit Markdown as usual</li>
+<li>Build with one command</li>
+<li>Preview instantly in browser</li>
+<li>Works with all editors</li>
+</ul>
+<h3 id="future-proof">✅ Future Proof</h3>
+<ul>
+<li>Pure HTML/CSS (no JavaScript required)</li>
+<li>No external dependencies at runtime</li>
+<li>Works offline</li>
+<li>Archive-friendly</li>
+</ul>
+<h2 id="technical-details">Technical Details</h2>
+<h3 id="dependencies">Dependencies</h3>
+<p><strong>Build Time:</strong><br />
+- <code>markdown&gt;=3.5.0</code> - Markdown to HTML conversion<br />
+- <code>Pygments&gt;=2.17.0</code> - Syntax highlighting for code blocks</p>
+<p><strong>Runtime:</strong><br />
+- None! Pure HTML/CSS</p>
+<h3 id="file-processing">File Processing</h3>
+<ol>
+<li><strong>Scan</strong>: Find all <code>.md</code> files (excluding <code>.git</code>, <code>node_modules</code>, hidden directories)</li>
+<li><strong>Convert</strong>: Transform Markdown to HTML with extensions:</li>
+<li><code>fenced_code</code> - Code blocks with syntax highlighting</li>
+<li><code>codehilite</code> - Pygments integration</li>
+<li><code>tables</code> - GitHub-style tables</li>
+<li><code>toc</code> - Table of contents generation</li>
+<li><code>nl2br</code> - Newline to <code>&lt;br&gt;</code> conversion</li>
+<li><strong>Template</strong>: Wrap in full HTML template with navigation</li>
+<li><strong>Links</strong>: Convert all <code>.md</code> links to <code>.html</code> links</li>
+<li><strong>Organize</strong>: Optionally move to <code>docs/</code> directory</li>
+<li><strong>Index</strong>: Generate <code>docs/index.html</code> with categories</li>
+</ol>
+<h3 id="html-template">HTML Template</h3>
+<p>Each page includes:<br />
+- Full HTML5 doctype<br />
+- Responsive viewport meta tag<br />
+- Embedded CSS (no external stylesheets)<br />
+- Navigation with relative links<br />
+- Main content area<br />
+- Source file information<br />
+- Generation timestamp<br />
+- Footer with project info</p>
+<h2 id="kiss-principle-compliance">KISS Principle Compliance</h2>
+<p>This build system follows the <strong>Keep It Simple, Stupid</strong> principle:</p>
+<p>✅ <strong>Simple</strong>: Two Python scripts, clear purpose<br />
+✅ <strong>Minimal Dependencies</strong>: Only markdown + Pygments<br />
+✅ <strong>No Complex Build Tools</strong>: No webpack, no npm, no frameworks<br />
+✅ <strong>Pure HTML/CSS</strong>: No JavaScript at runtime<br />
+✅ <strong>Standard Library First</strong>: Uses pathlib, argparse, re<br />
+✅ <strong>Clear Error Messages</strong>: Helpful feedback on issues<br />
+✅ <strong>Single Responsibility</strong>: Each script does one thing well</p>
+<h2 id="see-also">See Also</h2>
+<ul>
+<li><a href="scripts/README.html">Scripts Documentation</a> - All utility scripts</li>
+<li><a href="docs/QUICK_REFERENCE.html">Quick Reference</a> - Common commands</li>
+<li><a href="README.html">README</a> - Main project documentation</li>
+<li><a href="docs/CHANGELOG.html">Changelog</a> - Version history</li>
+</ul>
+<h2 id="questions">Questions?</h2>
+<ul>
+<li>Check the troubleshooting section above</li>
+<li>Run with <code>--help</code> flag for usage information</li>
+<li>Review the source code (it's well commented!)</li>
+<li>Check <code>scripts/README.md</code> for all available scripts</li>
+</ul>
+    </main>
+    
+    <div class="source-info">
+        <strong>📄 Source:</strong> <code>/home/runner/work/krwl-hof/krwl-hof/DOCUMENTATION_BUILD.md</code><br>
+        <strong>⏰ Generated:</strong> 2026-01-03 08:16:00
+    </div>
+    
+    <div class="footer">
+        <p><strong>KRWL HOF Community Events</strong> - Documentation</p>
+        <p>📍 Built with Leaflet.js | 🎨 Icons by Lucide | 💖 Barbie Pink Theme</p>
+    </div>
+</body>
+</html>

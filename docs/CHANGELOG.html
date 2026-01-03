@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Changelog</title>
+    <style>
+        /* GitHub Dark Theme with Barbie Pink Accents */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: #0d1117;
+            color: #c9d1d9;
+        }
+        
+        /* Headers */
+        h1, h2, h3, h4, h5, h6 {
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            line-height: 1.25;
+            color: #FF69B4;
+        }
+        
+        h1 { 
+            font-size: 2.5em; 
+            border-bottom: 2px solid #FF69B4; 
+            padding-bottom: 0.3em;
+            margin-bottom: 1.5rem;
+        }
+        
+        h2 { 
+            font-size: 1.75em; 
+            border-bottom: 1px solid #21262d; 
+            padding-bottom: 0.3em; 
+        }
+        
+        h3 { font-size: 1.5em; }
+        h4 { font-size: 1.25em; }
+        h5 { font-size: 1.1em; }
+        h6 { font-size: 1em; }
+        
+        /* Links */
+        a { 
+            color: #58a6ff; 
+            text-decoration: none; 
+        }
+        
+        a:hover { 
+            text-decoration: underline; 
+        }
+        
+        /* Navigation */
+        .nav {
+            background: #161b22;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            border-left: 4px solid #FF69B4;
+        }
+        
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .nav-links a {
+            padding: 0.5rem 1rem;
+            background: #21262d;
+            border-radius: 6px;
+            border: 1px solid #30363d;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        
+        .nav-links a:hover {
+            background: #30363d;
+            border-color: #FF69B4;
+            transform: translateY(-2px);
+            text-decoration: none;
+        }
+        
+        /* Code */
+        code {
+            background: #161b22;
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 85%;
+            color: #79c0ff;
+        }
+        
+        pre {
+            background: #161b22;
+            padding: 1rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            border: 1px solid #30363d;
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+            color: #c9d1d9;
+        }
+        
+        /* Tables */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1rem 0;
+            overflow-x: auto;
+            display: block;
+        }
+        
+        thead {
+            background: #161b22;
+        }
+        
+        th {
+            color: #FF69B4;
+            font-weight: 600;
+            text-align: left;
+            padding: 0.75rem;
+            border: 1px solid #30363d;
+        }
+        
+        td {
+            padding: 0.75rem;
+            border: 1px solid #30363d;
+        }
+        
+        tr:nth-child(even) {
+            background: #0d1117;
+        }
+        
+        tr:hover {
+            background: #161b22;
+        }
+        
+        /* Lists */
+        ul, ol {
+            margin: 1rem 0;
+            padding-left: 2rem;
+        }
+        
+        li {
+            margin: 0.5rem 0;
+        }
+        
+        /* Blockquotes */
+        blockquote {
+            border-left: 4px solid #FF69B4;
+            padding-left: 1rem;
+            margin: 1rem 0;
+            color: #8b949e;
+            font-style: italic;
+        }
+        
+        /* Horizontal Rule */
+        hr {
+            border: none;
+            border-top: 1px solid #21262d;
+            margin: 2rem 0;
+        }
+        
+        /* Paragraphs */
+        p {
+            margin: 1rem 0;
+        }
+        
+        /* Images */
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+            margin: 1rem 0;
+        }
+        
+        /* Source Info */
+        .source-info {
+            background: #161b22;
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1.5rem 0;
+            font-size: 0.9em;
+            color: #8b949e;
+            border-left: 4px solid #30363d;
+        }
+        
+        .source-info strong {
+            color: #c9d1d9;
+        }
+        
+        /* Footer */
+        .footer {
+            margin-top: 3rem;
+            padding-top: 1rem;
+            border-top: 1px solid #30363d;
+            color: #8b949e;
+            font-size: 0.9em;
+            text-align: center;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            h2 {
+                font-size: 1.5em;
+            }
+            
+            .nav-links {
+                flex-direction: column;
+            }
+            
+            .nav-links a {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-links">
+            <a href="../README.html">🏠 Home</a>
+            <a href="index.html">📖 Docs Index</a>
+            <a href="../static/index.html">🗺️ Map App</a>
+            <a href="README.html">📖 README</a>
+            <a href="QUICK_REFERENCE.html">⚡ Quick Ref</a>
+        </div>
+    </nav>
+    
+    <main>
+        <h1 id="changelog">Changelog</h1>
+<p>All notable changes to the KRWL HOF Community Events project will be documented in this file.</p>
+<p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>,<br />
+and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
+<h2 id="unreleased">[Unreleased]</h2>
+<h3 id="added">Added</h3>
+<ul>
+<li><strong>Dynamic Event Templates with Relative Times</strong>: Demo events now use <code>relative_time</code> specifications that calculate actual timestamps on every page reload</li>
+<li>Two types supported: <code>offset</code> (relative to current time) and <code>sunrise_relative</code> (relative to next sunrise)</li>
+<li>Timezone offset support for international testing</li>
+<li>Comprehensive test suite (<code>tests/test_relative_times.py</code> and HTML test page)</li>
+<li>Full documentation in README.md section "Advanced Features &gt; Dynamic Event Templates"</li>
+<li>Demo events always show accurate relative times like "happening now" or "starting in 5 minutes"</li>
+<li><code>processTemplateEvents()</code> method in frontend to calculate timestamps dynamically</li>
+<li>All 23 demo events now include <code>relative_time</code> field for automatic updating</li>
+</ul>
+<h3 id="fixed">Fixed</h3>
+<ul>
+<li>Duplicate events in embedded HTML (static/events.json now contains only real events)</li>
+<li>Event mutation issue in <code>processTemplateEvents()</code> (now creates copies instead of mutating)</li>
+<li>Missing <code>relative_time</code> field for <code>demo_far_away</code> event</li>
+<li>Unused imports in test file</li>
+</ul>
+<h3 id="changed">Changed</h3>
+<ul>
+<li><code>scripts/generate_demo_events.py</code> now includes <code>relative_time</code> specifications for all demo events</li>
+<li>Demo event generation now loads from <code>event-data/events.json</code> instead of <code>static/events.json</code></li>
+<li><code>assets/js/app.js</code> updated to process template events without mutation</li>
+</ul>
+<h2 id="100-2026-01-01">[1.0.0] - 2026-01-01</h2>
+<h3 id="major-features">Major Features</h3>
+<h4 id="architecture-simplification">🏗️ Architecture Simplification</h4>
+<ul>
+<li><strong>86% Code Reduction</strong>: Replaced 2185-line <code>generator.py</code> with streamlined 324-line <code>cdn_inliner.py</code></li>
+<li><strong>Single-File Output</strong>: Generate one HTML file with all resources inlined (66KB total)</li>
+<li><strong>CDN Fallback System</strong>: Tries jsDelivr first, falls back to local files if offline</li>
+<li><strong>Automatic Event Updates</strong>: HTML updates automatically after approve/publish operations</li>
+</ul>
+<p>See <a href="SIMPLIFICATION_SUMMARY.html">SIMPLIFICATION_SUMMARY.md</a> for complete details.</p>
+<h4 id="smart-scraper-system">🤖 Smart Scraper System</h4>
+<ul>
+<li><strong>AI-Powered Extraction</strong>: Modular scraper with AI provider integration (2,886 lines)</li>
+<li><strong>Free AI Providers</strong>: DuckDuckGo AI, Bing AI, Google Gemini support</li>
+<li><strong>Image Analysis</strong>: EXIF/GPS metadata extraction, OCR with Tesseract, AI-powered analysis</li>
+<li><strong>Multi-Platform Support</strong>: RSS/Atom, HTML, JSON API scrapers</li>
+<li><strong>Social Media Ready</strong>: Placeholder implementations for Facebook, Instagram, TikTok, X/Twitter, Telegram, WhatsApp</li>
+<li><strong>Production Ready</strong>: Comprehensive error handling, rate limiting, logging</li>
+</ul>
+<p>See <a href="SMART_SCRAPER_SUMMARY.html">SMART_SCRAPER_SUMMARY.md</a> for complete details.</p>
+<h3 id="added_1">Added</h3>
+<h4 id="backend-features">Backend Features</h4>
+<ul>
+<li><strong>Event Scraping</strong>: Scrape events from RSS feeds, APIs, and HTML pages</li>
+<li><strong>Editor Workflow</strong>: Review, edit, approve, or reject events before publishing</li>
+<li><strong>Python TUI</strong>: Interactive terminal interface for managing events with menu navigation</li>
+<li><strong>CLI Commands</strong>: Command-line interface for automation and scripting</li>
+<li><strong>Rejected Events Tracking</strong>: Track rejected events with timestamps to prevent re-scraping</li>
+<li><strong>Event Archiving</strong>: Automatically archive past events to keep published list current</li>
+<li><strong>Data Backup System</strong>: Automatic backups when clearing data with <code>.backup</code> extension</li>
+<li><strong>Distance Calculation</strong>: Haversine formula for calculating distances between coordinates</li>
+<li><strong>Documentation Viewer</strong>: Built-in TUI-based documentation viewer with search and navigation</li>
+<li><strong>Example Data Loader</strong>: Load sample data for development and testing</li>
+<li><strong>Data Management Tools</strong>: CLI and TUI tools to clear, list, and manage event data</li>
+<li><strong>GitHub Actions Workflow Launcher</strong>: Launch and manage GitHub Actions workflows from TUI and CLI</li>
+</ul>
+<h4 id="frontend-features">Frontend Features</h4>
+<ul>
+<li><strong>Interactive Map</strong>: Fullscreen map interface with Leaflet.js showing events</li>
+<li><strong>Geolocation Filtering</strong>: Shows only events near the user's location</li>
+<li><strong>Sunrise Filtering</strong>: Displays events only until the next sunrise</li>
+<li><strong>Custom Location Override</strong>: Allow users to set custom location instead of using geolocation</li>
+<li><strong>Event Filters</strong>: Filter events by category, time, and distance</li>
+<li><strong>Event Card UI</strong>: Card-based UI for displaying event details in the sidebar</li>
+<li><strong>Map Markers</strong>: Interactive markers on the map for events and user location</li>
+<li><strong>Responsive Design</strong>: Mobile-responsive layout with CSS media queries</li>
+<li><strong>Environment Watermark</strong>: Visual watermark showing environment, commit SHA, and PR number (configurable)</li>
+</ul>
+<h4 id="configuration-deployment">Configuration &amp; Deployment</h4>
+<ul>
+<li><strong>Debug Mode</strong>: Development config with console logging for troubleshooting</li>
+<li><strong>Production Optimization</strong>: Production config optimized for maximum speed with caching</li>
+<li><strong>Preview Deployment</strong>: Deploy testing/preview version with debug mode</li>
+<li><strong>Production Deployment</strong>: Deploy production version to main branch</li>
+<li><strong>Promotion Workflow</strong>: Promote preview to production via PR</li>
+<li><strong>Multi-Data Sources</strong>: Support for real, demo, or combined event data sources</li>
+<li><strong>Custom Domain Support</strong>: Support for custom domains via CNAME</li>
+<li><strong>GitHub Environments UI Integration</strong>: Deployments visible in GitHub UI with direct links</li>
+</ul>
+<h4 id="infrastructure">Infrastructure</h4>
+<ul>
+<li><strong>GitHub Copilot Custom Instructions</strong>: Comprehensive project-specific instructions including architecture, coding guidelines, and workflows</li>
+<li><strong>VS Code Workspace Configuration</strong>: Settings, recommended extensions, tasks, and debug configurations</li>
+<li><strong>Development Container Configuration</strong>: Docker-based dev container with Python 3.11 and pre-configured tools</li>
+<li><strong>Model Context Protocol (MCP) Server</strong>: MCP server configuration for enhanced AI assistance</li>
+<li><strong>Development Environment Documentation</strong>: Comprehensive setup guide for all development tools</li>
+</ul>
+<h4 id="testing-quality">Testing &amp; Quality</h4>
+<ul>
+<li><strong>CDN Fallback Tests</strong>: 6 comprehensive tests for CDN fallback system</li>
+<li><strong>Scraper Tests</strong>: 20 tests for event scraping functionality</li>
+<li><strong>Smart Scraper Tests</strong>: 17 tests for AI-powered scraping</li>
+<li><strong>Event Schema Validation</strong>: Tests for event data structure validation</li>
+<li><strong>Filter Tests</strong>: Tests for event filtering logic</li>
+<li><strong>Translation Tests</strong>: Tests for i18n functionality</li>
+<li><strong>Scheduler Tests</strong>: Tests for scheduled operations</li>
+<li><strong>KISS Principle Compliance</strong>: Automated checker to enforce simplicity</li>
+<li><strong>Feature Registry System</strong>: Documents all 38+ implemented features with validation</li>
+</ul>
+<h4 id="documentation">Documentation</h4>
+<ul>
+<li><strong>KISS Documentation Philosophy</strong>: All documentation consolidated in README.md, inline code comments, and CLI help</li>
+<li><strong>Auto-Generated README</strong>: Built from templates by <code>scripts/generate_readme.py</code></li>
+<li><strong>Comprehensive Inline Comments</strong>: Technical details live in the source code where they're relevant</li>
+<li><strong>Configuration Guide</strong>: Detailed configuration documentation in README.md</li>
+<li><strong>Testing Guide</strong>: Comprehensive testing instructions in README.md</li>
+<li><strong>Setup Guide</strong>: Complete setup and installation instructions in README.md</li>
+<li><strong>Management Interfaces Guide</strong>: Documentation for GitHub UI, CLI, and TUI interfaces</li>
+</ul>
+<h3 id="changed_1">Changed</h3>
+<ul>
+<li><strong>Static Generation</strong>: Moved from template-based generation to CDN inlining approach</li>
+<li><strong>Source Files</strong>: CSS and JS are now source files (edit directly) instead of generated files</li>
+<li><strong>Build Process</strong>: Faster build time (~1-2s vs ~2-3s) with single-file output</li>
+<li><strong>HTTP Requests</strong>: Reduced from 3 files to 1 file for better performance</li>
+</ul>
+<h3 id="removed">Removed</h3>
+<ul>
+<li><strong>generator.py</strong>: Removed 2185-line generator in favor of simpler cdn_inliner.py</li>
+<li><strong>Python Cache</strong>: Cleaned up 498KB of Python cache files</li>
+<li><strong>Obsolete Files</strong>: Removed temporary test files and outdated references</li>
+</ul>
+<h3 id="fixed_1">Fixed</h3>
+<ul>
+<li><strong>Offline Support</strong>: CDN fallback ensures app works without internet connection</li>
+<li><strong>Event Updates</strong>: Automatic HTML updates after event approval/rejection</li>
+<li><strong>Rate Limiting</strong>: Prevents abuse of AI providers with configurable delays</li>
+<li><strong>Error Handling</strong>: Comprehensive try/except blocks throughout codebase</li>
+</ul>
+<h3 id="security">Security</h3>
+<ul>
+<li><strong>Input Validation</strong>: All user input and scraped data is sanitized</li>
+<li><strong>XSS Protection</strong>: HTML escaping when displaying user-generated content</li>
+<li><strong>No Secrets in Code</strong>: API keys stored in config files (gitignored)</li>
+<li><strong>HTTPS Enforcement</strong>: Production uses HTTPS via GitHub Pages</li>
+</ul>
+<h2 id="development-statistics">Development Statistics</h2>
+<h3 id="code-metrics">Code Metrics</h3>
+<ul>
+<li><strong>Total Python Files</strong>: 35+</li>
+<li><strong>Total Lines of Code</strong>: 4,300+ (2,886 core + 1,414 infrastructure)</li>
+<li><strong>Lines of Documentation</strong>: 878+</li>
+<li><strong>Lines of Tests</strong>: 545+</li>
+<li><strong>Test Coverage</strong>: 37/37 tests passing (100%)</li>
+<li><strong>KISS Compliance</strong>: All files under 500 lines ✅</li>
+</ul>
+<h3 id="features-implemented">Features Implemented</h3>
+<ul>
+<li><strong>Backend Features</strong>: 15</li>
+<li><strong>Frontend Features</strong>: 14</li>
+<li><strong>Infrastructure Features</strong>: 9</li>
+<li><strong>Total Features</strong>: 38+</li>
+</ul>
+<h3 id="module-sizes-lines-of-code">Module Sizes (Lines of Code)</h3>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>Lines</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cdn_inliner.py</td>
+<td>324</td>
+<td>Generate static HTML</td>
+</tr>
+<tr>
+<td>utils.py</td>
+<td>397</td>
+<td>Shared utility functions</td>
+</tr>
+<tr>
+<td>scraper.py</td>
+<td>383</td>
+<td>Event scraping</td>
+</tr>
+<tr>
+<td>workflow_launcher.py</td>
+<td>418</td>
+<td>GitHub Actions integration</td>
+</tr>
+<tr>
+<td>scraper_config_tui.py</td>
+<td>538</td>
+<td>Configuration TUI</td>
+</tr>
+<tr>
+<td>scraper_cli.py</td>
+<td>355</td>
+<td>CLI commands</td>
+</tr>
+<tr>
+<td>smart_scraper/*</td>
+<td>1,700+</td>
+<td>AI-powered scraping system</td>
+</tr>
+</tbody>
+</table>
+<h3 id="performance-improvements">Performance Improvements</h3>
+<ul>
+<li><strong>Build Time</strong>: Reduced from ~2-3s to ~1-2s</li>
+<li><strong>File Size</strong>: Single 66KB file vs multiple files</li>
+<li><strong>HTTP Requests</strong>: 1 request vs 3 requests</li>
+<li><strong>Code Complexity</strong>: 86% reduction in generator code</li>
+</ul>
+<h2 id="migration-notes">Migration Notes</h2>
+<h3 id="for-developers">For Developers</h3>
+<p><strong>Old workflow</strong> (Template-based):</p>
+<div class="codehilite"><pre><span></span><code>vim<span class="w"> </span>src/modules/generator.py<span class="w">  </span><span class="c1"># Edit templates</span>
+python3<span class="w"> </span>src/main.py<span class="w"> </span>generate
+</code></pre></div>
+
+<p><strong>New workflow</strong> (Direct editing):</p>
+<div class="codehilite"><pre><span></span><code>vim<span class="w"> </span>static/css/style.css<span class="w">  </span><span class="c1"># Edit CSS directly</span>
+vim<span class="w"> </span>static/js/app.js<span class="w">      </span><span class="c1"># Edit JS directly</span>
+python3<span class="w"> </span>src/main.py<span class="w"> </span>generate<span class="w">  </span><span class="c1"># Generate HTML</span>
+</code></pre></div>
+
+<h3 id="for-users">For Users</h3>
+<p>No changes needed! All three management interfaces work the same:<br />
+- <strong>CLI</strong>: <code>python3 src/main.py list</code>, <code>python3 src/main.py publish event_001</code><br />
+- <strong>TUI</strong>: <code>python3 src/main.py</code> (interactive menu)<br />
+- <strong>GitHub UI</strong>: Actions → Review Events → Run workflow</p>
+<h3 id="backwards-compatibility">Backwards Compatibility</h3>
+<ul>
+<li>✅ All existing tests pass (37/37)</li>
+<li>✅ Legacy scraper preserved and working</li>
+<li>✅ SmartScraper is opt-in enhancement</li>
+<li>✅ No breaking changes to public APIs</li>
+<li>✅ Configuration format unchanged (extensions added)</li>
+</ul>
+<h2 id="future-enhancements">Future Enhancements</h2>
+<h3 id="phase-1-easy">Phase 1 (Easy)</h3>
+<ul>
+<li>Implement OpenAI provider</li>
+<li>Implement Anthropic provider</li>
+<li>Add more OCR engines</li>
+<li>Add service worker for true offline PWA</li>
+</ul>
+<h3 id="phase-2-medium">Phase 2 (Medium)</h3>
+<ul>
+<li>Facebook Graph API integration</li>
+<li>Instagram API integration</li>
+<li>Telegram Bot API integration</li>
+<li>HTTP/2 Server Push for multi-file option</li>
+</ul>
+<h3 id="phase-3-complex">Phase 3 (Complex)</h3>
+<ul>
+<li>Video frame analysis</li>
+<li>Batch processing UI</li>
+<li>Cost tracking dashboard</li>
+<li>Auto-scaling rate limits</li>
+</ul>
+<h2 id="contributing">Contributing</h2>
+<h3 id="testing-requirements">Testing Requirements</h3>
+<p>Before committing, run:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Documentation validation</span>
+python3<span class="w"> </span>docs/build_docs.py<span class="w"> </span>--validate
+
+<span class="c1"># Feature verification</span>
+python3<span class="w"> </span>verify_features.py<span class="w"> </span>--verbose
+
+<span class="c1"># Core tests</span>
+python3<span class="w"> </span>test_scraper.py<span class="w"> </span>--verbose
+python3<span class="w"> </span>test_smart_scraper.py<span class="w"> </span>--verbose
+python3<span class="w"> </span>test_filters.py<span class="w"> </span>--verbose
+python3<span class="w"> </span>test_event_schema.py<span class="w"> </span>--verbose
+
+<span class="c1"># KISS compliance</span>
+python3<span class="w"> </span>check_kiss.py<span class="w"> </span>--verbose
+</code></pre></div>
+
+<h3 id="code-guidelines">Code Guidelines</h3>
+<ul>
+<li><strong>KISS Principle</strong>: Keep files under 500 lines</li>
+<li><strong>Mobile First</strong>: Design for mobile, enhance for desktop</li>
+<li><strong>Accessibility</strong>: WCAG 2.1 Level AA compliance required</li>
+<li><strong>No Frameworks</strong>: Vanilla JS only (except Leaflet.js)</li>
+<li><strong>Python 3.x</strong>: Standard library preferred</li>
+</ul>
+<h2 id="acknowledgments">Acknowledgments</h2>
+<ul>
+<li><strong>Community</strong>: Built by and for the local Hof community</li>
+<li><strong>Open Source</strong>: Powered by Leaflet.js, Python, and love</li>
+<li><strong>AI Assistance</strong>: Enhanced with GitHub Copilot and AI providers</li>
+</ul>
+<hr />
+<p>For detailed information about specific changes, see:<br />
+- <a href="SIMPLIFICATION_SUMMARY.html">SIMPLIFICATION_SUMMARY.md</a> - Architecture simplification details<br />
+- <a href="SMART_SCRAPER_SUMMARY.html">SMART_SCRAPER_SUMMARY.md</a> - SmartScraper implementation details<br />
+- <a href="WIKI_INITIALIZATION.html">WIKI_INITIALIZATION.md</a> - GitHub Wiki setup guide<br />
+- <a href="docs/">docs/</a> - Complete project documentation</p>
+<h2 id="license">License</h2>
+<p>This project is open source and available under the terms specified in the repository.</p>
+<h2 id="contact">Contact</h2>
+<p>For questions, issues, or contributions:<br />
+- <strong>Repository</strong>: https://github.com/feileberlin/krwl-hof<br />
+- <strong>Issues</strong>: https://github.com/feileberlin/krwl-hof/issues<br />
+- <strong>Discussions</strong>: https://github.com/feileberlin/krwl-hof/discussions</p>
+<hr />
+<p><em>Last Updated: 2026-01-01</em></p>
+    </main>
+    
+    <div class="source-info">
+        <strong>📄 Source:</strong> <code>/home/runner/work/krwl-hof/krwl-hof/docs/CHANGELOG.md</code><br>
+        <strong>⏰ Generated:</strong> 2026-01-03 08:16:00
+    </div>
+    
+    <div class="footer">
+        <p><strong>KRWL HOF Community Events</strong> - Documentation</p>
+        <p>📍 Built with Leaflet.js | 🎨 Icons by Lucide | 💖 Barbie Pink Theme</p>
+    </div>
+</body>
+</html>
