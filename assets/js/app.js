@@ -71,6 +71,12 @@ class EventsApp {
         // Setup event listeners (always run, even if map fails)
         this.setupEventListeners();
         
+        // Check for pending events and update notifications
+        await this.checkPendingEvents();
+        
+        // Start periodic polling for pending events
+        this.startPendingEventsPolling();
+        
         // Signal that app is ready (for screenshot tools, etc.)
         this.markAppAsReady();
     }
@@ -197,6 +203,69 @@ class EventsApp {
             }
         }
     }
+    
+    async checkPendingEvents() {
+        /**
+         * Check for pending events and update UI notifications
+         * 
+         * Fetches pending-count.json and updates:
+         * 1. Dashboard notification box (if count > 0)
+         * 2. Browser tab title (adds ❗ emoji if count > 0)
+         * 
+         * Handles missing file gracefully (backward compatibility)
+         * Runs on page load and periodically (every 5 minutes)
+         */
+        try {
+            const response = await fetch('pending-count.json');
+            if (!response.ok) {
+                // File doesn't exist yet - this is okay
+                this.log('Pending count file not found (backward compatibility)');
+                return;
+            }
+            
+            const data = await response.json();
+            const count = data.count || 0;
+            
+            this.log('Pending events count:', count);
+            
+            // Update browser title
+            const baseTitle = 'KRWL HOF - Community Events';
+            if (count > 0) {
+                document.title = '❗ ' + baseTitle;
+            } else {
+                document.title = baseTitle;
+            }
+            
+            // Update dashboard notification
+            const notificationBox = document.getElementById('pending-notification');
+            const notificationText = document.getElementById('pending-notification-text');
+            
+            if (notificationBox && notificationText) {
+                if (count > 0) {
+                    notificationText.textContent = `${count} pending event${count > 1 ? 's' : ''} awaiting review`;
+                    notificationBox.style.display = 'flex';
+                    notificationBox.setAttribute('aria-hidden', 'false');
+                } else {
+                    notificationBox.style.display = 'none';
+                    notificationBox.setAttribute('aria-hidden', 'true');
+                }
+            }
+        } catch (error) {
+            this.log('Could not fetch pending events count:', error.message);
+            // Fail silently - this is a non-critical feature
+        }
+    }
+    
+    startPendingEventsPolling() {
+        /**
+         * Set up periodic checking for pending events
+         * Checks every 5 minutes (300000ms)
+         */
+        setInterval(() => {
+            this.checkPendingEvents();
+        }, 5 * 60 * 1000); // 5 minutes
+    }
+
     
     async loadConfig() {
         try {
