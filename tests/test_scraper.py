@@ -58,7 +58,7 @@ class ScraperTester:
         self.test_dir = tempfile.mkdtemp(prefix='krwl_scraper_test_')
         test_path = Path(self.test_dir)
         
-        # Create event-data directory (correct data location)
+        # Create data directory (correct data location)
         event_data_dir = test_path / 'data'
         event_data_dir.mkdir(exist_ok=True)
         

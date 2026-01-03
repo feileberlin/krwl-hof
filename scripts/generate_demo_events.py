@@ -26,7 +26,7 @@ Includes timezone-aware test cases to ensure proper international time handling.
 Timezone offset example: {"timezone_offset": 1} generates "2026-01-02T14:07:41+01:00"
 
 USAGE:
-    python3 scripts/generate_demo_events.py > event-data/events.demo.json
+    python3 scripts/generate_demo_events.py > data/events.demo.json
 
 FRONTEND INTEGRATION:
 The frontend's processTemplateEvents() method in assets/js/app.js detects 
@@ -78,9 +78,9 @@ def load_real_events(base_dir="."):
     """Load real events from production data as templates."""
     base_path = Path(base_dir)
     
-    # Try multiple locations for events file (prefer event-data over static)
+    # Try multiple locations for events file (prefer data over static)
     possible_paths = [
-        base_path / "event-data" / "events.json",
+        base_path / "data" / "events.json",
         base_path / "static" / "events.json",
         base_path / "data" / "events.json",
         base_path / "events.json",
