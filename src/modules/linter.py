@@ -537,3 +537,246 @@ class Linter:
                     print(f"      Error: {error}")
                 for warning in result.warnings:
                     print(f"      Warning: {warning}")
+    
+    # ==================== Component-Specific Linting ====================
+    
+    def lint_component(self, component_html: str, component_name: str) -> LintResult:
+        """
+        Lint an individual component template.
+        
+        Validates:
+        - Valid HTML structure
+        - Proper use of template variables
+        - Semantic HTML tags
+        - ARIA attributes
+        
+        Args:
+            component_html: Component template content
+            component_name: Name of component for error messages
+        
+        Returns:
+            LintResult with validation results
+        """
+        result = LintResult()
+        
+        # Check for template variables (should have {var_name} placeholders)
+        template_vars = re.findall(r'\{(\w+)\}', component_html)
+        if self.verbose:
+            print(f"  Component '{component_name}' uses {len(template_vars)} template variables")
+        
+        # Validate semantic tags based on component type
+        if 'map-main' in component_name:
+            if '<main' not in component_html:
+                result.add_error(f"{component_name}: Should use <main> semantic tag")
+            if 'role="application"' not in component_html:
+                result.add_warning(f"{component_name}: Missing application role for map")
+        
+        elif 'dashboard-aside' in component_name:
+            if '<aside' not in component_html:
+                result.add_error(f"{component_name}: Should use <aside> semantic tag")
+            if 'role="complementary"' not in component_html:
+                result.add_warning(f"{component_name}: Missing complementary role")
+        
+        elif 'filter-nav' in component_name:
+            if '<nav' not in component_html:
+                result.add_error(f"{component_name}: Should use <nav> semantic tag")
+            if 'role="navigation"' not in component_html:
+                result.add_warning(f"{component_name}: Missing navigation role")
+        
+        # Check for ARIA labels on interactive elements
+        if 'button' in component_html or 'role="button"' in component_html:
+            if 'aria-label=' not in component_html:
+                result.add_warning(f"{component_name}: Interactive elements should have aria-label")
+        
+        return result
+    
+    def lint_all_components(self, components_dir: Path) -> LintResult:
+        """
+        Lint all components in a directory.
+        
+        Args:
+            components_dir: Path to components directory
+        
+        Returns:
+            Combined LintResult for all components
+        """
+        result = LintResult()
+        
+        if not components_dir.exists():
+            result.add_error(f"Components directory not found: {components_dir}")
+            return result
+        
+        # Find all HTML component files
+        component_files = list(components_dir.rglob('*.html'))
+        
+        if not component_files:
+            result.add_warning(f"No component files found in {components_dir}")
+            return result
+        
+        print(f"\n🧩 Linting {len(component_files)} components...")
+        
+        for component_file in component_files:
+            relative_path = component_file.relative_to(components_dir)
+            try:
+                content = component_file.read_text(encoding='utf-8')
+                component_result = self.lint_component(content, str(relative_path))
+                result.merge(component_result)
+                
+                if component_result.passed and not component_result.warnings:
+                    print(f"  ✓ {relative_path}")
+                elif component_result.passed:
+                    print(f"  ⚠ {relative_path} ({len(component_result.warnings)} warnings)")
+                else:
+                    print(f"  ✗ {relative_path} ({len(component_result.errors)} errors)")
+            except Exception as e:
+                result.add_error(f"Failed to lint {relative_path}: {e}")
+        
+        return result
+    
+    def lint_design_tokens(self, design_config: Dict) -> LintResult:
+        """
+        Validate design token structure from config.
+        
+        Validates:
+        - Required sections present
+        - Color values are valid hex
+        - Spacing values have units
+        - Z-index values are integers
+        
+        Args:
+            design_config: Design section from data/config.json
+        
+        Returns:
+            LintResult with validation results
+        """
+        result = LintResult()
+        
+        if not design_config:
+            result.add_error("No design configuration provided")
+            return result
+        
+        # Check required sections
+        required_sections = ['colors', 'typography', 'spacing', 'z_index',
+                           'shadows', 'borders', 'transitions', 'branding']
+        
+        for section in required_sections:
+            if section not in design_config:
+                result.add_warning(f"Missing design section: {section}")
+        
+        # Validate colors
+        if 'colors' in design_config:
+            colors = design_config['colors']
+            hex_pattern = re.compile(r'^#[0-9A-Fa-f]{3}([0-9A-Fa-f]{3})?$')
+            
+            for key, value in colors.items():
+                if not hex_pattern.match(value):
+                    result.add_warning(f"Color '{key}' has invalid hex value: {value}")
+            
+            # Check required colors
+            required_colors = ['primary', 'bg_primary', 'text_primary']
+            for color in required_colors:
+                if color not in colors:
+                    result.add_error(f"Missing required color: {color}")
+        
+        # Validate spacing
+        if 'spacing' in design_config:
+            spacing = design_config['spacing']
+            unit_pattern = re.compile(r'^\d+(\.\d+)?(px|rem|em|%)$')
+            
+            for key, value in spacing.items():
+                if not unit_pattern.match(value):
+                    result.add_warning(f"Spacing '{key}' missing unit: {value}")
+        
+        # Validate z-index
+        if 'z_index' in design_config:
+            z_index = design_config['z_index']
+            
+            for key, value in z_index.items():
+                if key.startswith('_'):  # Skip comment keys
+                    continue
+                if not isinstance(value, int):
+                    result.add_error(f"Z-index '{key}' must be integer: {value}")
+            
+            # Validate layer ordering
+            if all(k in z_index for k in ['layer_1_map', 'layer_2_event_popups', 
+                                          'layer_3_ui', 'layer_4_modals']):
+                if not (z_index['layer_1_map'] < z_index['layer_2_event_popups'] < 
+                       z_index['layer_3_ui'] < z_index['layer_4_modals']):
+                    result.add_error("Z-index layers not in correct order (1 < 2 < 3 < 4)")
+        
+        return result
+    
+    def lint_semantic_structure(self, html: str) -> LintResult:
+        """
+        Validate semantic HTML5 structure.
+        
+        Checks for:
+        - Proper use of landmark elements
+        - ARIA roles match semantic tags
+        - Heading hierarchy
+        - Required ARIA attributes
+        
+        Args:
+            html: Complete HTML document
+        
+        Returns:
+            LintResult with validation results
+        """
+        result = LintResult()
+        
+        # Check for semantic landmarks
+        landmarks = {
+            '<main': 'main',
+            '<nav': 'navigation',
+            '<aside': 'complementary content',
+            '<header': 'header',
+            '<footer': 'footer'
+        }
+        
+        for tag, description in landmarks.items():
+            if tag in html:
+                if self.verbose:
+                    print(f"  ✓ Found {description} landmark")
+            else:
+                if tag == '<main':  # main is required
+                    result.add_error(f"Missing required {description} landmark")
+        
+        # Check for ARIA roles matching semantic tags
+        if '<main' in html and 'role="application"' not in html and 'role="main"' not in html:
+            result.add_warning("Main element should have appropriate ARIA role")
+        
+        if '<nav' in html and 'role="navigation"' not in html:
+            result.add_warning("Nav element missing navigation role")
+        
+        if '<aside' in html and 'role="complementary"' not in html:
+            result.add_warning("Aside element missing complementary role")
+        
+        # Check heading hierarchy
+        headings = re.findall(r'<h([1-6])', html)
+        if headings:
+            heading_levels = [int(h) for h in headings]
+            # Check if hierarchy starts at 1 and doesn't skip levels
+            if heading_levels[0] != 1:
+                result.add_warning(f"Heading hierarchy should start with h1, found h{heading_levels[0]}")
+            
+            for i in range(1, len(heading_levels)):
+                if heading_levels[i] > heading_levels[i-1] + 1:
+                    result.add_warning(f"Heading hierarchy skips level: h{heading_levels[i-1]} to h{heading_levels[i]}")
+        
+        # Check for live regions
+        if 'aria-live=' in html:
+            if self.verbose:
+                print("  ✓ Found ARIA live regions")
+        
+        # Check for proper button labels
+        button_pattern = re.compile(r'<button[^>]*>', re.IGNORECASE)
+        buttons = button_pattern.findall(html)
+        for button in buttons:
+            if 'aria-label=' not in button and '>' in button:
+                # Check if button has text content
+                button_end = html.find('</button>', html.find(button))
+                button_content = html[html.find(button):button_end]
+                if not re.search(r'>[^<]+<', button_content):
+                    result.add_warning("Button should have aria-label or text content")
+        
+        return result

@@ -112,10 +112,10 @@ def is_development():
 
 def load_config(base_path):
     """
-    Load config.json with environment override support.
+    Load data/config.json with environment override support.
     
     Environment can be:
-    1. Explicitly set in config.json ("development" or "production") - bypasses auto-detection
+    1. Explicitly set in data/config.json ("development" or "production") - bypasses auto-detection
     2. Set to "auto" - uses automatic environment detection (default)
     
     Auto-detection checks os.environ for:
@@ -128,6 +128,7 @@ def load_config(base_path):
     Returns:
         dict: Configuration dictionary with environment-specific overrides applied
     """
+    # SSG Standard: config.json at root level (like Hugo's config.toml, Jekyll's _config.yml)
     config_path = base_path / 'config.json'
     
     # Load base configuration
@@ -141,7 +142,7 @@ def load_config(base_path):
         # Explicit override - use it directly
         env_is_dev = (env_override == 'development')
         env_name = env_override
-        print(f"🎯 Environment forced to: {env_name} (from config.json)")
+        print(f"🎯 Environment forced to: {env_name} (from data/config.json)")
     else:
         # Auto-detection mode
         env_is_dev = is_development()
@@ -378,7 +379,7 @@ def archive_old_events(base_path):
     
     # Save archived events if there are any
     if archived_events:
-        archive_path = base_path / 'static' / 'archived_events.json'
+        archive_path = base_path / 'target' / 'archived_events.json'
         try:
             with open(archive_path, 'r') as f:
                 archive_data = json.load(f)
@@ -530,7 +531,7 @@ def update_events_in_html(base_path):
         events = events_data.get('events', [])
         
         # Read index.html
-        index_path = base_path / 'static' / 'index.html'
+        index_path = base_path / 'target' / 'index.html'
         if not index_path.exists():
             print(f"Error: {index_path} does not exist")
             return False
