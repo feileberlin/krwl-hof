@@ -322,10 +322,10 @@ class SiteGenerator:
                 self.dependencies_dir / 'leaflet' / 'leaflet.css'
             ),
             'app_css': self.read_text_file(
-                self.base_path / "src" / 'css' / 'style.css'
+                self.base_path / "assets" / 'css' / 'style.css'
             ),
             'time_drawer_css': self.read_text_file(
-                self.base_path / "src" / 'css' / 'time-drawer.css'
+                self.base_path / "assets" / 'css' / 'time-drawer.css'
             )
         }
     
@@ -336,13 +336,13 @@ class SiteGenerator:
                 self.dependencies_dir / 'leaflet' / 'leaflet.js'
             ),
             'i18n_js': self.read_text_file(
-                self.base_path / "src" / 'js' / 'i18n.js'
+                self.base_path / "assets" / 'js' / 'i18n.js'
             ),
             'time_drawer_js': self.read_text_file(
-                self.base_path / "src" / 'js' / 'time-drawer.js'
+                self.base_path / "assets" / 'js' / 'time-drawer.js'
             ),
             'app_js': self.read_text_file(
-                self.base_path / "src" / 'js' / 'app.js'
+                self.base_path / "assets" / 'js' / 'app.js'
             )
         }
         
