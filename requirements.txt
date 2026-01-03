@@ -29,3 +29,7 @@ feedparser>=6.0.10  # For RSS feed parsing
 
 # Optional dependencies for enhanced capabilities:
 # astral>=3.2  # For accurate sunrise/sunset calculations (using approximation for now)
+
+# Documentation Building
+markdown>=3.5.0         # Markdown to HTML conversion
+Pygments>=2.17.0        # Syntax highlighting for code blocks

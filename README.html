@@ -3,298 +3,723 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KRWL HOF - Community Events Documentation</title>
-    
-<style>
-body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
-    line-height: 1.6;
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 2rem;
-    background: #0d1117;
-    color: #c9d1d9;
-}
-h1, h2, h3, h4, h5, h6 {
-    margin-top: 1.5rem;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-    line-height: 1.25;
-    color: #FF69B4;
-}
-h1 { 
-    font-size: 2.5em; 
-    border-bottom: 2px solid #FF69B4; 
-    padding-bottom: 0.3em; 
-    text-align: center;
-    margin-bottom: 2rem;
-}
-h2 { 
-    font-size: 1.5em; 
-    border-bottom: 1px solid #21262d; 
-    padding-bottom: 0.3em; 
-}
-h3 { font-size: 1.25em; }
-a { 
-    color: #58a6ff; 
-    text-decoration: none; 
-}
-a:hover { 
-    text-decoration: underline; 
-}
-.hero {
-    text-align: center;
-    margin: 3rem 0;
-    padding: 2rem;
-    background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
-    border-radius: 12px;
-    border: 2px solid #FF69B4;
-}
-.hero h2 {
-    color: #FF69B4;
-    font-size: 2rem;
-    margin: 0 0 1rem 0;
-    border: none;
-}
-.hero p {
-    font-size: 1.2rem;
-    color: #c9d1d9;
-    margin: 0.5rem 0;
-}
-.nav {
-    background: #161b22;
-    padding: 1.5rem;
-    border-radius: 8px;
-    margin: 2rem 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-}
-.nav a {
-    display: block;
-    padding: 1rem;
-    background: #21262d;
-    border-radius: 6px;
-    color: #58a6ff;
-    text-align: center;
-    font-weight: 600;
-    border: 1px solid #30363d;
-    transition: all 0.2s;
-}
-.nav a:hover {
-    background: #30363d;
-    border-color: #FF69B4;
-    transform: translateY(-2px);
-    text-decoration: none;
-}
-.section {
-    background: #161b22;
-    padding: 1.5rem;
-    border-radius: 8px;
-    margin: 1.5rem 0;
-    border-left: 4px solid #FF69B4;
-}
-.doc-list {
-    list-style: none;
-    padding: 0;
-}
-.doc-list li {
-    padding: 0.75rem;
-    margin: 0.5rem 0;
-    background: #0d1117;
-    border-radius: 4px;
-    border-left: 3px solid #30363d;
-}
-.doc-list li:hover {
-    border-left-color: #FF69B4;
-    background: #161b22;
-}
-.doc-list a {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-.doc-list .emoji {
-    font-size: 1.5em;
-}
-.footer {
-    margin-top: 3rem;
-    padding-top: 1rem;
-    border-top: 1px solid #30363d;
-    color: #8b949e;
-    font-size: 0.9em;
-    text-align: center;
-}
-code {
-    background: #161b22;
-    padding: 0.2em 0.4em;
-    border-radius: 3px;
-    font-family: 'Courier New', monospace;
-    font-size: 85%;
-    color: #79c0ff;
-}
-.badge {
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-    background: #21262d;
-    border-radius: 12px;
-    font-size: 0.85rem;
-    color: #8b949e;
-    margin: 0 0.25rem;
-}
-</style>
-
+    <title>KRWL HOF Community Events</title>
+    <style>
+        /* GitHub Dark Theme with Barbie Pink Accents */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: #0d1117;
+            color: #c9d1d9;
+        }
+        
+        /* Headers */
+        h1, h2, h3, h4, h5, h6 {
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            line-height: 1.25;
+            color: #FF69B4;
+        }
+        
+        h1 { 
+            font-size: 2.5em; 
+            border-bottom: 2px solid #FF69B4; 
+            padding-bottom: 0.3em;
+            margin-bottom: 1.5rem;
+        }
+        
+        h2 { 
+            font-size: 1.75em; 
+            border-bottom: 1px solid #21262d; 
+            padding-bottom: 0.3em; 
+        }
+        
+        h3 { font-size: 1.5em; }
+        h4 { font-size: 1.25em; }
+        h5 { font-size: 1.1em; }
+        h6 { font-size: 1em; }
+        
+        /* Links */
+        a { 
+            color: #58a6ff; 
+            text-decoration: none; 
+        }
+        
+        a:hover { 
+            text-decoration: underline; 
+        }
+        
+        /* Navigation */
+        .nav {
+            background: #161b22;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            border-left: 4px solid #FF69B4;
+        }
+        
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .nav-links a {
+            padding: 0.5rem 1rem;
+            background: #21262d;
+            border-radius: 6px;
+            border: 1px solid #30363d;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        
+        .nav-links a:hover {
+            background: #30363d;
+            border-color: #FF69B4;
+            transform: translateY(-2px);
+            text-decoration: none;
+        }
+        
+        /* Code */
+        code {
+            background: #161b22;
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 85%;
+            color: #79c0ff;
+        }
+        
+        pre {
+            background: #161b22;
+            padding: 1rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            border: 1px solid #30363d;
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+            color: #c9d1d9;
+        }
+        
+        /* Tables */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1rem 0;
+            overflow-x: auto;
+            display: block;
+        }
+        
+        thead {
+            background: #161b22;
+        }
+        
+        th {
+            color: #FF69B4;
+            font-weight: 600;
+            text-align: left;
+            padding: 0.75rem;
+            border: 1px solid #30363d;
+        }
+        
+        td {
+            padding: 0.75rem;
+            border: 1px solid #30363d;
+        }
+        
+        tr:nth-child(even) {
+            background: #0d1117;
+        }
+        
+        tr:hover {
+            background: #161b22;
+        }
+        
+        /* Lists */
+        ul, ol {
+            margin: 1rem 0;
+            padding-left: 2rem;
+        }
+        
+        li {
+            margin: 0.5rem 0;
+        }
+        
+        /* Blockquotes */
+        blockquote {
+            border-left: 4px solid #FF69B4;
+            padding-left: 1rem;
+            margin: 1rem 0;
+            color: #8b949e;
+            font-style: italic;
+        }
+        
+        /* Horizontal Rule */
+        hr {
+            border: none;
+            border-top: 1px solid #21262d;
+            margin: 2rem 0;
+        }
+        
+        /* Paragraphs */
+        p {
+            margin: 1rem 0;
+        }
+        
+        /* Images */
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+            margin: 1rem 0;
+        }
+        
+        /* Source Info */
+        .source-info {
+            background: #161b22;
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1.5rem 0;
+            font-size: 0.9em;
+            color: #8b949e;
+            border-left: 4px solid #30363d;
+        }
+        
+        .source-info strong {
+            color: #c9d1d9;
+        }
+        
+        /* Footer */
+        .footer {
+            margin-top: 3rem;
+            padding-top: 1rem;
+            border-top: 1px solid #30363d;
+            color: #8b949e;
+            font-size: 0.9em;
+            text-align: center;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            h2 {
+                font-size: 1.5em;
+            }
+            
+            .nav-links {
+                flex-direction: column;
+            }
+            
+            .nav-links a {
+                text-align: center;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>🎯 KRWL HOF Community Events</h1>
-    
-    <div class="hero">
-        <h2>📚 Documentation Center</h2>
-        <p>Mobile-first Progressive Web App for discovering community events</p>
-        <p><span class="badge">🗺️ Interactive Map</span> <span class="badge">📍 Geolocation</span> <span class="badge">🎨 Lucide Icons</span></p>
-    </div>
-    
-    <div class="section">
-        <h2>🚀 Quick Start</h2>
-        <div class="nav">
-            <a href="static/index.html">🗺️ Open Map App</a>
-            <a href="docs/README.html">📖 Full Documentation Index</a>
-            <a href="#main-docs">📄 Main Documents</a>
-            <a href="#markers">🎨 Marker Design</a>
+    <nav class="nav">
+        <div class="nav-links">
+            <a href="README.html">🏠 Home</a>
+            <a href="docs/index.html">📖 Docs Index</a>
+            <a href="static/index.html">🗺️ Map App</a>
+            <a href="docs/CHANGELOG.html">📝 Changelog</a>
+            <a href="docs/QUICK_REFERENCE.html">⚡ Quick Ref</a>
         </div>
-    </div>
+    </nav>
     
-    <div class="section" id="main-docs">
-        <h2>📄 Main Documentation</h2>
-        <ul class="doc-list">
-            <li>
-                <a href="docs/README_README.md.html">
-                    <span class="emoji">📖</span>
-                    <div>
-                        <strong>Main README</strong><br>
-                        <small>Complete project documentation and setup guide</small>
-                    </div>
-                </a>
-            </li>
-            <li>
-                <a href="docs/QUICK_REFERENCE_QUICK_REFERENCE.md.html">
-                    <span class="emoji">⚡</span>
-                    <div>
-                        <strong>Quick Reference</strong><br>
-                        <small>Fast access to common commands and workflows</small>
-                    </div>
-                </a>
-            </li>
-            <li>
-                <a href="docs/CHANGELOG_CHANGELOG.md.html">
-                    <span class="emoji">📝</span>
-                    <div>
-                        <strong>Changelog</strong><br>
-                        <small>Version history and release notes</small>
-                    </div>
-                </a>
-            </li>
-        </ul>
-    </div>
+    <main>
+        <h1 id="krwl-hof-community-events">KRWL HOF Community Events</h1>
+<blockquote>
+<p>Community events scraper and viewer with geolocation filtering</p>
+</blockquote>
+<p><strong>🌐 Live Site: <a href="https://krwl.in">https://krwl.in</a></strong></p>
+<p><a href="https://web.dev/progressive-web_apps/"><img alt="PWA Ready" src="https://img.shields.io/badge/PWA-Ready-success" /></a><br />
+<a href="https://www.w3.org/WAI/WCAG21/quickref/"><img alt="Accessibility" src="https://img.shields.io/badge/A11y-Compliant-blue" /></a><br />
+<a href="https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps"><img alt="Mobile First" src="https://img.shields.io/badge/Mobile-First-orange" /></a></p>
+<h2 id="what-is-this">🎯 What is This?</h2>
+<p>A <strong>grassroots, mobile-first</strong> Progressive Web App (PWA) for discovering local community events in Hof and surrounding region (Bavaria, Germany). Built by and for the local community - from punk concerts to farmers markets, from Off-Theater to VHS courses.</p>
+<p><strong>Visit the live app at <a href="https://krwl.in">krwl.in</a></strong> to see events on an interactive map!</p>
+<h3 id="features">✨ Features</h3>
+<ul>
+<li>📱 <strong>PWA</strong>: Installable as native app on mobile and desktop</li>
+<li>🗺️ <strong>Interactive Map</strong>: Leaflet.js with event markers and clustering</li>
+<li>📍 <strong>Geolocation Filtering</strong>: Shows events within 5.0km radius</li>
+<li>🌅 <strong>Time-based Filtering</strong>: Shows events until next_sunrise</li>
+<li>🌐 <strong>Bilingual</strong>: English and German (i18n support)</li>
+<li>♿ <strong>Accessible</strong>: WCAG 2.1 Level AA compliant</li>
+<li>📱 <strong>Responsive</strong>: Mobile-first design, works on all screen sizes</li>
+<li>🔄 <strong>Auto-scraping</strong>: Configurable event sources with automatic updates</li>
+</ul>
+<h2 id="quick-start-for-developers">🚀 Quick Start for Developers</h2>
+<p>Want to run it locally or contribute?</p>
+<h3 id="prerequisites">Prerequisites</h3>
+<ul>
+<li>Python 3.x</li>
+<li>Modern web browser</li>
+<li>Internet connection (for Leaflet.js CDN)</li>
+</ul>
+<h3 id="setup">Setup</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Clone the repository</span>
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/feileberlin/krwl-hof.git
+<span class="nb">cd</span><span class="w"> </span>krwl-hof
+
+<span class="c1"># Install Python dependencies</span>
+pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+
+<span class="c1"># Download frontend libraries (Leaflet.js)</span>
+python3<span class="w"> </span>src/event_manager.py<span class="w"> </span>dependencies<span class="w"> </span>fetch
+
+<span class="c1"># Run locally</span>
+<span class="nb">cd</span><span class="w"> </span>static
+python3<span class="w"> </span>-m<span class="w"> </span>http.server<span class="w"> </span><span class="m">8000</span>
+</code></pre></div>
+
+<p>Open http://localhost:8000 in your browser</p>
+<h2 id="documentation-philosophy">📚 Documentation Philosophy</h2>
+<p><strong>Keep It Simple, Stupid (KISS)</strong></p>
+<p>All documentation lives in:<br />
+1. <strong>Code comments</strong> - In the source files where the logic lives<br />
+2. <strong>CLI --help</strong> - Every script has comprehensive help text<br />
+3. <strong>TUI hints</strong> - Contextual tooltips in the interactive interface<br />
+4. <strong>This README</strong> - One consolidated guide (you're reading it!)</p>
+<p>No complex documentation systems. No wiki syncing. No auto-generated multi-file docs. Just code comments, CLI help, and this README.</p>
+<h2 id="cli-usage">🛠️ CLI Usage</h2>
+<h3 id="event-manager-main-interface">Event Manager (Main Interface)</h3>
+<p>The primary tool for managing events:</p>
+<div class="codehilite"><pre><span></span><code>python3<span class="w"> </span>src/event_manager.py<span class="w">              </span><span class="c1"># Launch interactive TUI</span>
+python3<span class="w"> </span>src/event_manager.py<span class="w"> </span>--help<span class="w">       </span><span class="c1"># Show all commands</span>
+</code></pre></div>
+
+<h4 id="full-cli-help">Full CLI Help</h4>
+<div class="codehilite"><pre><span></span><code><span class="n">KRWL</span><span class="w"> </span><span class="n">HOF</span><span class="w"> </span><span class="n">Community</span><span class="w"> </span><span class="n">Events</span><span class="w"> </span><span class="n">Manager</span>
+<span class="o">==================================</span>
+
+<span class="n">A</span><span class="w"> </span><span class="n">modular</span><span class="w"> </span><span class="n">Python</span><span class="w"> </span><span class="n">TUI</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">managing</span><span class="w"> </span><span class="n">community</span><span class="w"> </span><span class="n">events</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">geolocation</span>
+<span class="ow">and</span><span class="w"> </span><span class="n">sunrise</span><span class="w"> </span><span class="n">filtering</span><span class="p">.</span>
+
+<span class="k">USAGE</span><span class="err">:</span>
+<span class="w">    </span><span class="n">python3</span><span class="w"> </span><span class="n">event_manager</span><span class="p">.</span><span class="n">py</span><span class="w"> </span><span class="o">[</span><span class="n">COMMAND</span><span class="o">]</span><span class="w"> </span><span class="o">[</span><span class="n">OPTIONS</span><span class="o">]</span>
+
+<span class="nl">COMMANDS</span><span class="p">:</span>
+<span class="w">    </span><span class="p">(</span><span class="k">no</span><span class="w"> </span><span class="n">command</span><span class="p">)</span><span class="w">              </span><span class="n">Launch</span><span class="w"> </span><span class="n">interactive</span><span class="w"> </span><span class="n">TUI</span><span class="w"> </span><span class="p">(</span><span class="k">default</span><span class="p">)</span>
+<span class="w">    </span><span class="n">setup</span><span class="w">                     </span><span class="n">Show</span><span class="w"> </span><span class="n">detailed</span><span class="w"> </span><span class="n">setup</span><span class="w"> </span><span class="n">instructions</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">your</span><span class="w"> </span><span class="n">own</span><span class="w"> </span><span class="n">site</span>
+<span class="w">    </span><span class="n">scrape</span><span class="w">                    </span><span class="n">Scrape</span><span class="w"> </span><span class="n">events</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">configured</span><span class="w"> </span><span class="n">sources</span>
+<span class="w">    </span><span class="n">review</span><span class="w">                    </span><span class="n">Review</span><span class="w"> </span><span class="n">pending</span><span class="w"> </span><span class="n">events</span><span class="w"> </span><span class="n">interactively</span>
+<span class="w">    </span><span class="n">publish</span><span class="w"> </span><span class="n">EVENT_ID</span><span class="w">          </span><span class="n">Publish</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="k">specific</span><span class="w"> </span><span class="n">pending</span><span class="w"> </span><span class="n">event</span>
+<span class="w">    </span><span class="n">reject</span><span class="w"> </span><span class="n">EVENT_ID</span><span class="w">           </span><span class="n">Reject</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="k">specific</span><span class="w"> </span><span class="n">pending</span><span class="w"> </span><span class="n">event</span>
+<span class="w">    </span><span class="k">bulk</span><span class="o">-</span><span class="n">publish</span><span class="w"> </span><span class="n">IDS</span><span class="w">          </span><span class="k">Bulk</span><span class="w"> </span><span class="n">publish</span><span class="w"> </span><span class="n">pending</span><span class="w"> </span><span class="n">events</span><span class="w"> </span><span class="p">(</span><span class="n">comma</span><span class="o">-</span><span class="n">separated</span><span class="w"> </span><span class="n">IDs</span><span class="o">/</span><span class="n">patterns</span><span class="p">)</span>
+<span class="w">    </span><span class="k">bulk</span><span class="o">-</span><span class="n">reject</span><span class="w"> </span><span class="n">IDS</span><span class="w">           </span><span class="k">Bulk</span><span class="w"> </span><span class="n">reject</span><span class="w"> </span><span class="n">pending</span><span class="w"> </span><span class="n">events</span><span class="w"> </span><span class="p">(</span><span class="n">comma</span><span class="o">-</span><span class="n">separated</span><span class="w"> </span><span class="n">IDs</span><span class="o">/</span><span class="n">patterns</span><span class="p">)</span>
+<span class="w">    </span><span class="n">list</span><span class="w">                      </span><span class="n">List</span><span class="w"> </span><span class="ow">all</span><span class="w"> </span><span class="n">published</span><span class="w"> </span><span class="n">events</span>
+<span class="w">    </span><span class="n">list</span><span class="o">-</span><span class="n">pending</span><span class="w">              </span><span class="n">List</span><span class="w"> </span><span class="ow">all</span><span class="w"> </span><span class="n">pending</span><span class="w"> </span><span class="n">events</span>
+
+<span class="w">    </span><span class="n">generate</span><span class="w">                  </span><span class="n">Generate</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="n">site</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">inlined</span><span class="w"> </span><span class="n">HTML</span>
+<span class="w">                              </span><span class="o">-</span><span class="w"> </span><span class="n">Ensures</span><span class="w"> </span><span class="n">dependencies</span><span class="w"> </span><span class="p">(</span><span class="n">Leaflet</span><span class="p">.</span><span class="n">js</span><span class="p">)</span>
+<span class="w">                              </span><span class="o">-</span><span class="w"> </span><span class="n">Loads</span><span class="w"> </span><span class="ow">all</span><span class="w"> </span><span class="n">resources</span><span class="w"> </span><span class="p">(</span><span class="n">CSS</span><span class="p">,</span><span class="w"> </span><span class="n">JS</span><span class="p">,</span><span class="w"> </span><span class="n">events</span><span class="p">,</span><span class="w"> </span><span class="n">translations</span><span class="p">)</span>
+<span class="w">                              </span><span class="o">-</span><span class="w"> </span><span class="n">Builds</span><span class="w"> </span><span class="n">HTML</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">templates</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">inlined</span><span class="w"> </span><span class="n">assets</span>
+<span class="w">                              </span><span class="o">-</span><span class="w"> </span><span class="n">Lints</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">validates</span><span class="w"> </span><span class="n">content</span>
+<span class="w">                              </span><span class="o">-</span><span class="w"> </span><span class="nl">Outputs</span><span class="p">:</span><span class="w"> </span><span class="k">static</span><span class="o">/</span><span class="k">index</span><span class="p">.</span><span class="n">html</span><span class="w"> </span><span class="p">(</span><span class="n">self</span><span class="o">-</span><span class="n">contained</span><span class="p">)</span>
+<span class="w">    </span><span class="k">update</span><span class="w">                    </span><span class="k">Update</span><span class="w"> </span><span class="n">events</span><span class="w"> </span><span class="k">data</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">existing</span><span class="w"> </span><span class="n">site</span><span class="w"> </span><span class="p">(</span><span class="n">fast</span><span class="p">)</span>
+<span class="w">    </span><span class="n">dependencies</span><span class="w"> </span><span class="k">fetch</span><span class="w">        </span><span class="k">Fetch</span><span class="w"> </span><span class="n">third</span><span class="o">-</span><span class="n">party</span><span class="w"> </span><span class="n">dependencies</span>
+<span class="w">    </span><span class="n">dependencies</span><span class="w"> </span><span class="k">check</span><span class="w">        </span><span class="k">Check</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">dependencies</span><span class="w"> </span><span class="k">are</span><span class="w"> </span><span class="n">present</span>
+
+<span class="w">    </span><span class="n">archive</span><span class="w">                   </span><span class="n">Archive</span><span class="w"> </span><span class="n">past</span><span class="w"> </span><span class="n">events</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">archived_events</span><span class="p">.</span><span class="n">json</span>
+<span class="w">    </span><span class="k">load</span><span class="o">-</span><span class="n">examples</span><span class="w">             </span><span class="k">Load</span><span class="w"> </span><span class="n">example</span><span class="w"> </span><span class="k">data</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">development</span>
+<span class="w">    </span><span class="n">clear</span><span class="o">-</span><span class="k">data</span><span class="w">                </span><span class="n">Clear</span><span class="w"> </span><span class="ow">all</span><span class="w"> </span><span class="n">event</span><span class="w"> </span><span class="k">data</span>
+
+<span class="nl">OPTIONS</span><span class="p">:</span>
+<span class="w">    </span><span class="o">-</span><span class="n">h</span><span class="p">,</span><span class="w"> </span><span class="o">--</span><span class="n">help</span><span class="w">               </span><span class="n">Show</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">help</span><span class="w"> </span><span class="n">message</span>
+<span class="w">    </span><span class="o">-</span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="o">--</span><span class="n">version</span><span class="w">            </span><span class="n">Show</span><span class="w"> </span><span class="n">version</span><span class="w"> </span><span class="n">information</span>
+<span class="w">    </span><span class="o">-</span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="o">--</span><span class="n">config</span><span class="w"> </span><span class="k">PATH</span><span class="w">        </span><span class="k">Use</span><span class="w"> </span><span class="n">custom</span><span class="w"> </span><span class="n">config</span><span class="w"> </span><span class="k">file</span>
+
+<span class="nl">EXAMPLES</span><span class="p">:</span>
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="n">Launch</span><span class="w"> </span><span class="n">interactive</span><span class="w"> </span><span class="n">TUI</span>
+<span class="w">    </span><span class="n">python3</span><span class="w"> </span><span class="n">event_manager</span><span class="p">.</span><span class="n">py</span>
+
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="n">Generate</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="n">site</span><span class="w"> </span><span class="p">(</span><span class="n">runtime</span><span class="o">-</span><span class="n">configurable</span><span class="p">)</span>
+<span class="w">    </span><span class="n">python3</span><span class="w"> </span><span class="n">event_manager</span><span class="p">.</span><span class="n">py</span><span class="w"> </span><span class="n">generate</span>
+
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="n">Fast</span><span class="w"> </span><span class="n">content</span><span class="w"> </span><span class="k">update</span>
+<span class="w">    </span><span class="n">python3</span><span class="w"> </span><span class="n">event_manager</span><span class="p">.</span><span class="n">py</span><span class="w"> </span><span class="k">update</span>
+
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="k">Fetch</span><span class="w"> </span><span class="n">dependencies</span>
+<span class="w">    </span><span class="n">python3</span><span class="w"> </span><span class="n">event_manager</span><span class="p">.</span><span class="n">py</span><span class="w"> </span><span class="n">dependencies</span><span class="w"> </span><span class="k">fetch</span>
+
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="k">Check</span><span class="w"> </span><span class="n">dependencies</span>
+<span class="w">    </span><span class="n">python3</span><span class="w"> </span><span class="n">event_manager</span><span class="p">.</span><span class="n">py</span><span class="w"> </span><span class="n">dependencies</span><span class="w"> </span><span class="k">check</span>
+
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="n">Scrape</span><span class="w"> </span><span class="n">events</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">sources</span>
+<span class="w">    </span><span class="n">python3</span><span class="w"> </span><span class="n">event_manager</span><span class="p">.</span><span class="n">py</span><span class="w"> </span><span class="n">scrape</span>
+
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="n">List</span><span class="w"> </span><span class="ow">all</span><span class="w"> </span><span class="n">published</span><span class="w"> </span><span class="n">events</span>
+<span class="w">    </span><span class="n">python3</span><span class="w"> </span><span class="n">event_manager</span><span class="p">.</span><span class="n">py</span><span class="w"> </span><span class="n">list</span>
+
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="n">Publish</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">single</span><span class="w"> </span><span class="n">event</span>
+<span class="w">    </span><span class="n">python3</span><span class="w"> </span><span class="n">event_manager</span><span class="p">.</span><span class="n">py</span><span class="w"> </span><span class="n">publish</span><span class="w"> </span><span class="n">pending_1</span>
+
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="k">Bulk</span><span class="w"> </span><span class="n">publish</span><span class="w"> </span><span class="k">using</span><span class="w"> </span><span class="n">wildcards</span>
+<span class="w">    </span><span class="n">python3</span><span class="w"> </span><span class="n">event_manager</span><span class="p">.</span><span class="n">py</span><span class="w"> </span><span class="k">bulk</span><span class="o">-</span><span class="n">publish</span><span class="w"> </span><span class="ss">&quot;pending_*&quot;</span>
+
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="k">Load</span><span class="w"> </span><span class="n">example</span><span class="w"> </span><span class="k">data</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">testing</span>
+<span class="w">    </span><span class="n">python3</span><span class="w"> </span><span class="n">event_manager</span><span class="p">.</span><span class="n">py</span><span class="w"> </span><span class="k">load</span><span class="o">-</span><span class="n">examples</span>
+
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="k">Get</span><span class="w"> </span><span class="n">help</span>
+<span class="w">    </span><span class="n">python3</span><span class="w"> </span><span class="n">event_manager</span><span class="p">.</span><span class="n">py</span><span class="w"> </span><span class="o">--</span><span class="n">help</span>
+
+<span class="n">WILDCARD</span><span class="w"> </span><span class="nl">PATTERNS</span><span class="p">:</span>
+<span class="w">    </span><span class="k">Bulk</span><span class="w"> </span><span class="n">operations</span><span class="w"> </span><span class="n">support</span><span class="w"> </span><span class="n">Unix</span><span class="o">-</span><span class="n">style</span><span class="w"> </span><span class="nl">wildcards</span><span class="p">:</span>
+<span class="w">    </span><span class="o">*</span><span class="w">       </span><span class="n">Matches</span><span class="w"> </span><span class="ow">any</span><span class="w"> </span><span class="n">characters</span><span class="w"> </span><span class="p">(</span><span class="n">including</span><span class="w"> </span><span class="k">none</span><span class="p">)</span>
+<span class="w">    </span><span class="vm">?</span><span class="w">       </span><span class="n">Matches</span><span class="w"> </span><span class="n">exactly</span><span class="w"> </span><span class="n">one</span><span class="w"> </span><span class="k">character</span>
+<span class="w">    </span><span class="o">[</span><span class="n">seq</span><span class="o">]</span><span class="w">   </span><span class="n">Matches</span><span class="w"> </span><span class="ow">any</span><span class="w"> </span><span class="k">character</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">seq</span>
+<span class="w">    </span><span class="o">[</span><span class="n">!seq</span><span class="o">]</span><span class="w">  </span><span class="n">Matches</span><span class="w"> </span><span class="ow">any</span><span class="w"> </span><span class="k">character</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">seq</span>
+
+<span class="w">    </span><span class="nl">Examples</span><span class="p">:</span>
+<span class="w">    </span><span class="n">pending_</span><span class="o">*</span><span class="w">              </span><span class="k">Match</span><span class="w"> </span><span class="ow">all</span><span class="w"> </span><span class="n">events</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">IDs</span><span class="w"> </span><span class="n">starting</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="s1">&#39;pending_&#39;</span>
+<span class="w">    </span><span class="n">html_frankenpost_</span><span class="o">*</span><span class="w">     </span><span class="k">Match</span><span class="w"> </span><span class="ow">all</span><span class="w"> </span><span class="n">events</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">Frankenpost</span><span class="w"> </span><span class="n">source</span>
+<span class="w">    </span><span class="o">*</span><span class="n">AUCHEVENT</span><span class="o">*</span><span class="w">            </span><span class="k">Match</span><span class="w"> </span><span class="ow">any</span><span class="w"> </span><span class="n">event</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="s1">&#39;AUCHEVENT&#39;</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">ID</span>
+<span class="w">    </span><span class="n">pending_</span><span class="o">[</span><span class="n">1-3</span><span class="o">]</span><span class="w">          </span><span class="k">Match</span><span class="w"> </span><span class="n">pending_1</span><span class="p">,</span><span class="w"> </span><span class="n">pending_2</span><span class="p">,</span><span class="w"> </span><span class="n">pending_3</span>
+
+<span class="nl">DOCUMENTATION</span><span class="p">:</span>
+<span class="w">    </span><span class="k">Full</span><span class="w"> </span><span class="n">documentation</span><span class="w"> </span><span class="n">available</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">README</span><span class="p">.</span><span class="n">txt</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">via</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">TUI</span>
+<span class="w">    </span><span class="p">(</span><span class="n">Main</span><span class="w"> </span><span class="n">Menu</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="k">View</span><span class="w"> </span><span class="n">Documentation</span><span class="p">)</span>
+
+<span class="k">For</span><span class="w"> </span><span class="n">more</span><span class="w"> </span><span class="n">information</span><span class="p">,</span><span class="w"> </span><span class="nl">visit</span><span class="p">:</span>
+<span class="w">    </span><span class="nl">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="p">.</span><span class="n">com</span><span class="o">/</span><span class="n">feileberlin</span><span class="o">/</span><span class="n">krwl</span><span class="o">-</span><span class="n">hof</span>
+</code></pre></div>
+
+<h2 id="configuration">⚙️ Configuration</h2>
+<p>All configuration lives in <code>config.json</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;app&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;KRWL HOF Community Events&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Community events scraper and viewer with geolocation filtering&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;map&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;default_center&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;lat&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">50.3167</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;lon&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">11.9167</span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;default_zoom&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">13</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;filtering&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;max_distance_km&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">5.0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;show_until&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;next_sunrise&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;scraping&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;schedule&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;timezone&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Europe/Berlin&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;times&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;04:00&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;16:00&quot;</span><span class="p">],</span><span class="w"> </span><span class="nt">&quot;_comment_schedule_usage&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Only active in CI/production environments for automated scraping&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;sources&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="err">...</span><span class="mi">12</span><span class="w"> </span><span class="err">co</span><span class="kc">nf</span><span class="err">igured</span><span class="w"> </span><span class="err">sources</span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="what-you-can-customize">What You Can Customize</h3>
+<ul>
+<li><strong>App name/description</strong>: <code>config.app.*</code></li>
+<li><strong>Map center and zoom</strong>: <code>config.map.*</code></li>
+<li><strong>Distance filter</strong>: <code>config.filtering.max_distance_km</code></li>
+<li><strong>Time filter</strong>: <code>config.filtering.show_until</code></li>
+<li><strong>Scraping schedule</strong>: <code>config.scraping.schedule</code></li>
+<li><strong>Event sources</strong>: <code>config.scraping.sources[]</code> (RSS, HTML, API)</li>
+<li><strong>Editor settings</strong>: <code>config.editor.*</code></li>
+</ul>
+<h2 id="testing">🧪 Testing</h2>
+<p>Run tests before committing:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Feature verification</span>
+python3<span class="w"> </span>scripts/verify_features.py<span class="w"> </span>--verbose
+
+<span class="c1"># Event schema validation</span>
+python3<span class="w"> </span>tests/test_event_schema.py<span class="w"> </span>--verbose
+
+<span class="c1"># Scraper tests</span>
+python3<span class="w"> </span>tests/test_scraper.py<span class="w"> </span>--verbose
+
+<span class="c1"># Filter tests</span>
+python3<span class="w"> </span>tests/test_filters.py<span class="w"> </span>--verbose
+
+<span class="c1"># Translation tests</span>
+python3<span class="w"> </span>tests/test_translations.py<span class="w"> </span>--verbose
+
+<span class="c1"># KISS principle compliance</span>
+python3<span class="w"> </span>scripts/check_kiss.py<span class="w"> </span>--verbose
+</code></pre></div>
+
+<h2 id="project-structure">📝 Project Structure</h2>
+<div class="codehilite"><pre><span></span><code>krwl-hof/
+├── config.json          # Unified configuration (auto-detects environment)
+├── static/              # Only index.html
+│   └── index.html       # Main app (auto-generated, DO NOT EDIT)
+├── assets/              # Frontend assets (CSS, JS, libraries, icons)
+│   ├── css/             # Stylesheets
+│   ├── js/              # JavaScript modules
+│   ├── lib/             # Third-party libraries (Leaflet.js)
+│   ├── markers/         # Event marker SVG icons
+│   ├── manifest.json    # PWA manifest
+│   └── *.svg            # App icons (favicon, PWA icons, logo)
+├── event-data/                # Event and translation data
+│   ├── events.json      # Published events
+│   ├── pending_events.json  # Events awaiting approval
+│   ├── rejected_events.json # Rejected events
+│   ├── archived_events.json # Past events
+│   ├── events.demo.json # Demo events for testing
+│   ├── content.json     # English translations
+│   ├── content.de.json  # German translations
+│   └── old/             # Historical event archives
+├── src/                 # Python backend
+│   ├── event_manager.py # Main CLI/TUI entry point
+│   └── modules/         # Modular components
+├── scripts/             # Utility scripts
+├── tests/               # Test suite
+└── README.md            # This file (auto-generated)
+</code></pre></div>
+
+<h2 id="workflow">🔄 Workflow</h2>
+<h3 id="1-scraping-events">1. Scraping Events</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Scrape from configured sources</span>
+python3<span class="w"> </span>src/event_manager.py<span class="w"> </span>scrape
+
+<span class="c1"># Or interactively</span>
+python3<span class="w"> </span>src/event_manager.py<span class="w">  </span><span class="c1"># Option 1: Scrape New Events</span>
+</code></pre></div>
+
+<p>Scraped events go to <code>static/pending_events.json</code> for editorial review.</p>
+<h3 id="2-editorial-review">2. Editorial Review</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Review pending events interactively</span>
+python3<span class="w"> </span>src/event_manager.py<span class="w"> </span>review
+
+<span class="c1"># Or approve/reject specific events</span>
+python3<span class="w"> </span>src/event_manager.py<span class="w"> </span>publish<span class="w"> </span>EVENT_ID
+python3<span class="w"> </span>src/event_manager.py<span class="w"> </span>reject<span class="w"> </span>EVENT_ID
+
+<span class="c1"># Bulk operations (supports wildcards)</span>
+python3<span class="w"> </span>src/event_manager.py<span class="w"> </span>bulk-publish<span class="w"> </span><span class="s2">&quot;pending_*&quot;</span>
+python3<span class="w"> </span>src/event_manager.py<span class="w"> </span>bulk-reject<span class="w"> </span><span class="s2">&quot;pending_*&quot;</span>
+</code></pre></div>
+
+<p>Approved events move to <code>data/events.json</code> and appear on the map.</p>
+<h3 id="3-static-site-generation">3. Static Site Generation</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Generate complete static site</span>
+python3<span class="w"> </span>src/event_manager.py<span class="w"> </span>generate
+
+<span class="c1"># Fast event update (no full rebuild)</span>
+python3<span class="w"> </span>src/event_manager.py<span class="w"> </span>update
+</code></pre></div>
+
+<p>Output: <code>static/index.html</code> (single-file HTML with everything inlined)</p>
+<h2 id="adding-event-sources">🕷️ Adding Event Sources</h2>
+<p>Edit <code>config.json</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;scraping&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;sources&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Your Event Source&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://example.com/events&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;rss&quot;</span><span class="p">,</span><span class="w">  </span><span class="c1">// or &quot;html&quot;, &quot;api&quot;</span>
+<span class="w">        </span><span class="nt">&quot;enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;notes&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Description of the source&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Test the scraper:</p>
+<div class="codehilite"><pre><span></span><code>python3<span class="w"> </span>src/event_manager.py<span class="w"> </span>scrape
+python3<span class="w"> </span>tests/test_scraper.py<span class="w"> </span>--verbose
+</code></pre></div>
+
+<h2 id="internationalization-i18n">🌐 Internationalization (i18n)</h2>
+<p>The app supports English and German:</p>
+<ul>
+<li><code>data/content.json</code> - English translations</li>
+<li><code>static/content.de.json</code> - German translations</li>
+</ul>
+<p>Add translations using the key path format:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;section&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Translation text&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>In code: <code>i18n.t('section.key')</code></p>
+<h2 id="advanced-features">🧪 Advanced Features</h2>
+<h3 id="dynamic-event-templates-with-relative-times">Dynamic Event Templates with Relative Times</h3>
+<p>The app supports <strong>dynamic event templates</strong> with relative time specifications. This feature allows demo events to always display accurate relative times like "happening now" or "starting in 5 minutes" on every page reload, without requiring manual timestamp updates.</p>
+<h4 id="how-it-works">How It Works</h4>
+<p>Demo events can include a <code>relative_time</code> field that specifies how to calculate actual timestamps dynamically:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;demo_happening_now&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;[DEMO] Event Happening Now&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;relative_time&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;offset&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;minutes&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">-30</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;duration_hours&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>When the app loads, the <code>processTemplateEvents()</code> method in <code>assets/js/app.js</code> detects events with <code>relative_time</code> specifications and calculates actual timestamps based on the current browser time.</p>
+<h4 id="relative-time-specifications">Relative Time Specifications</h4>
+<p><strong>Type 1: Offset (Relative to Current Time)</strong></p>
+<p>Events that occur relative to the current moment:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;offset&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;hours&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">           </span><span class="c1">// Optional: hours offset from now</span>
+<span class="w">  </span><span class="nt">&quot;minutes&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w">         </span><span class="c1">// Optional: minutes offset from now</span>
+<span class="w">  </span><span class="nt">&quot;duration_hours&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">  </span><span class="c1">// Event duration in hours</span>
+<span class="w">  </span><span class="nt">&quot;timezone_offset&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">  </span><span class="c1">// Optional: timezone offset for testing</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Examples:<br />
+- <code>{"type": "offset", "minutes": -30, "duration_hours": 2}</code> - Started 30 minutes ago<br />
+- <code>{"type": "offset", "minutes": 5, "duration_hours": 2}</code> - Starts in 5 minutes<br />
+- <code>{"type": "offset", "hours": 1, "duration_hours": 3}</code> - Starts in 1 hour, lasts 3 hours</p>
+<p><strong>Type 2: Sunrise Relative (Relative to Next Sunrise)</strong></p>
+<p>Events that occur relative to the next sunrise (simplified as 6:00 AM):</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sunrise_relative&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;start_offset_hours&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">-2</span><span class="p">,</span><span class="w">    </span><span class="c1">// Optional: hours offset for start time</span>
+<span class="w">  </span><span class="nt">&quot;start_offset_minutes&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">   </span><span class="c1">// Optional: minutes offset for start time</span>
+<span class="w">  </span><span class="nt">&quot;end_offset_hours&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">       </span><span class="c1">// Optional: hours offset for end time</span>
+<span class="w">  </span><span class="nt">&quot;end_offset_minutes&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">-5</span><span class="w">     </span><span class="c1">// Optional: minutes offset for end time</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Examples:<br />
+- <code>{"type": "sunrise_relative", "end_offset_minutes": -5, "start_offset_hours": -2}</code> - Ends 5 minutes before sunrise<br />
+- <code>{"type": "sunrise_relative", "start_offset_hours": -2, "end_offset_hours": 1}</code> - Starts 2 hours before sunrise, ends 1 hour after</p>
+<h4 id="generating-demo-events">Generating Demo Events</h4>
+<p>Run the demo event generator script:</p>
+<div class="codehilite"><pre><span></span><code>python3<span class="w"> </span>scripts/generate_demo_events.py<span class="w"> </span>&gt;<span class="w"> </span>event-data/events.demo.json
+</code></pre></div>
+
+<p>This creates template events with <code>relative_time</code> specifications. See inline comments in <code>scripts/generate_demo_events.py</code> for implementation details.</p>
+<h4 id="benefits">Benefits</h4>
+<ul>
+<li><strong>Always Fresh</strong>: Demo events always show accurate relative times</li>
+<li><strong>Filter Testing</strong>: Test time-based filters (sunrise, 6h, 12h) with realistic data</li>
+<li><strong>Timezone Testing</strong>: Verify international time handling</li>
+<li><strong>No Maintenance</strong>: No need to manually update demo event timestamps</li>
+<li><strong>Backward Compatible</strong>: Real events without <code>relative_time</code> work unchanged</li>
+</ul>
+<p>For technical implementation details, see inline comments in:<br />
+- <code>scripts/generate_demo_events.py</code> - Template generation logic<br />
+- <code>assets/js/app.js</code> - <code>processTemplateEvents()</code> method</p>
+<h3 id="screenshot-generation">Screenshot Generation</h3>
+<p>The app includes a <strong>ready signal</strong> that indicates when the page is fully loaded and ready for screenshot capture. This solves the problem of screenshots being taken before the map and event data have finished loading.</p>
+<h4 id="the-ready-signal">The Ready Signal</h4>
+<p>When ready, the app:<br />
+1. Sets a body attribute: <code>&lt;body data-app-ready="true"&gt;</code><br />
+2. Dispatches a custom event on the <code>window</code> object with metadata</p>
+<h4 id="quick-usage-example-playwright">Quick Usage Example (Playwright)</h4>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">playwright.sync_api</span> <span class="kn">import</span> <span class="n">sync_playwright</span>
+
+<span class="k">with</span> <span class="n">sync_playwright</span><span class="p">()</span> <span class="k">as</span> <span class="n">p</span><span class="p">:</span>
+    <span class="n">browser</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">chromium</span><span class="o">.</span><span class="n">launch</span><span class="p">()</span>
+    <span class="n">page</span> <span class="o">=</span> <span class="n">browser</span><span class="o">.</span><span class="n">new_page</span><span class="p">()</span>
+
+    <span class="c1"># Set viewport for desired screenshot size</span>
+    <span class="n">page</span><span class="o">.</span><span class="n">set_viewport_size</span><span class="p">({</span><span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="mi">1280</span><span class="p">,</span> <span class="s2">&quot;height&quot;</span><span class="p">:</span> <span class="mi">800</span><span class="p">})</span>
+
+    <span class="c1"># Navigate to the page</span>
+    <span class="n">page</span><span class="o">.</span><span class="n">goto</span><span class="p">(</span><span class="s1">&#39;http://localhost:8000&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Wait for app to be ready (max 30 seconds)</span>
+    <span class="n">page</span><span class="o">.</span><span class="n">wait_for_selector</span><span class="p">(</span><span class="s1">&#39;body[data-app-ready=&quot;true&quot;]&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">30000</span><span class="p">)</span>
+
+    <span class="c1"># Optional: Wait a bit more for map tiles to fully render</span>
+    <span class="n">page</span><span class="o">.</span><span class="n">wait_for_timeout</span><span class="p">(</span><span class="mi">2000</span><span class="p">)</span>
+
+    <span class="c1"># Take screenshot</span>
+    <span class="n">page</span><span class="o">.</span><span class="n">screenshot</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;screenshot.png&#39;</span><span class="p">,</span> <span class="n">full_page</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">browser</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</code></pre></div>
+
+<h4 id="complete-screenshot-script">Complete Screenshot Script</h4>
+<p>For a full example that generates both mobile and desktop screenshots, see <code>scripts/generate_screenshots.py</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Generate PWA screenshots</span>
+python3<span class="w"> </span>scripts/generate_screenshots.py
+</code></pre></div>
+
+<p>This generates:<br />
+- <code>assets/screenshot-mobile.png</code> (640×1136)<br />
+- <code>assets/screenshot-desktop.png</code> (1280×800)</p>
+<h4 id="recommended-screenshot-sizes">Recommended Screenshot Sizes</h4>
+<p>For PWA manifest compliance:<br />
+- <strong>Mobile</strong>: 640×1136 (narrow form factor)<br />
+- <strong>Desktop</strong>: 1280×800 (wide form factor)</p>
+<p>For technical implementation details and other automation tools (Puppeteer, Selenium), see inline comments in:<br />
+- <code>assets/js/app.js</code> - <code>markAppAsReady()</code> method<br />
+- <code>scripts/generate_screenshots.py</code> - Complete implementation</p>
+<h2 id="contributing">🤝 Contributing</h2>
+<p>We welcome contributions! Found a bug? Know a venue that should be included? Want to improve the UI?</p>
+<h3 id="guidelines">Guidelines</h3>
+<ol>
+<li><strong>KISS Principle</strong>: Keep it simple. Avoid over-engineering.</li>
+<li><strong>Mobile First</strong>: Always test on mobile viewport sizes.</li>
+<li><strong>Accessibility</strong>: Maintain WCAG 2.1 Level AA compliance.</li>
+<li><strong>Test Before Commit</strong>: Run the test suite.</li>
+<li><strong>No Frameworks</strong>: Vanilla JavaScript only (Leaflet.js is the only external library).</li>
+</ol>
+<h3 id="process">Process</h3>
+<ol>
+<li>Fork the repository</li>
+<li>Create a feature branch</li>
+<li>Make your changes</li>
+<li>Run tests: <code>python3 tests/test_scraper.py --verbose</code></li>
+<li>Submit a pull request</li>
+</ol>
+<p>Questions? Open an issue!</p>
+<h2 id="security">🔐 Security</h2>
+<ul>
+<li><strong>No secrets in code</strong>: Use environment variables or config files (gitignored)</li>
+<li><strong>Input validation</strong>: Always sanitize user input and scraped data</li>
+<li><strong>XSS protection</strong>: Escape HTML when displaying user-generated content</li>
+<li><strong>HTTPS</strong>: Production uses HTTPS (GitHub Pages enforces this)</li>
+</ul>
+<p>Found a security issue? Please report it privately via GitHub Security Advisories.</p>
+<h2 id="license">📄 License</h2>
+<p>[Add your license information here]</p>
+<h2 id="acknowledgments">🙏 Acknowledgments</h2>
+<p>Built with love for the Hof community. Special thanks to all the local venues and organizations sharing their event information.</p>
+<h2 id="links">🔗 Links</h2>
+<ul>
+<li><strong>Live App</strong>: <a href="https://krwl.in">krwl.in</a></li>
+<li><strong>GitHub Repository</strong>: <a href="https://github.com/feileberlin/krwl-hof">github.com/feileberlin/krwl-hof</a></li>
+<li><strong>Report Issues</strong>: <a href="https://github.com/feileberlin/krwl-hof/issues">GitHub Issues</a></li>
+</ul>
+<hr />
+<p><em>Last updated: 2026-01-02 21:06:54</em><br />
+<em>Auto-generated by <code>scripts/generate_readme.py</code> • Documentation philosophy: Code comments + CLI help + TUI hints + README</em></p>
+    </main>
     
-    <div class="section" id="markers">
-        <h2>🎨 Marker Icon System</h2>
-        <p>All map markers use <strong>Lucide icons</strong> wrapped in a unified gyro design with base64 embedding.</p>
-        <ul class="doc-list">
-            <li>
-                <a href="docs/assets_markers_LUCIDE_ICONS.md.html">
-                    <span class="emoji">🎨</span>
-                    <div>
-                        <strong>Lucide Icons Documentation</strong><br>
-                        <small>Complete icon mapping and implementation details</small>
-                    </div>
-                </a>
-            </li>
-            <li>
-                <a href="docs/MARKER_DESIGN_AUDIT.md.html">
-                    <span class="emoji">🔍</span>
-                    <div>
-                        <strong>Marker Design Audit</strong><br>
-                        <small>Analysis of marker design consistency</small>
-                    </div>
-                </a>
-            </li>
-            <li>
-                <a href="docs/MARKER_ICONS_RECOMMENDATION.md.html">
-                    <span class="emoji">💡</span>
-                    <div>
-                        <strong>Icon Library Recommendations</strong><br>
-                        <small>Comparison of free icon libraries</small>
-                    </div>
-                </a>
-            </li>
-            <li>
-                <a href="docs/assets_markers_UNIFIED_DESIGN.md.html">
-                    <span class="emoji">📐</span>
-                    <div>
-                        <strong>Unified Design System</strong><br>
-                        <small>Gyro marker shape specifications</small>
-                    </div>
-                </a>
-            </li>
-        </ul>
-    </div>
-    
-    <div class="section">
-        <h2>🛠️ Development</h2>
-        <ul class="doc-list">
-            <li>
-                <a href="docs/tests_README.md.html">
-                    <span class="emoji">✅</span>
-                    <div>
-                        <strong>Testing Documentation</strong><br>
-                        <small>Test suite and validation procedures</small>
-                    </div>
-                </a>
-            </li>
-            <li>
-                <a href="docs/scripts_README.md.html">
-                    <span class="emoji">⚙️</span>
-                    <div>
-                        <strong>Scripts Documentation</strong><br>
-                        <small>Build scripts and automation tools</small>
-                    </div>
-                </a>
-            </li>
-            <li>
-                <a href="docs/src_templates_README.md.html">
-                    <span class="emoji">📋</span>
-                    <div>
-                        <strong>Templates Documentation</strong><br>
-                        <small>HTML template system</small>
-                    </div>
-                </a>
-            </li>
-        </ul>
-    </div>
-    
-    <div class="section">
-        <h2>🔗 All Documentation Files</h2>
-        <p>Browse the complete <a href="docs/README.html">documentation index</a> for all available documents organized by category.</p>
-    </div>
-    
-    <div class="section">
-        <h2>ℹ️ About</h2>
-        <p><strong>KRWL HOF Community Events</strong> is a mobile-first Progressive Web App for discovering local events with:</p>
-        <ul>
-            <li>🗺️ Interactive Leaflet.js map with geolocation</li>
-            <li>🎨 29 Lucide icons as base64-embedded markers</li>
-            <li>📱 Mobile-first responsive design</li>
-            <li>🌐 Multilingual support (English/German)</li>
-            <li>⚙️ Configurable event categories</li>
-            <li>📦 Single self-contained HTML file</li>
-        </ul>
+    <div class="source-info">
+        <strong>📄 Source:</strong> <code>/home/runner/work/krwl-hof/krwl-hof/README.md</code><br>
+        <strong>⏰ Generated:</strong> 2026-01-03 08:07:23
     </div>
     
     <div class="footer">
-        <p><strong>KRWL HOF Community Events</strong> - Progressive Web App for discovering local events</p>
-        <p>📍 Built with Leaflet.js | 🎨 Icons by Lucide (ISC License) | 💖 Barbie Pink Theme</p>
-        <p><small>Last updated: 2026-01-03</small></p>
+        <p><strong>KRWL HOF Community Events</strong> - Documentation</p>
+        <p>📍 Built with Leaflet.js | 🎨 Icons by Lucide | 💖 Barbie Pink Theme</p>
     </div>
 </body>
 </html>

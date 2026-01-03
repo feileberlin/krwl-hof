@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom SVG Map Markers</title>
+    <style>
+        /* GitHub Dark Theme with Barbie Pink Accents */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: #0d1117;
+            color: #c9d1d9;
+        }
+        
+        /* Headers */
+        h1, h2, h3, h4, h5, h6 {
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            line-height: 1.25;
+            color: #FF69B4;
+        }
+        
+        h1 { 
+            font-size: 2.5em; 
+            border-bottom: 2px solid #FF69B4; 
+            padding-bottom: 0.3em;
+            margin-bottom: 1.5rem;
+        }
+        
+        h2 { 
+            font-size: 1.75em; 
+            border-bottom: 1px solid #21262d; 
+            padding-bottom: 0.3em; 
+        }
+        
+        h3 { font-size: 1.5em; }
+        h4 { font-size: 1.25em; }
+        h5 { font-size: 1.1em; }
+        h6 { font-size: 1em; }
+        
+        /* Links */
+        a { 
+            color: #58a6ff; 
+            text-decoration: none; 
+        }
+        
+        a:hover { 
+            text-decoration: underline; 
+        }
+        
+        /* Navigation */
+        .nav {
+            background: #161b22;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            border-left: 4px solid #FF69B4;
+        }
+        
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .nav-links a {
+            padding: 0.5rem 1rem;
+            background: #21262d;
+            border-radius: 6px;
+            border: 1px solid #30363d;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        
+        .nav-links a:hover {
+            background: #30363d;
+            border-color: #FF69B4;
+            transform: translateY(-2px);
+            text-decoration: none;
+        }
+        
+        /* Code */
+        code {
+            background: #161b22;
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 85%;
+            color: #79c0ff;
+        }
+        
+        pre {
+            background: #161b22;
+            padding: 1rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            border: 1px solid #30363d;
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+            color: #c9d1d9;
+        }
+        
+        /* Tables */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1rem 0;
+            overflow-x: auto;
+            display: block;
+        }
+        
+        thead {
+            background: #161b22;
+        }
+        
+        th {
+            color: #FF69B4;
+            font-weight: 600;
+            text-align: left;
+            padding: 0.75rem;
+            border: 1px solid #30363d;
+        }
+        
+        td {
+            padding: 0.75rem;
+            border: 1px solid #30363d;
+        }
+        
+        tr:nth-child(even) {
+            background: #0d1117;
+        }
+        
+        tr:hover {
+            background: #161b22;
+        }
+        
+        /* Lists */
+        ul, ol {
+            margin: 1rem 0;
+            padding-left: 2rem;
+        }
+        
+        li {
+            margin: 0.5rem 0;
+        }
+        
+        /* Blockquotes */
+        blockquote {
+            border-left: 4px solid #FF69B4;
+            padding-left: 1rem;
+            margin: 1rem 0;
+            color: #8b949e;
+            font-style: italic;
+        }
+        
+        /* Horizontal Rule */
+        hr {
+            border: none;
+            border-top: 1px solid #21262d;
+            margin: 2rem 0;
+        }
+        
+        /* Paragraphs */
+        p {
+            margin: 1rem 0;
+        }
+        
+        /* Images */
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+            margin: 1rem 0;
+        }
+        
+        /* Source Info */
+        .source-info {
+            background: #161b22;
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1.5rem 0;
+            font-size: 0.9em;
+            color: #8b949e;
+            border-left: 4px solid #30363d;
+        }
+        
+        .source-info strong {
+            color: #c9d1d9;
+        }
+        
+        /* Footer */
+        .footer {
+            margin-top: 3rem;
+            padding-top: 1rem;
+            border-top: 1px solid #30363d;
+            color: #8b949e;
+            font-size: 0.9em;
+            text-align: center;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            h2 {
+                font-size: 1.5em;
+            }
+            
+            .nav-links {
+                flex-direction: column;
+            }
+            
+            .nav-links a {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-links">
+            <a href="README.html">🏠 Home</a>
+            <a href="docs/index.html">📖 Docs Index</a>
+            <a href="static/index.html">🗺️ Map App</a>
+            <a href="docs/CHANGELOG.html">📝 Changelog</a>
+            <a href="docs/QUICK_REFERENCE.html">⚡ Quick Ref</a>
+        </div>
+    </nav>
+    
+    <main>
+        <h1 id="custom-svg-map-markers">Custom SVG Map Markers</h1>
+<p>Terminal/hacker style map markers with green (#00ff00) outlines matching the application theme.</p>
+<h2 id="design-philosophy">Design Philosophy</h2>
+<p>All markers follow the terminal aesthetic:<br />
+- <strong>No fill colors</strong> - Transparent backgrounds<br />
+- <strong>Green outlines only</strong> - #00ff00 (bright green)<br />
+- <strong>Distinct shapes</strong> - Different geometric shapes for easy identification<br />
+- <strong>Minimalist icons</strong> - Simple, readable symbols<br />
+- <strong>Consistent size</strong> - All 32x48px for uniform appearance<br />
+- <strong>Drop shadows</strong> - For depth on dark backgrounds</p>
+<h2 id="location-markers">Location Markers</h2>
+<h3 id="geolocation-marker-geolocationsvg">Geolocation (<code>marker-geolocation.svg</code>)</h3>
+<ul>
+<li><strong>Shape</strong>: Square pin</li>
+<li><strong>Icon</strong>: Person silhouette</li>
+<li><strong>Use</strong>: "You are here" - user's current location</li>
+<li><strong>Size</strong>: 32x48px</li>
+</ul>
+<h3 id="main-station-marker-main-stationsvg">Main Station (<code>marker-main-station.svg</code>)</h3>
+<ul>
+<li><strong>Shape</strong>: Rectangle with railroad crossing X</li>
+<li><strong>Icon</strong>: Train/rails</li>
+<li><strong>Use</strong>: Main train/bus station location</li>
+<li><strong>Size</strong>: 32x48px</li>
+</ul>
+<h3 id="city-center-marker-city-centersvg">City Center (<code>marker-city-center.svg</code>)</h3>
+<ul>
+<li><strong>Shape</strong>: Octagon (8-sided)</li>
+<li><strong>Icon</strong>: Crosshair/target center point</li>
+<li><strong>Use</strong>: City center reference point</li>
+<li><strong>Size</strong>: 32x48px</li>
+</ul>
+<h3 id="mayors-office-marker-mayors-officesvg">Mayor's Office (<code>marker-mayors-office.svg</code>)</h3>
+<ul>
+<li><strong>Shape</strong>: Building with pillars</li>
+<li><strong>Icon</strong>: Classical building facade with female symbol (♀)</li>
+<li><strong>Use</strong>: Government building, mayor's office</li>
+<li><strong>Size</strong>: 32x48px</li>
+</ul>
+<h2 id="event-category-markers">Event Category Markers</h2>
+<h3 id="default-event-marker-defaultsvg">Default Event (<code>marker-default.svg</code>)</h3>
+<ul>
+<li><strong>Shape</strong>: Classic teardrop pin</li>
+<li><strong>Icon</strong>: Circle with center dot</li>
+<li><strong>Use</strong>: Default event marker, all events</li>
+<li><strong>Size</strong>: 32x48px</li>
+</ul>
+<h3 id="activeselected-marker-activesvg">Active/Selected (<code>marker-active.svg</code>)</h3>
+<ul>
+<li><strong>Shape</strong>: Teardrop pin with glow</li>
+<li><strong>Icon</strong>: Larger glowing center dot</li>
+<li><strong>Use</strong>: Currently selected or hovered event</li>
+<li><strong>Size</strong>: 32x48px</li>
+<li><strong>Features</strong>: Thicker strokes, outer glow effect</li>
+</ul>
+<h3 id="on-stage-marker-on-stagesvg">On Stage (<code>marker-on-stage.svg</code>)</h3>
+<ul>
+<li><strong>Shape</strong>: Diamond pin</li>
+<li><strong>Icon</strong>: Microphone</li>
+<li><strong>Use</strong>: Music, theater, performances</li>
+<li><strong>Size</strong>: 32x48px</li>
+</ul>
+<h3 id="pub-games-marker-pub-gamessvg">Pub Games (<code>marker-pub-games.svg</code>)</h3>
+<ul>
+<li><strong>Shape</strong>: Hexagon pin</li>
+<li><strong>Icon</strong>: Beer mug</li>
+<li><strong>Use</strong>: Pub quizzes, game nights, social events</li>
+<li><strong>Size</strong>: 32x48px</li>
+</ul>
+<h3 id="festivals-marker-festivalssvg">Festivals (<code>marker-festivals.svg</code>)</h3>
+<ul>
+<li><strong>Shape</strong>: Star pin</li>
+<li><strong>Icon</strong>: Festival flag</li>
+<li><strong>Use</strong>: Festivals, celebrations, large events</li>
+<li><strong>Size</strong>: 32x48px</li>
+</ul>
+<h2 id="community-place-markers">Community Place Markers</h2>
+<h3 id="church-marker-churchsvg">Church (<code>marker-church.svg</code>)</h3>
+<ul>
+<li><strong>Shape</strong>: Cross-shaped pin</li>
+<li><strong>Icon</strong>: Christian cross</li>
+<li><strong>Use</strong>: Churches, chapels, religious buildings</li>
+<li><strong>Size</strong>: 32x48px</li>
+</ul>
+<h3 id="swimming-pool-marker-swimmingsvg">Swimming Pool (<code>marker-swimming.svg</code>)</h3>
+<ul>
+<li><strong>Shape</strong>: Wave-topped pin</li>
+<li><strong>Icon</strong>: Waves and swimmer</li>
+<li><strong>Use</strong>: Swimming pools, aquatic centers, beaches</li>
+<li><strong>Size</strong>: 32x48px</li>
+</ul>
+<h3 id="sports-field-marker-sports-fieldsvg">Sports Field (<code>marker-sports-field.svg</code>)</h3>
+<ul>
+<li><strong>Shape</strong>: Rectangular stadium pin</li>
+<li><strong>Icon</strong>: Playing field with goals</li>
+<li><strong>Use</strong>: Sports fields, stadiums, athletic facilities</li>
+<li><strong>Size</strong>: 32x48px</li>
+</ul>
+<h3 id="cemetery-marker-cemeterysvg">Cemetery (<code>marker-cemetery.svg</code>)</h3>
+<ul>
+<li><strong>Shape</strong>: Rounded tombstone pin</li>
+<li><strong>Icon</strong>: Cross on tombstone</li>
+<li><strong>Use</strong>: Cemeteries, memorial gardens</li>
+<li><strong>Size</strong>: 32x48px</li>
+</ul>
+<h3 id="library-marker-librarysvg">Library (<code>marker-library.svg</code>)</h3>
+<ul>
+<li><strong>Shape</strong>: Book spine pin</li>
+<li><strong>Icon</strong>: Book with pages</li>
+<li><strong>Use</strong>: Libraries, reading rooms, archives</li>
+<li><strong>Size</strong>: 32x48px</li>
+</ul>
+<h3 id="hospital-marker-hospitalsvg">Hospital (<code>marker-hospital.svg</code>)</h3>
+<ul>
+<li><strong>Shape</strong>: Pentagon pin</li>
+<li><strong>Icon</strong>: Medical cross (equal arms)</li>
+<li><strong>Use</strong>: Hospitals, clinics, medical centers</li>
+<li><strong>Size</strong>: 32x48px</li>
+</ul>
+<h3 id="parkgarden-marker-parksvg">Park/Garden (<code>marker-park.svg</code>)</h3>
+<ul>
+<li><strong>Shape</strong>: Tree crown pin</li>
+<li><strong>Icon</strong>: Tree with multiple circular crowns</li>
+<li><strong>Use</strong>: Parks, gardens, green spaces</li>
+<li><strong>Size</strong>: 32x48px</li>
+</ul>
+<h3 id="school-marker-schoolsvg">School (<code>marker-school.svg</code>)</h3>
+<ul>
+<li><strong>Shape</strong>: Trapezoid (graduation cap) pin</li>
+<li><strong>Icon</strong>: Graduation cap with tassel</li>
+<li><strong>Use</strong>: Schools, universities, educational institutions</li>
+<li><strong>Size</strong>: 32x48px</li>
+</ul>
+<h3 id="shopping-marker-shoppingsvg">Shopping (<code>marker-shopping.svg</code>)</h3>
+<ul>
+<li><strong>Shape</strong>: Shopping bag pin</li>
+<li><strong>Icon</strong>: Bag with handles and items</li>
+<li><strong>Use</strong>: Shopping centers, markets, retail areas</li>
+<li><strong>Size</strong>: 32x48px</li>
+</ul>
+<h3 id="museum-marker-museumsvg">Museum (<code>marker-museum.svg</code>)</h3>
+<ul>
+<li><strong>Shape</strong>: Classical temple pin</li>
+<li><strong>Icon</strong>: Temple with columns and pediment</li>
+<li><strong>Use</strong>: Museums, galleries, cultural centers</li>
+<li><strong>Size</strong>: 32x48px</li>
+</ul>
+<h2 id="terminal-color-palette">Terminal Color Palette</h2>
+<ul>
+<li><strong>Primary</strong>: #00ff00 (bright green)</li>
+<li><strong>Glow/Active</strong>: #00ff00 with opacity variations</li>
+<li><strong>Shadow</strong>: #000 with 50% opacity</li>
+<li><strong>Background</strong>: Transparent (shows map underneath)</li>
+</ul>
+<h2 id="usage-in-leaflet">Usage in Leaflet</h2>
+<h3 id="basic-usage">Basic Usage</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1">// Create custom terminal-style icon</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">terminalIcon</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">L</span><span class="p">.</span><span class="nx">icon</span><span class="p">({</span>
+<span class="w">    </span><span class="nx">iconUrl</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;markers/marker-default.svg&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">iconSize</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="mf">32</span><span class="p">,</span><span class="w"> </span><span class="mf">48</span><span class="p">],</span>
+<span class="w">    </span><span class="nx">iconAnchor</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="mf">16</span><span class="p">,</span><span class="w"> </span><span class="mf">48</span><span class="p">],</span>
+<span class="w">    </span><span class="nx">popupAnchor</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="mf">0</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mf">48</span><span class="p">]</span>
+<span class="p">});</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">marker</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">L</span><span class="p">.</span><span class="nx">marker</span><span class="p">([</span><span class="nx">lat</span><span class="p">,</span><span class="w"> </span><span class="nx">lon</span><span class="p">],</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">icon</span><span class="o">:</span><span class="w"> </span><span class="nx">terminalIcon</span><span class="w"> </span><span class="p">}).</span><span class="nx">addTo</span><span class="p">(</span><span class="nx">map</span><span class="p">);</span>
+</code></pre></div>
+
+<h3 id="location-based-markers">Location-Based Markers</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1">// Get marker for predefined locations</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">getLocationMarker</span><span class="p">(</span><span class="nx">locationType</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">iconMap</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="s1">&#39;geolocation&#39;</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;markers/marker-geolocation.svg&#39;</span><span class="p">,</span>
+<span class="w">        </span><span class="s1">&#39;main-station&#39;</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;markers/marker-main-station.svg&#39;</span><span class="p">,</span>
+<span class="w">        </span><span class="s1">&#39;city-center&#39;</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;markers/marker-city-center.svg&#39;</span><span class="p">,</span>
+<span class="w">        </span><span class="s1">&#39;mayors-office&#39;</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;markers/marker-mayors-office.svg&#39;</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">L</span><span class="p">.</span><span class="nx">icon</span><span class="p">({</span>
+<span class="w">        </span><span class="nx">iconUrl</span><span class="o">:</span><span class="w"> </span><span class="nx">iconMap</span><span class="p">[</span><span class="nx">locationType</span><span class="p">],</span>
+<span class="w">        </span><span class="nx">iconSize</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="mf">32</span><span class="p">,</span><span class="w"> </span><span class="mf">48</span><span class="p">],</span>
+<span class="w">        </span><span class="nx">iconAnchor</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="mf">16</span><span class="p">,</span><span class="w"> </span><span class="mf">48</span><span class="p">],</span>
+<span class="w">        </span><span class="nx">popupAnchor</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="mf">0</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mf">48</span><span class="p">]</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="p">}</span>
+
+<span class="c1">// Use for user location</span>
+<span class="nx">L</span><span class="p">.</span><span class="nx">marker</span><span class="p">([</span><span class="nx">userLat</span><span class="p">,</span><span class="w"> </span><span class="nx">userLon</span><span class="p">],</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
+<span class="w">    </span><span class="nx">icon</span><span class="o">:</span><span class="w"> </span><span class="nx">getLocationMarker</span><span class="p">(</span><span class="s1">&#39;geolocation&#39;</span><span class="p">)</span><span class="w"> </span>
+<span class="p">}).</span><span class="nx">addTo</span><span class="p">(</span><span class="nx">map</span><span class="p">);</span>
+</code></pre></div>
+
+<h3 id="category-based-event-markers">Category-Based Event Markers</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1">// Get marker based on event category</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">getEventMarker</span><span class="p">(</span><span class="nx">category</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">iconMap</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="s1">&#39;on-stage&#39;</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;markers/marker-on-stage.svg&#39;</span><span class="p">,</span>
+<span class="w">        </span><span class="s1">&#39;pub-games&#39;</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;markers/marker-pub-games.svg&#39;</span><span class="p">,</span>
+<span class="w">        </span><span class="s1">&#39;festivals&#39;</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;markers/marker-festivals.svg&#39;</span><span class="p">,</span>
+<span class="w">        </span><span class="s1">&#39;default&#39;</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;markers/marker-default.svg&#39;</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">iconUrl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">iconMap</span><span class="p">[</span><span class="nx">category</span><span class="p">]</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nx">iconMap</span><span class="p">.</span><span class="k">default</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">L</span><span class="p">.</span><span class="nx">icon</span><span class="p">({</span>
+<span class="w">        </span><span class="nx">iconUrl</span><span class="o">:</span><span class="w"> </span><span class="nx">iconUrl</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">iconSize</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="mf">32</span><span class="p">,</span><span class="w"> </span><span class="mf">48</span><span class="p">],</span>
+<span class="w">        </span><span class="nx">iconAnchor</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="mf">16</span><span class="p">,</span><span class="w"> </span><span class="mf">48</span><span class="p">],</span>
+<span class="w">        </span><span class="nx">popupAnchor</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="mf">0</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mf">48</span><span class="p">]</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="p">}</span>
+
+<span class="c1">// Use in marker creation</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">marker</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">L</span><span class="p">.</span><span class="nx">marker</span><span class="p">([</span><span class="nx">event</span><span class="p">.</span><span class="nx">lat</span><span class="p">,</span><span class="w"> </span><span class="nx">event</span><span class="p">.</span><span class="nx">lon</span><span class="p">],</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
+<span class="w">    </span><span class="nx">icon</span><span class="o">:</span><span class="w"> </span><span class="nx">getEventMarker</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">category</span><span class="p">)</span><span class="w"> </span>
+<span class="p">}).</span><span class="nx">addTo</span><span class="p">(</span><span class="nx">map</span><span class="p">);</span>
+</code></pre></div>
+
+<h3 id="activehover-state">Active/Hover State</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1">// Change marker on hover to show selection</span>
+<span class="nx">marker</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;mouseover&#39;</span><span class="p">,</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">setIcon</span><span class="p">(</span><span class="nx">L</span><span class="p">.</span><span class="nx">icon</span><span class="p">({</span>
+<span class="w">        </span><span class="nx">iconUrl</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;markers/marker-active.svg&#39;</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">iconSize</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="mf">32</span><span class="p">,</span><span class="w"> </span><span class="mf">48</span><span class="p">],</span>
+<span class="w">        </span><span class="nx">iconAnchor</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="mf">16</span><span class="p">,</span><span class="w"> </span><span class="mf">48</span><span class="p">],</span>
+<span class="w">        </span><span class="nx">popupAnchor</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="mf">0</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mf">48</span><span class="p">]</span>
+<span class="w">    </span><span class="p">}));</span>
+<span class="p">});</span>
+
+<span class="nx">marker</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;mouseout&#39;</span><span class="p">,</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Reset to original category marker</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">setIcon</span><span class="p">(</span><span class="nx">getEventMarker</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">category</span><span class="p">));</span>
+<span class="p">});</span>
+</code></pre></div>
+
+<h2 id="shape-distinctions">Shape Distinctions</h2>
+<p>Each marker has a unique shape for quick visual identification:</p>
+<table>
+<thead>
+<tr>
+<th>Marker</th>
+<th>Shape</th>
+<th>Visual Characteristic</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Default</td>
+<td>Teardrop</td>
+<td>Classic location pin</td>
+</tr>
+<tr>
+<td>Active</td>
+<td>Teardrop + Glow</td>
+<td>Thicker strokes, glowing</td>
+</tr>
+<tr>
+<td>Geolocation</td>
+<td>Square</td>
+<td>User location</td>
+</tr>
+<tr>
+<td>Main Station</td>
+<td>Rectangle + X</td>
+<td>Railroad crossing</td>
+</tr>
+<tr>
+<td>City Center</td>
+<td>Octagon</td>
+<td>8-sided symmetry</td>
+</tr>
+<tr>
+<td>Mayor's Office</td>
+<td>Building</td>
+<td>Classical facade</td>
+</tr>
+<tr>
+<td>On Stage</td>
+<td>Diamond</td>
+<td>4-pointed shape</td>
+</tr>
+<tr>
+<td>Pub Games</td>
+<td>Hexagon</td>
+<td>6-sided shape</td>
+</tr>
+<tr>
+<td>Festivals</td>
+<td>Star</td>
+<td>Multiple points</td>
+</tr>
+</tbody>
+</table>
+<h2 id="accessibility-features">Accessibility Features</h2>
+<ul>
+<li><strong>High contrast</strong>: Green on black background</li>
+<li><strong>Shape variety</strong>: Distinguishable without color</li>
+<li><strong>Clear outlines</strong>: 2px stroke width for visibility</li>
+<li><strong>Icons</strong>: Additional visual cues beyond shape</li>
+<li><strong>Drop shadow</strong>: Improves depth perception</li>
+<li><strong>Size consistency</strong>: All same size for fairness</li>
+</ul>
+<h2 id="technical-specifications">Technical Specifications</h2>
+<h3 id="common-elements">Common Elements</h3>
+<ul>
+<li><strong>Stroke Color</strong>: #00ff00 (bright green)</li>
+<li><strong>Stroke Width</strong>: 2px (main outline), 1-1.5px (details)</li>
+<li><strong>Fill</strong>: none (transparent)</li>
+<li><strong>Drop Shadow</strong>: ellipse, black with 50% opacity</li>
+<li><strong>Icon Size</strong>: 32×48 pixels</li>
+<li><strong>Anchor Point</strong>: [16, 48] (bottom center)</li>
+<li><strong>Popup Anchor</strong>: [0, -48] (above marker)</li>
+</ul>
+<h3 id="file-format">File Format</h3>
+<ul>
+<li>Format: SVG (Scalable Vector Graphics)</li>
+<li>Encoding: UTF-8</li>
+<li>Namespace: http://www.w3.org/2000/svg</li>
+<li>ViewBox: 0 0 32 48</li>
+<li>Optimization: Minimal, hand-coded paths</li>
+</ul>
+<h2 id="customization">Customization</h2>
+<h3 id="changing-the-terminal-color">Changing the Terminal Color</h3>
+<p>To change from green to another terminal color (e.g., cyan, amber):</p>
+<div class="codehilite"><pre><span></span><code><span class="o">&lt;!--</span><span class="w"> </span><span class="n">Change</span><span class="w"> </span><span class="kr">all</span><span class="w"> </span><span class="n">stroke</span><span class="o">=</span><span class="s">&quot;#00ff00&quot;</span><span class="w"> </span><span class="n">to</span><span class="o">:</span><span class="w"> </span><span class="o">--&gt;</span>
+<span class="n">stroke</span><span class="o">=</span><span class="s">&quot;#00ffff&quot;</span><span class="w">  </span><span class="o">&lt;!--</span><span class="w"> </span><span class="n">Cyan</span><span class="w"> </span><span class="o">--&gt;</span>
+<span class="n">stroke</span><span class="o">=</span><span class="s">&quot;#ffaa00&quot;</span><span class="w">  </span><span class="o">&lt;!--</span><span class="w"> </span><span class="n">Amber</span><span class="w"> </span><span class="o">--&gt;</span>
+<span class="n">stroke</span><span class="o">=</span><span class="s">&quot;#ff0000&quot;</span><span class="w">  </span><span class="o">&lt;!--</span><span class="w"> </span><span class="n">Red</span><span class="w"> </span><span class="o">--&gt;</span>
+</code></pre></div>
+
+<h3 id="adding-new-location-markers">Adding New Location Markers</h3>
+<ol>
+<li>Copy an existing marker SVG</li>
+<li>Create a unique shape (triangle, pentagon, etc.)</li>
+<li>Add an appropriate icon</li>
+<li>Keep the same terminal style (green outline only)</li>
+<li>Name it <code>marker-{location-name}.svg</code></li>
+<li>Add to <code>getLocationMarker()</code> function</li>
+</ol>
+<h3 id="adding-new-category-markers">Adding New Category Markers</h3>
+<ol>
+<li>Copy an existing category marker</li>
+<li>Design a new shape (avoid duplicates)</li>
+<li>Add a category-appropriate icon</li>
+<li>Keep terminal aesthetics</li>
+<li>Name it <code>marker-{category-name}.svg</code></li>
+<li>Add to <code>getEventMarker()</code> function</li>
+</ol>
+<h3 id="design-guidelines">Design Guidelines</h3>
+<ul>
+<li>Use only outlines (no fills except shadow and accents)</li>
+<li>Keep stroke width consistent (2px main, 1-1.5px details)</li>
+<li>Center anchor at bottom point (16, 48)</li>
+<li>Test at actual size for readability</li>
+<li>Ensure shape is distinctive at small sizes</li>
+<li>Icons should be 6-10px in the marker head</li>
+</ul>
+<h2 id="crtterminal-effect-optional">CRT/Terminal Effect (Optional)</h2>
+<p>For enhanced CRT monitor effect, add glow in CSS:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">.</span><span class="nc">leaflet-marker-icon</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">filter</span><span class="p">:</span><span class="w"> </span><span class="nb">drop-shadow</span><span class="p">(</span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">2</span><span class="kt">px</span><span class="w"> </span><span class="mh">#00ff00</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="p">.</span><span class="nc">leaflet-marker-icon</span><span class="p">:</span><span class="nd">hover</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">filter</span><span class="p">:</span><span class="w"> </span><span class="nb">drop-shadow</span><span class="p">(</span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">4</span><span class="kt">px</span><span class="w"> </span><span class="mh">#00ff00</span><span class="p">)</span><span class="w"> </span>
+<span class="w">            </span><span class="nb">drop-shadow</span><span class="p">(</span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">8</span><span class="kt">px</span><span class="w"> </span><span class="mh">#00ff00</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h2 id="browser-support">Browser Support</h2>
+<p>SVG markers work in all modern browsers:<br />
+- Chrome/Edge: ✅<br />
+- Firefox: ✅<br />
+- Safari: ✅<br />
+- Mobile browsers: ✅</p>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://leafletjs.com/reference.html#icon">Leaflet Icon Documentation</a></li>
+<li><a href="https://www.w3.org/TR/SVG2/paths.html">SVG Path Specification</a></li>
+<li>Terminal color palettes: Green (#00ff00), Amber (#ffaa00), Cyan (#00ffff)</li>
+</ul>
+    </main>
+    
+    <div class="source-info">
+        <strong>📄 Source:</strong> <code>/home/runner/work/krwl-hof/krwl-hof/assets/markers/README.md</code><br>
+        <strong>⏰ Generated:</strong> 2026-01-03 08:07:23
+    </div>
+    
+    <div class="footer">
+        <p><strong>KRWL HOF Community Events</strong> - Documentation</p>
+        <p>📍 Built with Leaflet.js | 🎨 Icons by Lucide | 💖 Barbie Pink Theme</p>
+    </div>
+</body>
+</html>
