@@ -327,6 +327,75 @@ class SiteGenerator:
         """Read logo SVG content for inline use"""
         return self.inline_svg_file('logo.svg', as_data_url=False)
     
+    def generate_marker_icon_map(self) -> Dict[str, str]:
+        """
+        Generate a map of marker icon names to base64 data URLs.
+        
+        Only includes markers that are actually referenced in the JavaScript
+        event category mapping to keep file size minimal.
+        
+        Returns:
+            Dictionary mapping marker names (without .svg extension) to data URLs
+            Example: {'marker-on-stage': 'data:image/svg+xml;base64,...'}
+        """
+        # List of markers actually used in JavaScript getMarkerIconForCategory
+        # This should match the unique values in the iconNameMap in app.js
+        required_markers = [
+            'marker-on-stage',      # Performance & Entertainment
+            'marker-music',         # Concerts
+            'marker-opera-house',   # Opera
+            'marker-pub-games',     # Social & Games
+            'marker-festivals',     # Festivals & Celebrations
+            'marker-workshops',     # Educational & Skills
+            'marker-school',        # Lectures
+            'marker-shopping',      # Shopping & Markets
+            'marker-sports',        # Sports & Fitness
+            'marker-sports-field',  # Athletics
+            'marker-swimming',      # Swimming
+            'marker-community',     # Community & Social Services
+            'marker-arts',          # Arts & Culture
+            'marker-museum',        # Exhibitions
+            'marker-food',          # Food & Dining
+            'marker-church',        # Religious
+            'marker-traditional-oceanic',  # Cultural/Traditional
+            'marker-castle',        # Historical
+            'marker-monument',      # Heritage
+            'marker-tower',         # Landmarks
+            'marker-ruins',         # Ruins
+            'marker-palace',        # Palace
+            'marker-park',          # Parks & Nature
+            'marker-parliament',    # Government
+            'marker-mayors-office', # City Hall
+            'marker-library',       # Libraries
+            'marker-national-archive',  # Archives
+            'marker-default',       # Default fallback
+            'marker-geolocation'    # User location marker
+        ]
+        
+        markers_dir = self.base_path / 'assets' / 'markers'
+        marker_map = {}
+        
+        if not markers_dir.exists():
+            print(f"⚠️  Markers directory not found: {markers_dir}")
+            return marker_map
+        
+        # Only process markers in the required list
+        for marker_name in required_markers:
+            svg_file = markers_dir / f"{marker_name}.svg"
+            
+            if not svg_file.exists():
+                print(f"⚠️  Required marker not found: {marker_name}.svg")
+                continue
+            
+            # Generate base64 data URL
+            try:
+                data_url = self.inline_svg_file(svg_file.name, as_data_url=True)
+                marker_map[marker_name] = data_url
+            except Exception as e:
+                print(f"⚠️  Failed to process {marker_name}.svg: {e}")
+        
+        return marker_map
+    
     def filter_and_sort_future_events(self, events: List[Dict]) -> List[Dict]:
         """Filter out past events and sort (running events first, then chronological)."""
         from datetime import timezone
@@ -454,7 +523,8 @@ class SiteGenerator:
         content_en: Dict,
         content_de: Dict,
         stylesheets: Dict[str, str],
-        scripts: Dict[str, str]
+        scripts: Dict[str, str],
+        marker_icons: Dict[str, str]
     ) -> str:
         """Build complete HTML structure using templates (KISS: simple .format())"""
         
@@ -477,7 +547,8 @@ class SiteGenerator:
 window.ALL_CONFIGS = {json.dumps(configs)};
 window.ALL_EVENTS = {json.dumps(events)};
 window.EMBEDDED_CONTENT_EN = {json.dumps(content_en)};
-window.EMBEDDED_CONTENT_DE = {json.dumps(content_de)};'''
+window.EMBEDDED_CONTENT_DE = {json.dumps(content_de)};
+window.MARKER_ICONS = {json.dumps(marker_icons)};'''
         
         # Use placeholder timestamp to avoid merge conflicts
         # Actual timestamp will be added during deployment if needed
@@ -563,10 +634,14 @@ window.EMBEDDED_CONTENT_DE = {json.dumps(content_de)};'''
         print("Loading translations...")
         content_en, content_de = self.load_translation_data()
         
+        print("Generating marker icon map...")
+        marker_icons = self.generate_marker_icon_map()
+        print(f"✅ Generated {len(marker_icons)} marker icons as base64 data URLs")
+        
         print(f"Building HTML ({len(events)} total events)...")
         html = self.build_html_structure(
             configs, events, content_en, content_de,
-            stylesheets, scripts
+            stylesheets, scripts, marker_icons
         )
         
         # Lint the generated content
