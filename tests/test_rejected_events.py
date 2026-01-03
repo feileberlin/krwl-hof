@@ -55,8 +55,8 @@ class RejectedEventsTester:
         self.test_dir = tempfile.mkdtemp(prefix='krwl_rejected_test_')
         test_path = Path(self.test_dir)
         
-        # Create event-data directory (correct data location)
-        event_data_dir = test_path / 'event-data'
+        # Create data directory (correct data location)
+        event_data_dir = test_path / 'data'
         event_data_dir.mkdir(exist_ok=True)
         
         # Create initial files
@@ -106,7 +106,7 @@ class RejectedEventsTester:
             )
             
             # Check file was created
-            rejected_file = test_path / 'event-data' / 'rejected_events.json'
+            rejected_file = test_path / 'data' / 'rejected_events.json'
             self.assert_test(
                 rejected_file.exists(),
                 "Rejected events file created",

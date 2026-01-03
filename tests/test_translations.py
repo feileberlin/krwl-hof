@@ -22,7 +22,7 @@ from typing import Dict, List, Set, Tuple
 class TranslationTester:
     """Tests translation file completeness and consistency"""
     
-    def __init__(self, static_dir: str = "static", verbose: bool = False):
+    def __init__(self, static_dir: str = "data/i18n", verbose: bool = False):
         self.static_dir = Path(static_dir)
         self.verbose = verbose
         self.tests_passed = 0
@@ -457,7 +457,7 @@ Examples:
     
     parser.add_argument(
         '--static-dir',
-        default='static',
+        default='data/i18n',
         help='Path to static directory containing content files (default: static)'
     )
     

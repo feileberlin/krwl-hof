@@ -42,7 +42,7 @@
 ## ❌ Experimental (Can Ignore)
 
 ### 1. FSH Restructuring
-- All the directory moving (src-modules, event-data, assets, target, layouts, content, etc.)
+- All the directory moving (src-modules, data, assets, target, layouts, content, etc.)
 - **Status**: ⚠️ Exploratory, may have broken things
 
 ### 2. Multiple Documentation Files

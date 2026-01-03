@@ -27,8 +27,8 @@ def test_pending_count_in_events_json():
         from modules.scraper import EventScraper
         from modules.utils import load_events, update_pending_count_in_events
         
-        # Create event-data directory
-        event_data_dir = test_path / 'event-data'
+        # Create data directory
+        event_data_dir = test_path / 'data'
         event_data_dir.mkdir(exist_ok=True)
         
         # Create pending events with 3 events

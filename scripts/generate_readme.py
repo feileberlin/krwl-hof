@@ -236,7 +236,7 @@ krwl-hof/
 │   ├── markers/         # Event marker SVG icons
 │   ├── manifest.json    # PWA manifest
 │   └── *.svg            # App icons (favicon, PWA icons, logo)
-├── event-data/                # Event and translation data
+├── data/                # Event and translation data
 │   ├── events.json      # Published events
 │   ├── pending_events.json  # Events awaiting approval
 │   ├── rejected_events.json # Rejected events
@@ -408,7 +408,7 @@ Examples:
 Run the demo event generator script:
 
 ```bash
-python3 scripts/generate_demo_events.py > event-data/events.demo.json
+python3 scripts/generate_demo_events.py > data/events.demo.json
 ```
 
 This creates template events with `relative_time` specifications. See inline comments in `scripts/generate_demo_events.py` for implementation details.

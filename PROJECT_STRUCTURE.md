@@ -197,7 +197,7 @@ python3 src/event_manager.py publish EVENT_ID
 - `assets/js/` → `src/js/`
 - `src/templates/components/` → `layouts/components/`
 - `src-modules/` → `src/modules/` + `src/`
-- `event-data/` → `data/`
+- `data/` → `data/`
 - `config.json` → `data/config.json`
 - `assets/lib/` → `static/` (libraries)
 

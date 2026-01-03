@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - `scripts/generate_demo_events.py` now includes `relative_time` specifications for all demo events
-- Demo event generation now loads from `event-data/events.json` instead of `static/events.json`
+- Demo event generation now loads from `data/events.json` instead of `static/events.json`
 - `assets/js/app.js` updated to process template events without mutation
 
 ## [1.0.0] - 2026-01-01

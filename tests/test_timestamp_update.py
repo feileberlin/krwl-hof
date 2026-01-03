@@ -26,8 +26,8 @@ def test_timestamp_only_on_new_events():
         
         from modules.scraper import EventScraper
         
-        # Create event-data directory (correct data location)
-        event_data_dir = test_path / 'event-data'
+        # Create data directory (correct data location)
+        event_data_dir = test_path / 'data'
         event_data_dir.mkdir(exist_ok=True)
         
         # Create initial pending_events.json with a specific timestamp

@@ -384,8 +384,8 @@ python3 src/event_manager.py generate
    - Read all 78 marker SVGs → base64 data URLs
 
 3. **Load data**:
-   - Read `event-data/events.json` → event list
-   - Read `event-data/content.json` → translations
+   - Read `data/events.json` → event list
+   - Read `data/content.json` → translations
 
 4. **Generate embedded JavaScript**:
    - `window.EVENT_DATA = {...}` → `embedded_data` string
