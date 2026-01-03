@@ -128,7 +128,8 @@ def load_config(base_path):
     Returns:
         dict: Configuration dictionary with environment-specific overrides applied
     """
-    config_path = base_path / 'data/config.json'
+    # SSG Standard: config.json at root level (like Hugo's config.toml, Jekyll's _config.yml)
+    config_path = base_path / 'config.json'
     
     # Load base configuration
     with open(config_path, 'r', encoding='utf-8') as f:

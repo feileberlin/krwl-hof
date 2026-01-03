@@ -1,10 +1,19 @@
 /* Base Styles - Reset and Global */
 /* Design tokens are loaded separately via design-tokens.css */
 
-* {
+/* IMPORTANT: Exclude Leaflet from box-sizing reset */
+/* Leaflet uses content-box for calculations, border-box breaks it */
+/* See: https://leafletjs.com/reference.html#map-boxzoom */
+*:not([class*='leaflet']) {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+}
+
+/* Explicitly reset box-sizing for Leaflet elements */
+.leaflet-container,
+.leaflet-container * {
+    box-sizing: content-box;
 }
 
 body {
