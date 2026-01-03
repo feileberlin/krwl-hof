@@ -195,7 +195,7 @@ python3 src/event_manager.py publish EVENT_ID
 ### Old → New Mapping
 - `assets/css/` → `src/css/`
 - `assets/js/` → `src/js/`
-- `src/templates/components/` → `layouts/components/`
+- `src/templates/components/` → `partials/`
 - `src-modules/` → `src/modules/` + `src/`
 - `data/` → `data/`
 - `config.json` → `data/config.json`

@@ -986,7 +986,7 @@ def cli_generate(base_path, config):
     CLI: Generate static site with inlined HTML.
     
     Creates a self-contained HTML file with all CSS, JS, events, and translations
-    embedded. Uses KISS templating (Python .format()) from layouts/components/.
+    embedded. Uses KISS templating (Python .format()) from partials/.
     
     Output: static/index.html (~313KB single-file HTML)
     """

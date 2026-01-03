@@ -243,7 +243,7 @@ def test_component_based_generation():
     print("✓ Has semantic structure")
     
     # Should have required elements
-    for element in ['<head>', '<body>', 'window.ALL_CONFIGS', 'window.ALL_EVENTS']:
+    for element in ['<head>', '<body>', 'window.APP_CONFIG', 'window.__INLINE_EVENTS_DATA__']:
         assert element in html_component, f"Missing {element} in component HTML"
     print("✓ Has all required elements")
     

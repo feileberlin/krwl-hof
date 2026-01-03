@@ -121,7 +121,7 @@ The build system itself. Python code that reads content/layouts/assets and gener
 
 ### Edit Templates
 ```bash
-vim layouts/components/filter-nav.html
+vim partials/filter-nav.html
 vim layouts/index.html
 ```
 

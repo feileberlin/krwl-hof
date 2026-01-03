@@ -20,7 +20,7 @@ The application uses a strict 4-layer z-index architecture:
 **KISS Principle Applied: Flat is better than nested!**
 
 ```
-layouts/components/
+partials/
 ├── README.md                          # This file
 ├── variables-reference.md             # CSS variable documentation
 ├── design-tokens.css                  # Generated CSS (auto-created)
@@ -398,7 +398,7 @@ result = linter.lint_semantic_structure(html)
 
 1. Check if CSS was generated:
    ```bash
-   ls -la layouts/components/design-tokens.css
+   ls -la partials/design-tokens.css
    ```
 
 2. Regenerate tokens:
@@ -415,7 +415,7 @@ result = linter.lint_semantic_structure(html)
 
 1. Verify all component files exist:
    ```bash
-   find layouts/components -name "*.html"
+   find partials -name "*.html"
    ```
 
 2. Check site generator logs for errors

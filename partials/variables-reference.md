@@ -167,5 +167,5 @@ For older browsers, consider using a fallback or polyfill.
 
 - `config.json` - Design token definitions
 - `src/tools/generate_design_tokens.py` - Token generator
-- `layouts/components/design-tokens.css` - Generated CSS output
+- `partials/design-tokens.css` - Generated CSS output
 - `assets/css/style.css` - Main stylesheet using tokens

@@ -125,15 +125,17 @@ krwl-hof/
 │   ├── manifest.json       # PWA manifest
 │   └── ...                 # Other assets (icons, favicon, etc.)
 │
-├── layouts/
-│   └── components/         # HTML component templates
-│       ├── html-head.html
-│       ├── html-body-open.html
-│       ├── html-body-close.html
-│       ├── map-main.html
-│       ├── dashboard-aside.html
-│       ├── filter-nav.html
-│       └── noscript-content.html
+├── partials/               # Template partials/components
+│   ├── html-head.html      # HTML head section with meta tags
+│   ├── html-body-open.html # Opening body tag
+│   ├── html-body-close.html # Closing body tag with scripts
+│   ├── map-main.html       # Map container component
+│   ├── dashboard-aside.html # Dashboard sidebar component
+│   ├── filter-nav.html     # Filter navigation component
+│   ├── noscript-content.html # Fallback content for JavaScript-disabled browsers
+│   ├── design-tokens.css   # Generated CSS custom properties
+│   ├── README.md           # Component system documentation
+│   └── variables-reference.md # CSS design token reference
 │
 ├── static/
 │   ├── index.html          # 🚫 AUTO-GENERATED (do not edit directly)
@@ -178,6 +180,39 @@ krwl-hof/
 | `assets/js/i18n.js` | Internationalization | Modifying translation loading or fallback |
 | `config.[prod,dev].json` | Configuration | Adding settings, sources, or options |
 | `features.json` | Feature registry | **ALWAYS** when adding new features |
+
+## File System Structure - Template Partials
+
+### Directory: `/partials/`
+Location for reusable template snippets and components that are included/assembled into the final HTML.
+
+**Purpose**: Store modular HTML template fragments following static site generator conventions (similar to Jekyll's `_includes/`, Hugo's `partials/`, 11ty's `_includes/`)
+
+**Contents**:
+- `html-head.html` - HTML head section with meta tags
+- `html-body-open.html` - Opening body tag
+- `html-body-close.html` - Closing body tag with scripts
+- `map-main.html` - Map container component
+- `dashboard-aside.html` - Dashboard sidebar component
+- `filter-nav.html` - Filter navigation component
+- `noscript-content.html` - Fallback content for JavaScript-disabled browsers
+- `design-tokens.css` - Generated CSS custom properties
+- `README.md` - Component system documentation
+- `variables-reference.md` - CSS design token reference
+
+**Usage in Python**:
+```python
+from src.modules.site_generator import SiteGenerator
+generator = SiteGenerator(base_path)
+html_head = generator.load_component('html-head.html')  # Loads from /partials/
+```
+
+**Why "partials"?**:
+- Industry-standard naming convention
+- Clear purpose (template partial/fragment)
+- Shorter path than /layouts/components/
+- Follows KISS principles (flat, simple structure)
+- Aligns with SSG best practices (Jekyll, Hugo, 11ty)
 
 ### Frontend File Edit Policy
 
