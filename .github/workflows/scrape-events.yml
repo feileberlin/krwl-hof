@@ -71,6 +71,7 @@ jobs:
         run: |
           TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M UTC')
           git add event-data/
+          git add target/pending-count.json
           git commit -m "chore: automated event scraping - $TIMESTAMP"
           git push
           echo "✓ Changes committed and pushed"
