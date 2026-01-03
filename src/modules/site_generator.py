@@ -59,11 +59,11 @@ DEPENDENCIES = {
         "version": "1.9.4",
         "base_url": "https://unpkg.com/leaflet@{version}/dist",
         "files": [
-            {"src": "leaflet.css", "dest": "leaflet/leaflet.css"},
-            {"src": "leaflet.js", "dest": "leaflet/leaflet.js"},
-            {"src": "images/marker-icon.png", "dest": "leaflet/images/marker-icon.png"},
-            {"src": "images/marker-icon-2x.png", "dest": "leaflet/images/marker-icon-2x.png"},
-            {"src": "images/marker-shadow.png", "dest": "leaflet/images/marker-shadow.png"}
+            {"src": "/leaflet.css", "dest": "leaflet/leaflet.css"},
+            {"src": "/leaflet.js", "dest": "leaflet/leaflet.js"},
+            {"src": "/images/marker-icon.png", "dest": "leaflet/images/marker-icon.png"},
+            {"src": "/images/marker-icon-2x.png", "dest": "leaflet/images/marker-icon-2x.png"},
+            {"src": "/images/marker-shadow.png", "dest": "leaflet/images/marker-shadow.png"}
         ]
     },
     "lucide": {
