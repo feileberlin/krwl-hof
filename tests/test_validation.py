@@ -7,14 +7,14 @@ Tests the data validation models for events, locations, and configuration.
 
 import sys
 from pathlib import Path
-from datetime import datetime
+from pydantic import ValidationError
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
 
 from modules.models import (
     Event, Location, ScrapingSource, MapConfig,
-    validate_event_data, validate_location_data, validate_events_list
+    validate_event_data, validate_events_list
 )
 
 
@@ -50,44 +50,44 @@ class ValidationTester:
         
         # Valid location
         try:
-            loc = Location(name="Test Location", lat=50.0, lon=11.0)
+            Location(name="Test Location", lat=50.0, lon=11.0)
             self.assert_test(True, "Valid location accepted")
         except Exception as e:
             self.assert_test(False, "Valid location accepted", str(e))
         
         # Invalid latitude (too high)
         try:
-            loc = Location(name="Test", lat=91.0, lon=11.0)
+            Location(name="Test", lat=91.0, lon=11.0)
             self.assert_test(False, "Invalid latitude rejected (>90)")
-        except ValueError:
+        except ValidationError:
             self.assert_test(True, "Invalid latitude rejected (>90)")
         
         # Invalid latitude (too low)
         try:
-            loc = Location(name="Test", lat=-91.0, lon=11.0)
+            Location(name="Test", lat=-91.0, lon=11.0)
             self.assert_test(False, "Invalid latitude rejected (<-90)")
-        except ValueError:
+        except ValidationError:
             self.assert_test(True, "Invalid latitude rejected (<-90)")
         
         # Invalid longitude (too high)
         try:
-            loc = Location(name="Test", lat=50.0, lon=181.0)
+            Location(name="Test", lat=50.0, lon=181.0)
             self.assert_test(False, "Invalid longitude rejected (>180)")
-        except ValueError:
+        except ValidationError:
             self.assert_test(True, "Invalid longitude rejected (>180)")
         
         # Invalid longitude (too low)
         try:
-            loc = Location(name="Test", lat=50.0, lon=-181.0)
+            Location(name="Test", lat=50.0, lon=-181.0)
             self.assert_test(False, "Invalid longitude rejected (<-180)")
-        except ValueError:
+        except ValidationError:
             self.assert_test(True, "Invalid longitude rejected (<-180)")
         
         # Empty name
         try:
-            loc = Location(name="", lat=50.0, lon=11.0)
+            Location(name="", lat=50.0, lon=11.0)
             self.assert_test(False, "Empty location name rejected")
-        except ValueError:
+        except ValidationError:
             self.assert_test(True, "Empty location name rejected")
     
     def test_event_validation(self):
@@ -96,7 +96,7 @@ class ValidationTester:
         
         # Valid event
         try:
-            event = Event(
+            Event(
                 id="test_1",
                 title="Test Event",
                 location=Location(name="Test Loc", lat=50.0, lon=11.0),
@@ -109,7 +109,7 @@ class ValidationTester:
         
         # Invalid ISO datetime
         try:
-            event = Event(
+            Event(
                 id="test_2",
                 title="Test Event",
                 location=Location(name="Test Loc", lat=50.0, lon=11.0),
@@ -122,7 +122,7 @@ class ValidationTester:
         
         # Invalid status
         try:
-            event = Event(
+            Event(
                 id="test_3",
                 title="Test Event",
                 location=Location(name="Test Loc", lat=50.0, lon=11.0),
@@ -135,7 +135,7 @@ class ValidationTester:
         
         # End time before start time
         try:
-            event = Event(
+            Event(
                 id="test_4",
                 title="Test Event",
                 location=Location(name="Test Loc", lat=50.0, lon=11.0),
@@ -149,7 +149,7 @@ class ValidationTester:
         
         # Title too long
         try:
-            event = Event(
+            Event(
                 id="test_5",
                 title="x" * 600,  # Too long
                 location=Location(name="Test Loc", lat=50.0, lon=11.0),
@@ -157,7 +157,7 @@ class ValidationTester:
                 status="pending"
             )
             self.assert_test(False, "Title too long rejected")
-        except ValueError:
+        except ValidationError:
             self.assert_test(True, "Title too long rejected")
     
     def test_scraping_source_validation(self):
@@ -166,7 +166,7 @@ class ValidationTester:
         
         # Valid source
         try:
-            source = ScrapingSource(
+            ScrapingSource(
                 name="Test Source",
                 type="rss",
                 url="https://example.com/feed.rss",
@@ -178,7 +178,7 @@ class ValidationTester:
         
         # Invalid URL (no protocol)
         try:
-            source = ScrapingSource(
+            ScrapingSource(
                 name="Test Source",
                 type="rss",
                 url="example.com/feed.rss",
@@ -190,7 +190,7 @@ class ValidationTester:
         
         # Invalid type
         try:
-            source = ScrapingSource(
+            ScrapingSource(
                 name="Test Source",
                 type="invalid_type",
                 url="https://example.com/feed",
@@ -206,7 +206,7 @@ class ValidationTester:
         
         # Valid map config
         try:
-            config = MapConfig(
+            MapConfig(
                 default_center={"lat": 50.0, "lon": 11.0},
                 default_zoom=13
             )
@@ -216,7 +216,7 @@ class ValidationTester:
         
         # Invalid center (missing lat)
         try:
-            config = MapConfig(
+            MapConfig(
                 default_center={"lon": 11.0},
                 default_zoom=13
             )
@@ -226,12 +226,12 @@ class ValidationTester:
         
         # Invalid zoom (too high)
         try:
-            config = MapConfig(
+            MapConfig(
                 default_center={"lat": 50.0, "lon": 11.0},
                 default_zoom=25  # Too high
             )
             self.assert_test(False, "Invalid zoom level rejected (>20)")
-        except ValueError:
+        except ValidationError:
             self.assert_test(True, "Invalid zoom level rejected (>20)")
     
     def test_validate_event_data_function(self):

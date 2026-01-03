@@ -4,6 +4,8 @@ Custom exception classes for the event manager
 This module defines custom exceptions for better error handling and reporting.
 """
 
+from typing import Any
+
 
 class EventManagerError(Exception):
     """Base exception for all event manager errors"""
@@ -31,7 +33,7 @@ class SourceUnavailableError(ScraperError):
 class ValidationError(EventManagerError):
     """Raised when data validation fails"""
     
-    def __init__(self, field: str, value: any, reason: str):
+    def __init__(self, field: str, value: Any, reason: str):
         self.field = field
         self.value = value
         self.reason = reason

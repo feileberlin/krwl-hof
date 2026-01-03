@@ -6,7 +6,6 @@ import re
 import sys
 from datetime import datetime, timedelta
 from urllib.parse import urljoin, urlparse
-from typing import List, Dict, Optional
 
 from .utils import load_pending_events, save_pending_events
 from .exceptions import SourceUnavailableError, NetworkError, ParsingError
@@ -327,22 +326,27 @@ class EventScraper:
         # Apply retry decorator dynamically
         @make_retry_decorator()
         def _do_request():
-            try:
-                # Set timeout if not provided
-                if 'timeout' not in kwargs:
-                    kwargs['timeout'] = self.timeout
-                
-                response = self.session.request(method, url, **kwargs)
-                response.raise_for_status()
-                return response
-            except requests.exceptions.Timeout:
-                raise NetworkError(url, "Request timed out after retries", None)
-            except requests.exceptions.ConnectionError as e:
-                raise NetworkError(url, f"Connection failed: {e}", None)
-            except requests.exceptions.HTTPError as e:
-                raise NetworkError(url, f"HTTP error: {e}", e.response.status_code)
-        
-        return _do_request()
+            # Set timeout if not provided
+            if 'timeout' not in kwargs:
+                kwargs['timeout'] = self.timeout
+
+            response = self.session.request(method, url, **kwargs)
+            response.raise_for_status()
+            return response
+
+        try:
+            return _do_request()
+        except requests.exceptions.Timeout as e:
+            # Raised after all retry attempts are exhausted
+            raise NetworkError(url, "Request timed out after retries", None) from e
+        except requests.exceptions.ConnectionError as e:
+            raise NetworkError(url, f"Connection failed after retries: {e}", None) from e
+        except requests.exceptions.HTTPError as e:
+            status_code = e.response.status_code if getattr(e, "response", None) is not None else None
+            raise NetworkError(url, f"HTTP error after retries: {e}", status_code) from e
+        except requests.exceptions.RequestException as e:
+            # Fallback for other request-related errors after retries
+            raise NetworkError(url, f"Request failed after retries: {e}", None) from e
             
     def _scrape_rss(self, source):
         """Scrape RSS feed with error handling"""

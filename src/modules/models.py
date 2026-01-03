@@ -7,7 +7,7 @@ It ensures data integrity throughout the scraping, editing, and publishing pipel
 
 import logging
 from datetime import datetime
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict
 from pydantic import BaseModel, Field, field_validator, model_validator
 
 logger = logging.getLogger(__name__)
@@ -18,22 +18,6 @@ class Location(BaseModel):
     name: str = Field(..., min_length=1, description="Location name")
     lat: float = Field(..., ge=-90, le=90, description="Latitude (-90 to 90)")
     lon: float = Field(..., ge=-180, le=180, description="Longitude (-180 to 180)")
-    
-    @field_validator('lat')
-    @classmethod
-    def validate_latitude(cls, v: float) -> float:
-        """Validate latitude is in valid range"""
-        if not -90 <= v <= 90:
-            raise ValueError(f"Latitude must be between -90 and 90, got {v}")
-        return v
-    
-    @field_validator('lon')
-    @classmethod
-    def validate_longitude(cls, v: float) -> float:
-        """Validate longitude is in valid range"""
-        if not -180 <= v <= 180:
-            raise ValueError(f"Longitude must be between -180 and 180, got {v}")
-        return v
 
 
 class Event(BaseModel):
@@ -86,7 +70,10 @@ class Event(BaseModel):
                 if "end_time must be after start_time" in str(e):
                     raise
                 # If parsing fails, skip this validation (will be caught by field validator)
-                pass
+                logger.debug(
+                    "Skipping time order validation due to parsing error in Event model: %s",
+                    e,
+                )
         return self
 
 
