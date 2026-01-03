@@ -1,21 +1,52 @@
-"""Event scraper module"""
+"""Event scraper module with robust error handling and retry logic"""
 
 import json
+import logging
 import re
 import sys
 from datetime import datetime, timedelta
 from urllib.parse import urljoin, urlparse
+from typing import List, Dict, Optional
+
 from .utils import load_pending_events, save_pending_events
+from .exceptions import SourceUnavailableError, NetworkError, ParsingError
+
+# Configure module logger
+logger = logging.getLogger(__name__)
 
 try:
     import requests
     from bs4 import BeautifulSoup
     import feedparser
+    from tenacity import (
+        retry,
+        stop_after_attempt,
+        wait_exponential,
+        retry_if_exception_type,
+        before_sleep_log
+    )
     SCRAPING_ENABLED = True
-except ImportError:
+    
+    # Define retry decorator for use in class methods
+    def make_retry_decorator():
+        return retry(
+            stop=stop_after_attempt(3),
+            wait=wait_exponential(multiplier=1, min=2, max=10),
+            retry=retry_if_exception_type((requests.exceptions.RequestException, requests.exceptions.Timeout)),
+            before_sleep=before_sleep_log(logger, logging.WARNING)
+        )
+    
+except ImportError as e:
     SCRAPING_ENABLED = False
+    logger.warning(f"Scraping libraries not available: {e}")
     # Note: Warning is printed only when scraping is actually attempted,
     # not at import time to avoid interference with other modules
+    
+    # Dummy decorator when libraries not available
+    def make_retry_decorator():
+        def dummy_decorator(func):
+            return func
+        return dummy_decorator
 
 # Try to import SmartScraper for enhanced functionality
 try:
@@ -26,33 +57,36 @@ except ImportError:
 
 
 class EventScraper:
-    """Scraper for community events from various sources"""
+    """Scraper for community events from various sources with robust error handling"""
     
     def __init__(self, config, base_path):
         self.config = config
         self.base_path = base_path
+        self.failed_sources = []  # Track failed sources for reporting
         
         # Try to initialize SmartScraper for enhanced functionality
         self.smart_scraper = None
         if SMART_SCRAPER_AVAILABLE:
             try:
                 self.smart_scraper = SmartScraper(config, base_path)
-                print("✓ Enhanced scraping enabled (SmartScraper)")
+                logger.info("Enhanced scraping enabled (SmartScraper)")
             except Exception as e:
-                print(f"⚠ SmartScraper initialization failed: {e}")
+                logger.warning(f"SmartScraper initialization failed: {e}")
                 self.smart_scraper = None
         
         if not SCRAPING_ENABLED:
             # Print warning when scraper is instantiated without required libraries
-            print("Warning: Scraping libraries not installed.", file=sys.stderr)
-            print("Install with: pip install -r requirements.txt", file=sys.stderr)
-            print("Or install directly: pip install requests beautifulsoup4 lxml feedparser", file=sys.stderr)
+            logger.error("Scraping libraries not installed.")
+            logger.error("Install with: pip install -r requirements.txt")
+            logger.error("Or install directly: pip install requests beautifulsoup4 lxml feedparser")
             self.session = None
         else:
             self.session = requests.Session()
             self.session.headers.update({
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
             })
+            # Set default timeout for all requests
+            self.timeout = 30
         
     def _write_scrape_status(self, scraped_count, added_count, duplicate_count, rejected_count, error=None):
         """Write scrape status file for workflow automation"""
@@ -81,36 +115,69 @@ class EventScraper:
         # Get the count for logging
         pending_data = load_pending_events(self.base_path)
         pending_count = len(pending_data.get('pending_events', []))
-        print(f"ℹ Updated pending count in events.json: {pending_count} events")
+        logger.info(f"Updated pending count in events.json: {pending_count} events")
     
     def scrape_all_sources(self):
-        """Scrape events from all configured sources"""
+        """Scrape events from all configured sources with graceful degradation"""
         if not SCRAPING_ENABLED:
-            print("ERROR: Scraping libraries not installed. Cannot scrape events.", file=sys.stderr)
-            print("Install with: pip install -r requirements.txt", file=sys.stderr)
-            print("Or install directly: pip install requests beautifulsoup4 lxml feedparser", file=sys.stderr)
+            logger.error("Scraping libraries not installed. Cannot scrape events.")
+            logger.error("Install with: pip install -r requirements.txt")
             
             # Write status file even if scraping is disabled
             self._write_scrape_status(0, 0, 0, 0, error='Scraping libraries not installed')
             # Still generate pending count JSON even if scraping failed
             self._write_pending_count()
             return []
-            
+        
+        logger.info("Starting event scraping from all sources")
         pending_data = load_pending_events(self.base_path)
         new_events = []
+        self.failed_sources = []
         
         for source in self.config['scraping']['sources']:
             if not source.get('enabled', False):
-                print(f"⊘ Skipping disabled source: {source['name']}")
+                logger.debug(f"Skipping disabled source: {source['name']}")
                 continue
-                
-            print(f"🔍 Scraping from: {source['name']}")
+            
+            logger.info(f"Scraping from: {source['name']}")
             try:
                 events = self.scrape_source(source)
                 new_events.extend(events)
-                print(f"  ✓ Found {len(events)} events")
+                logger.info(f"Found {len(events)} events from {source['name']}")
+            except SourceUnavailableError as e:
+                logger.error(f"Source unavailable: {e}")
+                self.failed_sources.append({
+                    'name': source['name'],
+                    'error': str(e),
+                    'type': 'unavailable'
+                })
+            except NetworkError as e:
+                logger.error(f"Network error: {e}")
+                self.failed_sources.append({
+                    'name': source['name'],
+                    'error': str(e),
+                    'type': 'network'
+                })
+            except ParsingError as e:
+                logger.error(f"Parsing error: {e}")
+                self.failed_sources.append({
+                    'name': source['name'],
+                    'error': str(e),
+                    'type': 'parsing'
+                })
             except Exception as e:
-                print(f"  ✗ Error: {str(e)}")
+                logger.exception(f"Unexpected error scraping {source['name']}: {e}")
+                self.failed_sources.append({
+                    'name': source['name'],
+                    'error': str(e),
+                    'type': 'unknown'
+                })
+        
+        # Report on failed sources
+        if self.failed_sources:
+            logger.warning(f"{len(self.failed_sources)} source(s) failed to scrape")
+            for failed in self.failed_sources:
+                logger.warning(f"  - {failed['name']}: {failed['error']}")
         
         # Load historical events for deduplication
         from .utils import load_historical_events, load_events, load_rejected_events, is_event_rejected
@@ -145,6 +212,7 @@ class EventScraper:
         added_count = 0
         skipped_duplicate = 0
         skipped_rejected = 0
+        skipped_invalid = 0
         
         for event in new_events:
             # Check if event was previously rejected (using pre-built set)
@@ -171,18 +239,32 @@ class EventScraper:
                 skipped_duplicate += 1
                 continue
             
-            # Event is new - add to pending
-            pending_data['pending_events'].append(event)
-            added_count += 1
+            # Validate and add event (this ensures data integrity)
+            if self._validate_and_add_event(event, pending_data):
+                added_count += 1
+                # Update the pending_keys set so we don't add duplicates within this batch
+                pending_keys.add(event_key)
+            else:
+                skipped_invalid += 1
         
         # Only save (and update timestamp) if events were actually added
         if added_count > 0:
             save_pending_events(self.base_path, pending_data)
         
-        print(f"\n📊 Total: {len(new_events)} scraped, {added_count} new, {skipped_duplicate} duplicates skipped, {skipped_rejected} rejected")
+        logger.info(
+            f"Scraping complete: {len(new_events)} scraped, "
+            f"{added_count} new, {skipped_duplicate} duplicates, "
+            f"{skipped_rejected} rejected, {skipped_invalid} invalid"
+        )
         
         # Write scrape status for workflow automation
-        self._write_scrape_status(len(new_events), added_count, skipped_duplicate, skipped_rejected)
+        error_summary = None
+        if self.failed_sources:
+            error_summary = f"{len(self.failed_sources)} sources failed"
+        self._write_scrape_status(
+            len(new_events), added_count, skipped_duplicate, 
+            skipped_rejected, error=error_summary
+        )
         
         # Write pending count JSON for frontend notifications
         self._write_pending_count()
@@ -190,7 +272,7 @@ class EventScraper:
         return new_events
         
     def scrape_source(self, source):
-        """Scrape events from a single source"""
+        """Scrape events from a single source with error handling"""
         if not SCRAPING_ENABLED:
             return []
         
@@ -199,78 +281,156 @@ class EventScraper:
             try:
                 return self.smart_scraper.scrape_source(source)
             except Exception as e:
-                print(f"  ⚠ SmartScraper failed, falling back to legacy: {e}")
+                logger.warning(f"SmartScraper failed for {source['name']}, falling back to legacy: {e}")
                 # Fall through to legacy scraper
             
         # Legacy scraper
         source_type = source.get('type', 'rss')
         
-        if source_type == 'rss':
-            return self._scrape_rss(source)
-        elif source_type == 'api':
-            return self._scrape_api(source)
-        elif source_type == 'html':
-            return self._scrape_html(source)
-        elif source_type == 'facebook':
-            return self._scrape_facebook(source)
-        else:
-            print(f"  ⚠ Unknown source type: {source_type}")
-            return []
+        try:
+            if source_type == 'rss':
+                return self._scrape_rss(source)
+            elif source_type == 'api':
+                return self._scrape_api(source)
+            elif source_type == 'html':
+                return self._scrape_html(source)
+            elif source_type == 'facebook':
+                return self._scrape_facebook(source)
+            else:
+                logger.warning(f"Unknown source type: {source_type}")
+                return []
+        except requests.exceptions.Timeout:
+            raise NetworkError(source['url'], "Request timed out", None)
+        except requests.exceptions.ConnectionError as e:
+            raise NetworkError(source['url'], f"Connection failed: {e}", None)
+        except requests.exceptions.HTTPError as e:
+            status_code = e.response.status_code if hasattr(e, 'response') else None
+            raise NetworkError(source['url'], f"HTTP error: {e}", status_code)
+        except Exception as e:
+            raise SourceUnavailableError(source['name'], source['url'], str(e))
+    
+    def _make_request(self, url: str, method: str = 'GET', **kwargs) -> 'requests.Response':
+        """
+        Make HTTP request with retry logic
+        
+        Args:
+            url: URL to request
+            method: HTTP method (GET, POST, etc.)
+            **kwargs: Additional arguments to pass to requests
+            
+        Returns:
+            Response object
+            
+        Raises:
+            NetworkError: If request fails after retries
+        """
+        # Apply retry decorator dynamically
+        @make_retry_decorator()
+        def _do_request():
+            try:
+                # Set timeout if not provided
+                if 'timeout' not in kwargs:
+                    kwargs['timeout'] = self.timeout
+                
+                response = self.session.request(method, url, **kwargs)
+                response.raise_for_status()
+                return response
+            except requests.exceptions.Timeout:
+                raise NetworkError(url, "Request timed out after retries", None)
+            except requests.exceptions.ConnectionError as e:
+                raise NetworkError(url, f"Connection failed: {e}", None)
+            except requests.exceptions.HTTPError as e:
+                raise NetworkError(url, f"HTTP error: {e}", e.response.status_code)
+        
+        return _do_request()
             
     def _scrape_rss(self, source):
-        """Scrape RSS feed"""
+        """Scrape RSS feed with error handling"""
         events = []
         try:
+            logger.debug(f"Parsing RSS feed: {source['url']}")
             feed = feedparser.parse(source['url'])
+            
+            if feed.bozo and not feed.entries:
+                # Feed has parsing errors and no entries
+                raise ParsingError('RSS', f"Feed parse error: {feed.bozo_exception}", None)
+            
             for entry in feed.entries:
-                event = self._parse_rss_entry(entry, source)
-                if event:
-                    events.append(event)
+                try:
+                    event = self._parse_rss_entry(entry, source)
+                    if event:
+                        events.append(event)
+                except Exception as e:
+                    logger.warning(f"Failed to parse RSS entry: {e}", extra={
+                        'source': source['name'],
+                        'entry_title': entry.get('title', 'Unknown')
+                    })
+            
+            logger.debug(f"Successfully parsed {len(events)} events from RSS")
+        except ParsingError:
+            raise
         except Exception as e:
-            print(f"    RSS error: {str(e)}")
+            raise ParsingError('RSS', str(e), None)
+        
         return events
         
     def _scrape_api(self, source):
-        """Scrape from API"""
+        """Scrape from API with error handling and retry logic"""
         events = []
         try:
-            response = self.session.get(source['url'], timeout=10)
-            response.raise_for_status()
+            logger.debug(f"Fetching from API: {source['url']}")
+            response = self._make_request(source['url'])
             data = response.json()
             
             # API-specific parsing would go here
             # This is a generic handler
             if isinstance(data, list):
                 for item in data:
-                    event = self._parse_api_item(item, source)
-                    if event:
-                        events.append(event)
+                    try:
+                        event = self._parse_api_item(item, source)
+                        if event:
+                            events.append(event)
+                    except Exception as e:
+                        logger.warning(f"Failed to parse API item: {e}", extra={
+                            'source': source['name'],
+                            'item': str(item)[:100]
+                        })
+            
+            logger.debug(f"Successfully parsed {len(events)} events from API")
+        except NetworkError:
+            raise
         except Exception as e:
-            print(f"    API error: {str(e)}")
+            raise ParsingError('API', str(e), str(data)[:200] if 'data' in locals() else None)
+        
         return events
         
     def _scrape_html(self, source):
-        """Scrape HTML page"""
+        """Scrape HTML page with error handling and retry logic"""
         events = []
         try:
-            response = self.session.get(source['url'], timeout=10)
-            response.raise_for_status()
+            logger.debug(f"Fetching HTML page: {source['url']}")
+            response = self._make_request(source['url'])
             soup = BeautifulSoup(response.content, 'lxml')
             
             # Generic HTML event scraping
             # Looks for common patterns in event listings
             events = self._extract_events_from_html(soup, source)
+            logger.debug(f"Successfully parsed {len(events)} events from HTML")
+        except NetworkError:
+            raise
         except Exception as e:
-            print(f"    HTML error: {str(e)}")
+            content_sample = response.content[:200].decode('utf-8', errors='ignore') if 'response' in locals() else None
+            raise ParsingError('HTML', str(e), content_sample)
+        
         return events
         
     def _scrape_facebook(self, source):
-        """Scrape Facebook page"""
+        """Scrape Facebook page (requires authentication)"""
         # Note: Direct Facebook scraping is difficult due to authentication
         # This is a placeholder that attempts basic scraping
         # For production, consider using Facebook Graph API with proper credentials
-        print(f"    ⚠ Facebook scraping requires authentication")
-        print(f"    → Consider using manual event creation or Graph API")
+        logger.warning(f"Facebook scraping requires authentication for {source['name']}")
+        logger.info("Consider using manual event creation or Graph API")
         return []
         
     def _parse_rss_entry(self, entry, source):
@@ -305,7 +465,10 @@ class EventScraper:
                 'status': 'pending'
             }
         except Exception as e:
-            print(f"      Error parsing RSS entry: {str(e)}")
+            logger.warning(f"Error parsing RSS entry: {e}", extra={
+                'source': source['name'],
+                'entry_title': entry.get('title', 'Unknown')
+            })
             return None
             
     def _parse_api_item(self, item, source):
@@ -325,7 +488,10 @@ class EventScraper:
                 'status': 'pending'
             }
         except Exception as e:
-            print(f"      Error parsing API item: {str(e)}")
+            logger.warning(f"Error parsing API item: {e}", extra={
+                'source': source['name'],
+                'item': str(item)[:100]
+            })
             return None
             
     def _extract_events_from_html(self, soup, source):
@@ -385,7 +551,9 @@ class EventScraper:
                     'status': 'pending'
                 }
         except Exception as e:
-            print(f"      Error parsing HTML element: {str(e)}")
+            logger.warning(f"Error parsing HTML element: {e}", extra={
+                'source': source['name']
+            })
         return None
         
     def _extract_date_from_text(self, text):
@@ -435,6 +603,37 @@ class EventScraper:
             }
         return self._extract_location_from_text('', source)
         
+    def _validate_and_add_event(self, event_data: dict, pending_data: dict) -> bool:
+        """
+        Validate event data using Pydantic and add to pending if valid
+        
+        Args:
+            event_data: Event dictionary to validate
+            pending_data: Pending events data structure
+            
+        Returns:
+            True if event was added, False otherwise
+        """
+        try:
+            from .models import validate_event_data
+            
+            # Validate event structure
+            validated_event = validate_event_data(event_data)
+            
+            # Convert back to dict for storage
+            event_dict = validated_event.model_dump()
+            pending_data['pending_events'].append(event_dict)
+            
+            logger.debug(f"Event validated and added: {event_dict['title']}")
+            return True
+            
+        except ValueError as e:
+            logger.warning(f"Event validation failed: {e}", extra={
+                'event_title': event_data.get('title', 'Unknown'),
+                'event_id': event_data.get('id', 'Unknown')
+            })
+            return False
+    
     def _clean_html(self, html_text):
         """Remove HTML tags from text"""
         if not html_text:
