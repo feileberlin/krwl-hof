@@ -362,6 +362,54 @@ body {
     border-bottom: 1px solid rgba(255, 105, 180, 0.2);
 }
 
+/* Pending Events Notification */
+.pending-notification {
+    background: linear-gradient(135deg, rgba(210, 153, 34, 0.15), rgba(210, 153, 34, 0.05));
+    border: 2px solid #d29922;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    animation: subtle-pulse 3s ease-in-out infinite;
+}
+
+.pending-notification-icon {
+    font-size: 1.5em;
+    flex-shrink: 0;
+}
+
+#pending-notification-text {
+    flex-grow: 1;
+    color: #c9d1d9;
+    font-weight: 500;
+}
+
+.pending-notification-link {
+    color: #d29922;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #d29922;
+    border-radius: 4px;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.pending-notification-link:hover,
+.pending-notification-link:focus {
+    background: #d29922;
+    color: #0d1117;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(210, 153, 34, 0.3);
+}
+
+@keyframes subtle-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.9; }
+}
+
 .dashboard-section:last-child {
     border-bottom: none;
     margin-bottom: 0;

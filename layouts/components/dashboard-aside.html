@@ -15,6 +15,16 @@
     <button id="close-dashboard" aria-label="Close menu">&times;</button>
     <h2 id="dashboard-title">Project Menu</h2>
     
+    <!-- Pending Events Notification -->
+    <div id="pending-notification" class="pending-notification" style="display: none;" role="alert" aria-live="polite">
+      <span class="pending-notification-icon">⚠️</span>
+      <span id="pending-notification-text"></span>
+      <a href="https://github.com/feileberlin/krwl-hof/actions/workflows/scrape-events.yml" 
+         target="_blank" 
+         rel="noopener noreferrer"
+         class="pending-notification-link">Review Events</a>
+    </div>
+    
     <div class="dashboard-section">
       <h3>📖 About</h3>
       <p>KRWL HOF Community Events is a mobile-first Progressive Web App for discovering community events with interactive map visualization.</p>

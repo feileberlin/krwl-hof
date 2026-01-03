@@ -70,6 +70,19 @@ class EventScraper:
         with open(status_file, 'w') as f:
             json.dump(status, f, indent=2)
     
+    def _write_pending_count(self):
+        """
+        Update pending count in events.json
+        This allows frontend to read pending count from the same file it already loads
+        """
+        from .utils import update_pending_count_in_events
+        update_pending_count_in_events(self.base_path)
+        
+        # Get the count for logging
+        pending_data = load_pending_events(self.base_path)
+        pending_count = len(pending_data.get('pending_events', []))
+        print(f"ℹ Updated pending count in events.json: {pending_count} events")
+    
     def scrape_all_sources(self):
         """Scrape events from all configured sources"""
         if not SCRAPING_ENABLED:
@@ -79,6 +92,8 @@ class EventScraper:
             
             # Write status file even if scraping is disabled
             self._write_scrape_status(0, 0, 0, 0, error='Scraping libraries not installed')
+            # Still generate pending count JSON even if scraping failed
+            self._write_pending_count()
             return []
             
         pending_data = load_pending_events(self.base_path)
@@ -143,6 +158,9 @@ class EventScraper:
         
         # Write scrape status for workflow automation
         self._write_scrape_status(len(new_events), added_count, skipped_duplicate, skipped_rejected)
+        
+        # Write pending count JSON for frontend notifications
+        self._write_pending_count()
         
         return new_events
         
