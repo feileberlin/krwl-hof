@@ -114,7 +114,7 @@ class SiteGenerator:
             print(f"✗ {e}")
             return False
     
-    def fetch_dependency_files(self, name: str, config: Dict) -> bool:
+    def fetch_dependency_files(self, name: str, config: Dict) -> tuple[bool, bool]:
         """Fetch all files for one dependency package
         
         Checks if files already exist before fetching. If all files are present,
@@ -126,7 +126,9 @@ class SiteGenerator:
             config: Dependency configuration dict with version, base_url, files
             
         Returns:
-            True if all files exist or were successfully fetched, False otherwise
+            Tuple of (success: bool, used_cache: bool)
+            success: True if all files exist or were successfully fetched
+            used_cache: True if files were already present (not fetched)
         """
         print(f"\n📦 {name} v{config['version']}")
         base_url = config['base_url'].format(version=config['version'])
@@ -150,7 +152,7 @@ class SiteGenerator:
         # If all files exist, we're done
         if not missing_files:
             print(f"✅ {name} complete (using cached files)")
-            return True
+            return True, True
         
         # Try to fetch missing files
         fetch_success = True
@@ -176,10 +178,10 @@ class SiteGenerator:
                 print(f"✅ {name} complete")
             else:
                 print(f"✅ {name} complete (partial fetch, using cached files)")
-            return True
+            return True, len(existing_files) > 0
         else:
             print(f"❌ {name} incomplete - files missing and CDN unavailable")
-            return False
+            return False, False
     
     def fetch_all_dependencies(self) -> bool:
         """Fetch all required third-party dependencies
@@ -199,18 +201,17 @@ class SiteGenerator:
         print("📦 Fetching Dependencies")
         print("=" * 60)
         
-        results = [
+        results_with_cache = [
             self.fetch_dependency_files(name, cfg) 
             for name, cfg in DEPENDENCIES.items()
         ]
         
+        # Unpack results and cache status
+        results = [r[0] for r in results_with_cache]
+        had_cached = any(r[1] for r in results_with_cache)
+        
         print("\n" + "=" * 60)
         if all(results):
-            # Check if we used any cached files
-            had_cached = any(
-                all((self.dependencies_dir / f['dest']).exists() for f in cfg['files'])
-                for cfg in DEPENDENCIES.values()
-            )
             if had_cached:
                 print("✅ All dependencies ready (using cached files)")
             else:

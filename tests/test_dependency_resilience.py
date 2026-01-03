@@ -18,7 +18,7 @@ import urllib.error
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
 
-from modules.site_generator import SiteGenerator
+from modules.site_generator import SiteGenerator, DEPENDENCIES
 
 
 class TestDependencyResilience(unittest.TestCase):
@@ -136,7 +136,6 @@ class TestDependencyResilience(unittest.TestCase):
         # Create some but not all files
         self.create_dummy_file(self.base_path / 'target' / 'leaflet' / 'leaflet.css')
         
-        from modules.site_generator import DEPENDENCIES
         leaflet_config = DEPENDENCIES['leaflet']
         
         present, missing = self.generator.check_dependency_files('leaflet', leaflet_config)
@@ -159,7 +158,6 @@ class TestDependencyResilience(unittest.TestCase):
         for file_path in leaflet_files:
             self.create_dummy_file(self.base_path / 'target' / file_path)
         
-        from modules.site_generator import DEPENDENCIES
         leaflet_config = DEPENDENCIES['leaflet']
         
         present, missing = self.generator.check_dependency_files('leaflet', leaflet_config)
