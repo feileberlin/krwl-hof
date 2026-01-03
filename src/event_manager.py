@@ -1211,6 +1211,8 @@ def main():
                        help='Show version')
     parser.add_argument('-c', '--config', type=str,
                        help='Custom config file path')
+    parser.add_argument('--debug', action='store_true',
+                       help='Enable debug logging')
     
     args = parser.parse_args()
     
@@ -1226,6 +1228,15 @@ def main():
     
     # Get base path
     base_path = Path(__file__).parent.parent
+    
+    # Configure logging based on mode
+    from modules.logging_config import configure_for_cli, configure_for_tui
+    if args.command is None:
+        # TUI mode - log to file only
+        configure_for_tui()
+    else:
+        # CLI mode - log to console
+        configure_for_cli(debug=args.debug)
     
     try:
         # Load config

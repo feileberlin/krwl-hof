@@ -1,9 +1,13 @@
 """Utility functions for the event manager"""
 
 import json
+import logging
 import os
 from pathlib import Path
 from datetime import datetime
+
+# Configure module logger
+logger = logging.getLogger(__name__)
 
 
 def is_ci():
@@ -110,6 +114,68 @@ def is_development():
     return not is_production() and not is_ci()
 
 
+def validate_config(config: dict) -> None:
+    """
+    Validate configuration structure and values
+    
+    Args:
+        config: Configuration dictionary to validate
+        
+    Raises:
+        ValueError: If configuration is invalid
+    """
+    from .exceptions import ConfigurationError
+    
+    # Validate required top-level keys
+    required_keys = ['app', 'scraping', 'filtering', 'map', 'data']
+    for key in required_keys:
+        if key not in config:
+            raise ConfigurationError(key, f"Missing required configuration section")
+    
+    # Validate map configuration
+    if 'default_center' in config['map']:
+        center = config['map']['default_center']
+        if 'lat' not in center or 'lon' not in center:
+            raise ConfigurationError('map.default_center', "Must contain 'lat' and 'lon' keys")
+        
+        lat = center['lat']
+        lon = center['lon']
+        
+        if not isinstance(lat, (int, float)) or not -90 <= lat <= 90:
+            raise ConfigurationError('map.default_center.lat', f"Latitude must be between -90 and 90, got {lat}")
+        
+        if not isinstance(lon, (int, float)) or not -180 <= lon <= 180:
+            raise ConfigurationError('map.default_center.lon', f"Longitude must be between -180 and 180, got {lon}")
+    
+    # Validate scraping sources
+    if 'sources' in config['scraping']:
+        for idx, source in enumerate(config['scraping']['sources']):
+            if 'name' not in source:
+                raise ConfigurationError(f'scraping.sources[{idx}]', "Source must have a 'name' field")
+            if 'url' not in source:
+                raise ConfigurationError(f'scraping.sources[{idx}].url', "Source must have a 'url' field")
+            if 'type' not in source:
+                raise ConfigurationError(f'scraping.sources[{idx}].type', "Source must have a 'type' field")
+            
+            # Validate URL format
+            url = source['url']
+            if not url.startswith(('http://', 'https://')):
+                raise ConfigurationError(
+                    f'scraping.sources[{idx}].url',
+                    f"URL must start with http:// or https://, got: {url}"
+                )
+            
+            # Validate source type
+            allowed_types = ['rss', 'api', 'html', 'facebook']
+            if source['type'] not in allowed_types:
+                raise ConfigurationError(
+                    f'scraping.sources[{idx}].type',
+                    f"Source type must be one of {allowed_types}, got: {source['type']}"
+                )
+    
+    logger.debug("Configuration validation passed")
+
+
 def load_config(base_path):
     """
     Load data/config.json with environment override support.
@@ -132,8 +198,22 @@ def load_config(base_path):
     config_path = base_path / 'config.json'
     
     # Load base configuration
-    with open(config_path, 'r', encoding='utf-8') as f:
-        config = json.load(f)
+    try:
+        with open(config_path, 'r', encoding='utf-8') as f:
+            config = json.load(f)
+    except FileNotFoundError:
+        logger.error(f"Configuration file not found: {config_path}")
+        raise
+    except json.JSONDecodeError as e:
+        logger.error(f"Invalid JSON in configuration file: {e}")
+        raise
+    
+    # Validate configuration structure
+    try:
+        validate_config(config)
+    except Exception as e:
+        logger.error(f"Configuration validation failed: {e}")
+        raise
     
     # Check for explicit environment override
     env_override = config.get('environment', 'auto')
@@ -142,7 +222,7 @@ def load_config(base_path):
         # Explicit override - use it directly
         env_is_dev = (env_override == 'development')
         env_name = env_override
-        print(f"🎯 Environment forced to: {env_name} (from data/config.json)")
+        logger.info(f"Environment forced to: {env_name} (from data/config.json)")
     else:
         # Auto-detection mode
         env_is_dev = is_development()
@@ -155,7 +235,7 @@ def load_config(base_path):
         else:
             env_name = 'production'
         
-        print(f"🚀 Environment auto-detected: {env_name}")
+        logger.info(f"Environment auto-detected: {env_name}")
     
     # Apply environment-specific overrides
     # These values are HARDCODED based on environment - not read from config.json
@@ -200,7 +280,7 @@ def load_config(base_path):
         config['performance']['cache_enabled'] = True  # Enable caching
         config['performance']['prefetch_events'] = True  # Preload for speed
     
-    print(f"   → debug: {config['debug']}, data source: {config['data']['source']}")
+    logger.debug(f"Config loaded: debug={config['debug']}, data source={config['data']['source']}")
     
     return config
 
@@ -575,7 +655,7 @@ def load_historical_events(base_path):
                     historical_events.append(event)
         except (json.JSONDecodeError, IOError) as e:
             # Skip corrupted or unreadable backup files
-            print(f"Warning: Could not load backup file {backup_file}: {e}")
+            logger.warning(f"Could not load backup file {backup_file}: {e}")
             continue
     
     # Cache the results
@@ -606,7 +686,7 @@ def update_events_in_html(base_path):
         # Read index.html
         index_path = base_path / 'target' / 'index.html'
         if not index_path.exists():
-            print(f"Error: {index_path} does not exist")
+            logger.error(f"Index file does not exist: {index_path}")
             return False
         
         with open(index_path, 'r', encoding='utf-8') as f:
@@ -626,18 +706,16 @@ def update_events_in_html(base_path):
         
         # Verify the replacement worked
         if updated_html == html_content:
-            print("Warning: EVENTS array not found or not replaced in index.html")
+            logger.warning("EVENTS array not found or not replaced in index.html")
             return False
         
         # Write updated HTML
         with open(index_path, 'w', encoding='utf-8') as f:
             f.write(updated_html)
         
-        print(f"✓ Updated {len(events)} event(s) in index.html")
+        logger.info(f"Updated {len(events)} event(s) in index.html")
         return True
         
     except Exception as e:
-        import traceback
-        print(f"Error updating events in HTML: {e}")
-        traceback.print_exc()
+        logger.exception(f"Error updating events in HTML: {e}")
         return False

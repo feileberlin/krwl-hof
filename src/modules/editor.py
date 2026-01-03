@@ -1,8 +1,12 @@
 """Event editor module for reviewing and publishing events"""
 
+import logging
 from datetime import datetime
 from .utils import (load_pending_events, save_pending_events, load_events, 
                    save_events, add_rejected_event)
+
+# Configure module logger
+logger = logging.getLogger(__name__)
 
 
 class EventEditor:
@@ -104,19 +108,41 @@ class EventEditor:
         print(f"Source: {event.get('source', 'N/A')}")
         
     def _approve_event(self, event):
-        """Approve and publish an event"""
-        event['status'] = 'published'
-        event['published_at'] = datetime.now().isoformat()
-        
-        # Backup the published event
-        from .utils import backup_published_event
-        backup_path = backup_published_event(self.base_path, event)
-        print(f"  ✓ Event backed up to: {backup_path.relative_to(self.base_path)}")
-        
-        # Add to published events
-        events_data = load_events(self.base_path)
-        events_data['events'].append(event)
-        save_events(self.base_path, events_data)
+        """Approve and publish an event with validation"""
+        try:
+            # Validate event before publishing
+            from .models import validate_event_data
+            validated_event = validate_event_data(event)
+            event_dict = validated_event.model_dump()
+            
+            event_dict['status'] = 'published'
+            event_dict['published_at'] = datetime.now().isoformat()
+            
+            # Backup the published event
+            from .utils import backup_published_event
+            backup_path = backup_published_event(self.base_path, event_dict)
+            print(f"  ✓ Event backed up to: {backup_path.relative_to(self.base_path)}")
+            
+            # Add to published events
+            events_data = load_events(self.base_path)
+            events_data['events'].append(event_dict)
+            save_events(self.base_path, events_data)
+            
+            logger.info(f"Event approved and published: {event_dict['title']}", extra={
+                'event_id': event_dict['id'],
+                'event_title': event_dict['title']
+            })
+            
+            # Update the original event dict for removal from pending
+            event.update(event_dict)
+            
+        except ValueError as e:
+            logger.error(f"Event validation failed during approval: {e}", extra={
+                'event_title': event.get('title', 'Unknown')
+            })
+            print(f"\n⚠ Validation error: {e}")
+            print("Event was not approved. Please edit and fix the issues.")
+            raise
         
     def _reject_event(self, event):
         """Reject an event and add it to the rejected events list"""
@@ -126,6 +152,14 @@ class EventEditor:
         
         if event_title and event_source:
             add_rejected_event(self.base_path, event_title, event_source)
+            logger.info(f"Event rejected: {event_title}", extra={
+                'event_title': event_title,
+                'event_source': event_source
+            })
+        else:
+            logger.warning("Rejected event missing title or source", extra={
+                'event': event
+            })
         
     def _edit_event(self, event):
         """Edit event details"""
