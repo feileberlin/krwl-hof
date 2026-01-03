@@ -442,22 +442,6 @@ class EventScraper:
         soup = BeautifulSoup(html_text, 'lxml')
         return soup.get_text(strip=True)
         
-    def _event_exists(self, events, new_event):
-        """
-        Check if event already exists in list
-        
-        OPTIMIZATION: Uses set-based lookup for O(1) average case performance.
-        Builds a set of (title, start_time) tuples for efficient checking.
-        """
-        # Create set of (title, start_time) tuples for O(1) lookup
-        event_keys = {
-            (event.get('title'), event.get('start_time'))
-            for event in events
-        }
-        
-        # O(1) lookup instead of O(n) iteration
-        return (new_event.get('title'), new_event.get('start_time')) in event_keys
-        
     def create_manual_event(self, title, description, location_name, lat, lon, 
                            start_time, end_time=None, url=None):
         """Create an event manually"""

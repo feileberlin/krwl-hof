@@ -45,9 +45,9 @@ class EventsApp {
      * OPTIMIZATION: Debounced version of displayEvents
      * Prevents excessive re-renders when filters change rapidly (e.g., slider drag)
      * 
-     * @param {number} delay - Milliseconds to wait before executing (default: 150ms)
+     * @param {number} delay - Milliseconds to wait before executing (default: 100ms for sliders)
      */
-    displayEventsDebounced(delay = 150) {
+    displayEventsDebounced(delay = 100) {
         if (this.filterDebounceTimer) {
             clearTimeout(this.filterDebounceTimer);
         }
@@ -1716,7 +1716,8 @@ class EventsApp {
                     this.filters.maxDistance = value;
                     valueDisplay.textContent = `${value} km`;
                     // OPTIMIZATION: Use debounced update for slider (fires frequently during drag)
-                    this.displayEventsDebounced(100);
+                    // Uses default 100ms delay optimized for slider interactions
+                    this.displayEventsDebounced();
                 });
             });
         }
