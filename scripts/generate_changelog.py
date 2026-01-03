@@ -11,21 +11,50 @@ import re
 from datetime import datetime
 from collections import defaultdict
 import sys
+import json
+from pathlib import Path
 
-def run_git_command(cmd):
+# Determine repository root dynamically
+REPO_ROOT = Path(__file__).parent.parent
+
+def run_git_command(cmd_list):
     """Run a git command and return the output."""
     result = subprocess.run(
-        cmd,
-        shell=True,
+        cmd_list,
+        shell=False,
         capture_output=True,
         text=True,
-        cwd='/home/runner/work/krwl-hof/krwl-hof'
+        cwd=str(REPO_ROOT)
     )
     if result.returncode != 0:
-        print(f"Error running command: {cmd}", file=sys.stderr)
+        print(f"Error running command: {' '.join(cmd_list)}", file=sys.stderr)
         print(f"Error: {result.stderr}", file=sys.stderr)
         return ""
     return result.stdout.strip()
+
+def get_repo_info():
+    """Extract repository owner and name from git remote URL."""
+    remote_url = run_git_command(['git', 'config', '--get', 'remote.origin.url'])
+    
+    # Parse GitHub URL (handles both HTTPS and SSH formats)
+    match = re.search(r'github\.com[:/]([^/]+)/([^/.]+)', remote_url)
+    if match:
+        owner = match.group(1)
+        repo = match.group(2)
+        return owner, repo
+    
+    # Fallback to config.json if available
+    config_path = REPO_ROOT / 'config.json'
+    if config_path.exists():
+        try:
+            with open(config_path, 'r', encoding='utf-8') as f:
+                config = json.load(f)
+                # Try to extract from config if it has repository info
+                return 'feileberlin', 'krwl-hof'  # Safe fallback
+        except Exception:
+            pass
+    
+    return 'feileberlin', 'krwl-hof'  # Default fallback
 
 def extract_pr_number(subject):
     """Extract PR number from merge commit subject."""
@@ -34,8 +63,11 @@ def extract_pr_number(subject):
 
 def get_all_prs():
     """Get all merged PRs from git history."""
-    # Get all merge commits with PR info
-    cmd = 'git log --all --merges --format="%H|%s|%aI" --grep="Merge pull request"'
+    # Get repository info
+    repo_owner, repo_name = get_repo_info()
+    
+    # Get all commits (not just merges, since grafted repos may not have proper merge commits)
+    cmd = ['git', 'log', '--format=%H|%s|%aI']
     output = run_git_command(cmd)
     
     prs = []
@@ -48,25 +80,31 @@ def get_all_prs():
             continue
             
         commit_hash, subject, date_str = parts[0], parts[1], parts[2]
+        
+        # Only process lines that are PR merges
+        if 'Merge pull request' not in subject:
+            continue
+            
         pr_number = extract_pr_number(subject)
         
         if pr_number:
             # Get full commit message (PR description)
-            desc_cmd = f'git log --format=%B -n 1 {commit_hash}'
+            desc_cmd = ['git', 'log', '--format=%B', '-n', '1', commit_hash]
             full_message = run_git_command(desc_cmd)
             
             # Extract description (everything after first 2 lines)
             lines = full_message.split('\n')
             description = '\n'.join(lines[2:]).strip()
             
-            # Extract branch name from subject
-            branch_match = re.search(r'from feileberlin/([\w/-]+)', subject)
+            # Extract branch name from subject (owner-agnostic)
+            branch_match = re.search(r'from [^/]+/([\w/-]+)', subject)
             branch = branch_match.group(1) if branch_match else ""
             
             # Parse date
             try:
                 merge_date = datetime.fromisoformat(date_str.replace('Z', '+00:00'))
-            except:
+            except ValueError as exc:
+                print(f"Warning: failed to parse merge date '{date_str}': {exc}", file=sys.stderr)
                 merge_date = datetime.now()
             
             prs.append({
@@ -113,6 +151,10 @@ def generate_changelog():
     print("Fetching PR history from git...")
     prs = get_all_prs()
     print(f"Found {len(prs)} merged PRs")
+    
+    # Get repository info for links
+    repo_owner, repo_name = get_repo_info()
+    repo_url = f"https://github.com/{repo_owner}/{repo_name}"
     
     # Group by date
     grouped_prs = group_prs_by_date(prs)
@@ -177,9 +219,9 @@ def generate_changelog():
     changelog.append("## Project Information")
     changelog.append("")
     changelog.append("### Repository")
-    changelog.append("- **URL**: https://github.com/feileberlin/krwl-hof")
-    changelog.append("- **Issues**: https://github.com/feileberlin/krwl-hof/issues")
-    changelog.append("- **Discussions**: https://github.com/feileberlin/krwl-hof/discussions")
+    changelog.append(f"- **URL**: {repo_url}")
+    changelog.append(f"- **Issues**: {repo_url}/issues")
+    changelog.append(f"- **Discussions**: {repo_url}/discussions")
     changelog.append("")
     changelog.append("### Contributing")
     changelog.append("For information on how to contribute, see the [README.md](README.md) file.")
@@ -198,8 +240,10 @@ def main():
         print("Generating CHANGELOG.md...")
         content = generate_changelog()
         
-        # Write to file
-        output_path = '/home/runner/work/krwl-hof/krwl-hof/docs/CHANGELOG.md'
+        # Write to file using dynamic path
+        output_path = REPO_ROOT / 'docs' / 'CHANGELOG.md'
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        
         with open(output_path, 'w', encoding='utf-8') as f:
             f.write(content)
         
