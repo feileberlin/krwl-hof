@@ -89,7 +89,15 @@ class SiteGenerator:
     # ==================== Dependency Management ====================
     
     def fetch_file_from_url(self, url: str, destination: Path) -> bool:
-        """Fetch a single file from URL and save to destination"""
+        """Fetch a single file from URL and save to destination
+        
+        Args:
+            url: URL to fetch from
+            destination: Path to save file to
+            
+        Returns:
+            True if file was successfully fetched, False otherwise
+        """
         try:
             destination.parent.mkdir(parents=True, exist_ok=True)
             print(f"  Fetching {destination.name}...", end=" ", flush=True)
@@ -107,12 +115,46 @@ class SiteGenerator:
             return False
     
     def fetch_dependency_files(self, name: str, config: Dict) -> bool:
-        """Fetch all files for one dependency package"""
+        """Fetch all files for one dependency package
+        
+        Checks if files already exist before fetching. If all files are present,
+        skips fetching and returns True. Only fails if files are missing AND
+        fetch fails.
+        
+        Args:
+            name: Dependency package name (e.g., 'leaflet')
+            config: Dependency configuration dict with version, base_url, files
+            
+        Returns:
+            True if all files exist or were successfully fetched, False otherwise
+        """
         print(f"\n📦 {name} v{config['version']}")
         base_url = config['base_url'].format(version=config['version'])
         
-        all_success = True
+        # First, check which files already exist
+        existing_files = []
+        missing_files = []
         for file_info in config['files']:
+            dest = self.dependencies_dir / file_info['dest']
+            if dest.exists():
+                existing_files.append(file_info)
+            else:
+                missing_files.append(file_info)
+        
+        # Report existing files
+        for file_info in existing_files:
+            dest = self.dependencies_dir / file_info['dest']
+            size_kb = dest.stat().st_size / 1024
+            print(f"  ✓ {dest.name} already present ({size_kb:.1f} KB)")
+        
+        # If all files exist, we're done
+        if not missing_files:
+            print(f"✅ {name} complete (using cached files)")
+            return True
+        
+        # Try to fetch missing files
+        fetch_success = True
+        for file_info in missing_files:
             # Handle case where src is empty (use base_url directly)
             if file_info['src']:
                 url = f"{base_url}{file_info['src']}"
@@ -120,14 +162,39 @@ class SiteGenerator:
                 url = base_url
             dest = self.dependencies_dir / file_info['dest']
             if not self.fetch_file_from_url(url, dest):
-                all_success = False
+                fetch_success = False
         
-        status = "✅" if all_success else "⚠️ "
-        print(f"{status} {name} {'complete' if all_success else 'incomplete'}")
-        return all_success
+        # Determine final status
+        # Success if all files now exist (were already there or successfully fetched)
+        all_files_present = all(
+            (self.dependencies_dir / f['dest']).exists() 
+            for f in config['files']
+        )
+        
+        if all_files_present:
+            if fetch_success:
+                print(f"✅ {name} complete")
+            else:
+                print(f"✅ {name} complete (partial fetch, using cached files)")
+            return True
+        else:
+            print(f"❌ {name} incomplete - files missing and CDN unavailable")
+            return False
     
     def fetch_all_dependencies(self) -> bool:
-        """Fetch all required third-party dependencies"""
+        """Fetch all required third-party dependencies
+        
+        Returns True if all dependencies are present (either already cached or
+        successfully fetched). Only returns False if dependencies are missing
+        AND fetch from CDN failed.
+        
+        This ensures resilient deployments that continue even when CDN has
+        temporary issues, as long as files are already present from previous
+        successful fetches.
+        
+        Returns:
+            True if all dependencies are ready, False if missing and fetch failed
+        """
         print("=" * 60)
         print("📦 Fetching Dependencies")
         print("=" * 60)
@@ -139,9 +206,18 @@ class SiteGenerator:
         
         print("\n" + "=" * 60)
         if all(results):
-            print("✅ All dependencies fetched")
+            # Check if we used any cached files
+            had_cached = any(
+                all((self.dependencies_dir / f['dest']).exists() for f in cfg['files'])
+                for cfg in DEPENDENCIES.values()
+            )
+            if had_cached:
+                print("✅ All dependencies ready (using cached files)")
+            else:
+                print("✅ All dependencies fetched")
         else:
-            print("⚠️  Some dependencies failed")
+            print("❌ Missing required dependencies")
+            print("   Some files are missing and CDN is unavailable")
         print("=" * 60)
         return all(results)
     
