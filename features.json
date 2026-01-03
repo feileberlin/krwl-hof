@@ -812,6 +812,100 @@
       "config_keys": [],
       "test_method": "manual",
       "test_instructions": "1. Install dependencies: pip install markdown>=3.5.0 Pygments>=2.17.0\n2. Build documentation: python3 scripts/build_markdown_docs.py --organize --verbose\n3. Verify all .md files converted to .html with:\n   - GitHub dark theme (#0d1117 background, #c9d1d9 text)\n   - Barbie Pink (#FF69B4) headings and accents\n   - Syntax highlighting in code blocks\n   - Navigation bar on every page\n4. Verify file organization:\n   - README.md/README.html stay in root\n   - DOCUMENTATION_BUILD.md/DOCUMENTATION_BUILD.html stay in root\n   - All other docs moved to docs/\n5. Verify docs/index.html generated with categorized navigation\n6. Test cleanup script: python3 scripts/cleanup_old_docs.py --dry-run\n7. Open docs/index.html in browser and verify:\n   - Works with file:// protocol (no server needed)\n   - Navigation links work\n   - All .md links converted to .html\n   - Mobile responsive design\n   - Syntax highlighting displays correctly"
+    },
+    {
+      "id": "pydantic-validation",
+      "name": "Pydantic Data Validation",
+      "description": "Type-safe data validation using Pydantic models for events, locations, and configuration. Ensures data integrity throughout the pipeline with automatic validation and helpful error messages.",
+      "category": "backend",
+      "implemented": true,
+      "files": [
+        "src/modules/models.py",
+        "src/modules/scraper.py",
+        "src/modules/editor.py",
+        "src/modules/utils.py"
+      ],
+      "code_patterns": [
+        {
+          "file": "src/modules/models.py",
+          "pattern": "class Event\\(BaseModel\\)|class Location\\(BaseModel\\)|@field_validator|validate_event_data",
+          "description": "Pydantic models with field validators"
+        }
+      ],
+      "test_method": "automated",
+      "test_instructions": "Run: python3 tests/test_validation.py --verbose"
+    },
+    {
+      "id": "error-handling-retry-logic",
+      "name": "Robust Error Handling and Retry Logic",
+      "description": "Graceful error handling with custom exceptions, exponential backoff retry logic for network requests, and source-level failure isolation. One failing source doesn't crash the entire scraping process.",
+      "category": "backend",
+      "implemented": true,
+      "files": [
+        "src/modules/exceptions.py",
+        "src/modules/scraper.py"
+      ],
+      "code_patterns": [
+        {
+          "file": "src/modules/exceptions.py",
+          "pattern": "class ScraperError|class NetworkError|class SourceUnavailableError|class ParsingError",
+          "description": "Custom exception hierarchy"
+        },
+        {
+          "file": "src/modules/scraper.py",
+          "pattern": "@retry|make_retry_decorator|stop_after_attempt|wait_exponential",
+          "description": "Retry logic with exponential backoff using tenacity"
+        }
+      ],
+      "test_method": "integration",
+      "test_instructions": "1. Run scraper with one invalid source: python3 src/event_manager.py scrape\n2. Verify scraper continues despite source failure\n3. Check logs for retry attempts and error details\n4. Verify _write_scrape_status includes error summary"
+    },
+    {
+      "id": "structured-logging",
+      "name": "Structured Logging System",
+      "description": "Centralized logging configuration with appropriate log levels (DEBUG, INFO, WARNING, ERROR, CRITICAL), structured context data, and separate configurations for CLI and TUI modes. Includes rotating file handlers for production debugging.",
+      "category": "infrastructure",
+      "implemented": true,
+      "files": [
+        "src/modules/logging_config.py",
+        "src/event_manager.py",
+        "src/modules/scraper.py",
+        "src/modules/editor.py",
+        "src/modules/utils.py"
+      ],
+      "code_patterns": [
+        {
+          "file": "src/modules/logging_config.py",
+          "pattern": "def setup_logging|configure_for_cli|configure_for_tui|RotatingFileHandler",
+          "description": "Logging configuration functions"
+        },
+        {
+          "file": "src/modules/scraper.py",
+          "pattern": "logger = logging.getLogger|logger.info|logger.error|logger.warning|extra=",
+          "description": "Structured logging with context"
+        }
+      ],
+      "test_method": "manual",
+      "test_instructions": "1. Run CLI with debug: python3 src/event_manager.py scrape --debug\n2. Verify DEBUG level logs appear\n3. Run TUI: python3 src/event_manager.py\n4. Verify logs written to logs/event_manager.log\n5. Check log rotation works (max 5MB per file)"
+    },
+    {
+      "id": "configuration-validation",
+      "name": "Configuration Validation",
+      "description": "Validates config.json structure and values on load, including URLs, coordinates, and required fields. Provides helpful error messages with specific field names and expected values.",
+      "category": "backend",
+      "implemented": true,
+      "files": [
+        "src/modules/utils.py"
+      ],
+      "code_patterns": [
+        {
+          "file": "src/modules/utils.py",
+          "pattern": "def validate_config|ConfigurationError|validate_config\\(config\\)",
+          "description": "Configuration validation function"
+        }
+      ],
+      "test_method": "manual",
+      "test_instructions": "1. Temporarily break config.json (invalid lat/lon, missing field)\n2. Run: python3 src/event_manager.py list\n3. Verify helpful ConfigurationError with field name\n4. Restore config.json"
     }
   ]
 }
