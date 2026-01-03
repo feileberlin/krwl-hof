@@ -26,9 +26,9 @@ def test_timestamp_only_on_new_events():
         
         from modules.scraper import EventScraper
         
-        # Create static directory
-        static_dir = test_path / 'static'
-        static_dir.mkdir(exist_ok=True)
+        # Create event-data directory (correct data location)
+        event_data_dir = test_path / 'event-data'
+        event_data_dir.mkdir(exist_ok=True)
         
         # Create initial pending_events.json with a specific timestamp
         initial_timestamp = "2026-01-01T10:00:00"
@@ -36,7 +36,7 @@ def test_timestamp_only_on_new_events():
             'pending_events': [],
             'last_scraped': initial_timestamp
         }
-        with open(static_dir / 'pending_events.json', 'w') as f:
+        with open(event_data_dir / 'pending_events.json', 'w') as f:
             json.dump(pending_events, f, indent=2)
         
         # Create events.json
@@ -44,7 +44,7 @@ def test_timestamp_only_on_new_events():
             'events': [],
             'last_updated': datetime.now().isoformat()
         }
-        with open(static_dir / 'events.json', 'w') as f:
+        with open(event_data_dir / 'events.json', 'w') as f:
             json.dump(events, f, indent=2)
         
         # Create rejected_events.json
@@ -52,7 +52,7 @@ def test_timestamp_only_on_new_events():
             'rejected_events': [],
             'last_updated': datetime.now().isoformat()
         }
-        with open(static_dir / 'rejected_events.json', 'w') as f:
+        with open(event_data_dir / 'rejected_events.json', 'w') as f:
             json.dump(rejected_events, f, indent=2)
         
         # Create test config with no sources (so no events will be scraped)
@@ -73,7 +73,7 @@ def test_timestamp_only_on_new_events():
         scraper = EventScraper(config, test_path)
         scraper.scrape_all_sources()
         
-        with open(static_dir / 'pending_events.json', 'r') as f:
+        with open(event_data_dir / 'pending_events.json', 'r') as f:
             data = json.load(f)
         
         if data['last_scraped'] == initial_timestamp:
@@ -93,7 +93,7 @@ def test_timestamp_only_on_new_events():
             start_time=datetime.now().isoformat()
         )
         
-        with open(static_dir / 'pending_events.json', 'r') as f:
+        with open(event_data_dir / 'pending_events.json', 'r') as f:
             data = json.load(f)
         
         if data['last_scraped'] != initial_timestamp:
@@ -107,7 +107,7 @@ def test_timestamp_only_on_new_events():
         second_timestamp = data['last_scraped']
         scraper.scrape_all_sources()
         
-        with open(static_dir / 'pending_events.json', 'r') as f:
+        with open(event_data_dir / 'pending_events.json', 'r') as f:
             data = json.load(f)
         
         if data['last_scraped'] == second_timestamp:

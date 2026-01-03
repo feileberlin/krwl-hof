@@ -55,9 +55,9 @@ class RejectedEventsTester:
         self.test_dir = tempfile.mkdtemp(prefix='krwl_rejected_test_')
         test_path = Path(self.test_dir)
         
-        # Create static directory
-        static_dir = test_path / 'static'
-        static_dir.mkdir(exist_ok=True)
+        # Create event-data directory (correct data location)
+        event_data_dir = test_path / 'event-data'
+        event_data_dir.mkdir(exist_ok=True)
         
         # Create initial files
         pending_events = {
@@ -65,7 +65,7 @@ class RejectedEventsTester:
             'last_updated': datetime.now().isoformat()
         }
         
-        with open(static_dir / 'pending_events.json', 'w') as f:
+        with open(event_data_dir / 'pending_events.json', 'w') as f:
             json.dump(pending_events, f, indent=2)
         
         events = {
@@ -73,7 +73,7 @@ class RejectedEventsTester:
             'last_updated': datetime.now().isoformat()
         }
         
-        with open(static_dir / 'events.json', 'w') as f:
+        with open(event_data_dir / 'events.json', 'w') as f:
             json.dump(events, f, indent=2)
         
         return test_path
@@ -106,7 +106,7 @@ class RejectedEventsTester:
             )
             
             # Check file was created
-            rejected_file = test_path / 'static' / 'rejected_events.json'
+            rejected_file = test_path / 'event-data' / 'rejected_events.json'
             self.assert_test(
                 rejected_file.exists(),
                 "Rejected events file created",
