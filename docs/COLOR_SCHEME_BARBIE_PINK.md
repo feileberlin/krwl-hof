@@ -211,8 +211,8 @@ python3 src/event_manager.py generate
 
 ## 📚 Related Documentation
 
-- [Design Tokens](../layouts/components/variables-reference.md) - Current design token system
-- [Component System](../layouts/components/README.md) - How tokens are used
+- [Design Tokens](../partials/variables-reference.md) - Current design token system
+- [Component System](../partials/README.md) - How tokens are used
 - [Instant Rebranding](../KISS_IMPROVEMENTS.md) - How to rebrand the entire site
 
 ## 🎨 Design Philosophy

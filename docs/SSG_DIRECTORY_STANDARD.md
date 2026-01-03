@@ -73,7 +73,7 @@ krwl-hof/
 
 | 11ty | KRWL HOF | Purpose |
 |------|----------|---------|
-| `_includes/` | `layouts/components/` | ✅ Template partials |
+| `_includes/` | `partials/` | ✅ Template partials |
 | `assets/` | `assets/` | ✅ Source CSS/JS |
 | `static/` | `static/` | ✅ Static files |
 | `posts/` | `content/events/` | ✅ Content files |
