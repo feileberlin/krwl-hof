@@ -27,6 +27,23 @@
     white-space: nowrap;
     overflow-x: auto;
     z-index: 1001;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Dashboard opening animation - filter bar expands */
+#event-filter-bar.dashboard-opening {
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    width: auto;
+    max-width: none;
+}
+
+/* Filter items fade out during dashboard opening */
+#event-filter-bar.dashboard-opening .filter-bar-item {
+    opacity: 0;
+    transition: opacity 0.2s ease-out;
 }
 
 #event-filter-bar .filter-bar-item {
