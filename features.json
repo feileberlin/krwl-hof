@@ -253,7 +253,7 @@
       "category": "backend",
       "implemented": true,
       "files": [
-        "scripts/generate_demo_events.py"
+        "src/tools/generate_demo_events.py"
       ],
       "test_method": "check_files_exist"
     },
@@ -734,7 +734,7 @@
       "implemented": true,
       "files": [
         "assets/js/app.js",
-        "scripts/generate_screenshots.py",
+        "src/tools/generate_screenshots.py",
         "README.md"
       ],
       "code_patterns": [
@@ -745,7 +745,7 @@
         }
       ],
       "test_method": "automated",
-      "test_instructions": "1. Start local server: cd static && python3 -m http.server 8000\n2. Run test script: python3 scripts/generate_screenshots.py --verbose\n3. Verify body[data-app-ready='true'] attribute is set after page load\n4. Verify 'app-ready' custom event is dispatched with event.detail metadata\n5. Check that screenshots are captured with fully loaded map and events\n6. Verify both mobile (640×1136) and desktop (1280×800) screenshots are generated"
+      "test_instructions": "1. Start local server: cd static && python3 -m http.server 8000\n2. Run test script: python3 src/tools/generate_screenshots.py --verbose\n3. Verify body[data-app-ready='true'] attribute is set after page load\n4. Verify 'app-ready' custom event is dispatched with event.detail metadata\n5. Check that screenshots are captured with fully loaded map and events\n6. Verify both mobile (640×1136) and desktop (1280×800) screenshots are generated"
     },
     {
       "id": "html-export-linting",
@@ -781,7 +781,7 @@
       "implemented": true,
       "files": [
         "src/modules/htmldocs_generator.py",
-        "scripts/cleanup_old_docs.py",
+        "src/tools/cleanup_old_docs.py",
         "scripts/README.md",
         "requirements.txt"
       ],
@@ -799,7 +799,7 @@
       ],
       "config_keys": [],
       "test_method": "manual",
-      "test_instructions": "1. Install dependencies: pip install markdown>=3.5.0 Pygments>=2.17.0\n2. Build documentation: python3 src/event_manager.py docs build\n3. Verify all .md files converted to .html with:\n   - GitHub dark theme (#0d1117 background, #c9d1d9 text)\n   - Barbie Pink (#FF69B4) headings and accents\n   - Syntax highlighting in code blocks\n   - Navigation bar on every page\n4. Verify file organization in docs/\n5. Verify docs/index.html generated with categorized navigation\n6. Test cleanup script: python3 scripts/cleanup_old_docs.py --dry-run\n7. Open docs/index.html in browser and verify it works with file:// protocol"
+      "test_instructions": "1. Install dependencies: pip install markdown>=3.5.0 Pygments>=2.17.0\n2. Build documentation: python3 src/event_manager.py docs build\n3. Verify all .md files converted to .html with:\n   - GitHub dark theme (#0d1117 background, #c9d1d9 text)\n   - Barbie Pink (#FF69B4) headings and accents\n   - Syntax highlighting in code blocks\n   - Navigation bar on every page\n4. Verify file organization in docs/\n5. Verify docs/index.html generated with categorized navigation\n6. Test cleanup script: python3 src/tools/cleanup_old_docs.py --dry-run\n7. Open docs/index.html in browser and verify it works with file:// protocol"
     },
     {
       "id": "pydantic-validation",
