@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ssg Directory Standard - KRWL HOF Documentation</title>
+    <meta name="description" content="KRWL HOF Community Events Documentation">
+    <style>
+
+/* Documentation Styles - Generated from config.json design tokens */
+
+:root {
+    /* Colors from design tokens */
+    --color-primary: #FF69B4;
+    --color-primary-hover: #ff4da6;
+    --color-bg-primary: #0d1117;
+    --color-bg-secondary: #161b22;
+    --color-bg-tertiary: #21262d;
+    --color-text-primary: #c9d1d9;
+    --color-text-secondary: #8b949e;
+    --color-text-tertiary: #6e7681;
+    --color-border-primary: #30363d;
+    --color-border-secondary: #21262d;
+    --color-accent: #58a6ff;
+    --color-success: #3fb950;
+    --color-warning: #d29922;
+    --color-error: #f85149;
+    
+    /* Typography */
+    --font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+    --font-family-mono: 'Monaco', 'Courier New', monospace;
+    --font-size-base: 16px;
+    --font-size-small: 14px;
+    --font-size-large: 18px;
+    --line-height-base: 1.6;
+    
+    /* Spacing */
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    --spacing-xxl: 48px;
+    
+    /* Borders */
+    --border-radius-small: 4px;
+    --border-radius-medium: 6px;
+    --border-radius-large: 8px;
+    
+    /* Shadows */
+    --shadow-small: 0 2px 4px rgba(0, 0, 0, 0.3);
+    --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --shadow-large: 0 8px 24px rgba(0, 0, 0, 0.5);
+    --shadow-glow-primary: 0 0 10px rgba(255, 105, 180, 0.3);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-family-base);
+    background: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    line-height: var(--line-height-base);
+    font-size: var(--font-size-base);
+}
+
+/* Layout */
+.docs-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar Navigation */
+.docs-sidebar {
+    width: 280px;
+    background: var(--color-bg-secondary);
+    border-right: 1px solid var(--color-border-primary);
+    padding: var(--spacing-lg);
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 100;
+}
+
+.docs-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-xl);
+    padding-bottom: var(--spacing-lg);
+    border-bottom: 1px solid var(--color-border-primary);
+}
+
+.docs-logo-icon {
+    color: var(--color-primary);
+    width: 32px;
+    height: 32px;
+}
+
+.docs-logo-text {
+    font-size: var(--font-size-large);
+    font-weight: 600;
+    color: var(--color-primary);
+}
+
+.docs-nav {
+    list-style: none;
+}
+
+.docs-nav-item {
+    margin-bottom: var(--spacing-sm);
+}
+
+.docs-nav-link {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    border-radius: var(--border-radius-small);
+    transition: all 0.2s ease;
+}
+
+.docs-nav-link:hover {
+    background: var(--color-bg-tertiary);
+    color: var(--color-text-primary);
+}
+
+.docs-nav-link.active {
+    background: var(--color-bg-tertiary);
+    color: var(--color-primary);
+    border-left: 2px solid var(--color-primary);
+}
+
+.docs-nav-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+/* Main Content */
+.docs-main {
+    margin-left: 280px;
+    flex: 1;
+    padding: var(--spacing-xl);
+    max-width: 900px;
+}
+
+.docs-content {
+    background: var(--color-bg-secondary);
+    border-radius: var(--border-radius-medium);
+    padding: var(--spacing-xxl);
+    box-shadow: var(--shadow-medium);
+}
+
+/* Back to App Link */
+.back-to-app {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: var(--color-accent);
+    text-decoration: none;
+    margin-bottom: var(--spacing-lg);
+    font-size: var(--font-size-small);
+    transition: color 0.2s ease;
+}
+
+.back-to-app:hover {
+    color: var(--color-primary);
+}
+
+/* Typography */
+.docs-content h1 {
+    color: var(--color-primary);
+    font-size: 2.5rem;
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 2px solid var(--color-border-primary);
+}
+
+.docs-content h2 {
+    color: var(--color-text-primary);
+    font-size: 2rem;
+    margin-top: var(--spacing-xl);
+    margin-bottom: var(--spacing-md);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.docs-content h2::before {
+    content: '';
+    width: 4px;
+    height: 1.5rem;
+    background: var(--color-primary);
+    border-radius: 2px;
+}
+
+.docs-content h3 {
+    color: var(--color-text-primary);
+    font-size: 1.5rem;
+    margin-top: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+}
+
+.docs-content h4 {
+    color: var(--color-text-secondary);
+    font-size: 1.25rem;
+    margin-top: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+}
+
+.docs-content p {
+    margin-bottom: var(--spacing-md);
+    color: var(--color-text-primary);
+}
+
+.docs-content a {
+    color: var(--color-accent);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+}
+
+.docs-content a:hover {
+    border-bottom-color: var(--color-accent);
+}
+
+/* Lists */
+.docs-content ul,
+.docs-content ol {
+    margin-bottom: var(--spacing-md);
+    padding-left: var(--spacing-xl);
+}
+
+.docs-content li {
+    margin-bottom: var(--spacing-sm);
+    color: var(--color-text-primary);
+}
+
+/* Code */
+.docs-content code {
+    font-family: var(--font-family-mono);
+    background: var(--color-bg-tertiary);
+    padding: 2px 6px;
+    border-radius: var(--border-radius-small);
+    font-size: var(--font-size-small);
+    color: var(--color-primary);
+}
+
+.docs-content pre {
+    background: var(--color-bg-tertiary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--border-radius-medium);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    overflow-x: auto;
+}
+
+.docs-content pre code {
+    background: none;
+    padding: 0;
+    color: var(--color-text-primary);
+}
+
+/* Tables */
+.docs-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: var(--spacing-md);
+    background: var(--color-bg-tertiary);
+    border-radius: var(--border-radius-medium);
+    overflow: hidden;
+}
+
+.docs-content th {
+    background: var(--color-bg-primary);
+    color: var(--color-primary);
+    padding: var(--spacing-md);
+    text-align: left;
+    font-weight: 600;
+}
+
+.docs-content td {
+    padding: var(--spacing-md);
+    border-top: 1px solid var(--color-border-primary);
+    color: var(--color-text-primary);
+}
+
+.docs-content tr:hover td {
+    background: var(--color-bg-secondary);
+}
+
+/* Blockquotes */
+.docs-content blockquote {
+    border-left: 4px solid var(--color-primary);
+    padding-left: var(--spacing-md);
+    margin: var(--spacing-md) 0;
+    color: var(--color-text-secondary);
+    font-style: italic;
+    background: var(--color-bg-tertiary);
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius-small);
+}
+
+/* Horizontal Rule */
+.docs-content hr {
+    border: none;
+    height: 1px;
+    background: var(--color-border-primary);
+    margin: var(--spacing-lg) 0;
+}
+
+/* Syntax Highlighting */
+pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.codehilite .hll { background-color: #49483e }
+.codehilite { background: #272822; color: #f8f8f2 }
+.codehilite .c { color: #959077 } /* Comment */
+.codehilite .err { color: #ed007e; background-color: #1e0010 } /* Error */
+.codehilite .esc { color: #f8f8f2 } /* Escape */
+.codehilite .g { color: #f8f8f2 } /* Generic */
+.codehilite .k { color: #66d9ef } /* Keyword */
+.codehilite .l { color: #ae81ff } /* Literal */
+.codehilite .n { color: #f8f8f2 } /* Name */
+.codehilite .o { color: #ff4689 } /* Operator */
+.codehilite .x { color: #f8f8f2 } /* Other */
+.codehilite .p { color: #f8f8f2 } /* Punctuation */
+.codehilite .ch { color: #959077 } /* Comment.Hashbang */
+.codehilite .cm { color: #959077 } /* Comment.Multiline */
+.codehilite .cp { color: #959077 } /* Comment.Preproc */
+.codehilite .cpf { color: #959077 } /* Comment.PreprocFile */
+.codehilite .c1 { color: #959077 } /* Comment.Single */
+.codehilite .cs { color: #959077 } /* Comment.Special */
+.codehilite .gd { color: #ff4689 } /* Generic.Deleted */
+.codehilite .ge { color: #f8f8f2; font-style: italic } /* Generic.Emph */
+.codehilite .ges { color: #f8f8f2; font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.codehilite .gr { color: #f8f8f2 } /* Generic.Error */
+.codehilite .gh { color: #f8f8f2 } /* Generic.Heading */
+.codehilite .gi { color: #a6e22e } /* Generic.Inserted */
+.codehilite .go { color: #66d9ef } /* Generic.Output */
+.codehilite .gp { color: #ff4689; font-weight: bold } /* Generic.Prompt */
+.codehilite .gs { color: #f8f8f2; font-weight: bold } /* Generic.Strong */
+.codehilite .gu { color: #959077 } /* Generic.Subheading */
+.codehilite .gt { color: #f8f8f2 } /* Generic.Traceback */
+.codehilite .kc { color: #66d9ef } /* Keyword.Constant */
+.codehilite .kd { color: #66d9ef } /* Keyword.Declaration */
+.codehilite .kn { color: #ff4689 } /* Keyword.Namespace */
+.codehilite .kp { color: #66d9ef } /* Keyword.Pseudo */
+.codehilite .kr { color: #66d9ef } /* Keyword.Reserved */
+.codehilite .kt { color: #66d9ef } /* Keyword.Type */
+.codehilite .ld { color: #e6db74 } /* Literal.Date */
+.codehilite .m { color: #ae81ff } /* Literal.Number */
+.codehilite .s { color: #e6db74 } /* Literal.String */
+.codehilite .na { color: #a6e22e } /* Name.Attribute */
+.codehilite .nb { color: #f8f8f2 } /* Name.Builtin */
+.codehilite .nc { color: #a6e22e } /* Name.Class */
+.codehilite .no { color: #66d9ef } /* Name.Constant */
+.codehilite .nd { color: #a6e22e } /* Name.Decorator */
+.codehilite .ni { color: #f8f8f2 } /* Name.Entity */
+.codehilite .ne { color: #a6e22e } /* Name.Exception */
+.codehilite .nf { color: #a6e22e } /* Name.Function */
+.codehilite .nl { color: #f8f8f2 } /* Name.Label */
+.codehilite .nn { color: #f8f8f2 } /* Name.Namespace */
+.codehilite .nx { color: #a6e22e } /* Name.Other */
+.codehilite .py { color: #f8f8f2 } /* Name.Property */
+.codehilite .nt { color: #ff4689 } /* Name.Tag */
+.codehilite .nv { color: #f8f8f2 } /* Name.Variable */
+.codehilite .ow { color: #ff4689 } /* Operator.Word */
+.codehilite .pm { color: #f8f8f2 } /* Punctuation.Marker */
+.codehilite .w { color: #f8f8f2 } /* Text.Whitespace */
+.codehilite .mb { color: #ae81ff } /* Literal.Number.Bin */
+.codehilite .mf { color: #ae81ff } /* Literal.Number.Float */
+.codehilite .mh { color: #ae81ff } /* Literal.Number.Hex */
+.codehilite .mi { color: #ae81ff } /* Literal.Number.Integer */
+.codehilite .mo { color: #ae81ff } /* Literal.Number.Oct */
+.codehilite .sa { color: #e6db74 } /* Literal.String.Affix */
+.codehilite .sb { color: #e6db74 } /* Literal.String.Backtick */
+.codehilite .sc { color: #e6db74 } /* Literal.String.Char */
+.codehilite .dl { color: #e6db74 } /* Literal.String.Delimiter */
+.codehilite .sd { color: #e6db74 } /* Literal.String.Doc */
+.codehilite .s2 { color: #e6db74 } /* Literal.String.Double */
+.codehilite .se { color: #ae81ff } /* Literal.String.Escape */
+.codehilite .sh { color: #e6db74 } /* Literal.String.Heredoc */
+.codehilite .si { color: #e6db74 } /* Literal.String.Interpol */
+.codehilite .sx { color: #e6db74 } /* Literal.String.Other */
+.codehilite .sr { color: #e6db74 } /* Literal.String.Regex */
+.codehilite .s1 { color: #e6db74 } /* Literal.String.Single */
+.codehilite .ss { color: #e6db74 } /* Literal.String.Symbol */
+.codehilite .bp { color: #f8f8f2 } /* Name.Builtin.Pseudo */
+.codehilite .fm { color: #a6e22e } /* Name.Function.Magic */
+.codehilite .vc { color: #f8f8f2 } /* Name.Variable.Class */
+.codehilite .vg { color: #f8f8f2 } /* Name.Variable.Global */
+.codehilite .vi { color: #f8f8f2 } /* Name.Variable.Instance */
+.codehilite .vm { color: #f8f8f2 } /* Name.Variable.Magic */
+.codehilite .il { color: #ae81ff } /* Literal.Number.Integer.Long */
+
+.codehilite {
+    background: var(--color-bg-tertiary) !important;
+    border-radius: var(--border-radius-medium);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .docs-sidebar {
+        display: none;
+    }
+    
+    .docs-main {
+        margin-left: 0;
+        padding: var(--spacing-md);
+    }
+    
+    .docs-content {
+        padding: var(--spacing-md);
+    }
+    
+    .docs-content h1 {
+        font-size: 2rem;
+    }
+    
+    .docs-content h2 {
+        font-size: 1.5rem;
+    }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--color-bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-border-primary);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary);
+}
+
+    </style>
+</head>
+<body>
+    <div class="docs-container">
+        <!-- Sidebar Navigation -->
+        <nav class="docs-sidebar">
+            <div class="docs-logo">
+                <span class="docs-logo-icon">📚</span>
+                <span class="docs-logo-text">Docs</span>
+            </div>
+            <ul class="docs-nav">
+
+            <li class="docs-nav-item">
+                <a href="CHANGELOG.html" class="docs-nav-link">
+                    <span class="docs-nav-icon">📋</span>
+                    <span>Changelog</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="COLOR_SCHEME_BARBIE_PINK.html" class="docs-nav-link">
+                    <span class="docs-nav-icon">🎨</span>
+                    <span>Color Scheme Barbie Pink</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="DEPENDENCY_UPDATE_GUIDE.html" class="docs-nav-link">
+                    <span class="docs-nav-icon">📦</span>
+                    <span>Dependency Update Guide</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="EASY_DEPENDENCY_UPDATES.html" class="docs-nav-link">
+                    <span class="docs-nav-icon">📦</span>
+                    <span>Easy Dependency Updates</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="IMPLEMENTATION_COMPLETE_OLD.html" class="docs-nav-link">
+                    <span class="docs-nav-icon">✅</span>
+                    <span>Implementation Complete Old</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="KISS_IMPROVEMENTS.html" class="docs-nav-link">
+                    <span class="docs-nav-icon">💖</span>
+                    <span>Kiss Improvements</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="LEAFLET_BEST_PRACTICES.html" class="docs-nav-link">
+                    <span class="docs-nav-icon">🗺️</span>
+                    <span>Leaflet Best Practices</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="LEAFLET_UPDATE_GUIDE.html" class="docs-nav-link">
+                    <span class="docs-nav-icon">🗺️</span>
+                    <span>Leaflet Update Guide</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="LUCIDE_UPDATE_GUIDE.html" class="docs-nav-link">
+                    <span class="docs-nav-icon">😊</span>
+                    <span>Lucide Update Guide</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="MARKDOWN_LINTING.html" class="docs-nav-link">
+                    <span class="docs-nav-icon">📝</span>
+                    <span>Markdown Linting</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="PROOF_SINGLE_PAGE.html" class="docs-nav-link">
+                    <span class="docs-nav-icon">🛡️</span>
+                    <span>Proof Single Page</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="PYTHON_WEB_STANDARDS.html" class="docs-nav-link">
+                    <span class="docs-nav-icon">🐍</span>
+                    <span>Python Web Standards</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="QUICK_REFERENCE.html" class="docs-nav-link">
+                    <span class="docs-nav-icon">🔖</span>
+                    <span>Quick Reference</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="SSG_DIRECTORY_STANDARD.html" class="docs-nav-link active">
+                    <span class="docs-nav-icon">📁</span>
+                    <span>Ssg Directory Standard</span>
+                </a>
+            </li>
+            
+            </ul>
+        </nav>
+        
+        <!-- Main Content -->
+        <main class="docs-main">
+            <a href="../index.html" class="back-to-app">
+                <span>←</span>
+                Back to App
+            </a>
+            <article class="docs-content">
+<h1 id="ssg-directory-structure-standard">SSG Directory Structure Standard</h1>
+<p><strong>KRWL HOF follows industry-standard Static Site Generator conventions used by Hugo, Jekyll, and 11ty.</strong></p>
+<h2 id="directory-structure">📁 Directory Structure</h2>
+<div class="codehilite"><pre><span></span><code><span class="n">krwl</span><span class="o">-</span><span class="n">hof</span><span class="o">/</span>
+<span class="err">├──</span><span class="w"> </span><span class="n">layouts</span><span class="o">/</span><span class="w">              </span><span class="err">←</span><span class="w"> </span><span class="n">Hugo</span><span class="o">/</span><span class="n">Jekyll</span><span class="o">/</span><span class="n">_layouts</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">HTML</span><span class="w"> </span><span class="n">templates</span>
+<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">components</span><span class="o">/</span><span class="w">       </span><span class="err">←</span><span class="w"> </span><span class="n">Reusable</span><span class="w"> </span><span class="n">template</span><span class="w"> </span><span class="n">partials</span>
+<span class="err">│</span><span class="w">   </span><span class="err">└──</span><span class="w"> </span><span class="n">index</span><span class="o">.</span><span class="n">html</span><span class="w">        </span><span class="err">←</span><span class="w"> </span><span class="n">Base</span><span class="w"> </span><span class="n">template</span>
+<span class="err">│</span>
+<span class="err">├──</span><span class="w"> </span><span class="n">assets</span><span class="o">/</span><span class="w">               </span><span class="err">←</span><span class="w"> </span><span class="n">Hugo</span><span class="o">/</span><span class="n">Jekyll</span><span class="o">/</span><span class="n">assets</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Source</span><span class="w"> </span><span class="n">CSS</span><span class="o">/</span><span class="n">JS</span><span class="w"> </span><span class="p">(</span><span class="n">processed</span><span class="p">)</span>
+<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">css</span><span class="o">/</span><span class="w">              </span><span class="err">←</span><span class="w"> </span><span class="n">Source</span><span class="w"> </span><span class="n">stylesheets</span><span class="w"> </span><span class="p">(</span><span class="n">modular</span><span class="p">)</span>
+<span class="err">│</span><span class="w">   </span><span class="err">└──</span><span class="w"> </span><span class="n">js</span><span class="o">/</span><span class="w">               </span><span class="err">←</span><span class="w"> </span><span class="n">Source</span><span class="w"> </span><span class="n">JavaScript</span>
+<span class="err">│</span>
+<span class="err">├──</span><span class="w"> </span><span class="k">static</span><span class="o">/</span><span class="w">               </span><span class="err">←</span><span class="w"> </span><span class="n">Hugo</span><span class="o">/</span><span class="n">Jekyll</span><span class="o">/</span><span class="k">static</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Static</span><span class="w"> </span><span class="n">files</span><span class="w"> </span><span class="p">(</span><span class="n">copied</span><span class="w"> </span><span class="k">as</span><span class="o">-</span><span class="k">is</span><span class="p">)</span>
+<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">favicon</span><span class="o">.</span><span class="n">svg</span><span class="w">       </span><span class="err">←</span><span class="w"> </span><span class="n">Site</span><span class="w"> </span><span class="n">icons</span>
+<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">manifest</span><span class="o">.</span><span class="n">json</span><span class="w">     </span><span class="err">←</span><span class="w"> </span><span class="n">PWA</span><span class="w"> </span><span class="n">manifest</span>
+<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">leaflet</span><span class="o">/</span><span class="w">          </span><span class="err">←</span><span class="w"> </span><span class="n">Third</span><span class="o">-</span><span class="n">party</span><span class="w"> </span><span class="n">libraries</span>
+<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">lucide</span><span class="o">/</span><span class="w">           </span><span class="err">←</span><span class="w"> </span><span class="n">Icon</span><span class="w"> </span><span class="n">library</span>
+<span class="err">│</span><span class="w">   </span><span class="err">└──</span><span class="w"> </span><span class="n">markers</span><span class="o">/</span><span class="w">          </span><span class="err">←</span><span class="w"> </span><span class="n">Static</span><span class="w"> </span><span class="n">SVG</span><span class="w"> </span><span class="n">assets</span>
+<span class="err">│</span>
+<span class="err">├──</span><span class="w"> </span><span class="n">content</span><span class="o">/</span><span class="w">              </span><span class="err">←</span><span class="w"> </span><span class="n">Hugo</span><span class="o">/</span><span class="n">Jekyll</span><span class="o">/</span><span class="n">_posts</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Content</span><span class="o">/</span><span class="n">data</span><span class="w"> </span><span class="n">files</span>
+<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">events</span><span class="o">/</span><span class="w">           </span><span class="err">←</span><span class="w"> </span><span class="n">Event</span><span class="w"> </span><span class="n">JSON</span><span class="w"> </span><span class="n">files</span>
+<span class="err">│</span><span class="w">   </span><span class="err">└──</span><span class="w"> </span><span class="n">old</span><span class="o">/</span><span class="w">              </span><span class="err">←</span><span class="w"> </span><span class="n">Archived</span><span class="w"> </span><span class="n">content</span>
+<span class="err">│</span>
+<span class="err">├──</span><span class="w"> </span><span class="n">public</span><span class="o">/</span><span class="w">               </span><span class="err">←</span><span class="w"> </span><span class="n">Hugo</span><span class="o">/</span><span class="n">Jekyll</span><span class="o">/</span><span class="n">_site</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Build</span><span class="w"> </span><span class="n">output</span>
+<span class="err">│</span><span class="w">   </span><span class="err">└──</span><span class="w"> </span><span class="n">index</span><span class="o">.</span><span class="n">html</span><span class="w">        </span><span class="err">←</span><span class="w"> </span><span class="n">Generated</span><span class="w"> </span><span class="n">site</span><span class="w"> </span><span class="p">(</span><span class="n">deploy</span><span class="w"> </span><span class="n">this</span><span class="p">)</span>
+<span class="err">│</span>
+<span class="err">├──</span><span class="w"> </span><span class="n">src</span><span class="o">/</span><span class="w">                  </span><span class="err">←</span><span class="w"> </span><span class="n">Build</span><span class="w"> </span><span class="n">tools</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">generators</span><span class="w"> </span><span class="p">(</span><span class="n">Python</span><span class="p">)</span>
+<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">event_manager</span><span class="o">.</span><span class="n">py</span><span class="w">  </span><span class="err">←</span><span class="w"> </span><span class="n">CLI</span><span class="w"> </span><span class="n">entry</span><span class="w"> </span><span class="n">point</span>
+<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">modules</span><span class="o">/</span><span class="w">          </span><span class="err">←</span><span class="w"> </span><span class="n">Core</span><span class="w"> </span><span class="n">functionality</span>
+<span class="err">│</span><span class="w">   </span><span class="err">└──</span><span class="w"> </span><span class="n">tools</span><span class="o">/</span><span class="w">            </span><span class="err">←</span><span class="w"> </span><span class="n">Build</span><span class="w"> </span><span class="n">scripts</span>
+<span class="err">│</span>
+<span class="err">├──</span><span class="w"> </span><span class="n">docs</span><span class="o">/</span><span class="w">                 </span><span class="err">←</span><span class="w"> </span><span class="n">Documentation</span><span class="w"> </span><span class="p">(</span><span class="ow">not</span><span class="w"> </span><span class="n">deployed</span><span class="p">)</span>
+<span class="err">├──</span><span class="w"> </span><span class="n">tests</span><span class="o">/</span><span class="w">                </span><span class="err">←</span><span class="w"> </span><span class="n">Test</span><span class="w"> </span><span class="n">suite</span><span class="w"> </span><span class="p">(</span><span class="ow">not</span><span class="w"> </span><span class="n">deployed</span><span class="p">)</span>
+<span class="err">├──</span><span class="w"> </span><span class="n">scripts</span><span class="o">/</span><span class="w">              </span><span class="err">←</span><span class="w"> </span><span class="n">Utility</span><span class="w"> </span><span class="n">scripts</span><span class="w"> </span><span class="p">(</span><span class="ow">not</span><span class="w"> </span><span class="n">deployed</span><span class="p">)</span>
+<span class="err">│</span>
+<span class="err">├──</span><span class="w"> </span><span class="n">config</span><span class="o">.</span><span class="n">json</span><span class="w">           </span><span class="err">←</span><span class="w"> </span><span class="n">Hugo</span><span class="o">/</span><span class="n">Jekyll</span><span class="w"> </span><span class="n">config</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Site</span><span class="w"> </span><span class="n">configuration</span>
+<span class="err">└──</span><span class="w"> </span><span class="n">requirements</span><span class="o">.</span><span class="n">txt</span><span class="w">      </span><span class="err">←</span><span class="w"> </span><span class="n">Python</span><span class="w"> </span><span class="n">dependencies</span>
+</code></pre></div>
+
+<h2 id="ssg-standard-compliance">🎯 SSG Standard Compliance</h2>
+<h3 id="hugo-comparison">Hugo Comparison</h3>
+<table>
+<thead>
+<tr>
+<th>Hugo</th>
+<th>KRWL HOF</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>layouts/</code></td>
+<td><code>layouts/</code></td>
+<td>✅ HTML templates</td>
+</tr>
+<tr>
+<td><code>assets/</code></td>
+<td><code>assets/</code></td>
+<td>✅ Source CSS/JS</td>
+</tr>
+<tr>
+<td><code>public/</code></td>
+<td><code>public/</code></td>
+<td>✅ Static files</td>
+</tr>
+<tr>
+<td><code>content/</code></td>
+<td><code>content/</code></td>
+<td>✅ Content files</td>
+</tr>
+<tr>
+<td><code>public/</code></td>
+<td><code>public/</code></td>
+<td>✅ Build output</td>
+</tr>
+<tr>
+<td><code>config.toml</code></td>
+<td><code>config.json</code></td>
+<td>✅ Configuration</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Score: 100% compliant</strong> 🎉</p>
+<h3 id="jekyll-comparison">Jekyll Comparison</h3>
+<table>
+<thead>
+<tr>
+<th>Jekyll</th>
+<th>KRWL HOF</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>_layouts/</code></td>
+<td><code>layouts/</code></td>
+<td>✅ HTML templates</td>
+</tr>
+<tr>
+<td><code>assets/</code></td>
+<td><code>assets/</code></td>
+<td>✅ Source CSS/JS</td>
+</tr>
+<tr>
+<td><code>public/</code> or <code>/</code></td>
+<td><code>public/</code></td>
+<td>✅ Static files</td>
+</tr>
+<tr>
+<td><code>_posts/</code></td>
+<td><code>content/events/</code></td>
+<td>✅ Content files</td>
+</tr>
+<tr>
+<td><code>_site/</code></td>
+<td><code>public/</code></td>
+<td>✅ Build output</td>
+</tr>
+<tr>
+<td><code>_config.yml</code></td>
+<td><code>config.json</code></td>
+<td>✅ Configuration</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Score: 100% compliant</strong> 🎉</p>
+<h3 id="11ty-eleventy-comparison">11ty (Eleventy) Comparison</h3>
+<table>
+<thead>
+<tr>
+<th>11ty</th>
+<th>KRWL HOF</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>_includes/</code></td>
+<td><code>assets/html/</code></td>
+<td>✅ Template partials</td>
+</tr>
+<tr>
+<td><code>assets/</code></td>
+<td><code>assets/</code></td>
+<td>✅ Source CSS/JS</td>
+</tr>
+<tr>
+<td><code>public/</code></td>
+<td><code>public/</code></td>
+<td>✅ Static files</td>
+</tr>
+<tr>
+<td><code>posts/</code></td>
+<td><code>content/events/</code></td>
+<td>✅ Content files</td>
+</tr>
+<tr>
+<td><code>_site/</code></td>
+<td><code>public/</code></td>
+<td>✅ Build output</td>
+</tr>
+<tr>
+<td><code>.eleventy.js</code></td>
+<td><code>config.json</code></td>
+<td>✅ Configuration</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Score: 100% compliant</strong> 🎉</p>
+<h2 id="directory-purposes">📋 Directory Purposes</h2>
+<h3 id="layouts-template-layer"><code>layouts/</code> - Template Layer</h3>
+<p><strong>Industry Standard</strong>: Hugo's <code>layouts/</code>, Jekyll's <code>_layouts/</code>, 11ty's <code>_includes/</code></p>
+<p><strong>Purpose</strong>: HTML templates and components</p>
+<p><strong>Contents</strong>:
+- <code>index.html</code> - Base template
+- <code>components/</code> - Reusable partials (header, footer, nav, etc.)</p>
+<p><strong>Rules</strong>:
+- ✅ HTML templates only
+- ✅ Use template variables (e.g., <code>{app_name}</code>, <code>{event_count}</code>)
+- ✅ Semantic HTML5 tags
+- ❌ No hardcoded content
+- ❌ No business logic</p>
+<p><strong>Example</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="cm">&lt;!-- layouts/index.html --&gt;</span>
+<span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&quot;en&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>{app_name}<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+  {content}
+<span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</code></pre></div>
+
+<h3 id="assets-source-assets-processed"><code>assets/</code> - Source Assets (Processed)</h3>
+<p><strong>Industry Standard</strong>: Hugo's <code>assets/</code>, Jekyll's <code>assets/</code>, 11ty's <code>assets/</code></p>
+<p><strong>Purpose</strong>: Source CSS/JS that gets processed during build</p>
+<p><strong>Contents</strong>:
+- <code>css/</code> - Modular CSS files (imported into main)
+- <code>js/</code> - Source JavaScript (concatenated/minified)</p>
+<p><strong>Rules</strong>:
+- ✅ Source files only (not deployed directly)
+- ✅ Modular organization
+- ✅ Use CSS custom properties from config
+- ❌ No hardcoded values
+- ❌ No compiled/minified files here</p>
+<p><strong>Build Process</strong>:</p>
+<div class="codehilite"><pre><span></span><code>assets/css/*.css → processed → public/index.html (inlined)
+assets/js/*.js   → processed → public/index.html (inlined)
+</code></pre></div>
+
+<h3 id="public-static-files-copied-as-is"><code>public/</code> - Static Files (Copied As-Is)</h3>
+<p><strong>Industry Standard</strong>: Hugo's <code>public/</code>, Jekyll's root/static, 11ty's <code>public/</code></p>
+<p><strong>Purpose</strong>: Files copied to output without processing</p>
+<p><strong>Contents</strong>:
+- Third-party libraries (Leaflet, Lucide)
+- Images, icons, fonts
+- manifest.json, favicon
+- robots.txt, .nojekyll</p>
+<p><strong>Rules</strong>:
+- ✅ Files copied exactly as-is
+- ✅ No processing or transformation
+- ✅ Relative paths preserved
+- ❌ No source files (use <code>assets/</code> instead)</p>
+<p><strong>Example</strong>:</p>
+<div class="codehilite"><pre><span></span><code>assets/favicon.svg → public/favicon.svg (copied)
+lib/leaflet/    → public/leaflet/    (copied)
+</code></pre></div>
+
+<h3 id="content-contentdata-files"><code>content/</code> - Content/Data Files</h3>
+<p><strong>Industry Standard</strong>: Hugo's <code>content/</code>, Jekyll's <code>_posts/</code>, 11ty's <code>posts/</code></p>
+<p><strong>Purpose</strong>: Content and data files (JSON, Markdown, YAML)</p>
+<p><strong>Contents</strong>:
+- <code>events/</code> - Event data (JSON)
+- <code>old/</code> - Archived content</p>
+<p><strong>Rules</strong>:
+- ✅ Data files only (JSON, Markdown, YAML)
+- ✅ Structured content
+- ✅ Versioned with git
+- ❌ No code or logic
+- ❌ No binary files</p>
+<p><strong>Example</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1">// content/events/event-001.json</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Community Meetup&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;date&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2024-01-15&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;location&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;lat&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">52.52</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;lng&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">13.40</span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="public-build-output"><code>public/</code> - Build Output</h3>
+<p><strong>Industry Standard</strong>: Hugo's <code>public/</code>, Jekyll's <code>_site/</code>, 11ty's <code>_site/</code></p>
+<p><strong>Purpose</strong>: Generated site ready for deployment</p>
+<p><strong>Contents</strong>:
+- <code>index.html</code> - Final HTML (everything inlined)
+- Copied static files</p>
+<p><strong>Rules</strong>:
+- ✅ Auto-generated (never edit manually)
+- ✅ Deploy this directory
+- ✅ Can be deleted and rebuilt
+- ❌ Don't commit (add to .gitignore)
+- ❌ Don't edit files here</p>
+<p><strong>Deployment</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># GitHub Pages - deploy public/ to gh-pages branch</span>
+<span class="c1"># Netlify - deploy public/ directory</span>
+<span class="c1"># Vercel - deploy public/ directory</span>
+</code></pre></div>
+
+<h3 id="src-build-tools"><code>src/</code> - Build Tools</h3>
+<p><strong>Custom Addition</strong> (not in all SSGs, but common in modern setups)</p>
+<p><strong>Purpose</strong>: Python generator and build tools</p>
+<p><strong>Contents</strong>:
+- <code>event_manager.py</code> - CLI for site generation
+- <code>modules/</code> - Core build logic
+- <code>tools/</code> - Build utilities</p>
+<p><strong>Why Not Standard SSG?</strong>
+- We use Python instead of Go/Ruby/Node
+- Custom event management workflow
+- Editorial review system
+- Dynamic data fetching</p>
+<h3 id="configjson-configuration"><code>config.json</code> - Configuration</h3>
+<p><strong>Industry Standard</strong>: Hugo's <code>config.toml</code>, Jekyll's <code>_config.yml</code>, 11ty's <code>.eleventy.js</code></p>
+<p><strong>Purpose</strong>: Site configuration and design tokens</p>
+<p><strong>Contents</strong>:
+- Design system (colors, fonts, spacing)
+- App settings (name, description)
+- Build options (environment, debug)
+- Data sources (scraping URLs)</p>
+<p><strong>Format Choice</strong>:
+- JSON (universal, no dependencies)
+- Could be YAML or TOML (SSG-standard)</p>
+<h2 id="build-pipeline">🔄 Build Pipeline</h2>
+<h3 id="ssg-standard-pipeline">SSG-Standard Pipeline</h3>
+<div class="codehilite"><pre><span></span><code><span class="n">graph</span><span class="w"> </span><span class="n">LR</span>
+<span class="w">    </span><span class="n">A</span><span class="o">[</span><span class="n">content/</span><span class="o">]</span><span class="w"> </span><span class="o">--&gt;</span><span class="w"> </span><span class="n">D</span><span class="o">[</span><span class="n">Generator</span><span class="o">]</span>
+<span class="w">    </span><span class="n">B</span><span class="o">[</span><span class="n">assets/</span><span class="o">]</span><span class="w"> </span><span class="o">--&gt;</span><span class="w"> </span><span class="n">D</span>
+<span class="w">    </span><span class="n">C</span><span class="o">[</span><span class="n">layouts/</span><span class="o">]</span><span class="w"> </span><span class="o">--&gt;</span><span class="w"> </span><span class="n">D</span>
+<span class="w">    </span><span class="n">D</span><span class="w"> </span><span class="o">--&gt;</span><span class="w"> </span><span class="n">E</span><span class="o">[</span><span class="n">public/</span><span class="o">]</span>
+<span class="w">    </span><span class="n">F</span><span class="o">[</span><span class="n">static/</span><span class="o">]</span><span class="w"> </span><span class="c1">--&gt; E</span>
+</code></pre></div>
+
+<h3 id="critical-our-inline-architecture">🚨 CRITICAL: Our Inline Architecture</h3>
+<p><strong>Unlike traditional SSGs that copy files, we INLINE everything:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># 1. Read content</span>
+content/events/*.json<span class="w"> </span>→<span class="w"> </span>Load<span class="w"> </span>event<span class="w"> </span>data
+
+<span class="c1"># 2. Load &amp; INLINE assets (NOT copy)</span>
+assets/css/*.css<span class="w"> </span>→<span class="w"> </span>Read<span class="w"> </span>→<span class="w"> </span>INLINE<span class="w"> </span>into<span class="w"> </span>&lt;style&gt;
+assets/js/*.js<span class="w"> </span>→<span class="w"> </span>Read<span class="w"> </span>→<span class="w"> </span>INLINE<span class="w"> </span>into<span class="w"> </span>&lt;script&gt;
+lib/leaflet/leaflet.css<span class="w"> </span>→<span class="w"> </span>Read<span class="w"> </span>→<span class="w"> </span>INLINE<span class="w"> </span>into<span class="w"> </span>&lt;style&gt;
+lib/leaflet/leaflet.js<span class="w"> </span>→<span class="w"> </span>Read<span class="w"> </span>→<span class="w"> </span>INLINE<span class="w"> </span>into<span class="w"> </span>&lt;script&gt;
+
+<span class="c1"># 3. Apply templates</span>
+layouts/index.html<span class="w"> </span>→<span class="w"> </span>Insert<span class="w"> </span>data<span class="w"> </span><span class="p">&amp;</span><span class="w"> </span>INLINED<span class="w"> </span>assets
+
+<span class="c1"># 4. Convert markers to base64</span>
+assets/svg/*.svg<span class="w"> </span>→<span class="w"> </span>Convert<span class="w"> </span>to<span class="w"> </span>data<span class="w"> </span>URLs<span class="w"> </span>→<span class="w"> </span>INLINE
+
+<span class="c1"># 5. Generate SINGLE FILE output</span>
+public/index.html<span class="w"> </span>→<span class="w"> </span>Self-contained<span class="w"> </span>HTML<span class="w"> </span><span class="o">(</span>zero<span class="w"> </span>external<span class="w"> </span>files<span class="o">)</span>
+</code></pre></div>
+
+<h3 id="traditional-ssg-vs-krwl-hof">Traditional SSG vs KRWL HOF</h3>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Traditional SSG</th>
+<th>KRWL HOF (Inline)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CSS Loading</strong></td>
+<td><code>&lt;link href="style.css"&gt;</code></td>
+<td><code>&lt;style&gt;/* CSS here */&lt;/style&gt;</code></td>
+</tr>
+<tr>
+<td><strong>JS Loading</strong></td>
+<td><code>&lt;script src="app.js"&gt;</code></td>
+<td><code>&lt;script&gt;/* JS here */&lt;/script&gt;</code></td>
+</tr>
+<tr>
+<td><strong>Images</strong></td>
+<td><code>&lt;img src="icon.png"&gt;</code></td>
+<td><code>&lt;img src="data:image/..."&gt;</code></td>
+</tr>
+<tr>
+<td><strong>HTTP Requests</strong></td>
+<td>Multiple files</td>
+<td>Zero (single HTML)</td>
+</tr>
+<tr>
+<td><strong>Offline</strong></td>
+<td>Needs service worker</td>
+<td>Works immediately</td>
+</tr>
+<tr>
+<td><strong>Deployment</strong></td>
+<td>Multiple files</td>
+<td>Single file</td>
+</tr>
+</tbody>
+</table>
+<h3 id="build-command">Build Command</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Run generator</span>
+python3<span class="w"> </span>src/event_manager.py<span class="w"> </span>generate
+
+<span class="c1"># Output</span>
+public/index.html<span class="w">  </span>←<span class="w"> </span>Single<span class="w"> </span>self-contained<span class="w"> </span>file
+</code></pre></div>
+
+<h3 id="what-gets-inlined">What Gets Inlined</h3>
+<ol>
+<li><strong>Leaflet CSS</strong> → <code>&lt;style&gt;</code> tag (FIRST - critical for compatibility)</li>
+<li><strong>Design tokens CSS</strong> → <code>&lt;style&gt;</code> tag</li>
+<li><strong>App CSS</strong> → <code>&lt;style&gt;</code> tag (9 modular files combined)</li>
+<li><strong>Leaflet JS</strong> → <code>&lt;script&gt;</code> tag</li>
+<li><strong>Lucide JS</strong> → <code>&lt;script&gt;</code> tag</li>
+<li><strong>i18n JS</strong> → <code>&lt;script&gt;</code> tag</li>
+<li><strong>App JS</strong> → <code>&lt;script&gt;</code> tag</li>
+<li><strong>Event data</strong> → <code>&lt;script&gt;window.ALL_EVENTS = [...]&lt;/script&gt;</code></li>
+<li><strong>Translations</strong> → <code>&lt;script&gt;window.EMBEDDED_CONTENT_EN = {...}&lt;/script&gt;</code></li>
+<li><strong>Marker icons</strong> → <code>&lt;script&gt;window.MARKER_ICONS = {...}&lt;/script&gt;</code> (base64 data URLs)</li>
+</ol>
+<h3 id="benefits-of-inline-architecture">Benefits of Inline Architecture</h3>
+<p>✅ <strong>Performance</strong>:
+- Zero HTTP requests
+- No DNS lookups
+- No SSL handshakes
+- Instant load</p>
+<p>✅ <strong>Offline-First</strong>:
+- Works immediately without service worker
+- No cache management needed
+- No network dependency</p>
+<p>✅ <strong>Deployment</strong>:
+- Single file to deploy
+- No directory structure to maintain
+- Trivial hosting (any static server)</p>
+<p>✅ <strong>Security</strong>:
+- No external resource loading
+- No CDN dependency risk
+- Content Security Policy friendly</p>
+<p>✅ <strong>Reproducibility</strong>:
+- Build output is deterministic
+- No external resource drift
+- Version control friendly</p>
+<p>⚠️ <strong>Trade-offs</strong>:
+- Larger initial HTML file (~500KB)
+- No browser caching between pages (single-page app)
+- Must regenerate for updates (acceptable trade-off)</p>
+<h3 id="implementation-in-site_generatorpy">Implementation in <code>site_generator.py</code></h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">load_stylesheet_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load all CSS - will be INLINED, not linked&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s1">&#39;leaflet_css&#39;</span><span class="p">:</span> <span class="n">read_file</span><span class="p">(</span><span class="s1">&#39;lib/leaflet/leaflet.css&#39;</span><span class="p">),</span>  <span class="c1"># INLINE</span>
+        <span class="s1">&#39;app_css&#39;</span><span class="p">:</span> <span class="n">read_file</span><span class="p">(</span><span class="s1">&#39;assets/css/style.css&#39;</span><span class="p">)</span>             <span class="c1"># INLINE</span>
+    <span class="p">}</span>
+
+<span class="k">def</span> <span class="nf">build_html_from_components</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build HTML with everything inlined&quot;&quot;&quot;</span>
+    <span class="n">html</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">    &lt;head&gt;</span>
+<span class="s1">      &lt;style&gt;</span><span class="si">{</span><span class="n">stylesheets</span><span class="p">[</span><span class="s1">&#39;leaflet_css&#39;</span><span class="p">]</span><span class="si">}</span><span class="s1">&lt;/style&gt;  &lt;!-- INLINED --&gt;</span>
+<span class="s1">      &lt;style&gt;</span><span class="si">{</span><span class="n">design_tokens_css</span><span class="si">}</span><span class="s1">&lt;/style&gt;            &lt;!-- INLINED --&gt;</span>
+<span class="s1">      &lt;style&gt;</span><span class="si">{</span><span class="n">stylesheets</span><span class="p">[</span><span class="s1">&#39;app_css&#39;</span><span class="p">]</span><span class="si">}</span><span class="s1">&lt;/style&gt;       &lt;!-- INLINED --&gt;</span>
+<span class="s1">    &lt;/head&gt;</span>
+<span class="s1">    &lt;body&gt;</span>
+<span class="s1">      &lt;script&gt;</span><span class="si">{</span><span class="n">scripts</span><span class="p">[</span><span class="s1">&#39;leaflet_js&#39;</span><span class="p">]</span><span class="si">}</span><span class="s1">&lt;/script&gt;      &lt;!-- INLINED --&gt;</span>
+<span class="s1">      &lt;script&gt;</span><span class="si">{</span><span class="n">scripts</span><span class="p">[</span><span class="s1">&#39;app_js&#39;</span><span class="p">]</span><span class="si">}</span><span class="s1">&lt;/script&gt;          &lt;!-- INLINED --&gt;</span>
+<span class="s1">    &lt;/body&gt;</span>
+<span class="s1">    &#39;&#39;&#39;</span>
+</code></pre></div>
+
+<h3 id="build-commands">Build Commands</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Generate site (Hugo: hugo, Jekyll: jekyll build)</span>
+python3<span class="w"> </span>src/event_manager.py<span class="w"> </span>generate
+
+<span class="c1"># Development server (Hugo: hugo server, Jekyll: jekyll serve)</span>
+<span class="nb">cd</span><span class="w"> </span>public<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>python3<span class="w"> </span>-m<span class="w"> </span>http.server<span class="w"> </span><span class="m">8000</span>
+
+<span class="c1"># Clean build (Hugo: hugo clean, Jekyll: jekyll clean)</span>
+rm<span class="w"> </span>-rf<span class="w"> </span>public/
+
+<span class="c1"># Update dependencies (Hugo: hugo mod get -u)</span>
+python3<span class="w"> </span>src/event_manager.py<span class="w"> </span>libs
+</code></pre></div>
+
+<h2 id="design-token-integration">🎨 Design Token Integration</h2>
+<p>Unlike traditional SSGs, we have <strong>centralized design tokens</strong> in <code>config.json</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;design&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;colors&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;primary&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#FF69B4&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;bg_primary&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#0d1117&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;typography&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;font_family_base&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sans-serif&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;font_size_base&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;16px&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p><strong>Generated to CSS</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">:</span><span class="nd">root</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nv">--color-primary</span><span class="p">:</span><span class="w"> </span><span class="mh">#FF69B4</span><span class="p">;</span>
+<span class="w">  </span><span class="nv">--color-bg-primary</span><span class="p">:</span><span class="w"> </span><span class="mh">#0d1117</span><span class="p">;</span>
+<span class="w">  </span><span class="nv">--font-family-base</span><span class="p">:</span><span class="w"> </span><span class="kc">sans-serif</span><span class="p">;</span>
+<span class="w">  </span><span class="nv">--font-size-base</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span><span class="kt">px</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p><strong>Used in assets/css</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">body</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">background</span><span class="p">:</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="nv">--color-bg-primary</span><span class="p">);</span>
+<span class="w">  </span><span class="k">color</span><span class="p">:</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="nv">--color-primary</span><span class="p">);</span>
+<span class="w">  </span><span class="k">font-family</span><span class="p">:</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="nv">--font-family-base</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>This enables <strong>instant rebranding</strong> - just edit config.json!</p>
+<h2 id="deployment">📦 Deployment</h2>
+<h3 id="ssg-standard-deployment">SSG-Standard Deployment</h3>
+<p>All SSGs deploy the build output directory:</p>
+<table>
+<thead>
+<tr>
+<th>SSG</th>
+<th>Deploy Directory</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hugo</td>
+<td><code>public/</code></td>
+</tr>
+<tr>
+<td>Jekyll</td>
+<td><code>_site/</code></td>
+</tr>
+<tr>
+<td>11ty</td>
+<td><code>_site/</code></td>
+</tr>
+<tr>
+<td><strong>KRWL HOF</strong></td>
+<td><strong><code>public/</code></strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="deployment-platforms">Deployment Platforms</h3>
+<p><strong>GitHub Pages</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># .github/workflows/deploy.yml</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">python3 src/event_manager.py generate</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">peaceiris/actions-gh-pages@v3</span>
+<span class="w">  </span><span class="nt">with</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">publish_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./public</span>
+</code></pre></div>
+
+<p><strong>Netlify</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># netlify.toml</span>
+<span class="k">[build]</span>
+<span class="w">  </span><span class="n">command</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;python3 src/event_manager.py generate&quot;</span>
+<span class="w">  </span><span class="n">publish</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;public&quot;</span>
+</code></pre></div>
+
+<p><strong>Vercel</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;buildCommand&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;python3 src/event_manager.py generate&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;outputDirectory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;public&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h2 id="compliance-checklist">✅ Compliance Checklist</h2>
+<ul>
+<li>[x] <code>layouts/</code> for templates (Hugo/Jekyll/11ty standard)</li>
+<li>[x] <code>assets/</code> for source CSS/JS (Hugo/Jekyll/11ty standard)</li>
+<li>[x] <code>public/</code> for static files (Hugo/Jekyll/11ty standard)</li>
+<li>[x] <code>content/</code> for data/content (Hugo/Jekyll/11ty standard)</li>
+<li>[x] <code>public/</code> for build output (Hugo/Jekyll/11ty standard)</li>
+<li>[x] <code>config.json</code> for configuration (SSG-standard pattern)</li>
+<li>[x] Clear separation: source vs output</li>
+<li>[x] Build command generates to <code>public/</code></li>
+<li>[x] Static files copied as-is</li>
+<li>[x] Templates use variables, not hardcoded content</li>
+</ul>
+<h2 id="benefits-of-ssg-standards">🎯 Benefits of SSG Standards</h2>
+<p><strong>Familiarity</strong>: Developers know the structure immediately</p>
+<p><strong>Tooling</strong>: Works with SSG-compatible tools (deployment, IDEs)</p>
+<p><strong>Scalability</strong>: Easy to add pages, content, components</p>
+<p><strong>Maintainability</strong>: Clear separation of concerns</p>
+<p><strong>Portability</strong>: Could switch to Hugo/Jekyll/11ty with minimal changes</p>
+<h2 id="further-reading">📚 Further Reading</h2>
+<ul>
+<li><strong>Hugo</strong>: https://gohugo.io/getting-started/directory-structure/</li>
+<li><strong>Jekyll</strong>: https://jekyllrb.com/docs/structure/</li>
+<li><strong>11ty</strong>: https://www.11ty.dev/docs/</li>
+<li><strong>SSG Comparison</strong>: https://jamstack.org/generators/</li>
+</ul>
+<h2 id="summary">🎉 Summary</h2>
+<p><strong>KRWL HOF is 100% SSG-compliant!</strong></p>
+<p>We follow industry-standard directory conventions used by Hugo, Jekyll, and 11ty:
+- ✅ Standard directory names
+- ✅ Standard purposes
+- ✅ Standard build output
+- ✅ Standard deployment</p>
+<p><strong>Plus modern enhancements:</strong>
+- 🎨 Centralized design tokens
+- 🧪 Automated testing
+- 🔧 Python build tools
+- 📱 PWA features</p>
+<p>This gives us <strong>the best of both worlds</strong>: industry-standard structure + modern tooling!</p>
+            </article>
+        </main>
+    </div>
+</body>
+</html>

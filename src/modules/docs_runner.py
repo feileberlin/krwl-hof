@@ -36,6 +36,10 @@ class DocsRunner:
                 'script': 'scripts/generate_screenshots.py',
                 'description': 'Generate project screenshots',
             },
+            'html-docs': {
+                'script': 'src/modules/docs_generator.py',
+                'description': 'Generate styled HTML documentation with Barbie Pink theme',
+            },
         },
         'validate': {
             'docs': {

@@ -8,5 +8,9 @@
 # EXCEPT index.html (the generated file)
 !index.html
 
+# EXCEPT docs/ directory (generated documentation)
+!docs/
+!docs/**
+
 # And this .gitignore file itself
 !.gitignore

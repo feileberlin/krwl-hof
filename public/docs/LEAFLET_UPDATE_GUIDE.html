@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaflet Update Guide - KRWL HOF Documentation</title>
+    <meta name="description" content="KRWL HOF Community Events Documentation">
+    <style>
+
+/* Documentation Styles - Generated from config.json design tokens */
+
+:root {
+    /* Colors from design tokens */
+    --color-primary: #FF69B4;
+    --color-primary-hover: #ff4da6;
+    --color-bg-primary: #0d1117;
+    --color-bg-secondary: #161b22;
+    --color-bg-tertiary: #21262d;
+    --color-text-primary: #c9d1d9;
+    --color-text-secondary: #8b949e;
+    --color-text-tertiary: #6e7681;
+    --color-border-primary: #30363d;
+    --color-border-secondary: #21262d;
+    --color-accent: #58a6ff;
+    --color-success: #3fb950;
+    --color-warning: #d29922;
+    --color-error: #f85149;
+    
+    /* Typography */
+    --font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+    --font-family-mono: 'Monaco', 'Courier New', monospace;
+    --font-size-base: 16px;
+    --font-size-small: 14px;
+    --font-size-large: 18px;
+    --line-height-base: 1.6;
+    
+    /* Spacing */
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    --spacing-xxl: 48px;
+    
+    /* Borders */
+    --border-radius-small: 4px;
+    --border-radius-medium: 6px;
+    --border-radius-large: 8px;
+    
+    /* Shadows */
+    --shadow-small: 0 2px 4px rgba(0, 0, 0, 0.3);
+    --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --shadow-large: 0 8px 24px rgba(0, 0, 0, 0.5);
+    --shadow-glow-primary: 0 0 10px rgba(255, 105, 180, 0.3);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-family-base);
+    background: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    line-height: var(--line-height-base);
+    font-size: var(--font-size-base);
+}
+
+/* Layout */
+.docs-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar Navigation */
+.docs-sidebar {
+    width: 280px;
+    background: var(--color-bg-secondary);
+    border-right: 1px solid var(--color-border-primary);
+    padding: var(--spacing-lg);
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 100;
+}
+
+.docs-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-xl);
+    padding-bottom: var(--spacing-lg);
+    border-bottom: 1px solid var(--color-border-primary);
+}
+
+.docs-logo-icon {
+    color: var(--color-primary);
+    width: 32px;
+    height: 32px;
+}
+
+.docs-logo-text {
+    font-size: var(--font-size-large);
+    font-weight: 600;
+    color: var(--color-primary);
+}
+
+.docs-nav {
+    list-style: none;
+}
+
+.docs-nav-item {
+    margin-bottom: var(--spacing-sm);
+}
+
+.docs-nav-link {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    border-radius: var(--border-radius-small);
+    transition: all 0.2s ease;
+}
+
+.docs-nav-link:hover {
+    background: var(--color-bg-tertiary);
+    color: var(--color-text-primary);
+}
+
+.docs-nav-link.active {
+    background: var(--color-bg-tertiary);
+    color: var(--color-primary);
+    border-left: 2px solid var(--color-primary);
+}
+
+.docs-nav-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+/* Main Content */
+.docs-main {
+    margin-left: 280px;
+    flex: 1;
+    padding: var(--spacing-xl);
+    max-width: 900px;
+}
+
+.docs-content {
+    background: var(--color-bg-secondary);
+    border-radius: var(--border-radius-medium);
+    padding: var(--spacing-xxl);
+    box-shadow: var(--shadow-medium);
+}
+
+/* Back to App Link */
+.back-to-app {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: var(--color-accent);
+    text-decoration: none;
+    margin-bottom: var(--spacing-lg);
+    font-size: var(--font-size-small);
+    transition: color 0.2s ease;
+}
+
+.back-to-app:hover {
+    color: var(--color-primary);
+}
+
+/* Typography */
+.docs-content h1 {
+    color: var(--color-primary);
+    font-size: 2.5rem;
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 2px solid var(--color-border-primary);
+}
+
+.docs-content h2 {
+    color: var(--color-text-primary);
+    font-size: 2rem;
+    margin-top: var(--spacing-xl);
+    margin-bottom: var(--spacing-md);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.docs-content h2::before {
+    content: '';
+    width: 4px;
+    height: 1.5rem;
+    background: var(--color-primary);
+    border-radius: 2px;
+}
+
+.docs-content h3 {
+    color: var(--color-text-primary);
+    font-size: 1.5rem;
+    margin-top: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+}
+
+.docs-content h4 {
+    color: var(--color-text-secondary);
+    font-size: 1.25rem;
+    margin-top: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+}
+
+.docs-content p {
+    margin-bottom: var(--spacing-md);
+    color: var(--color-text-primary);
+}
+
+.docs-content a {
+    color: var(--color-accent);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+}
+
+.docs-content a:hover {
+    border-bottom-color: var(--color-accent);
+}
+
+/* Lists */
+.docs-content ul,
+.docs-content ol {
+    margin-bottom: var(--spacing-md);
+    padding-left: var(--spacing-xl);
+}
+
+.docs-content li {
+    margin-bottom: var(--spacing-sm);
+    color: var(--color-text-primary);
+}
+
+/* Code */
+.docs-content code {
+    font-family: var(--font-family-mono);
+    background: var(--color-bg-tertiary);
+    padding: 2px 6px;
+    border-radius: var(--border-radius-small);
+    font-size: var(--font-size-small);
+    color: var(--color-primary);
+}
+
+.docs-content pre {
+    background: var(--color-bg-tertiary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--border-radius-medium);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    overflow-x: auto;
+}
+
+.docs-content pre code {
+    background: none;
+    padding: 0;
+    color: var(--color-text-primary);
+}
+
+/* Tables */
+.docs-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: var(--spacing-md);
+    background: var(--color-bg-tertiary);
+    border-radius: var(--border-radius-medium);
+    overflow: hidden;
+}
+
+.docs-content th {
+    background: var(--color-bg-primary);
+    color: var(--color-primary);
+    padding: var(--spacing-md);
+    text-align: left;
+    font-weight: 600;
+}
+
+.docs-content td {
+    padding: var(--spacing-md);
+    border-top: 1px solid var(--color-border-primary);
+    color: var(--color-text-primary);
+}
+
+.docs-content tr:hover td {
+    background: var(--color-bg-secondary);
+}
+
+/* Blockquotes */
+.docs-content blockquote {
+    border-left: 4px solid var(--color-primary);
+    padding-left: var(--spacing-md);
+    margin: var(--spacing-md) 0;
+    color: var(--color-text-secondary);
+    font-style: italic;
+    background: var(--color-bg-tertiary);
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius-small);
+}
+
+/* Horizontal Rule */
+.docs-content hr {
+    border: none;
+    height: 1px;
+    background: var(--color-border-primary);
+    margin: var(--spacing-lg) 0;
+}
+
+/* Syntax Highlighting */
+pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.codehilite .hll { background-color: #49483e }
+.codehilite { background: #272822; color: #f8f8f2 }
+.codehilite .c { color: #959077 } /* Comment */
+.codehilite .err { color: #ed007e; background-color: #1e0010 } /* Error */
+.codehilite .esc { color: #f8f8f2 } /* Escape */
+.codehilite .g { color: #f8f8f2 } /* Generic */
+.codehilite .k { color: #66d9ef } /* Keyword */
+.codehilite .l { color: #ae81ff } /* Literal */
+.codehilite .n { color: #f8f8f2 } /* Name */
+.codehilite .o { color: #ff4689 } /* Operator */
+.codehilite .x { color: #f8f8f2 } /* Other */
+.codehilite .p { color: #f8f8f2 } /* Punctuation */
+.codehilite .ch { color: #959077 } /* Comment.Hashbang */
+.codehilite .cm { color: #959077 } /* Comment.Multiline */
+.codehilite .cp { color: #959077 } /* Comment.Preproc */
+.codehilite .cpf { color: #959077 } /* Comment.PreprocFile */
+.codehilite .c1 { color: #959077 } /* Comment.Single */
+.codehilite .cs { color: #959077 } /* Comment.Special */
+.codehilite .gd { color: #ff4689 } /* Generic.Deleted */
+.codehilite .ge { color: #f8f8f2; font-style: italic } /* Generic.Emph */
+.codehilite .ges { color: #f8f8f2; font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.codehilite .gr { color: #f8f8f2 } /* Generic.Error */
+.codehilite .gh { color: #f8f8f2 } /* Generic.Heading */
+.codehilite .gi { color: #a6e22e } /* Generic.Inserted */
+.codehilite .go { color: #66d9ef } /* Generic.Output */
+.codehilite .gp { color: #ff4689; font-weight: bold } /* Generic.Prompt */
+.codehilite .gs { color: #f8f8f2; font-weight: bold } /* Generic.Strong */
+.codehilite .gu { color: #959077 } /* Generic.Subheading */
+.codehilite .gt { color: #f8f8f2 } /* Generic.Traceback */
+.codehilite .kc { color: #66d9ef } /* Keyword.Constant */
+.codehilite .kd { color: #66d9ef } /* Keyword.Declaration */
+.codehilite .kn { color: #ff4689 } /* Keyword.Namespace */
+.codehilite .kp { color: #66d9ef } /* Keyword.Pseudo */
+.codehilite .kr { color: #66d9ef } /* Keyword.Reserved */
+.codehilite .kt { color: #66d9ef } /* Keyword.Type */
+.codehilite .ld { color: #e6db74 } /* Literal.Date */
+.codehilite .m { color: #ae81ff } /* Literal.Number */
+.codehilite .s { color: #e6db74 } /* Literal.String */
+.codehilite .na { color: #a6e22e } /* Name.Attribute */
+.codehilite .nb { color: #f8f8f2 } /* Name.Builtin */
+.codehilite .nc { color: #a6e22e } /* Name.Class */
+.codehilite .no { color: #66d9ef } /* Name.Constant */
+.codehilite .nd { color: #a6e22e } /* Name.Decorator */
+.codehilite .ni { color: #f8f8f2 } /* Name.Entity */
+.codehilite .ne { color: #a6e22e } /* Name.Exception */
+.codehilite .nf { color: #a6e22e } /* Name.Function */
+.codehilite .nl { color: #f8f8f2 } /* Name.Label */
+.codehilite .nn { color: #f8f8f2 } /* Name.Namespace */
+.codehilite .nx { color: #a6e22e } /* Name.Other */
+.codehilite .py { color: #f8f8f2 } /* Name.Property */
+.codehilite .nt { color: #ff4689 } /* Name.Tag */
+.codehilite .nv { color: #f8f8f2 } /* Name.Variable */
+.codehilite .ow { color: #ff4689 } /* Operator.Word */
+.codehilite .pm { color: #f8f8f2 } /* Punctuation.Marker */
+.codehilite .w { color: #f8f8f2 } /* Text.Whitespace */
+.codehilite .mb { color: #ae81ff } /* Literal.Number.Bin */
+.codehilite .mf { color: #ae81ff } /* Literal.Number.Float */
+.codehilite .mh { color: #ae81ff } /* Literal.Number.Hex */
+.codehilite .mi { color: #ae81ff } /* Literal.Number.Integer */
+.codehilite .mo { color: #ae81ff } /* Literal.Number.Oct */
+.codehilite .sa { color: #e6db74 } /* Literal.String.Affix */
+.codehilite .sb { color: #e6db74 } /* Literal.String.Backtick */
+.codehilite .sc { color: #e6db74 } /* Literal.String.Char */
+.codehilite .dl { color: #e6db74 } /* Literal.String.Delimiter */
+.codehilite .sd { color: #e6db74 } /* Literal.String.Doc */
+.codehilite .s2 { color: #e6db74 } /* Literal.String.Double */
+.codehilite .se { color: #ae81ff } /* Literal.String.Escape */
+.codehilite .sh { color: #e6db74 } /* Literal.String.Heredoc */
+.codehilite .si { color: #e6db74 } /* Literal.String.Interpol */
+.codehilite .sx { color: #e6db74 } /* Literal.String.Other */
+.codehilite .sr { color: #e6db74 } /* Literal.String.Regex */
+.codehilite .s1 { color: #e6db74 } /* Literal.String.Single */
+.codehilite .ss { color: #e6db74 } /* Literal.String.Symbol */
+.codehilite .bp { color: #f8f8f2 } /* Name.Builtin.Pseudo */
+.codehilite .fm { color: #a6e22e } /* Name.Function.Magic */
+.codehilite .vc { color: #f8f8f2 } /* Name.Variable.Class */
+.codehilite .vg { color: #f8f8f2 } /* Name.Variable.Global */
+.codehilite .vi { color: #f8f8f2 } /* Name.Variable.Instance */
+.codehilite .vm { color: #f8f8f2 } /* Name.Variable.Magic */
+.codehilite .il { color: #ae81ff } /* Literal.Number.Integer.Long */
+
+.codehilite {
+    background: var(--color-bg-tertiary) !important;
+    border-radius: var(--border-radius-medium);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .docs-sidebar {
+        display: none;
+    }
+    
+    .docs-main {
+        margin-left: 0;
+        padding: var(--spacing-md);
+    }
+    
+    .docs-content {
+        padding: var(--spacing-md);
+    }
+    
+    .docs-content h1 {
+        font-size: 2rem;
+    }
+    
+    .docs-content h2 {
+        font-size: 1.5rem;
+    }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--color-bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-border-primary);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary);
+}
+
+    </style>
+</head>
+<body>
+    <div class="docs-container">
+        <!-- Sidebar Navigation -->
+        <nav class="docs-sidebar">
+            <div class="docs-logo">
+                <span class="docs-logo-icon">📚</span>
+                <span class="docs-logo-text">Docs</span>
+            </div>
+            <ul class="docs-nav">
+
+            <li class="docs-nav-item">
+                <a href="CHANGELOG.html" class="docs-nav-link">
+                    <span class="docs-nav-icon">📋</span>
+                    <span>Changelog</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="COLOR_SCHEME_BARBIE_PINK.html" class="docs-nav-link">
+                    <span class="docs-nav-icon">🎨</span>
+                    <span>Color Scheme Barbie Pink</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="DEPENDENCY_UPDATE_GUIDE.html" class="docs-nav-link">
+                    <span class="docs-nav-icon">📦</span>
+                    <span>Dependency Update Guide</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="EASY_DEPENDENCY_UPDATES.html" class="docs-nav-link">
+                    <span class="docs-nav-icon">📦</span>
+                    <span>Easy Dependency Updates</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="IMPLEMENTATION_COMPLETE_OLD.html" class="docs-nav-link">
+                    <span class="docs-nav-icon">✅</span>
+                    <span>Implementation Complete Old</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="KISS_IMPROVEMENTS.html" class="docs-nav-link">
+                    <span class="docs-nav-icon">💖</span>
+                    <span>Kiss Improvements</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="LEAFLET_BEST_PRACTICES.html" class="docs-nav-link">
+                    <span class="docs-nav-icon">🗺️</span>
+                    <span>Leaflet Best Practices</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="LEAFLET_UPDATE_GUIDE.html" class="docs-nav-link active">
+                    <span class="docs-nav-icon">🗺️</span>
+                    <span>Leaflet Update Guide</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="LUCIDE_UPDATE_GUIDE.html" class="docs-nav-link">
+                    <span class="docs-nav-icon">😊</span>
+                    <span>Lucide Update Guide</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="MARKDOWN_LINTING.html" class="docs-nav-link">
+                    <span class="docs-nav-icon">📝</span>
+                    <span>Markdown Linting</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="PROOF_SINGLE_PAGE.html" class="docs-nav-link">
+                    <span class="docs-nav-icon">🛡️</span>
+                    <span>Proof Single Page</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="PYTHON_WEB_STANDARDS.html" class="docs-nav-link">
+                    <span class="docs-nav-icon">🐍</span>
+                    <span>Python Web Standards</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="QUICK_REFERENCE.html" class="docs-nav-link">
+                    <span class="docs-nav-icon">🔖</span>
+                    <span>Quick Reference</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="SSG_DIRECTORY_STANDARD.html" class="docs-nav-link">
+                    <span class="docs-nav-icon">📁</span>
+                    <span>Ssg Directory Standard</span>
+                </a>
+            </li>
+            
+            </ul>
+        </nav>
+        
+        <!-- Main Content -->
+        <main class="docs-main">
+            <a href="../index.html" class="back-to-app">
+                <span>←</span>
+                Back to App
+            </a>
+            <article class="docs-content">
+<h1 id="leaflet-update-guide">Leaflet Update Guide</h1>
+<p><strong>Purpose</strong>: Ensure Leaflet library updates don't break our custom theming.</p>
+<h2 id="our-approach">🎯 Our Approach</h2>
+<p>We follow Leaflet's official customization pattern:
+- <strong>Core CSS</strong>: <code>lib/leaflet/leaflet.css</code> - Handles functionality (position, layout, mechanics)
+- <strong>Custom CSS</strong>: <code>assets/css/leaflet-custom.css</code> - Handles theming (colors, shadows, borders)</p>
+<p>This separation means:
+✅ <strong>Safe to update Leaflet core</strong> - Functional CSS won't conflict with our theme
+✅ <strong>Safe to rebrand</strong> - Our custom CSS only touches visual properties
+✅ <strong>No breakage</strong> - We don't override positioning, sizing, or z-index</p>
+<h2 id="how-to-update-leaflet">📦 How to Update Leaflet</h2>
+<h3 id="before-updating">Before Updating</h3>
+<ol>
+<li>
+<p><strong>Run compatibility test</strong>:
+   <code>bash
+   python3 tests/test_leaflet_compatibility.py</code>
+   This checks:
+   - ✅ Only official Leaflet classes used
+   - ✅ No dangerous property overrides
+   - ✅ No <code>!important</code> conflicts
+   - ✅ CSS variables used properly</p>
+</li>
+<li>
+<p><strong>Check current version</strong>:
+   <code>bash
+   grep -A 5 '"leaflet"' src/modules/site_generator.py</code>
+   Current: <code>1.9.4</code></p>
+</li>
+<li>
+<p><strong>Review Leaflet changelog</strong>:
+   - Visit: https://github.com/Leaflet/Leaflet/blob/main/CHANGELOG.md
+   - Look for CSS class changes or deprecations</p>
+</li>
+</ol>
+<h3 id="updating-process">Updating Process</h3>
+<ol>
+<li>
+<p><strong>Update version in code</strong>:
+   <code>bash
+   vim src/modules/site_generator.py</code>
+   Change line 55:
+   <code>python
+   "version": "1.9.4",  # Update this number</code></p>
+</li>
+<li>
+<p><strong>Download new Leaflet files</strong>:
+   <code>bash
+   python3 src/event_manager.py libs</code>
+   This fetches:
+   - <code>leaflet.css</code> (core styles)
+   - <code>leaflet.js</code> (library)
+   - Marker images (icon-*.png)</p>
+</li>
+<li>
+<p><strong>Test compatibility</strong>:
+   <code>bash
+   python3 tests/test_leaflet_compatibility.py</code>
+   Must pass with no errors!</p>
+</li>
+<li>
+<p><strong>Rebuild site</strong>:
+   <code>bash
+   python3 src/event_manager.py generate</code></p>
+</li>
+<li>
+<p><strong>Manual testing</strong>:
+   <code>bash
+   cd public &amp;&amp; python3 -m http.server 8000</code>
+   Test:
+   - ✅ Map loads correctly
+   - ✅ Markers display with pink glow
+   - ✅ Popups have dark theme
+   - ✅ Zoom controls visible
+   - ✅ No console errors</p>
+</li>
+</ol>
+<h3 id="after-updating">After Updating</h3>
+<ol>
+<li>
+<p><strong>Verify visual appearance</strong>:
+   - Screenshot before/after
+   - Check marker hover effects
+   - Check popup styling
+   - Check mobile responsiveness</p>
+</li>
+<li>
+<p><strong>Run full test suite</strong>:
+   <code>bash
+   python3 tests/test_components.py</code></p>
+</li>
+<li>
+<p><strong>Update documentation</strong>:
+   <code>bash
+   # Update this file with new version number
+   vim docs/LEAFLET_UPDATE_GUIDE.md</code></p>
+</li>
+<li>
+<p><strong>Commit changes</strong>:
+   <code>bash
+   git add src/modules/site_generator.py lib/leaflet/
+   git commit -m "chore: Update Leaflet to vX.X.X"</code></p>
+</li>
+</ol>
+<h2 id="what-we-customize-safe">🛡️ What We Customize (Safe)</h2>
+<h3 id="visual-properties-only">Visual Properties Only</h3>
+<div class="codehilite"><pre><span></span><code><span class="c">/* ✅ SAFE: Visual customization */</span>
+<span class="p">.</span><span class="nc">leaflet-popup-content-wrapper</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">background</span><span class="p">:</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="nv">--color-bg-secondary</span><span class="p">);</span><span class="w">      </span><span class="c">/* Color */</span>
+<span class="w">    </span><span class="k">color</span><span class="p">:</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="nv">--color-text-primary</span><span class="p">);</span><span class="w">           </span><span class="c">/* Color */</span>
+<span class="w">    </span><span class="k">border</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="kt">px</span><span class="w"> </span><span class="kc">solid</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="nv">--color-border-primary</span><span class="p">);</span><span class="w">  </span><span class="c">/* Border */</span>
+<span class="p">}</span>
+
+<span class="p">.</span><span class="nc">leaflet-marker-icon</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">filter</span><span class="p">:</span><span class="w"> </span><span class="nb">drop-shadow</span><span class="p">(</span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">2</span><span class="kt">px</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="nv">--color-primary</span><span class="p">));</span><span class="w">  </span><span class="c">/* Effect */</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>These properties are <strong>purely visual</strong> and don't affect Leaflet's functionality.</p>
+<h2 id="what-we-dont-override-dangerous">🚫 What We DON'T Override (Dangerous)</h2>
+<h3 id="functional-properties">Functional Properties</h3>
+<div class="codehilite"><pre><span></span><code><span class="c">/* ❌ DANGEROUS: Never override these */</span>
+<span class="p">.</span><span class="nc">leaflet-container</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c">/* position: absolute;  ← DON&#39;T TOUCH */</span>
+<span class="w">    </span><span class="c">/* width: 100%;         ← DON&#39;T TOUCH */</span>
+<span class="w">    </span><span class="c">/* height: 100%;        ← DON&#39;T TOUCH */</span>
+<span class="w">    </span><span class="c">/* z-index: 0;          ← DON&#39;T TOUCH */</span>
+<span class="w">    </span><span class="c">/* overflow: hidden;    ← DON&#39;T TOUCH */</span>
+<span class="p">}</span>
+
+<span class="p">.</span><span class="nc">leaflet-marker-icon</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c">/* position: absolute;  ← DON&#39;T TOUCH */</span>
+<span class="w">    </span><span class="c">/* transform: translate3d(...);  ← DON&#39;T TOUCH */</span>
+<span class="w">    </span><span class="c">/* pointer-events: auto;  ← DON&#39;T TOUCH */</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>These properties control <strong>functionality</strong> and would break map mechanics.</p>
+<h2 id="pre-update-checklist">📋 Pre-Update Checklist</h2>
+<p>Before updating Leaflet, verify:</p>
+<ul>
+<li>[ ] Compatibility test passes (<code>test_leaflet_compatibility.py</code>)</li>
+<li>[ ] Leaflet changelog reviewed for breaking changes</li>
+<li>[ ] Current site works correctly (baseline)</li>
+<li>[ ] Backup created (<code>git commit</code> before updating)</li>
+</ul>
+<h2 id="post-update-checklist">📋 Post-Update Checklist</h2>
+<p>After updating Leaflet, verify:</p>
+<ul>
+<li>[ ] Compatibility test still passes</li>
+<li>[ ] Map loads without console errors</li>
+<li>[ ] Markers display correctly with pink glow</li>
+<li>[ ] Popups styled with dark theme</li>
+<li>[ ] Zoom controls visible and functional</li>
+<li>[ ] Mobile view works correctly</li>
+<li>[ ] No visual regressions (compare screenshots)</li>
+<li>[ ] All component tests pass</li>
+</ul>
+<h2 id="troubleshooting">🔧 Troubleshooting</h2>
+<h3 id="issue-popups-look-wrong-after-update">Issue: Popups look wrong after update</h3>
+<p><strong>Cause</strong>: Leaflet changed popup HTML structure</p>
+<p><strong>Fix</strong>: Update selectors in <code>assets/css/leaflet-custom.css</code></p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Check Leaflet&#39;s new structure</span>
+vim<span class="w"> </span>lib/leaflet/leaflet.css
+<span class="c1"># Search for .leaflet-popup</span>
+
+<span class="c1"># Update our custom CSS accordingly</span>
+vim<span class="w"> </span>assets/css/leaflet-custom.css
+</code></pre></div>
+
+<h3 id="issue-markers-dont-have-glow-effect">Issue: Markers don't have glow effect</h3>
+<p><strong>Cause</strong>: Leaflet changed marker class structure</p>
+<p><strong>Fix</strong>: Update marker styling</p>
+<div class="codehilite"><pre><span></span><code><span class="c">/* Old */</span>
+<span class="p">.</span><span class="nc">leaflet-marker-icon</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">filter</span><span class="p">:</span><span class="w"> </span><span class="nb">drop-shadow</span><span class="p">(</span><span class="err">...</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c">/* New - check Leaflet CSS for current class name */</span>
+<span class="p">.</span><span class="nc">leaflet-marker-icon-new-class</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">filter</span><span class="p">:</span><span class="w"> </span><span class="nb">drop-shadow</span><span class="p">(</span><span class="err">...</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="issue-z-index-conflicts">Issue: Z-index conflicts</h3>
+<p><strong>Cause</strong>: Leaflet changed internal z-index values</p>
+<p><strong>Fix</strong>: Update z-index tokens in <code>config.json</code></p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;design&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;z_index&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;layer_2_leaflet_popup&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">700</span><span class="p">,</span><span class="w">  </span><span class="c1">// Update based on Leaflet&#39;s new values</span>
+<span class="w">      </span><span class="nt">&quot;layer_2_leaflet_tooltip&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">650</span><span class="p">,</span>
+<span class="w">      </span><span class="err">...</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h2 id="resources">📚 Resources</h2>
+<ul>
+<li><strong>Leaflet Documentation</strong>: https://leafletjs.com/reference.html</li>
+<li><strong>Leaflet GitHub</strong>: https://github.com/Leaflet/Leaflet</li>
+<li><strong>Leaflet Changelog</strong>: https://github.com/Leaflet/Leaflet/blob/main/CHANGELOG.md</li>
+<li><strong>Our Customizations</strong>: <code>assets/css/leaflet-custom.css</code></li>
+<li><strong>Design Tokens</strong>: <code>config.json</code> (design section)</li>
+</ul>
+<h2 id="design-token-integration">🎨 Design Token Integration</h2>
+<p>All Leaflet customizations use CSS variables from <code>config.json</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;design&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;colors&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;primary&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#FF69B4&quot;</span><span class="p">,</span><span class="w">           </span><span class="c1">// Marker glow color</span>
+<span class="w">      </span><span class="nt">&quot;bg_secondary&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#161b22&quot;</span><span class="p">,</span><span class="w">      </span><span class="c1">// Popup background</span>
+<span class="w">      </span><span class="nt">&quot;border_primary&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#30363d&quot;</span><span class="p">,</span><span class="w">    </span><span class="c1">// Popup border</span>
+<span class="w">      </span><span class="err">...</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>This means:
+- ✅ Instant rebranding (just edit config.json)
+- ✅ Consistent theming across all Leaflet elements
+- ✅ No hardcoded colors in CSS</p>
+<h2 id="best-practices">🚀 Best Practices</h2>
+<ol>
+<li><strong>Always test before production</strong> - Update in dev branch first</li>
+<li><strong>Use compatibility test</strong> - Catches 90% of issues automatically</li>
+<li><strong>Document version</strong> - Keep version number in site_generator.py up-to-date</li>
+<li><strong>Keep customizations minimal</strong> - Less custom CSS = fewer conflicts</li>
+<li><strong>Use design tokens</strong> - Never hardcode colors or values</li>
+<li><strong>Separate concerns</strong> - Core functionality (Leaflet) vs theme (our CSS)</li>
+</ol>
+<h2 id="version-history">📝 Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Leaflet Version</th>
+<th>Date</th>
+<th>Status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1.9.4</td>
+<td>2024</td>
+<td>✅ Current</td>
+<td>Initial component system version</td>
+</tr>
+</tbody>
+</table>
+<h2 id="summary">🎯 Summary</h2>
+<p><strong>Our approach is safe because:</strong>
+1. We only customize <strong>visual properties</strong> (colors, borders, shadows)
+2. We never touch <strong>functional properties</strong> (position, size, z-index)
+3. We use <strong>official Leaflet classes</strong> only
+4. We use <strong>CSS variables</strong> for easy updates
+5. We have <strong>automated tests</strong> to catch conflicts</p>
+<p><strong>Updating Leaflet is low-risk when you:</strong>
+1. Run compatibility test first
+2. Review changelog for breaking changes
+3. Test thoroughly after update
+4. Keep customizations minimal</p>
+<p>This guide ensures Leaflet updates are <strong>smooth, safe, and predictable</strong>. 🎉</p>
+            </article>
+        </main>
+    </div>
+</body>
+</html>
