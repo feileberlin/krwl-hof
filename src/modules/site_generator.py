@@ -76,6 +76,20 @@ DEPENDENCIES = {
             # Production version (minified, default package export)
             {"src": "", "dest": "lucide/lucide.min.js"}
         ]
+    },
+    "roboto": {
+        "version": "latest",
+        "base_url": "https://fonts.gstatic.com/s/roboto/v30",
+        "files": [
+            # Roboto Regular (400) - Latin
+            {"src": "/KFOmCnqEu92Fr1Mu4mxKKTU1Kg.woff2", "dest": "roboto/roboto-regular-latin.woff2"},
+            # Roboto Medium (500) - Latin
+            {"src": "/KFOlCnqEu92Fr1MmEU9fBBc4AMP6lQ.woff2", "dest": "roboto/roboto-medium-latin.woff2"},
+            # Roboto Bold (700) - Latin
+            {"src": "/KFOlCnqEu92Fr1MmWUlfBBc4AMP6lQ.woff2", "dest": "roboto/roboto-bold-latin.woff2"},
+            # Roboto Mono Regular (400) - Latin
+            {"src": "/../robotomono/v23/L0xuDF4xlVMF-BfR8bXMIhJHg45mwgGEFl0_3vq_ROW4.woff2", "dest": "roboto/roboto-mono-regular-latin.woff2"}
+        ]
     }
 }
 
@@ -336,8 +350,9 @@ class SiteGenerator:
         return configs
     
     def load_stylesheet_resources(self) -> Dict[str, str]:
-        """Load all CSS resources"""
-        return {
+        """Load all CSS resources including fonts"""
+        stylesheets = {
+            'roboto_fonts': self.generate_roboto_font_faces(),
             'leaflet_css': self.read_text_file(
                 self.dependencies_dir / 'leaflet' / 'leaflet.css'
             ),
@@ -345,6 +360,88 @@ class SiteGenerator:
                 self.base_path / "assets" / 'css' / 'style.css'
             )
         }
+        return stylesheets
+    
+    def generate_roboto_font_faces(self) -> str:
+        """
+        Generate @font-face declarations for Roboto fonts with base64 inlining.
+        
+        Includes 4 variants following best practices:
+        - Roboto Regular (400) - Body text
+        - Roboto Medium (500) - Emphasis
+        - Roboto Bold (700) - Headings
+        - Roboto Mono Regular (400) - Code/Debug sections
+        
+        Returns:
+            CSS string with @font-face declarations and base64-encoded fonts
+        """
+        import base64
+        
+        font_faces = []
+        font_files = {
+            'roboto-regular': {
+                'family': 'Roboto',
+                'weight': '400',
+                'style': 'normal',
+                'file': 'roboto/roboto-regular-latin.woff2'
+            },
+            'roboto-medium': {
+                'family': 'Roboto',
+                'weight': '500',
+                'style': 'normal',
+                'file': 'roboto/roboto-medium-latin.woff2'
+            },
+            'roboto-bold': {
+                'family': 'Roboto',
+                'weight': '700',
+                'style': 'normal',
+                'file': 'roboto/roboto-bold-latin.woff2'
+            },
+            'roboto-mono': {
+                'family': 'Roboto Mono',
+                'weight': '400',
+                'style': 'normal',
+                'file': 'roboto/roboto-mono-regular-latin.woff2'
+            }
+        }
+        
+        for name, config in font_files.items():
+            font_path = self.dependencies_dir / config['file']
+            
+            # Check if font file exists
+            if not font_path.exists():
+                logger.warning(f"Font file not found: {font_path}")
+                continue
+            
+            try:
+                # Read and encode font file as base64
+                with open(font_path, 'rb') as f:
+                    font_data = f.read()
+                    font_base64 = base64.b64encode(font_data).decode('utf-8')
+                
+                # Generate @font-face declaration
+                font_face = f"""@font-face {{
+    font-family: '{config['family']}';
+    font-style: {config['style']};
+    font-weight: {config['weight']};
+    font-display: swap;
+    src: url(data:font/woff2;base64,{font_base64}) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}}"""
+                font_faces.append(font_face)
+                
+            except Exception as e:
+                logger.warning(f"Failed to inline font {name}: {e}")
+        
+        if not font_faces:
+            # Fallback if no fonts could be loaded
+            return "/* Roboto fonts not available - using system fonts */"
+        
+        header = """/* Roboto Fonts - Inlined as base64 */
+/* Following best practices: Regular (400), Medium (500), Bold (700), Mono (400) */
+"""
+        return header + '\n\n'.join(font_faces) + '\n'
+
     
     def load_script_resources(self) -> Dict[str, str]:
         """Load all JavaScript resources including Lucide"""
@@ -884,6 +981,8 @@ window.DASHBOARD_ICONS = {json.dumps(DASHBOARD_ICONS_MAP, ensure_ascii=False)};'
         - Environment detection
         - Caching status
         - File size information (HTML size, cache file size if applicable)
+        - Deployment timestamp
+        - Git commit information (hash, author, date, message)
         
         Args:
             primary_config: Primary configuration object
@@ -967,6 +1066,56 @@ window.DASHBOARD_ICONS = {json.dumps(DASHBOARD_ICONS_MAP, ensure_ascii=False)};'
             logger.warning(f"Could not determine cache status: {e}")
             debug_info['cache_enabled'] = False
             debug_info['cache_file_size'] = None
+        
+        # Deployment timestamp (current time when HTML is generated)
+        debug_info['deployment_time'] = datetime.now().isoformat()
+        
+        # Git commit information
+        try:
+            import subprocess
+            
+            # Get last commit hash (short form)
+            commit_hash = subprocess.check_output(
+                ['git', 'rev-parse', '--short', 'HEAD'],
+                cwd=self.base_path,
+                stderr=subprocess.DEVNULL
+            ).decode('utf-8').strip()
+            
+            # Get commit author
+            commit_author = subprocess.check_output(
+                ['git', 'log', '-1', '--format=%an'],
+                cwd=self.base_path,
+                stderr=subprocess.DEVNULL
+            ).decode('utf-8').strip()
+            
+            # Get commit date
+            commit_date = subprocess.check_output(
+                ['git', 'log', '-1', '--format=%ci'],
+                cwd=self.base_path,
+                stderr=subprocess.DEVNULL
+            ).decode('utf-8').strip()
+            
+            # Get commit message (first line)
+            commit_message = subprocess.check_output(
+                ['git', 'log', '-1', '--format=%s'],
+                cwd=self.base_path,
+                stderr=subprocess.DEVNULL
+            ).decode('utf-8').strip()
+            
+            debug_info['git_commit'] = {
+                'hash': commit_hash,
+                'author': commit_author,
+                'date': commit_date,
+                'message': commit_message
+            }
+        except Exception as e:
+            logger.warning(f"Could not retrieve git commit info: {e}")
+            debug_info['git_commit'] = {
+                'hash': 'unknown',
+                'author': 'unknown',
+                'date': 'unknown',
+                'message': 'Git information not available'
+            }
         
         return debug_info
     
@@ -1172,6 +1321,7 @@ window.DEBUG_INFO = {json.dumps(debug_info, ensure_ascii=False)};'''
             html_head.format(
                 app_name=app_name,
                 favicon=favicon,
+                roboto_fonts=stylesheets['roboto_fonts'],
                 design_tokens_css=design_tokens_css,
                 leaflet_css=stylesheets['leaflet_css'],
                 app_css=stylesheets['app_css']
@@ -1187,7 +1337,8 @@ window.DEBUG_INFO = {json.dumps(debug_info, ensure_ascii=False)};'''
             '',
             '<!-- Layer 3: UI overlays -->',
             dashboard_aside.format(
-                logo_svg=logo_svg
+                logo_svg=logo_svg,
+                app_name=app_name
             ),
             filter_nav.format(
                 logo_svg=logo_svg

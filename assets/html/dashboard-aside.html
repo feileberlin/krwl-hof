@@ -9,7 +9,7 @@
       <div class="dashboard-logo">{logo_svg}</div>
       <button id="close-dashboard" aria-label="Close menu">&times;</button>
     </div>
-    <h2 id="dashboard-title">Project Menu</h2>
+    <h2 id="dashboard-title">{app_name}</h2>
     
     <!-- Pending Events Notification -->
     <div id="pending-notification" class="pending-notification" style="display: none;" role="alert" aria-live="polite">
@@ -23,21 +23,74 @@
     
     <div class="dashboard-section">
       <h3><i class="dashboard-section-icon" data-lucide="book-open" aria-hidden="true"></i> About</h3>
-      <p>KRWL HOF Community Events is a mobile-first Progressive Web App for discovering community events with interactive map visualization.</p>
-      <p>This project helps you find local events near you using geolocation filtering and real-time data aggregation from multiple sources.</p>
+      <p>KRWL HOF Community Events is a mobile-first Progressive Web App
+for discovering community events with interactive map
+visualization.</p>
+      <p>This project helps you find local events near you using
+geolocation filtering and real-time data aggregation from
+multiple sources.</p>
     </div>
     
     <div id="dashboard-debug-section" class="dashboard-section" style="display: none;">
       <h3><i class="dashboard-section-icon" data-lucide="bug" aria-hidden="true"></i> Debug Info</h3>
-      <p><strong>Environment:</strong> <span id="debug-environment"></span></p>
-      <p><strong>Event Counts:</strong> <span id="debug-event-counts"></span></p>
-      <p><strong>Data Source:</strong> <span id="debug-data-source"></span></p>
-      <p><strong>Debug Mode:</strong> <span id="debug-mode"></span></p>
-      <p><strong>Caching:</strong> <span id="debug-caching"></span></p>
-      <p><strong>File Size:</strong> <span id="debug-file-size"></span></p>
-      <p><strong>Size Breakdown:</strong> <span id="debug-size-breakdown" style="font-size: 0.9em;"></span></p>
-      <p><strong>DOM Cache:</strong> <span id="debug-dom-cache"></span></p>
-      <p><strong>Historical Events Cache:</strong> <span id="debug-historical-cache"></span></p>
+      
+      <!-- Git Commit - Last Commit -->
+      <div id="debug-git-stamp" class="debug-git-stamp">
+        <div class="debug-git-title">Last commit</div>
+        <div class="debug-git-hash">
+          <i class="debug-git-icon" data-lucide="git-commit" aria-hidden="true"></i>
+          <span id="debug-commit-hash">unknown</span>
+        </div>
+        <div class="debug-git-details">
+          <div><strong>Author:</strong> <span id="debug-commit-author">unknown</span></div>
+          <div><strong>Date:</strong> <span id="debug-commit-date">unknown</span></div>
+          <div class="debug-commit-message" id="debug-commit-message" title="">unknown</div>
+        </div>
+      </div>
+      
+      <!-- Unix top-style output -->
+      <div class="debug-top-style">
+        <div class="debug-top-header">
+          KRWL HOF - <span id="debug-deployment-time">unknown</span>
+        </div>
+        
+        <!-- Compact two-column layout -->
+        <div class="debug-top-grid">
+          <div class="debug-top-row">
+            <div class="debug-top-cell">
+              <strong>Events:</strong> <span id="debug-event-counts-published">0</span>/<span id="debug-event-counts-pending">0</span>/<span id="debug-event-counts-archived">0</span>
+              <div class="debug-hint">pub/pend/arch</div>
+            </div>
+            <div class="debug-top-cell">
+              <strong>Env:</strong> <span id="debug-environment" class="debug-env-badge">UNKNOWN</span>
+            </div>
+          </div>
+          
+          <div class="debug-top-row">
+            <div class="debug-top-cell">
+              <strong>Cache:</strong> <span id="debug-caching">unknown</span>
+            </div>
+            <div class="debug-top-cell">
+              <strong>Size:</strong> <span id="debug-file-size">unknown</span>
+            </div>
+          </div>
+          
+          <div class="debug-top-row">
+            <div class="debug-top-cell">
+              <strong>DOM:</strong> <span id="debug-dom-cache">0</span>
+            </div>
+            <div class="debug-top-cell">
+              <strong>Hist:</strong> <span id="debug-historical-cache">none</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Size breakdown - collapsible -->
+        <div class="debug-top-breakdown">
+          <strong>index.html size breakdown:</strong>
+          <div id="debug-size-breakdown" class="debug-size-details">Loading...</div>
+        </div>
+      </div>
     </div>
     
     <div class="dashboard-section">

@@ -46,11 +46,28 @@ BLACKS & GREYS:
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-weight: 400;
     background: var(--color-bg-primary);
     color: var(--color-text-primary);
     overflow: hidden;
 }
+
+/* Typography - Roboto Font Weights */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700; /* Roboto Bold for headings */
+}
+
+strong, b {
+    font-weight: 700; /* Roboto Bold for emphasis */
+}
+
+/* Medium weight for sub-emphasis */
+.font-medium {
+    font-weight: 500; /* Roboto Medium */
+}
+
 
 #app {
     height: var(--app-height);
@@ -198,11 +215,10 @@ body {
     position: fixed;
     background: var(--barbie-shade-darkest);
     backdrop-filter: blur(10px);
-    border: 2px solid var(--color-border-primary);
-    border-radius: 8px;
+    border: none; /* Removed border */
+    border-radius: 4px; /* Reduced from 8px */
     padding: 0.5rem 0;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5),
-                0 0 10px rgba(255, 105, 180, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); /* Removed pink glow */
     z-index: 3000;
     min-width: 200px;
     white-space: normal;
@@ -486,7 +502,7 @@ body {
     height: 20px;
     margin-right: 0.5rem;
     vertical-align: middle;
-    color: #c9d1d9; /* Light text - 12.5:1 contrast on #161b22 */
+    color: #FFB3DF; /* Barbie medium tint - visible on dark background */
 }
 
 /* Fill icons with solid color instead of stroke/outline */
@@ -503,7 +519,7 @@ body {
 
 /* Hover effect for section icons */
 .dashboard-section h3:hover .dashboard-section-icon {
-    color: #FF69B4; /* Barbie Pink hover */
+    color: #BF5087; /* Light shade - muted pink hover */
     transition: color 0.2s ease;
 }
 
@@ -562,6 +578,10 @@ body {
     color: #4CAF50;
 }
 
+.env-ci {
+    color: #58a6ff;
+}
+
 .debug-enabled {
     color: #FFB3DF;
 }
@@ -569,6 +589,260 @@ body {
 .debug-disabled {
     color: #888;
 }
+
+.cache-enabled {
+    color: #D689B8; /* Light tone - ecological Barbie instead of green */
+}
+
+.cache-disabled {
+    color: #888;
+}
+
+/* Git commit stamp - Clean display without header */
+.debug-git-stamp {
+    background: rgba(191, 80, 135, 0.08); /* Light shade tint - ecological */
+    border: 1px solid #BF5087; /* Light shade - muted pink */
+    border-radius: 4px;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    font-family: 'Roboto Mono', 'Monaco', 'Courier New', monospace;
+}
+
+.debug-git-title {
+    font-size: 0.75em;
+    font-weight: 700;
+    color: #B05F8E; /* Medium tone */
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+}
+
+.debug-git-hash {
+    font-size: 1em;
+    font-weight: 700; /* Roboto Bold */
+    color: #BF5087; /* Light shade - muted, no neon */
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.debug-git-icon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    color: #BF5087; /* Light shade - muted */
+}
+
+.debug-git-icon svg {
+    fill: currentColor;
+    stroke: none;
+}
+
+.debug-git-details {
+    font-size: 0.85em;
+    color: #D689B8; /* Light tone - natural, earthy */
+    line-height: 1.6;
+}
+
+.debug-git-details strong {
+    color: #B05F8E; /* Medium tone - ecological */
+    text-transform: uppercase;
+    font-size: 0.9em;
+    font-weight: 700; /* Roboto Bold */
+}
+
+.debug-commit-message {
+    font-style: italic;
+    color: #D689B8; /* Light tone - soft */
+    margin-top: 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-left: 2px solid #B05F8E; /* Medium tone */
+    padding-left: 0.5rem;
+}
+
+/* Unix top-style debug output - Natural Barbie Edition */
+.debug-top-style {
+    font-family: 'Roboto Mono', 'Monaco', 'Courier New', monospace;
+    font-size: 0.85em;
+    background: #0d1117; /* Solid dark background - no gradients */
+    border: 1px solid #8A4A70; /* Dark tone - ecological */
+    border-radius: 4px;
+    padding: 0.75rem;
+    color: #D689B8; /* Light tone - natural */
+}
+
+.debug-top-header {
+    color: #BF5087; /* Light shade - muted pink */
+    font-weight: 700; /* Roboto Bold */
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #8A4A70; /* Dark tone */
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
+    background: rgba(138, 74, 112, 0.1); /* Dark tone tint - subtle */
+    padding: 0.5rem;
+    margin: -0.75rem -0.75rem 0.75rem -0.75rem;
+    font-size: 0.85em;
+}
+
+/* Compact two-column grid layout */
+.debug-top-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.debug-top-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+}
+
+.debug-top-cell {
+    padding: 0.25rem;
+    line-height: 1.4;
+}
+
+.debug-top-cell strong {
+    color: #BF5087; /* Light shade - muted */
+    text-transform: uppercase;
+    font-size: 0.85em;
+    letter-spacing: 0.05em;
+    margin-right: 0.25rem;
+}
+
+/* Hint text for event counts description */
+.debug-hint {
+    font-size: 0.7em;
+    color: #8A4A70; /* Dark tone - subtle */
+    font-style: italic;
+    margin-top: 0.1rem;
+    opacity: 0.8;
+}
+
+/* Size breakdown section */
+.debug-top-breakdown {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(138, 74, 112, 0.3);
+}
+
+.debug-top-breakdown strong {
+    color: #BF5087; /* Light shade - muted */
+    text-transform: uppercase;
+    font-size: 0.85em;
+    letter-spacing: 0.05em;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.debug-top-section {
+    margin-bottom: 0.5rem;
+    line-height: 1.8;
+    padding: 0.25rem 0.5rem;
+    transition: background 0.2s;
+}
+
+.debug-top-section:hover {
+    background: rgba(138, 74, 112, 0.1); /* Dark tone tint - subtle */
+    border-left: 2px solid #8A4A70; /* Dark tone */
+    margin-left: -0.5rem;
+    padding-left: calc(0.5rem - 2px);
+}
+
+.debug-top-section strong {
+    color: #BF5087; /* Light shade - muted */
+    display: inline-block;
+    min-width: 150px;
+    text-transform: uppercase;
+    font-size: 0.9em;
+    letter-spacing: 0.05em;
+}
+
+.debug-top-total {
+    color: #D689B8;
+    font-size: 0.9em;
+    margin-left: 0.5rem;
+}
+
+.debug-env-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 2px;
+    font-weight: 700; /* Roboto Bold */
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 1px solid;
+}
+
+.debug-env-badge.env-dev {
+    background: rgba(255, 179, 223, 0.15); /* Medium tint - soft */
+    border-color: #D689B8; /* Light tone */
+    color: #FFB3DF; /* Medium tint */
+}
+
+.debug-env-badge.env-production {
+    background: rgba(191, 80, 135, 0.15); /* Barbie light shade */
+    border-color: #BF5087; /* Light shade */
+    color: #D689B8; /* Light tone */
+}
+
+.debug-env-badge.env-ci {
+    background: rgba(176, 95, 142, 0.15); /* Barbie medium tone */
+    border-color: #B05F8E; /* Medium tone */
+    color: #D689B8; /* Light tone - ecological Barbie */
+}
+
+.debug-size-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 0.9em;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.debug-size-list li {
+    color: #D689B8; /* Light tone - natural */
+    white-space: nowrap;
+}
+
+.debug-size-list li::before {
+    content: '▸';
+    margin-right: 0.25rem;
+    color: #B05F8E; /* Medium tone - muted */
+}
+
+.debug-size-details {
+    margin-top: 0.25rem;
+}
+
+/* Natural Barbie-themed value highlights - no glow */
+#debug-event-counts-published,
+#debug-event-counts-pending,
+#debug-event-counts-archived,
+#debug-event-counts-total {
+    color: #BF5087; /* Light shade - muted */
+    font-weight: 700; /* Roboto Bold */
+}
+
+#debug-caching.cache-enabled {
+    color: #D689B8; /* Light tone - ecological Barbie instead of green */
+    font-weight: 700; /* Roboto Bold */
+}
+
+#debug-caching.cache-disabled {
+    color: #8b949e;
+}
+
+
 
 /* Mobile optimizations */
 @media (max-width: 768px) {
