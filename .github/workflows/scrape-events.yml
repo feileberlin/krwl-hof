@@ -79,6 +79,7 @@ jobs:
           TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M UTC')
           git add assets/json/
           git commit -m "chore: automated event scraping - $TIMESTAMP"
+          git pull --rebase origin main
           git push
           echo "✓ Changes committed and pushed"
           echo "ℹ Note: Events are in pending queue awaiting editorial review"
