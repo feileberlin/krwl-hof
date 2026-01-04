@@ -4,15 +4,11 @@
        role="complementary"
        aria-label="Application menu and information"
        aria-hidden="true">
-  <button id="filter-bar-logo" 
-          class="filter-bar-logo" 
-          aria-label="Open application menu" 
-          aria-haspopup="dialog" 
-          aria-expanded="false">
-    {logo_svg}
-  </button>
   <div class="dashboard-content">
-    <button id="close-dashboard" aria-label="Close menu">&times;</button>
+    <div class="dashboard-header">
+      <div class="dashboard-logo">{logo_svg}</div>
+      <button id="close-dashboard" aria-label="Close menu">&times;</button>
+    </div>
     <h2 id="dashboard-title">Project Menu</h2>
     
     <!-- Pending Events Notification -->
