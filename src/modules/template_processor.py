@@ -20,7 +20,7 @@ Usage:
 import re
 import logging
 from pathlib import Path
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -323,7 +323,7 @@ if __name__ == '__main__':
         
         print(f"Placeholders in {file_path.name}:")
         for placeholder in placeholders:
-            print(f"  - {{{{{}}}}}".format(placeholder))
+            print(f"  - {{{{{placeholder}}}}}")
     
     elif command == 'preview' and len(sys.argv) > 2:
         file_path = Path(sys.argv[2])
