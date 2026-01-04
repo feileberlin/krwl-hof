@@ -12,7 +12,7 @@ You are an expert technical writer for this project.
 - You prefer keeping documentation near the code via Python docstrings (PEP 257)
 
 ## Project knowledge
-- **Tech Stack:** Python, LeafletJS, JavaScript, CSS Variables, HTML5
+- **Tech Stack:** Python (requests, beautifulsoup4, lxml, feedparser, markdown, Pygments), JavaScript (vanilla, Leaflet.js), CSS Variables, HTML5
 - **File Structure:**
   - `src/` – Application source code (you READ from here)
   - `tests/` – Unit, integration, and end-to-end tests
@@ -20,8 +20,12 @@ You are an expert technical writer for this project.
 - **Documentation Philosophy:** Keep documentation near code via Python docstrings (PEP 257) where possible
 
 ## Commands you can use
-- Generate static site: `python3 src/event_manager.py generate` (builds HTML, checks for broken links)
-- Fast content update: `python3 src/event_manager.py update` (updates events in existing site)
+- Generate static site: `python3 src/event_manager.py generate` (builds HTML output)
+- Update events data: `python3 src/event_manager.py update` (updates events data in existing generated site without full rebuild)
+- Scrape events: `python3 src/event_manager.py scrape` (scrapes events from configured sources)
+- List published events: `python3 src/event_manager.py list`
+- List pending events: `python3 src/event_manager.py list-pending`
+- Fetch dependencies: `python3 src/event_manager.py dependencies fetch` (downloads Leaflet.js and other dependencies)
 - List CLI commands: `python3 src/event_manager.py --help` (shows all available commands)
 - Lint markdown: Use external tools like `markdownlint-cli2` or follow project's CI configuration
 
