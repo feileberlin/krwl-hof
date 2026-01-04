@@ -1,0 +1,530 @@
+name: Website Maintenance (Unified)
+
+# This workflow is a wrapper that automatically adapts to changes in event_scraper.py
+# It dynamically discovers scraper capabilities and adjusts its behavior accordingly
+
+on:
+  schedule:
+    # Dynamic scheduling based on config.json scraping.schedule
+    # These times are read from scraper capabilities at runtime
+    # Default: 04:00 and 16:00 Europe/Berlin (03:00 and 15:00 UTC)
+    - cron: '0 3 * * *'   # 4:00 AM Berlin time (CET)
+    - cron: '0 15 * * *'  # 4:00 PM Berlin time (CET)
+  
+  push:
+    branches:
+      - main
+    paths:
+      - 'assets/json/events.json'       # Published events data
+      - 'assets/json/events.demo.json'  # Demo events data
+      - 'config.json'                   # Configuration changes
+      - 'src/modules/scraper.py'        # Scraper changes trigger workflow update
+  
+  workflow_dispatch:  # Manual trigger with options
+    inputs:
+      task:
+        description: 'Task to perform'
+        required: true
+        type: choice
+        options:
+          - 'scrape-only'        # Just scrape events
+          - 'scrape-and-deploy'  # Scrape and deploy if changes
+          - 'force-deploy'       # Force full rebuild and deploy
+          - 'update-events'      # Fast event data update
+          - 'review-pending'     # Review and publish pending events
+          - 'info'               # Show scraper capabilities
+        default: 'scrape-and-deploy'
+      
+      force_scrape:
+        description: 'Force scraping even if sources unchanged'
+        type: boolean
+        default: false
+      
+      # Editorial options (for review-pending task)
+      event_ids:
+        description: 'Event IDs to publish (comma-separated, or "all" for bulk)'
+        type: string
+        required: false
+      
+      auto_publish_pattern:
+        description: 'Auto-publish events matching pattern (e.g., "pending_*")'
+        type: string
+        required: false
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+# Prevent concurrent runs to avoid conflicts
+concurrency:
+  group: "website-maintenance"
+  cancel-in-progress: false
+
+jobs:
+  # Job 1: Introspect scraper capabilities
+  discover-capabilities:
+    name: Discover Scraper Capabilities
+    runs-on: ubuntu-latest
+    outputs:
+      capabilities: ${{ steps.introspect.outputs.capabilities }}
+      enabled_sources: ${{ steps.introspect.outputs.enabled_sources }}
+      source_count: ${{ steps.introspect.outputs.source_count }}
+      scraping_enabled: ${{ steps.introspect.outputs.scraping_enabled }}
+      schedule_timezone: ${{ steps.introspect.outputs.schedule_timezone }}
+      schedule_times: ${{ steps.introspect.outputs.schedule_times }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+      
+      - name: Introspect scraper capabilities
+        id: introspect
+        run: |
+          echo "🔍 Discovering scraper capabilities..."
+          
+          # Get scraper capabilities via CLI
+          CAPABILITIES=$(python3 src/event_manager.py scraper-info)
+          echo "capabilities<<EOF" >> $GITHUB_OUTPUT
+          echo "$CAPABILITIES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          # Extract specific fields for conditional logic
+          ENABLED_SOURCES=$(echo "$CAPABILITIES" | jq -r '.enabled_sources | length')
+          SCRAPING_ENABLED=$(echo "$CAPABILITIES" | jq -r '.scraping_libraries_installed')
+          SCHEDULE_TZ=$(echo "$CAPABILITIES" | jq -r '.schedule.timezone // "Europe/Berlin"')
+          SCHEDULE_TIMES=$(echo "$CAPABILITIES" | jq -r '.schedule.times | join(", ")')
+          
+          echo "enabled_sources=$ENABLED_SOURCES" >> $GITHUB_OUTPUT
+          echo "source_count=$ENABLED_SOURCES" >> $GITHUB_OUTPUT
+          echo "scraping_enabled=$SCRAPING_ENABLED" >> $GITHUB_OUTPUT
+          echo "schedule_timezone=$SCHEDULE_TZ" >> $GITHUB_OUTPUT
+          echo "schedule_times=$SCHEDULE_TIMES" >> $GITHUB_OUTPUT
+          
+          echo "✓ Scraper capabilities discovered"
+          echo "  - Enabled sources: $ENABLED_SOURCES"
+          echo "  - Scraping enabled: $SCRAPING_ENABLED"
+          echo "  - Schedule: $SCHEDULE_TIMES ($SCHEDULE_TZ)"
+      
+      - name: Display capabilities
+        run: |
+          echo "## 🔍 Scraper Capabilities" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```json' >> $GITHUB_STEP_SUMMARY
+          echo '${{ steps.introspect.outputs.capabilities }}' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+  # Job 2: Scrape events (conditional)
+  scrape-events:
+    name: Scrape Events
+    runs-on: ubuntu-latest
+    needs: discover-capabilities
+    if: |
+      (github.event_name == 'schedule' || 
+       github.event.inputs.task == 'scrape-only' || 
+       github.event.inputs.task == 'scrape-and-deploy' ||
+       github.event.inputs.force_scrape == 'true') &&
+      needs.discover-capabilities.outputs.scraping_enabled == 'true' &&
+      needs.discover-capabilities.outputs.source_count != '0'
+    
+    outputs:
+      changes_detected: ${{ steps.check_changes.outputs.changes_detected }}
+      pending_count: ${{ steps.count_pending.outputs.pending_count }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+      
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+      
+      - name: Run scraper (adaptive)
+        id: scrape
+        run: |
+          echo "🔍 Starting event scraping..."
+          echo "Scraping from ${{ needs.discover-capabilities.outputs.source_count }} enabled sources"
+          
+          # Run scraper using event_manager CLI
+          python3 src/event_manager.py scrape
+          
+          echo "✓ Scraping completed"
+      
+      - name: Check for changes
+        id: check_changes
+        run: |
+          if [[ -n $(git status --porcelain assets/json/) ]]; then
+            echo "changes_detected=true" >> $GITHUB_OUTPUT
+            echo "✓ New events detected"
+          else
+            echo "changes_detected=false" >> $GITHUB_OUTPUT
+            echo "ℹ No new events found"
+          fi
+      
+      - name: Count pending events
+        id: count_pending
+        run: |
+          if [ -f assets/json/pending_events.json ]; then
+            COUNT=$(python3 -c "import json; data = json.load(open('assets/json/pending_events.json')); print(len(data.get('pending_events', [])))")
+            echo "pending_count=$COUNT" >> $GITHUB_OUTPUT
+            echo "ℹ Pending events: $COUNT"
+          else
+            echo "pending_count=0" >> $GITHUB_OUTPUT
+            echo "ℹ Pending events: 0"
+          fi
+      
+      - name: Commit and push changes
+        if: steps.check_changes.outputs.changes_detected == 'true'
+        run: |
+          TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M UTC')
+          git add assets/json/
+          git commit -m "chore: automated event scraping - $TIMESTAMP"
+          
+          # Pull with rebase to handle concurrent changes
+          if ! git pull --rebase origin main; then
+            echo "❌ Rebase failed - manual intervention required"
+            git rebase --abort || true
+            exit 1
+          fi
+          
+          git push
+          echo "✓ Changes committed and pushed"
+      
+      - name: Generate scraping summary
+        run: |
+          TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M:%S UTC')
+          PENDING_COUNT="${{ steps.count_pending.outputs.pending_count }}"
+          CHANGES="${{ steps.check_changes.outputs.changes_detected }}"
+          
+          echo "## 🔍 Event Scraping Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Date/Time:** $TIMESTAMP" >> $GITHUB_STEP_SUMMARY
+          echo "**Sources:** ${{ needs.discover-capabilities.outputs.source_count }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "$CHANGES" == "true" ]; then
+            echo "**Status:** ✅ New events found" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "**Status:** ℹ️ No new events" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "**Pending Events:** $PENDING_COUNT" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "$PENDING_COUNT" -gt "0" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "⚠️ **Action Required:** $PENDING_COUNT events awaiting review" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  # Job 3: Update events data (fast path for event changes)
+  update-events:
+    name: Fast Event Update
+    runs-on: ubuntu-latest
+    needs: [discover-capabilities, scrape-events]
+    if: |
+      always() &&
+      (github.event.inputs.task == 'update-events' ||
+       (github.event_name == 'push' && 
+        contains(github.event.head_commit.modified, 'assets/json/events.json')))
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+      
+      - name: Fast update events data
+        run: |
+          echo "⚡ Fast updating events data..."
+          python3 src/event_manager.py update
+          echo "✓ Events data updated"
+      
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./public
+
+  # Job 4: Full rebuild (comprehensive path)
+  full-rebuild:
+    name: Full Site Rebuild
+    runs-on: ubuntu-latest
+    needs: [discover-capabilities, scrape-events]
+    if: |
+      always() &&
+      (github.event.inputs.task == 'force-deploy' ||
+       github.event.inputs.task == 'scrape-and-deploy' ||
+       (github.event_name == 'push' && 
+        (contains(github.event.head_commit.modified, 'config.json') ||
+         contains(github.event.head_commit.modified, 'src/modules/scraper.py'))))
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+      
+      - name: Fetch third-party dependencies
+        run: |
+          echo "📦 Fetching dependencies..."
+          python3 src/event_manager.py dependencies fetch
+      
+      - name: Verify dependencies
+        run: |
+          python3 src/event_manager.py dependencies check
+      
+      - name: Full site generation
+        run: |
+          echo "🔨 Building site..."
+          python3 src/event_manager.py generate
+          echo "✓ Site built successfully"
+      
+      - name: Add deployment timestamp
+        run: |
+          TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M:%S UTC')
+          if [ -f public/index.html ]; then
+            sed -i "s/BUILD_TIMESTAMP_PLACEHOLDER/$TIMESTAMP/g" public/index.html
+          fi
+      
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./public
+
+  # Job 5: Deploy to GitHub Pages
+  deploy:
+    name: Deploy to GitHub Pages
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: [update-events, full-rebuild]
+    if: |
+      always() &&
+      (needs.update-events.result == 'success' || 
+       needs.full-rebuild.result == 'success')
+    
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+      
+      - name: Deployment summary
+        run: |
+          echo "## 🚀 Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**URL:** ${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Time:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+
+  # Job 6: Show info (manual trigger only)
+  show-info:
+    name: Show Scraper Info
+    runs-on: ubuntu-latest
+    needs: discover-capabilities
+    if: github.event.inputs.task == 'info'
+    
+    steps:
+      - name: Display full capabilities
+        run: |
+          echo "## 🔍 Complete Scraper Capabilities" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```json' >> $GITHUB_STEP_SUMMARY
+          echo '${{ needs.discover-capabilities.outputs.capabilities }}' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Key Information" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Enabled Sources:** ${{ needs.discover-capabilities.outputs.source_count }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Scraping Libraries:** ${{ needs.discover-capabilities.outputs.scraping_enabled }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Schedule:** ${{ needs.discover-capabilities.outputs.schedule_times }} (${{ needs.discover-capabilities.outputs.schedule_timezone }})" >> $GITHUB_STEP_SUMMARY
+
+  # Job 7: Review and publish pending events (editorial workflow)
+  review-pending:
+    name: Review Pending Events
+    runs-on: ubuntu-latest
+    needs: [discover-capabilities, scrape-events]
+    if: |
+      always() &&
+      (github.event.inputs.task == 'review-pending' ||
+       (github.event.inputs.auto_publish_pattern != '' && github.event.inputs.auto_publish_pattern != null))
+    
+    outputs:
+      published_count: ${{ steps.publish.outputs.published_count }}
+      events_published: ${{ steps.publish.outputs.events_published }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # Ensure we have latest changes from scrape-events job
+          ref: main
+      
+      - name: Pull latest changes
+        run: |
+          git pull origin main
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+      
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+      
+      - name: List pending events
+        id: list_pending
+        run: |
+          echo "📋 Listing pending events..."
+          python3 src/event_manager.py list-pending > pending_list.txt
+          cat pending_list.txt
+          
+          # Count pending events
+          PENDING_COUNT=$(python3 -c "import json; data = json.load(open('assets/json/pending_events.json')); print(len(data.get('pending_events', [])))")
+          echo "pending_count=$PENDING_COUNT" >> $GITHUB_OUTPUT
+          echo "ℹ Found $PENDING_COUNT pending events"
+          
+          # Add to summary
+          echo "## 📋 Pending Events Review" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Pending Events:** $PENDING_COUNT" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat pending_list.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+      
+      - name: Publish events (auto or manual)
+        id: publish
+        run: |
+          echo "🔄 Publishing events..."
+          PUBLISHED_COUNT=0
+          PUBLISHED_IDS=""
+          
+          # Check for auto-publish pattern
+          AUTO_PATTERN="${{ github.event.inputs.auto_publish_pattern }}"
+          MANUAL_IDS="${{ github.event.inputs.event_ids }}"
+          
+          if [ -n "$AUTO_PATTERN" ]; then
+            echo "📦 Auto-publishing events matching: $AUTO_PATTERN"
+            
+            # Use bulk-publish with pattern
+            if python3 src/event_manager.py bulk-publish "$AUTO_PATTERN"; then
+              # Count how many were published
+              PUBLISHED_COUNT=$(git diff --cached --name-only | grep -c "events.json" || echo "0")
+              PUBLISHED_IDS="Pattern: $AUTO_PATTERN"
+              echo "✓ Auto-published events matching pattern"
+            else
+              echo "⚠️ Auto-publish failed or no events matched pattern"
+            fi
+            
+          elif [ -n "$MANUAL_IDS" ]; then
+            echo "📝 Publishing specific events: $MANUAL_IDS"
+            
+            if [ "$MANUAL_IDS" = "all" ]; then
+              # Publish all pending events
+              echo "Publishing ALL pending events..."
+              python3 src/event_manager.py bulk-publish "pending_*"
+              PUBLISHED_COUNT=$(git diff --cached --name-only | grep -c "events.json" || echo "0")
+              PUBLISHED_IDS="all"
+            else
+              # Publish specific IDs (comma-separated)
+              IFS=',' read -ra IDS_ARRAY <<< "$MANUAL_IDS"
+              for EVENT_ID in "${IDS_ARRAY[@]}"; do
+                EVENT_ID=$(echo "$EVENT_ID" | xargs)  # Trim whitespace
+                echo "Publishing: $EVENT_ID"
+                if python3 src/event_manager.py publish "$EVENT_ID"; then
+                  PUBLISHED_COUNT=$((PUBLISHED_COUNT + 1))
+                  PUBLISHED_IDS="$PUBLISHED_IDS $EVENT_ID"
+                else
+                  echo "⚠️ Failed to publish: $EVENT_ID"
+                fi
+              done
+            fi
+            
+          else
+            echo "⚠️ No events specified for publishing"
+            echo "Provide either 'event_ids' or 'auto_publish_pattern'"
+          fi
+          
+          echo "published_count=$PUBLISHED_COUNT" >> $GITHUB_OUTPUT
+          echo "events_published=$PUBLISHED_IDS" >> $GITHUB_OUTPUT
+          
+          echo "✓ Published $PUBLISHED_COUNT event(s)"
+          
+          # Add to summary
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Publishing Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Published:** $PUBLISHED_COUNT event(s)" >> $GITHUB_STEP_SUMMARY
+          if [ -n "$PUBLISHED_IDS" ]; then
+            echo "- **IDs:** $PUBLISHED_IDS" >> $GITHUB_STEP_SUMMARY
+          fi
+      
+      - name: Commit and push changes
+        if: steps.publish.outputs.published_count != '0'
+        run: |
+          TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M UTC')
+          PUBLISHED_COUNT="${{ steps.publish.outputs.published_count }}"
+          
+          git add assets/json/
+          git commit -m "chore: publish $PUBLISHED_COUNT event(s) - $TIMESTAMP"
+          
+          # Pull with rebase to handle concurrent changes
+          if ! git pull --rebase origin main; then
+            echo "❌ Rebase failed - manual intervention required"
+            git rebase --abort || true
+            exit 1
+          fi
+          
+          git push
+          echo "✓ Changes committed and pushed"
+      
+      - name: Trigger deployment
+        if: steps.publish.outputs.published_count != '0'
+        run: |
+          echo "🚀 Events published, deployment will be triggered automatically"
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ **Deployment triggered automatically** (push to events.json)" >> $GITHUB_STEP_SUMMARY

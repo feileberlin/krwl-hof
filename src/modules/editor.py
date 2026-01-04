@@ -4,6 +4,7 @@ import logging
 from datetime import datetime
 from .utils import (load_pending_events, save_pending_events, load_events, 
                    save_events, add_rejected_event)
+from .batch_selector import BatchSelector
 
 # Configure module logger
 logger = logging.getLogger(__name__)
@@ -60,6 +61,7 @@ class EventEditor:
             print("  (e) Edit event")
             print("  (r) Reject and delete")
             print("  (s) Skip to next")
+            print("  (b) Batch select mode")
             print("  (q) Quit review")
             print("-" * 60)
             self._print_review_footer()
@@ -79,12 +81,59 @@ class EventEditor:
                 print("\nEvent rejected and saved to rejected list!")
             elif choice == 's':
                 i += 1
+            elif choice == 'b':
+                # Enter batch selection mode using modular component
+                selector = BatchSelector(pending_events)
+                result = selector.run()
+                
+                if result['action'] == 'approve':
+                    self._batch_approve(pending_events, result['indices'])
+                    print(f"✅ Approved {len(result['indices'])} event(s)")
+                elif result['action'] == 'reject':
+                    self._batch_reject(pending_events, result['indices'])
+                    print(f"✅ Rejected {len(result['indices'])} event(s)")
+                
+                # Reload pending events as they may have changed
+                pending_data = load_pending_events(self.base_path)
+                pending_events = pending_data['pending_events']
+                i = 0  # Restart from beginning
             elif choice == 'q':
                 break
             else:
                 print("\nInvalid choice. Try again.")
                 
         # Save updated pending events
+        save_pending_events(self.base_path, pending_data)
+    
+    def _batch_approve(self, pending_events, selected_indices):
+        """Batch approve selected events"""
+        events_data = load_events(self.base_path)
+        
+        # Sort in reverse order to safely remove from list
+        for idx in sorted(selected_indices, reverse=True):
+            event = pending_events[idx]
+            self._approve_event(event)
+            pending_events.pop(idx)
+        
+        # Save changes
+        save_events(self.base_path, events_data)
+        pending_data = {'pending_events': pending_events}
+        save_pending_events(self.base_path, pending_data)
+        
+        # Update HTML
+        from .utils import update_events_in_html
+        update_events_in_html(self.base_path)
+    
+    def _batch_reject(self, pending_events, selected_indices):
+        """Batch reject selected events"""
+        # Sort in reverse order to safely remove from list
+        for idx in sorted(selected_indices, reverse=True):
+            event = pending_events[idx]
+            self._reject_event(event)
+            pending_events.pop(idx)
+        
+        # Save changes
+        pending_data = {'pending_events': pending_events}
         save_pending_events(self.base_path, pending_data)
     
     def _print_review_footer(self):

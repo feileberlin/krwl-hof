@@ -18,6 +18,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from modules.scraper import EventScraper
 from modules.editor import EventEditor
 from modules.site_generator import SiteGenerator
+from modules.batch_operations import expand_wildcards, process_in_batches, find_events_by_ids, determine_batch_size
 from modules.utils import (
     load_config, load_events, save_events, 
     load_pending_events, save_pending_events, 
@@ -243,6 +244,7 @@ COMMANDS:
     archive                   Archive past events to archived_events.json
     load-examples             Load example data for development
     clear-data                Clear all event data
+    scraper-info              Show scraper capabilities (JSON output for workflows)
     
 OPTIONS:
     -h, --help               Show this help message
@@ -267,6 +269,9 @@ EXAMPLES:
     
     # Scrape events from sources
     python3 event_manager.py scrape
+    
+    # Show scraper capabilities (for workflow introspection)
+    python3 event_manager.py scraper-info
     
     # List all published events
     python3 event_manager.py list
@@ -728,48 +733,6 @@ def cli_publish_event(base_path, event_id):
     return 0
 
 
-def expand_wildcard_patterns(patterns, pending_events):
-    """
-    Expand wildcard patterns to match event IDs.
-    
-    Args:
-        patterns: List of patterns (can include wildcards like * and ?)
-        pending_events: List of pending events with 'id' field
-        
-    Returns:
-        List of expanded event IDs (duplicates removed, order preserved)
-    """
-    expanded_ids = []
-    seen_ids = set()
-    
-    for pattern in patterns:
-        pattern = pattern.strip()
-        if not pattern:
-            continue
-            
-        # Check if pattern contains wildcards
-        if '*' in pattern or '?' in pattern or '[' in pattern:
-            # Match against all pending event IDs
-            matches_found = False
-            for event in pending_events:
-                event_id = event.get('id', '')
-                if fnmatch.fnmatch(event_id, pattern):
-                    matches_found = True
-                    if event_id not in seen_ids:
-                        expanded_ids.append(event_id)
-                        seen_ids.add(event_id)
-            
-            if not matches_found:
-                print(f"⚠ Warning: Pattern '{pattern}' matched no events")
-        else:
-            # Exact ID - add if not already seen
-            if pattern not in seen_ids:
-                expanded_ids.append(pattern)
-                seen_ids.add(pattern)
-    
-    return expanded_ids
-
-
 def cli_reject_event(base_path, event_id):
     """CLI: Reject a pending event"""
     pending_data = load_pending_events(base_path)
@@ -879,7 +842,7 @@ def _publish_events_batch(base_path, events_to_publish, events, events_data):
 
 
 def cli_bulk_publish_events(base_path, event_ids_str):
-    """CLI: Bulk publish pending events (supports wildcards)"""
+    """CLI: Bulk publish pending events (supports wildcards and batching)"""
     # Parse comma-separated event IDs/patterns
     patterns = [p.strip() for p in event_ids_str.split(',')]
     
@@ -890,8 +853,8 @@ def cli_bulk_publish_events(base_path, event_ids_str):
     pending_data = load_pending_events(base_path)
     events = pending_data.get('pending_events', [])
     
-    # Expand wildcards
-    event_ids = expand_wildcard_patterns(patterns, events)
+    # Expand wildcards using modular function
+    event_ids = expand_wildcards(patterns, events)
     
     if not event_ids:
         print("Error: No events matched the provided patterns")
@@ -899,35 +862,54 @@ def cli_bulk_publish_events(base_path, event_ids_str):
     
     events_data = load_events(base_path)
     
-    print(f"Bulk publishing {len(event_ids)} event(s)...")
-    print("-" * 80)
+    print(f"📝 Bulk publishing {len(event_ids)} event(s)...")
+    print("=" * 80)
     
-    # Find events to publish
-    events_to_publish, initial_failed_ids = _find_events_to_process(event_ids, events)
-    failed_count = len(initial_failed_ids)
+    # Determine optimal batch size
+    batch_size = determine_batch_size(len(event_ids))
     
-    # Publish events
-    published_count, pub_failed_count, pub_failed_ids = _publish_events_batch(
-        base_path, events_to_publish, events, events_data
-    )
-    failed_count += pub_failed_count
-    failed_ids = initial_failed_ids + pub_failed_ids
+    # Process in batches using modular function
+    def publish_batch(batch_ids, batch_num, total_batches):
+        """Process a batch of events for publishing"""
+        batch_result = {'success': [], 'failed': []}
+        
+        # Find events in this batch
+        events_to_publish, failed_ids = find_events_by_ids(batch_ids, events)
+        batch_result['failed'].extend(failed_ids)
+        
+        # Publish the batch
+        published_count, pub_failed_count, pub_failed_ids = _publish_events_batch(
+            base_path, events_to_publish, events, events_data
+        )
+        
+        # Track successes
+        for event_id in batch_ids:
+            if event_id not in failed_ids and event_id not in pub_failed_ids:
+                batch_result['success'].append(event_id)
+        
+        batch_result['failed'].extend(pub_failed_ids)
+        
+        print(f"   ✓ Batch {batch_num}: {len(batch_result['success'])} published, {len(batch_result['failed'])} failed")
+        
+        return batch_result
     
-    # Save changes
-    if published_count > 0:
+    # Process all batches
+    results = process_in_batches(event_ids, batch_size=batch_size, callback=publish_batch)
+    
+    # Save changes if any events were published
+    if results['processed'] > 0:
+        print("\n💾 Saving changes...")
         save_events(base_path, events_data)
         save_pending_events(base_path, pending_data)
         
-        # Update events in HTML
-        print("\nUpdating events in HTML...")
+        print("🔄 Updating events in HTML...")
         update_events_in_html(base_path)
     
     # Summary
-    print("-" * 80)
-    print(f"✓ Successfully published: {published_count} event(s)")
-    if failed_count > 0:
-        print(f"✗ Failed: {failed_count} event(s)")
-        print(f"  Failed IDs: {', '.join(failed_ids)}")
+    print("=" * 80)
+    print(f"✅ Successfully published: {results['processed']} event(s)")
+    if results['failed'] > 0:
+        print(f"❌ Failed: {results['failed']} event(s)")
         return 1
     
     return 0
@@ -1290,6 +1272,13 @@ def _execute_command(args, base_path, config):
     if command == 'review':
         app = EventManagerTUI()
         app.review_pending_events()
+        return 0
+    
+    if command == 'scraper-info':
+        # Output scraper capabilities as JSON for workflow consumption
+        scraper = EventScraper(config, base_path)
+        capabilities = scraper.get_scraper_capabilities()
+        print(json.dumps(capabilities, indent=2))
         return 0
     
     if command is None:

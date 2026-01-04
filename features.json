@@ -925,6 +925,43 @@
       ],
       "test_method": "check_files_exist",
       "cli_command": "python3 src/event_manager.py docs html-docs"
+    },
+    {
+      "id": "unified-workflow-wrapper",
+      "name": "Unified Workflow Wrapper (Adaptive)",
+      "description": "Single GitHub Actions workflow that automatically adapts to changes in event_scraper.py by introspecting scraper capabilities, configuration, and enabled sources at runtime. Combines scraping, building, deployment, and editorial review into one intelligent workflow.",
+      "category": "infrastructure",
+      "implemented": true,
+      "files": [
+        ".github/workflows/website-maintenance.yml",
+        "src/modules/scraper.py",
+        "src/event_manager.py"
+      ],
+      "config_keys": [
+        "scraping.sources",
+        "scraping.schedule.timezone",
+        "scraping.schedule.times"
+      ],
+      "code_patterns": [
+        {
+          "file": "src/modules/scraper.py",
+          "pattern": "get_scraper_capabilities|get_enabled_sources|get_scraping_schedule",
+          "description": "Scraper introspection methods for workflow adaptation"
+        },
+        {
+          "file": ".github/workflows/website-maintenance.yml",
+          "pattern": "discover-capabilities|scraper-info|CAPABILITIES|review-pending",
+          "description": "Workflow jobs for introspection and editorial review"
+        },
+        {
+          "file": "src/event_manager.py",
+          "pattern": "scraper-info|bulk-publish|bulk-reject",
+          "description": "CLI commands for workflow integration"
+        }
+      ],
+      "test_method": "manual",
+      "test_instructions": "1. Test scraper introspection: python3 src/event_manager.py scraper-info\n2. Validate workflow syntax: python3 -c \"import yaml; yaml.safe_load(open('.github/workflows/website-maintenance.yml'))\"\n3. Test editorial commands: python3 src/event_manager.py list-pending\n4. Trigger workflow manually via GitHub Actions UI with different task options (review-pending, info, scrape-and-deploy)\n5. Test auto-publish pattern: Set auto_publish_pattern to 'pending_*' and verify bulk publishing\n6. Verify workflow adapts when scraping sources are added/modified in config.json",
+      "cli_command": "python3 src/event_manager.py scraper-info"
     }
   ]
 }
