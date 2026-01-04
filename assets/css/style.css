@@ -503,7 +503,7 @@ strong, b {
     height: 20px;
     margin-right: 0.5rem;
     vertical-align: middle;
-    color: #c9d1d9; /* Light text - 12.5:1 contrast on #161b22 */
+    color: #FFB3DF; /* Barbie medium tint - visible on dark background */
 }
 
 /* Fill icons with solid color instead of stroke/outline */
@@ -520,7 +520,7 @@ strong, b {
 
 /* Hover effect for section icons */
 .dashboard-section h3:hover .dashboard-section-icon {
-    color: #FF69B4; /* Barbie Pink hover */
+    color: #BF5087; /* Light shade - muted pink hover */
     transition: color 0.2s ease;
 }
 
