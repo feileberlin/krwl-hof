@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lucide Update Guide - KRWL HOF Documentation</title>
+    <meta name="description" content="KRWL HOF Community Events Documentation">
+    <style>
+
+/* Documentation Styles - Generated from config.json design tokens */
+
+:root {
+    /* Colors from design tokens */
+    --color-primary: #FF69B4;
+    --color-primary-hover: #ff4da6;
+    --color-bg-primary: #0d1117;
+    --color-bg-secondary: #161b22;
+    --color-bg-tertiary: #21262d;
+    --color-text-primary: #c9d1d9;
+    --color-text-secondary: #8b949e;
+    --color-text-tertiary: #6e7681;
+    --color-border-primary: #30363d;
+    --color-border-secondary: #21262d;
+    --color-accent: #58a6ff;
+    --color-success: #3fb950;
+    --color-warning: #d29922;
+    --color-error: #f85149;
+    
+    /* Typography */
+    --font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+    --font-family-mono: 'Monaco', 'Courier New', monospace;
+    --font-size-base: 16px;
+    --font-size-small: 14px;
+    --font-size-large: 18px;
+    --line-height-base: 1.6;
+    
+    /* Spacing */
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    --spacing-xxl: 48px;
+    
+    /* Borders */
+    --border-radius-small: 4px;
+    --border-radius-medium: 6px;
+    --border-radius-large: 8px;
+    
+    /* Shadows */
+    --shadow-small: 0 2px 4px rgba(0, 0, 0, 0.3);
+    --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --shadow-large: 0 8px 24px rgba(0, 0, 0, 0.5);
+    --shadow-glow-primary: 0 0 10px rgba(255, 105, 180, 0.3);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-family-base);
+    background: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    line-height: var(--line-height-base);
+    font-size: var(--font-size-base);
+}
+
+/* Layout */
+.docs-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar Navigation */
+.docs-sidebar {
+    width: 280px;
+    background: var(--color-bg-secondary);
+    border-right: 1px solid var(--color-border-primary);
+    padding: var(--spacing-lg);
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 100;
+}
+
+.docs-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-xl);
+    padding-bottom: var(--spacing-lg);
+    border-bottom: 1px solid var(--color-border-primary);
+}
+
+.docs-logo-icon {
+    color: var(--color-primary);
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.docs-logo-icon svg {
+    width: 32px;
+    height: 32px;
+}
+
+.docs-logo-text {
+    font-size: var(--font-size-large);
+    font-weight: 600;
+    color: var(--color-primary);
+}
+
+.docs-nav {
+    list-style: none;
+}
+
+.docs-nav-item {
+    margin-bottom: var(--spacing-sm);
+}
+
+.docs-nav-link {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    border-radius: var(--border-radius-small);
+    transition: all 0.2s ease;
+}
+
+.docs-nav-link:hover {
+    background: var(--color-bg-tertiary);
+    color: var(--color-text-primary);
+}
+
+.docs-nav-link.active {
+    background: var(--color-bg-tertiary);
+    color: var(--color-primary);
+    border-left: 2px solid var(--color-primary);
+}
+
+.docs-nav-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.docs-nav-icon svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* Main Content */
+.docs-main {
+    margin-left: 280px;
+    flex: 1;
+    padding: var(--spacing-xl);
+    max-width: 900px;
+}
+
+.docs-content {
+    background: var(--color-bg-secondary);
+    border-radius: var(--border-radius-medium);
+    padding: var(--spacing-xxl);
+    box-shadow: var(--shadow-medium);
+}
+
+/* Back to App Link */
+.back-to-app {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: var(--color-accent);
+    text-decoration: none;
+    margin-bottom: var(--spacing-lg);
+    font-size: var(--font-size-small);
+    transition: color 0.2s ease;
+}
+
+.back-to-app:hover {
+    color: var(--color-primary);
+}
+
+/* Typography */
+.docs-content h1 {
+    color: var(--color-primary);
+    font-size: 2.5rem;
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 2px solid var(--color-border-primary);
+}
+
+.docs-content h2 {
+    color: var(--color-text-primary);
+    font-size: 2rem;
+    margin-top: var(--spacing-xl);
+    margin-bottom: var(--spacing-md);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.docs-content h2::before {
+    content: '';
+    width: 4px;
+    height: 1.5rem;
+    background: var(--color-primary);
+    border-radius: 2px;
+}
+
+.docs-content h3 {
+    color: var(--color-text-primary);
+    font-size: 1.5rem;
+    margin-top: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+}
+
+.docs-content h4 {
+    color: var(--color-text-secondary);
+    font-size: 1.25rem;
+    margin-top: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+}
+
+.docs-content p {
+    margin-bottom: var(--spacing-md);
+    color: var(--color-text-primary);
+}
+
+.docs-content a {
+    color: var(--color-accent);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+}
+
+.docs-content a:hover {
+    border-bottom-color: var(--color-accent);
+}
+
+/* Lists */
+.docs-content ul,
+.docs-content ol {
+    margin-bottom: var(--spacing-md);
+    padding-left: var(--spacing-xl);
+}
+
+.docs-content li {
+    margin-bottom: var(--spacing-sm);
+    color: var(--color-text-primary);
+}
+
+/* Code */
+.docs-content code {
+    font-family: var(--font-family-mono);
+    background: var(--color-bg-tertiary);
+    padding: 2px 6px;
+    border-radius: var(--border-radius-small);
+    font-size: var(--font-size-small);
+    color: var(--color-primary);
+}
+
+.docs-content pre {
+    background: var(--color-bg-tertiary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--border-radius-medium);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    overflow-x: auto;
+}
+
+.docs-content pre code {
+    background: none;
+    padding: 0;
+    color: var(--color-text-primary);
+}
+
+/* Tables */
+.docs-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: var(--spacing-md);
+    background: var(--color-bg-tertiary);
+    border-radius: var(--border-radius-medium);
+    overflow: hidden;
+}
+
+.docs-content th {
+    background: var(--color-bg-primary);
+    color: var(--color-primary);
+    padding: var(--spacing-md);
+    text-align: left;
+    font-weight: 600;
+}
+
+.docs-content td {
+    padding: var(--spacing-md);
+    border-top: 1px solid var(--color-border-primary);
+    color: var(--color-text-primary);
+}
+
+.docs-content tr:hover td {
+    background: var(--color-bg-secondary);
+}
+
+/* Blockquotes */
+.docs-content blockquote {
+    border-left: 4px solid var(--color-primary);
+    padding-left: var(--spacing-md);
+    margin: var(--spacing-md) 0;
+    color: var(--color-text-secondary);
+    font-style: italic;
+    background: var(--color-bg-tertiary);
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius-small);
+}
+
+/* Horizontal Rule */
+.docs-content hr {
+    border: none;
+    height: 1px;
+    background: var(--color-border-primary);
+    margin: var(--spacing-lg) 0;
+}
+
+/* Syntax Highlighting */
+pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.codehilite .hll { background-color: #49483e }
+.codehilite { background: #272822; color: #f8f8f2 }
+.codehilite .c { color: #959077 } /* Comment */
+.codehilite .err { color: #ed007e; background-color: #1e0010 } /* Error */
+.codehilite .esc { color: #f8f8f2 } /* Escape */
+.codehilite .g { color: #f8f8f2 } /* Generic */
+.codehilite .k { color: #66d9ef } /* Keyword */
+.codehilite .l { color: #ae81ff } /* Literal */
+.codehilite .n { color: #f8f8f2 } /* Name */
+.codehilite .o { color: #ff4689 } /* Operator */
+.codehilite .x { color: #f8f8f2 } /* Other */
+.codehilite .p { color: #f8f8f2 } /* Punctuation */
+.codehilite .ch { color: #959077 } /* Comment.Hashbang */
+.codehilite .cm { color: #959077 } /* Comment.Multiline */
+.codehilite .cp { color: #959077 } /* Comment.Preproc */
+.codehilite .cpf { color: #959077 } /* Comment.PreprocFile */
+.codehilite .c1 { color: #959077 } /* Comment.Single */
+.codehilite .cs { color: #959077 } /* Comment.Special */
+.codehilite .gd { color: #ff4689 } /* Generic.Deleted */
+.codehilite .ge { color: #f8f8f2; font-style: italic } /* Generic.Emph */
+.codehilite .ges { color: #f8f8f2; font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.codehilite .gr { color: #f8f8f2 } /* Generic.Error */
+.codehilite .gh { color: #f8f8f2 } /* Generic.Heading */
+.codehilite .gi { color: #a6e22e } /* Generic.Inserted */
+.codehilite .go { color: #66d9ef } /* Generic.Output */
+.codehilite .gp { color: #ff4689; font-weight: bold } /* Generic.Prompt */
+.codehilite .gs { color: #f8f8f2; font-weight: bold } /* Generic.Strong */
+.codehilite .gu { color: #959077 } /* Generic.Subheading */
+.codehilite .gt { color: #f8f8f2 } /* Generic.Traceback */
+.codehilite .kc { color: #66d9ef } /* Keyword.Constant */
+.codehilite .kd { color: #66d9ef } /* Keyword.Declaration */
+.codehilite .kn { color: #ff4689 } /* Keyword.Namespace */
+.codehilite .kp { color: #66d9ef } /* Keyword.Pseudo */
+.codehilite .kr { color: #66d9ef } /* Keyword.Reserved */
+.codehilite .kt { color: #66d9ef } /* Keyword.Type */
+.codehilite .ld { color: #e6db74 } /* Literal.Date */
+.codehilite .m { color: #ae81ff } /* Literal.Number */
+.codehilite .s { color: #e6db74 } /* Literal.String */
+.codehilite .na { color: #a6e22e } /* Name.Attribute */
+.codehilite .nb { color: #f8f8f2 } /* Name.Builtin */
+.codehilite .nc { color: #a6e22e } /* Name.Class */
+.codehilite .no { color: #66d9ef } /* Name.Constant */
+.codehilite .nd { color: #a6e22e } /* Name.Decorator */
+.codehilite .ni { color: #f8f8f2 } /* Name.Entity */
+.codehilite .ne { color: #a6e22e } /* Name.Exception */
+.codehilite .nf { color: #a6e22e } /* Name.Function */
+.codehilite .nl { color: #f8f8f2 } /* Name.Label */
+.codehilite .nn { color: #f8f8f2 } /* Name.Namespace */
+.codehilite .nx { color: #a6e22e } /* Name.Other */
+.codehilite .py { color: #f8f8f2 } /* Name.Property */
+.codehilite .nt { color: #ff4689 } /* Name.Tag */
+.codehilite .nv { color: #f8f8f2 } /* Name.Variable */
+.codehilite .ow { color: #ff4689 } /* Operator.Word */
+.codehilite .pm { color: #f8f8f2 } /* Punctuation.Marker */
+.codehilite .w { color: #f8f8f2 } /* Text.Whitespace */
+.codehilite .mb { color: #ae81ff } /* Literal.Number.Bin */
+.codehilite .mf { color: #ae81ff } /* Literal.Number.Float */
+.codehilite .mh { color: #ae81ff } /* Literal.Number.Hex */
+.codehilite .mi { color: #ae81ff } /* Literal.Number.Integer */
+.codehilite .mo { color: #ae81ff } /* Literal.Number.Oct */
+.codehilite .sa { color: #e6db74 } /* Literal.String.Affix */
+.codehilite .sb { color: #e6db74 } /* Literal.String.Backtick */
+.codehilite .sc { color: #e6db74 } /* Literal.String.Char */
+.codehilite .dl { color: #e6db74 } /* Literal.String.Delimiter */
+.codehilite .sd { color: #e6db74 } /* Literal.String.Doc */
+.codehilite .s2 { color: #e6db74 } /* Literal.String.Double */
+.codehilite .se { color: #ae81ff } /* Literal.String.Escape */
+.codehilite .sh { color: #e6db74 } /* Literal.String.Heredoc */
+.codehilite .si { color: #e6db74 } /* Literal.String.Interpol */
+.codehilite .sx { color: #e6db74 } /* Literal.String.Other */
+.codehilite .sr { color: #e6db74 } /* Literal.String.Regex */
+.codehilite .s1 { color: #e6db74 } /* Literal.String.Single */
+.codehilite .ss { color: #e6db74 } /* Literal.String.Symbol */
+.codehilite .bp { color: #f8f8f2 } /* Name.Builtin.Pseudo */
+.codehilite .fm { color: #a6e22e } /* Name.Function.Magic */
+.codehilite .vc { color: #f8f8f2 } /* Name.Variable.Class */
+.codehilite .vg { color: #f8f8f2 } /* Name.Variable.Global */
+.codehilite .vi { color: #f8f8f2 } /* Name.Variable.Instance */
+.codehilite .vm { color: #f8f8f2 } /* Name.Variable.Magic */
+.codehilite .il { color: #ae81ff } /* Literal.Number.Integer.Long */
+
+.codehilite {
+    background: var(--color-bg-tertiary) !important;
+    border-radius: var(--border-radius-medium);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .docs-sidebar {
+        display: none;
+    }
+    
+    .docs-main {
+        margin-left: 0;
+        padding: var(--spacing-md);
+    }
+    
+    .docs-content {
+        padding: var(--spacing-md);
+    }
+    
+    .docs-content h1 {
+        font-size: 2rem;
+    }
+    
+    .docs-content h2 {
+        font-size: 1.5rem;
+    }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--color-bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-border-primary);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary);
+}
+
+    </style>
+</head>
+<body>
+    <div class="docs-container">
+        <!-- Sidebar Navigation -->
+        <nav class="docs-sidebar">
+            <div class="docs-logo">
+                <span class="docs-logo-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></span>
+                <span class="docs-logo-text">Docs</span>
+            </div>
+            <ul class="docs-nav">
+
+            <li class="docs-nav-item">
+                <a href="CHANGELOG.html" class="docs-nav-link">
+                    <span class="docs-nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" x2="6" y1="3" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span>
+                    <span>Changelog</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="COLOR_SCHEME_BARBIE_PINK.html" class="docs-nav-link">
+                    <span class="docs-nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></span>
+                    <span>Color Scheme Barbie Pink</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="DEPENDENCY_UPDATE_GUIDE.html" class="docs-nav-link">
+                    <span class="docs-nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></span>
+                    <span>Dependency Update Guide</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="EASY_DEPENDENCY_UPDATES.html" class="docs-nav-link">
+                    <span class="docs-nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></span>
+                    <span>Easy Dependency Updates</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="IMPLEMENTATION_COMPLETE_OLD.html" class="docs-nav-link">
+                    <span class="docs-nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg></span>
+                    <span>Implementation Complete Old</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="KISS_IMPROVEMENTS.html" class="docs-nav-link">
+                    <span class="docs-nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></span>
+                    <span>Kiss Improvements</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="LEAFLET_BEST_PRACTICES.html" class="docs-nav-link">
+                    <span class="docs-nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15"/><path d="M9 3.236v15"/></svg></span>
+                    <span>Leaflet Best Practices</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="LEAFLET_UPDATE_GUIDE.html" class="docs-nav-link">
+                    <span class="docs-nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15"/><path d="M9 3.236v15"/></svg></span>
+                    <span>Leaflet Update Guide</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="LUCIDE_UPDATE_GUIDE.html" class="docs-nav-link active">
+                    <span class="docs-nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/></svg></span>
+                    <span>Lucide Update Guide</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="MARKDOWN_LINTING.html" class="docs-nav-link">
+                    <span class="docs-nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></span>
+                    <span>Markdown Linting</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="PROOF_SINGLE_PAGE.html" class="docs-nav-link">
+                    <span class="docs-nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg></span>
+                    <span>Proof Single Page</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="PYTHON_WEB_STANDARDS.html" class="docs-nav-link">
+                    <span class="docs-nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>
+                    <span>Python Web Standards</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="QUICK_REFERENCE.html" class="docs-nav-link">
+                    <span class="docs-nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg></span>
+                    <span>Quick Reference</span>
+                </a>
+            </li>
+            
+
+            <li class="docs-nav-item">
+                <a href="SSG_DIRECTORY_STANDARD.html" class="docs-nav-link">
+                    <span class="docs-nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg></span>
+                    <span>Ssg Directory Standard</span>
+                </a>
+            </li>
+            
+            </ul>
+        </nav>
+        
+        <!-- Main Content -->
+        <main class="docs-main">
+            <a href="../index.html" class="back-to-app">
+                <span style="display: inline-flex; align-items: center; width: 18px; height: 18px;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg></span>
+                Back to App
+            </a>
+            <article class="docs-content">
+<h1 id="lucide-update-guide">Lucide Update Guide</h1>
+<p><strong>Purpose</strong>: Ensure Lucide icon library updates don't break our icon system.</p>
+<h2 id="our-approach">🎯 Our Approach</h2>
+<p>We use Lucide's UMD build with standard initialization:
+- <strong>Library</strong>: <code>lib/lucide/lucide.min.js</code> - Official Lucide UMD build
+- <strong>Usage</strong>: <code>assets/js/app.js</code> - Initialize icons with <code>lucide.createIcons()</code>
+- <strong>Pattern</strong>: HTML attributes <code>data-lucide="icon-name"</code> for declarative icons</p>
+<p>This approach means:
+✅ <strong>Safe to update Lucide</strong> - We use stable public API
+✅ <strong>No build dependencies</strong> - Pure runtime initialization
+✅ <strong>Icons load dynamically</strong> - No hardcoded SVG paths</p>
+<h2 id="how-to-update-lucide">📦 How to Update Lucide</h2>
+<h3 id="before-updating">Before Updating</h3>
+<ol>
+<li>
+<p><strong>Run compatibility test</strong>:
+   <code>bash
+   python3 tests/test_lucide_compatibility.py</code>
+   This checks:
+   - ✅ Only official Lucide API methods used
+   - ✅ All icons available in Lucide
+   - ✅ No deprecated methods
+   - ✅ Proper initialization pattern</p>
+</li>
+<li>
+<p><strong>Check current version</strong>:
+   <code>bash
+   grep -A 5 '"lucide"' src/modules/site_generator.py</code>
+   Current: <code>latest</code> (auto-updates to newest stable)</p>
+</li>
+<li>
+<p><strong>Review Lucide changelog</strong>:
+   - Visit: https://github.com/lucide-icons/lucide/releases
+   - Look for API changes, icon renames, or deprecations</p>
+</li>
+</ol>
+<h3 id="updating-process">Updating Process</h3>
+<ol>
+<li>
+<p><strong>Update version in code</strong> (optional - we use "latest"):
+   <code>bash
+   vim src/modules/site_generator.py</code>
+   Change line 66:
+   <code>python
+   "version": "latest",  # Or pin to specific version like "0.400.0"</code></p>
+</li>
+<li>
+<p><strong>Download new Lucide library</strong>:
+   <code>bash
+   python3 src/event_manager.py libs</code>
+   This fetches:
+   - <code>lucide.min.js</code> (minified UMD build)
+   - <code>lucide.js</code> (development UMD build)</p>
+</li>
+<li>
+<p><strong>Test compatibility</strong>:
+   <code>bash
+   python3 tests/test_lucide_compatibility.py</code>
+   Must pass with no errors!</p>
+</li>
+<li>
+<p><strong>Rebuild site</strong>:
+   <code>bash
+   python3 src/event_manager.py generate</code></p>
+</li>
+<li>
+<p><strong>Manual testing</strong>:
+   <code>bash
+   cd public &amp;&amp; python3 -m http.server 8000</code>
+   Test:
+   - ✅ All icons render correctly
+   - ✅ Icons have correct colors (CSS theming)
+   - ✅ Icon hover effects work
+   - ✅ No console errors
+   - ✅ Mobile icons visible</p>
+</li>
+</ol>
+<h3 id="after-updating">After Updating</h3>
+<ol>
+<li>
+<p><strong>Verify all icons render</strong>:
+   - Check dashboard menu icons
+   - Check filter bar icons
+   - Check event detail icons
+   - Check navigation icons</p>
+</li>
+<li>
+<p><strong>Run full test suite</strong>:
+   <code>bash
+   python3 tests/test_components.py</code></p>
+</li>
+<li>
+<p><strong>Update icon list</strong> (if you added new icons):
+   <code>bash
+   vim tests/test_lucide_compatibility.py</code>
+   Add new icon names to <code>USED_ICONS</code> set</p>
+</li>
+<li>
+<p><strong>Commit changes</strong>:
+   <code>bash
+   git add src/modules/site_generator.py lib/lucide/
+   git commit -m "chore: Update Lucide to vX.X.X"</code></p>
+</li>
+</ol>
+<h2 id="icons-we-use">🎨 Icons We Use</h2>
+<p>Current icons in use (update <code>tests/test_lucide_compatibility.py</code> when adding):</p>
+<table>
+<thead>
+<tr>
+<th>Icon Name</th>
+<th>Usage</th>
+<th>Location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>alert-triangle</code></td>
+<td>Pending events</td>
+<td>Dashboard notification</td>
+</tr>
+<tr>
+<td><code>book-open</code></td>
+<td>About section</td>
+<td>Dashboard header</td>
+</tr>
+<tr>
+<td><code>bug</code></td>
+<td>Debug info</td>
+<td>Dashboard header</td>
+</tr>
+<tr>
+<td><code>user</code></td>
+<td>Maintainer</td>
+<td>Dashboard header</td>
+</tr>
+<tr>
+<td><code>book-text</code></td>
+<td>Documentation</td>
+<td>Dashboard header</td>
+</tr>
+<tr>
+<td><code>heart</code></td>
+<td>Thanks/Credits</td>
+<td>Dashboard header</td>
+</tr>
+<tr>
+<td><code>calendar</code></td>
+<td>Event dates</td>
+<td>Event cards</td>
+</tr>
+<tr>
+<td><code>clock</code></td>
+<td>Time filters</td>
+<td>Filter bar</td>
+</tr>
+<tr>
+<td><code>map-pin</code></td>
+<td>Location</td>
+<td>Event details</td>
+</tr>
+<tr>
+<td><code>navigation</code></td>
+<td>Geolocation</td>
+<td>Map controls</td>
+</tr>
+<tr>
+<td><code>filter</code></td>
+<td>Filter toggle</td>
+<td>Filter bar</td>
+</tr>
+<tr>
+<td><code>x</code></td>
+<td>Close buttons</td>
+<td>Modals, popups</td>
+</tr>
+<tr>
+<td><code>menu</code></td>
+<td>Dashboard toggle</td>
+<td>Top bar</td>
+</tr>
+<tr>
+<td><code>info</code></td>
+<td>Information</td>
+<td>Dashboard</td>
+</tr>
+<tr>
+<td><code>settings</code></td>
+<td>Settings</td>
+<td>Dashboard</td>
+</tr>
+<tr>
+<td><code>github</code></td>
+<td>GitHub link</td>
+<td>Footer</td>
+</tr>
+<tr>
+<td><code>external-link</code></td>
+<td>External URLs</td>
+<td>Event links</td>
+</tr>
+<tr>
+<td><code>chevron-down</code></td>
+<td>Expand</td>
+<td>Dropdowns</td>
+</tr>
+<tr>
+<td><code>chevron-up</code></td>
+<td>Collapse</td>
+<td>Dropdowns</td>
+</tr>
+<tr>
+<td><code>search</code></td>
+<td>Search</td>
+<td>Future feature</td>
+</tr>
+<tr>
+<td><code>home</code></td>
+<td>Home link</td>
+<td>Navigation</td>
+</tr>
+<tr>
+<td><code>star</code></td>
+<td>Favorites</td>
+<td>Future feature</td>
+</tr>
+<tr>
+<td><code>trash</code></td>
+<td>Delete</td>
+<td>Admin actions</td>
+</tr>
+<tr>
+<td><code>edit</code></td>
+<td>Edit</td>
+<td>Admin actions</td>
+</tr>
+<tr>
+<td><code>check</code></td>
+<td>Confirm</td>
+<td>Forms</td>
+</tr>
+<tr>
+<td><code>alert-circle</code></td>
+<td>Alerts</td>
+<td>Notifications</td>
+</tr>
+<tr>
+<td><code>help-circle</code></td>
+<td>Help</td>
+<td>Documentation</td>
+</tr>
+</tbody>
+</table>
+<h2 id="how-we-use-lucide">🔧 How We Use Lucide</h2>
+<h3 id="method-1-declarative-recommended">Method 1: Declarative (Recommended)</h3>
+<div class="codehilite"><pre><span></span><code><span class="cm">&lt;!-- HTML with data-lucide attribute --&gt;</span>
+<span class="p">&lt;</span><span class="nt">i</span> <span class="na">data-lucide</span><span class="o">=</span><span class="s">&quot;calendar&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">i</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">i</span> <span class="na">data-lucide</span><span class="o">=</span><span class="s">&quot;map-pin&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">i</span><span class="p">&gt;</span>
+
+<span class="cm">&lt;!-- Icons are automatically replaced on page load --&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="w">  </span><span class="nx">lucide</span><span class="p">.</span><span class="nx">createIcons</span><span class="p">();</span>
+<span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</code></pre></div>
+
+<p><strong>Benefits:</strong>
+- ✅ Simple, declarative
+- ✅ Automatic replacement
+- ✅ No manual SVG handling</p>
+<h3 id="method-2-programmatic">Method 2: Programmatic</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1">// Create icon dynamically</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">icon</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">lucide</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">&#39;calendar&#39;</span><span class="p">);</span>
+<span class="nx">container</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">icon</span><span class="p">);</span>
+</code></pre></div>
+
+<p><strong>Benefits:</strong>
+- ✅ Dynamic icon creation
+- ✅ Full control over attributes</p>
+<h3 id="our-initialization-pattern">Our Initialization Pattern</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1">// In assets/js/app.js</span>
+<span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">&#39;DOMContentLoaded&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// Initialize Lucide icons</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">lucide</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">lucide</span><span class="p">.</span><span class="nx">createIcons</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">warn</span><span class="p">(</span><span class="s1">&#39;Lucide library not loaded&#39;</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">});</span>
+</code></pre></div>
+
+<p><strong>Safety features:</strong>
+- ✅ Checks if Lucide loaded
+- ✅ Waits for DOM ready
+- ✅ Warns if library missing</p>
+<h2 id="styling-lucide-icons">🎨 Styling Lucide Icons</h2>
+<p>We style icons with CSS custom properties:</p>
+<div class="codehilite"><pre><span></span><code><span class="c">/* Icon theming */</span>
+<span class="o">[</span><span class="nt">data-lucide</span><span class="o">]</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">color</span><span class="p">:</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="nv">--color-text-primary</span><span class="p">);</span>
+<span class="w">  </span><span class="k">width</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="kt">px</span><span class="p">;</span>
+<span class="w">  </span><span class="k">height</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="kt">px</span><span class="p">;</span>
+<span class="w">  </span><span class="k">stroke-width</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="o">[</span><span class="nt">data-lucide</span><span class="o">]</span><span class="p">:</span><span class="nd">hover</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">color</span><span class="p">:</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="nv">--color-primary</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p><strong>Design tokens used:</strong>
+- <code>--color-text-primary</code> - Default icon color
+- <code>--color-primary</code> - Accent/hover color
+- <code>--color-text-secondary</code> - Muted icons</p>
+<p>This means:
+- ✅ Instant rebranding (edit config.json)
+- ✅ Consistent theming across all icons
+- ✅ No hardcoded colors</p>
+<h2 id="pre-update-checklist">📋 Pre-Update Checklist</h2>
+<p>Before updating Lucide, verify:</p>
+<ul>
+<li>[ ] Compatibility test passes (<code>test_lucide_compatibility.py</code>)</li>
+<li>[ ] Lucide changelog reviewed for breaking changes</li>
+<li>[ ] Current site icons render correctly (baseline)</li>
+<li>[ ] Backup created (<code>git commit</code> before updating)</li>
+</ul>
+<h2 id="post-update-checklist">📋 Post-Update Checklist</h2>
+<p>After updating Lucide, verify:</p>
+<ul>
+<li>[ ] Compatibility test still passes</li>
+<li>[ ] All icons render without errors</li>
+<li>[ ] Icons have correct colors and sizes</li>
+<li>[ ] Hover effects work correctly</li>
+<li>[ ] Mobile icons visible</li>
+<li>[ ] No console errors</li>
+<li>[ ] All component tests pass</li>
+</ul>
+<h2 id="troubleshooting">🔧 Troubleshooting</h2>
+<h3 id="issue-icons-dont-render-after-update">Issue: Icons don't render after update</h3>
+<p><strong>Cause</strong>: Lucide API changed or library didn't load</p>
+<p><strong>Fix 1</strong>: Check console for errors</p>
+<div class="codehilite"><pre><span></span><code><span class="c1">// In browser console</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">lucide</span><span class="p">);</span><span class="w">  </span><span class="c1">// Should show object</span>
+</code></pre></div>
+
+<p><strong>Fix 2</strong>: Verify library loaded</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Check if file exists and has content</span>
+ls<span class="w"> </span>-lh<span class="w"> </span>lib/lucide/lucide.min.js
+</code></pre></div>
+
+<p><strong>Fix 3</strong>: Re-download library</p>
+<div class="codehilite"><pre><span></span><code>rm<span class="w"> </span>-rf<span class="w"> </span>lib/lucide/
+python3<span class="w"> </span>src/event_manager.py<span class="w"> </span>libs
+</code></pre></div>
+
+<h3 id="issue-some-icons-missing-after-update">Issue: Some icons missing after update</h3>
+<p><strong>Cause</strong>: Lucide renamed or removed icons</p>
+<p><strong>Fix</strong>: Check Lucide changelog for icon renames</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Find renamed icons in changelog</span>
+curl<span class="w"> </span>-s<span class="w"> </span>https://api.github.com/repos/lucide-icons/lucide/releases/latest<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;renamed\|removed&quot;</span>
+</code></pre></div>
+
+<p>Update icon names in code:</p>
+<div class="codehilite"><pre><span></span><code><span class="cm">&lt;!-- Old --&gt;</span>
+<span class="p">&lt;</span><span class="nt">i</span> <span class="na">data-lucide</span><span class="o">=</span><span class="s">&quot;old-name&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">i</span><span class="p">&gt;</span>
+
+<span class="cm">&lt;!-- New --&gt;</span>
+<span class="p">&lt;</span><span class="nt">i</span> <span class="na">data-lucide</span><span class="o">=</span><span class="s">&quot;new-name&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">i</span><span class="p">&gt;</span>
+</code></pre></div>
+
+<h3 id="issue-icons-render-but-styling-is-wrong">Issue: Icons render but styling is wrong</h3>
+<p><strong>Cause</strong>: Lucide changed SVG structure or default styles</p>
+<p><strong>Fix</strong>: Update CSS selectors</p>
+<div class="codehilite"><pre><span></span><code><span class="c">/* Check new SVG structure */</span>
+<span class="o">[</span><span class="nt">data-lucide</span><span class="o">]</span><span class="w"> </span><span class="nt">svg</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c">/* Adjust styles */</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="issue-icons-too-largesmall-after-update">Issue: Icons too large/small after update</h3>
+<p><strong>Cause</strong>: Lucide changed default size or stroke-width</p>
+<p><strong>Fix</strong>: Explicitly set size in CSS</p>
+<div class="codehilite"><pre><span></span><code><span class="o">[</span><span class="nt">data-lucide</span><span class="o">]</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">width</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="kt">px</span><span class="w"> </span><span class="cp">!important</span><span class="p">;</span>
+<span class="w">  </span><span class="k">height</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="kt">px</span><span class="w"> </span><span class="cp">!important</span><span class="p">;</span>
+<span class="w">  </span><span class="k">stroke-width</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h2 id="deprecated-patterns">🚫 Deprecated Patterns</h2>
+<h3 id="old-lucidereplace">❌ Old: lucide.replace()</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1">// Deprecated in v0.263.0+</span>
+<span class="nx">lucide</span><span class="p">.</span><span class="nx">replace</span><span class="p">();</span>
+</code></pre></div>
+
+<h3 id="new-lucidecreateicons">✅ New: lucide.createIcons()</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1">// Current method</span>
+<span class="nx">lucide</span><span class="p">.</span><span class="nx">createIcons</span><span class="p">();</span>
+</code></pre></div>
+
+<h3 id="old-new-lucideicon">❌ Old: new lucide.Icon()</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1">// Deprecated</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">icon</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">lucide</span><span class="p">.</span><span class="nx">Icon</span><span class="p">(</span><span class="s1">&#39;calendar&#39;</span><span class="p">);</span>
+</code></pre></div>
+
+<h3 id="new-lucidecreateelement">✅ New: lucide.createElement()</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1">// Current method</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">icon</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">lucide</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">&#39;calendar&#39;</span><span class="p">);</span>
+</code></pre></div>
+
+<h2 id="resources">📚 Resources</h2>
+<ul>
+<li><strong>Lucide Website</strong>: https://lucide.dev</li>
+<li><strong>Lucide GitHub</strong>: https://github.com/lucide-icons/lucide</li>
+<li><strong>Lucide Releases</strong>: https://github.com/lucide-icons/lucide/releases</li>
+<li><strong>Icon Directory</strong>: https://lucide.dev/icons/</li>
+<li><strong>API Docs</strong>: https://lucide.dev/guide/packages/lucide</li>
+<li><strong>Our Usage</strong>: <code>assets/js/app.js</code></li>
+<li><strong>Design Tokens</strong>: <code>config.json</code> (design section)</li>
+</ul>
+<h2 id="version-pinning-strategy">🎯 Version Pinning Strategy</h2>
+<h3 id="current-latest-auto-update">Current: "latest" (Auto-update)</h3>
+<div class="codehilite"><pre><span></span><code><span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;latest&quot;</span><span class="p">,</span>
+</code></pre></div>
+
+<p><strong>Pros:</strong>
+- ✅ Always newest features
+- ✅ Automatic bug fixes
+- ✅ No manual version bumps</p>
+<p><strong>Cons:</strong>
+- ⚠️ Potential breaking changes
+- ⚠️ Less predictable</p>
+<h3 id="alternative-pin-specific-version">Alternative: Pin specific version</h3>
+<div class="codehilite"><pre><span></span><code><span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.400.0&quot;</span><span class="p">,</span>
+</code></pre></div>
+
+<p><strong>Pros:</strong>
+- ✅ Predictable behavior
+- ✅ No surprise breaks
+- ✅ Controlled updates</p>
+<p><strong>Cons:</strong>
+- ⚠️ Manual version management
+- ⚠️ Miss bug fixes</p>
+<p><strong>Recommendation</strong>: Use "latest" + run compatibility test frequently</p>
+<h2 id="best-practices">🚀 Best Practices</h2>
+<ol>
+<li><strong>Always test before production</strong> - Update in dev branch first</li>
+<li><strong>Use compatibility test</strong> - Catches API changes automatically</li>
+<li><strong>Document icon usage</strong> - Update USED_ICONS list when adding icons</li>
+<li><strong>Use declarative syntax</strong> - Prefer <code>data-lucide</code> over programmatic</li>
+<li><strong>Style with tokens</strong> - Use CSS variables, never hardcode colors</li>
+<li><strong>Check for renames</strong> - Review changelog for icon name changes</li>
+<li><strong>Keep initialization simple</strong> - Don't overcomplicate icon loading</li>
+</ol>
+<h2 id="version-history">📝 Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Lucide Version</th>
+<th>Date</th>
+<th>Status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>latest</td>
+<td>2024</td>
+<td>✅ Current</td>
+<td>Using auto-update strategy</td>
+</tr>
+</tbody>
+</table>
+<h2 id="summary">🎯 Summary</h2>
+<p><strong>Our approach is safe because:</strong>
+1. We use <strong>stable public API</strong> (<code>createIcons()</code>, <code>createElement()</code>)
+2. We use <strong>declarative syntax</strong> (data-lucide attributes)
+3. We have <strong>safety checks</strong> (library availability)
+4. We use <strong>design tokens</strong> for theming
+5. We have <strong>automated tests</strong> to catch breaking changes</p>
+<p><strong>Updating Lucide is low-risk when you:</strong>
+1. Run compatibility test first
+2. Review changelog for breaking changes
+3. Test all icons after update
+4. Keep icon usage documented
+5. Use version pinning if stability critical</p>
+<p>This guide ensures Lucide updates are <strong>smooth, safe, and predictable</strong>. 🎉</p>
+            </article>
+        </main>
+    </div>
+</body>
+</html>
