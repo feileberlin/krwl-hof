@@ -3,17 +3,48 @@
  * 
  * Handles loading and switching between different language translations.
  * Supports language detection via:
- * 1. URL slug (e.g., /de/, /en/)
- * 2. Config file setting
+ * 1. URL path (e.g., /en/ → English, / → German)
+ * 2. Config file setting (if URL doesn't specify)
  * 3. Browser language preference
- * 4. Default fallback to English
+ * 4. Default fallback to German (de)
+ * 
+ * URL Routing:
+ * - krwl.in/ → German (default)
+ * - krwl.in/en/ → English
  */
 
 class I18n {
     constructor() {
-        this.currentLocale = 'en';
+        this.currentLocale = 'de'; // Default to German
         this.content = null;
         this.fallbackContent = null;
+    }
+    
+    /**
+     * Detect language from URL path
+     * 
+     * @returns {string|null} Two-letter language code or null if not in URL
+     */
+    detectLanguageFromURL() {
+        const pathname = window.location.pathname;
+        
+        // Check for /en/ or /en (at start of path)
+        if (pathname.startsWith('/en/') || pathname === '/en') {
+            return 'en';
+        }
+        
+        // Check for /de/ or /de (at start of path)
+        if (pathname.startsWith('/de/') || pathname === '/de') {
+            return 'de';
+        }
+        
+        // Root path (/) defaults to German
+        if (pathname === '/' || pathname === '') {
+            return 'de';
+        }
+        
+        // No language in URL, will use other detection methods
+        return null;
     }
     
     /**
@@ -28,34 +59,60 @@ class I18n {
     
     /**
      * Initialize i18n system
-     * Priority: Config > Browser > Default (en)
+     * Priority: URL path > Config > Browser > Default (de)
      * 
      * @param {Object} config - Application config
      * @returns {Promise<void>}
      */
     async init(config) {
-        // Determine which language to use
-        const configLang = config?.app?.language || 'auto';
-        const browserLang = this.detectBrowserLanguage();
+        // Priority 1: Check URL path first
+        const urlLang = this.detectLanguageFromURL();
         
-        // Priority order
-        if (configLang && configLang !== 'auto') {
-            this.currentLocale = configLang;
-            console.log(`[i18n] Using language from config: ${configLang}`);
+        if (urlLang) {
+            this.currentLocale = urlLang;
+            console.log(`[i18n] Using language from URL: ${urlLang}`);
         } else {
-            // Auto-detect from browser
-            const supportedLangs = ['en', 'de'];
-            if (supportedLangs.includes(browserLang)) {
-                this.currentLocale = browserLang;
-                console.log(`[i18n] Using browser language: ${browserLang}`);
+            // Priority 2: Check config
+            const configLang = config?.app?.language || 'auto';
+            const browserLang = this.detectBrowserLanguage();
+            
+            if (configLang && configLang !== 'auto') {
+                this.currentLocale = configLang;
+                console.log(`[i18n] Using language from config: ${configLang}`);
             } else {
-                this.currentLocale = 'en';
-                console.log(`[i18n] Using default language: en`);
+                // Priority 3: Auto-detect from browser
+                const supportedLangs = ['en', 'de'];
+                if (supportedLangs.includes(browserLang)) {
+                    this.currentLocale = browserLang;
+                    console.log(`[i18n] Using browser language: ${browserLang}`);
+                } else {
+                    // Priority 4: Default to German
+                    this.currentLocale = 'de';
+                    console.log(`[i18n] Using default language: de (German)`);
+                }
             }
         }
         
         // Load content files
         await this.loadContent();
+    }
+    
+    /**
+     * Get base path for content files based on current directory
+     * Handles both root (/) and language subdirectories (/en/)
+     * 
+     * @returns {string} Base path for content files
+     */
+    getContentBasePath() {
+        const pathname = window.location.pathname;
+        
+        // If we're in /en/ subdirectory, go up one level
+        if (pathname.startsWith('/en/') || pathname === '/en') {
+            return '../';
+        }
+        
+        // If we're at root or in another path, content is in same directory
+        return '';
     }
     
     /**
@@ -66,20 +123,22 @@ class I18n {
      */
     async loadContent() {
         try {
+            const basePath = this.getContentBasePath();
+            
             // Always load English as fallback
-            const fallbackResponse = await fetch('content.json');
+            const fallbackResponse = await fetch(`${basePath}content.json`);
             this.fallbackContent = await fallbackResponse.json();
             
             // If not English, load the requested language
             if (this.currentLocale !== 'en') {
-                const contentFile = `content.${this.currentLocale}.json`;
+                const contentFile = `${basePath}content.${this.currentLocale}.json`;
                 try {
                     const response = await fetch(contentFile);
                     if (response.ok) {
                         this.content = await response.json();
                         console.log(`[i18n] Loaded ${contentFile}`);
                     } else {
-                        console.warn(`[i18n] Content file ${contentFile} not found, using English`);
+                        console.warn(`[i18n] Content file ${contentFile} not found, using English fallback`);
                         this.content = this.fallbackContent;
                     }
                 } catch (error) {
@@ -94,7 +153,7 @@ class I18n {
             console.error('[i18n] Error loading content files:', error);
             // Create minimal fallback
             this.content = {
-                locale: 'en',
+                locale: 'de',
                 app: { title: 'KRWL HOF Community Events' }
             };
             this.fallbackContent = this.content;
