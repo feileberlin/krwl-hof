@@ -15,7 +15,7 @@ from .utils import (
 from .core.scraper import EventScraper
 from .core.editor import EventEditor
 from .build.site_generator import SiteGenerator
-from .utils.scheduler import ScheduleConfig
+from .scheduler import ScheduleConfig
 
 __all__ = [
     'load_config',
