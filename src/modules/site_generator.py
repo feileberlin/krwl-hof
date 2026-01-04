@@ -1337,7 +1337,8 @@ window.DEBUG_INFO = {json.dumps(debug_info, ensure_ascii=False)};'''
             '',
             '<!-- Layer 3: UI overlays -->',
             dashboard_aside.format(
-                logo_svg=logo_svg
+                logo_svg=logo_svg,
+                app_name=app_name
             ),
             filter_nav.format(
                 logo_svg=logo_svg
