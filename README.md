@@ -48,7 +48,7 @@ pip install -r requirements.txt
 python3 src/event_manager.py dependencies fetch
 
 # Run locally
-cd public
+cd static
 python3 -m http.server 8000
 ```
 
@@ -112,9 +112,50 @@ COMMANDS:
     dependencies fetch        Fetch third-party dependencies
     dependencies check        Check if dependencies are present
     
-    archive                   Archive past events to archived_events.json
+    schema validate           Validate events against schema
+    schema migrate            Migrate events to new schema format
+    schema categories         List all valid event categories
+    
+    cache stats               Show cache statistics
+    cache clear               Clear asset cache
+    cache inspect KEY         Inspect specific cache entry
+    
+    icons                     Show current icon mode
+    icons mode [MODE]         Set or show icon mode (svg-paths | base64)
+    icons switch              Interactive icon mode switcher
+    icons compare             Compare icon modes
+    
+    config validate           Validate configuration file
+    
+    test                      Run all tests
+    test --list               List available test categories and tests
+    test core                 Run core functionality tests
+    test features             Run feature tests
+    test infrastructure       Run infrastructure tests
+    test scraper              Run specific test (e.g., test_scraper)
+    test --verbose            Run tests with verbose output
+    
+    utils                     List all utility commands
+    utils --list              List all utility commands
+    utils kiss-check          Check KISS compliance
+    utils verify-features     Verify features are present
+    utils config-edit         Launch config editor
+    
+    docs                      List all documentation tasks
+    docs --list               List all documentation tasks
+    docs readme               Generate README.md
+    docs demos                Generate demo events
+    docs lint-markdown        Lint markdown files
+    docs generate             Run all generation tasks
+    docs validate             Run all validation tasks
+    
+    archive-monthly           Archive old events based on retention window
+    archive-monthly --dry-run Preview archiving without making changes
+    archive-info              Show archiving configuration and existing archives
+    archive                   Archive past events to archived_events.json (legacy)
     load-examples             Load example data for development
     clear-data                Clear all event data
+    scraper-info              Show scraper capabilities (JSON output for workflows)
     
 OPTIONS:
     -h, --help               Show this help message
@@ -140,6 +181,9 @@ EXAMPLES:
     # Scrape events from sources
     python3 event_manager.py scrape
     
+    # Show scraper capabilities (for workflow introspection)
+    python3 event_manager.py scraper-info
+    
     # List all published events
     python3 event_manager.py list
     
@@ -151,6 +195,38 @@ EXAMPLES:
     
     # Load example data for testing
     python3 event_manager.py load-examples
+    
+    # Run all tests
+    python3 event_manager.py test
+    
+    # Run specific test category
+    python3 event_manager.py test core
+    python3 event_manager.py test features
+    
+    # Run individual test
+    python3 event_manager.py test scraper
+    python3 event_manager.py test translations
+    
+    # List available tests
+    python3 event_manager.py test --list
+    
+    # Run tests with verbose output
+    python3 event_manager.py test --verbose
+    python3 event_manager.py test core --verbose
+    
+    # Run utilities
+    python3 event_manager.py utils --list
+    python3 event_manager.py utils kiss-check
+    python3 event_manager.py utils verify-features --verbose
+    
+    # Documentation tasks
+    python3 event_manager.py docs --list
+    python3 event_manager.py docs readme
+    python3 event_manager.py docs lint-markdown --all
+    python3 event_manager.py docs lint-markdown README.md
+    python3 event_manager.py docs lint-markdown --fix --all
+    python3 event_manager.py docs generate
+    python3 event_manager.py docs validate
     
     # Get help
     python3 event_manager.py --help
@@ -219,7 +295,7 @@ Run tests before committing:
 
 ```bash
 # Feature verification
-python3 -m modules.feature_verifier --verbose
+python3 scripts/verify_features.py --verbose
 
 # Event schema validation
 python3 tests/test_event_schema.py --verbose
@@ -234,7 +310,7 @@ python3 src/event_manager.py test filters --verbose
 python3 tests/test_translations.py --verbose
 
 # KISS principle compliance
-python3 -m modules.kiss_checker --verbose
+python3 scripts/check_kiss.py --verbose
 ```
 
 ## 📝 Project Structure
@@ -257,16 +333,13 @@ krwl-hof/
 │   ├── rejected_events.json # Rejected events
 │   ├── archived_events.json # Past events
 │   ├── events.demo.json # Demo events for testing
-│   ├── i18n/            # Translations
-│   │   ├── content.json     # English translations
-│   │   └── content.de.json  # German translations
-│   ├── templates/       # JSON templates
+│   ├── content.json     # English translations
+│   ├── content.de.json  # German translations
 │   └── old/             # Historical event archives
 ├── src/                 # Python backend
 │   ├── event_manager.py # Main CLI/TUI entry point
-│   ├── modules/         # Modular components
-│   └── tools/           # Standalone utility tools
-├── scripts/             # Shell scripts for hosting setup
+│   └── modules/         # Modular components
+├── scripts/             # Utility scripts
 ├── tests/               # Test suite
 └── README.md            # This file (auto-generated)
 ```
@@ -300,7 +373,7 @@ python3 src/event_manager.py bulk-publish "pending_*"
 python3 src/event_manager.py bulk-reject "pending_*"
 ```
 
-Approved events move to `data/events.json` and appear on the map.
+Approved events move to `assets/json/events.json` and appear on the map.
 
 ### 3. Static Site Generation
 
@@ -312,7 +385,7 @@ python3 src/event_manager.py generate
 python3 src/event_manager.py update
 ```
 
-Output: `public/index.html` (single-file HTML with everything inlined)
+Output: `static/index.html` (single-file HTML with everything inlined)
 
 ## 🕷️ Adding Event Sources
 
@@ -426,10 +499,10 @@ Examples:
 Run the demo event generator script:
 
 ```bash
-python3 src/tools/generate_demo_events.py > data/events.demo.json
+python3 scripts/generate_demo_events.py > data/events.demo.json
 ```
 
-This creates template events with `relative_time` specifications. See inline comments in `src/tools/generate_demo_events.py` for implementation details.
+This creates template events with `relative_time` specifications. See inline comments in `scripts/generate_demo_events.py` for implementation details.
 
 #### Benefits
 
@@ -440,7 +513,7 @@ This creates template events with `relative_time` specifications. See inline com
 - **Backward Compatible**: Real events without `relative_time` work unchanged
 
 For technical implementation details, see inline comments in:
-- `src/tools/generate_demo_events.py` - Template generation logic
+- `scripts/generate_demo_events.py` - Template generation logic
 - `assets/js/app.js` - `processTemplateEvents()` method
 
 ### Screenshot Generation
@@ -482,11 +555,11 @@ with sync_playwright() as p:
 
 #### Complete Screenshot Script
 
-For a full example that generates both mobile and desktop screenshots, see `src/tools/generate_screenshots.py`:
+For a full example that generates both mobile and desktop screenshots, see `scripts/generate_screenshots.py`:
 
 ```bash
 # Generate PWA screenshots
-python3 src/tools/generate_screenshots.py
+python3 scripts/generate_screenshots.py
 ```
 
 This generates:
@@ -501,7 +574,7 @@ For PWA manifest compliance:
 
 For technical implementation details and other automation tools (Puppeteer, Selenium), see inline comments in:
 - `assets/js/app.js` - `markAppAsReady()` method
-- `src/tools/generate_screenshots.py` - Complete implementation
+- `scripts/generate_screenshots.py` - Complete implementation
 
 ## 🤝 Contributing
 
@@ -550,5 +623,5 @@ Built with love for the Hof community. Special thanks to all the local venues an
 
 ---
 
-*Last updated: 2026-01-03 17:05:54*  
-*Auto-generated by `src/tools/docstring_readme.py` • Documentation philosophy: Code comments + CLI help + TUI hints + README*
+*Last updated: 2026-01-04 19:31:58*  
+*Auto-generated by `scripts/generate_readme.py` • Documentation philosophy: Code comments + CLI help + TUI hints + README*
