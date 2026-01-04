@@ -536,9 +536,141 @@ This project follows **strict KISS principles**. Always:
 ### Python Style
 - **Python 3.x** standard library preferred
 - **Type hints**: Not required but appreciated
-- **Docstrings**: Use for modules and complex functions
+- **Docstrings**: **REQUIRED** - Single source of truth for all documentation
 - **Error handling**: Comprehensive try/except blocks
 - **Module structure**: Keep modules under 1000 lines
+
+### Documentation Philosophy: Docstrings as Single Source of Truth
+
+**This project uses Python docstrings as the primary documentation method to avoid duplication.**
+
+#### Why Docstrings?
+- ✅ **No duplication** - Write documentation once, use everywhere
+- ✅ **Always up-to-date** - Documentation lives with the code
+- ✅ **Programmatic access** - Extract with `__doc__` for help text, CLI, and docs generation
+- ✅ **IDE integration** - Hover hints, autocomplete work automatically
+- ✅ **Standard Python** - No custom documentation system needed
+
+#### Docstring Best Practices
+
+**Module-level docstrings** (top of file):
+```python
+"""
+Event Archiving Module - KISS Implementation
+
+Simple monthly event archiving based on config.json settings.
+Archives old events to keep active list manageable.
+"""
+```
+
+**Function/method docstrings** (detailed for public APIs):
+```python
+def archive_events(self, dry_run=False):
+    """
+    Archive old events based on configurable retention window.
+    
+    This command moves events older than the configured retention window
+    (default: 60 days) to monthly archive files. This keeps the active
+    events list manageable and improves site performance.
+    
+    Configuration: config.json → archiving section
+    - retention.active_window_days: How many days to keep active
+    - organization.path: Where to save archives
+    
+    Usage:
+        python3 src/event_manager.py archive-monthly           # Run archiving
+        python3 src/event_manager.py archive-monthly --dry-run # Preview
+    
+    Args:
+        dry_run: If True, show what would be archived without making changes
+        
+    Returns:
+        Dict with results: total_events, archived_count, active_count, etc.
+    """
+```
+
+**Short docstrings** (for internal/simple functions):
+```python
+def _parse_event_date(self, start_str):
+    """Parse event start date string to datetime, return None if invalid."""
+    # Implementation...
+```
+
+#### Using Docstrings for Help Text
+
+Extract docstrings programmatically instead of duplicating text:
+
+```python
+# ❌ BAD: Duplicated help text
+HELP_TEXT = "Archive events based on retention window..."
+def cli_archive():
+    """Archive events based on retention window..."""  # Duplicate!
+
+# ✅ GOOD: Single source of truth
+def cli_archive():
+    """Archive events based on retention window..."""
+    
+# Extract for help:
+print(cli_archive.__doc__)
+```
+
+#### When to Write Detailed Docstrings
+
+1. **Always** - Public functions, CLI commands, API endpoints
+2. **Always** - Modules (top of file)
+3. **Always** - Classes (what they do, how to use them)
+4. **Sometimes** - Complex internal functions (if non-obvious)
+5. **Rarely** - Simple getters/setters, obvious helpers
+
+#### Docstring Format
+
+Use **Google Style** (readable, concise):
+
+```python
+def function(arg1, arg2):
+    """
+    Short one-line summary.
+    
+    Longer explanation if needed. Can span multiple paragraphs.
+    Explain what the function does, why it exists, and how to use it.
+    
+    Args:
+        arg1: Description of arg1
+        arg2: Description of arg2
+        
+    Returns:
+        Description of return value
+        
+    Raises:
+        ValueError: When and why this is raised
+    """
+```
+
+#### Documentation Generation
+
+The project can auto-generate documentation from docstrings:
+
+```bash
+# Generate README from docstrings
+python3 scripts/generate_readme.py
+
+# View function help
+python3 -c "from src.modules.archive_events import EventArchiver; help(EventArchiver.archive_events)"
+```
+
+#### Inline Comments vs Docstrings
+
+- **Docstrings** - WHAT the code does, HOW to use it (external interface)
+- **Comments** - WHY the code does it this way (internal reasoning)
+
+```python
+def archive_events(self, dry_run=False):
+    """Archive old events based on retention window."""  # WHAT it does
+    
+    # KISS: Use simple month-based grouping instead of complex date math
+    # This avoids timezone issues and keeps the code maintainable
+    filename = f"{event_date.strftime('%Y%m')}.json"  # WHY we chose this format
+```
 
 ### JavaScript Style
 - **ES6+** features are okay (async/await, arrow functions, etc.)

@@ -1,18 +1,22 @@
 #!/usr/bin/env python3
 """
-Simplified README Generator for KRWL HOF Community Events
+Docstring-Based README Generator for KRWL HOF Community Events
+
+Generates README.md by extracting documentation from Python docstrings.
+This ensures a single source of truth: docstrings serve as code documentation,
+CLI help text, and README content.
 
 Philosophy: All documentation should be:
-- Code comments (in the source files)
-- CLI --help text (from argparse)
+- Python docstrings (single source of truth)
+- CLI --help text (extracted from docstrings)
 - Inline TUI hints (contextual tooltips)
-- One consolidated README.md (this generates it)
+- One consolidated README.md (generated from docstrings)
 
 No complex validation. No multiple documentation files.
 Keep it simple, stupid (KISS).
 
 Usage:
-    python3 scripts/generate_readme.py [--update-github-about]
+    python3 scripts/docstring_readme.py [--update-github-about]
     
 Options:
     --update-github-about    Also update GitHub repository About section

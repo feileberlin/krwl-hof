@@ -18,6 +18,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from modules.scraper import EventScraper
 from modules.editor import EventEditor
 from modules.site_generator import SiteGenerator
+from modules.archive_events import EventArchiver, print_config_info
 from modules.batch_operations import expand_wildcards, process_in_batches, find_events_by_ids, determine_batch_size
 from modules.utils import (
     load_config, load_events, save_events, 
@@ -241,7 +242,10 @@ COMMANDS:
     docs generate             Run all generation tasks
     docs validate             Run all validation tasks
     
-    archive                   Archive past events to archived_events.json
+    archive-monthly           Archive old events based on retention window
+    archive-monthly --dry-run Preview archiving without making changes
+    archive-info              Show archiving configuration and existing archives
+    archive                   Archive past events to archived_events.json (legacy)
     load-examples             Load example data for development
     clear-data                Clear all event data
     scraper-info              Show scraper capabilities (JSON output for workflows)
@@ -1114,6 +1118,134 @@ def cli_archive_old_events(base_path):
     return 0
 
 
+def cli_archive_monthly(base_path, config, dry_run=False):
+    """
+    Archive old events based on configurable retention window.
+    
+    This command moves events older than the configured retention window
+    (default: 60 days) to monthly archive files. This keeps the active
+    events list manageable and improves site performance.
+    
+    Configuration: config.json → archiving section
+    - retention.active_window_days: How many days to keep active
+    - organization.path: Where to save archives
+    - organization.format: Archive filename format (YYYYMM or YYYY-MM)
+    
+    Usage:
+        python3 src/event_manager.py archive-monthly           # Run archiving
+        python3 src/event_manager.py archive-monthly --dry-run # Preview changes
+    
+    Archives are organized by month (e.g., 202601.json for January 2026)
+    and stored in assets/json/events/archived/
+    
+    Args:
+        base_path: Repository root path
+        config: Loaded configuration
+        dry_run: If True, show what would be archived without making changes
+        
+    Returns:
+        Exit code (0 for success, 1 for error)
+    """
+    try:
+        archiver = EventArchiver(config, base_path)
+        
+        if dry_run:
+            print("🔍 DRY RUN MODE - No changes will be made")
+            print("-" * 60)
+        
+        results = archiver.archive_events(dry_run=dry_run)
+        
+        if not results.get('enabled'):
+            print("ℹ️  Archiving is disabled in config.json")
+            print("   To enable: Set archiving.enabled = true")
+            return 0
+        
+        # Print results
+        print(f"\n{'DRY RUN ' if dry_run else ''}ARCHIVING RESULTS")
+        print("=" * 60)
+        print(f"Total events: {results['total_events']}")
+        print(f"{'Would archive' if dry_run else 'Archived'}: {results['archived_count']}")
+        print(f"Remaining active: {results['active_count']}")
+        print(f"Retention window: {results['retention_days']} days")
+        print(f"Cutoff date: {results['cutoff_date'][:10]}")
+        
+        if results['archived_count'] > 0:
+            if not dry_run:
+                print(f"\n✓ Successfully archived {results['archived_count']} event(s)")
+                print(f"  Archives saved to: {archiver.archive_path}")
+                
+                # List archives
+                archives = archiver.list_archives()
+                if archives:
+                    print(f"\n  Archive files:")
+                    for arch in archives[-5:]:  # Show last 5 archives
+                        print(f"    • {arch['filename']}: {arch['event_count']} events")
+            else:
+                print(f"\n💡 Run without --dry-run to archive these events")
+        else:
+            print("\n✓ No events to archive (all within retention window)")
+        
+        print("=" * 60)
+        return 0
+        
+    except Exception as e:
+        print(f"✗ Error during archiving: {e}")
+        import traceback
+        traceback.print_exc()
+        return 1
+
+
+def cli_archive_info(base_path, config):
+    """
+    Display current event archiving configuration.
+    
+    Shows the archiving settings from config.json including:
+    - Whether archiving is enabled
+    - Retention window (how many days of events stay active)
+    - Schedule (when archiving runs automatically)
+    - Archive organization (path, format, grouping)
+    
+    Usage:
+        python3 src/event_manager.py archive-info
+    
+    This is useful for understanding how archiving works and
+    verifying your configuration before running archiving.
+    
+    Args:
+        base_path: Repository root path
+        config: Loaded configuration
+        
+    Returns:
+        Exit code (0 for success, 1 for error)
+    """
+    try:
+        archiver = EventArchiver(config, base_path)
+        
+        # Use the shared print function from archive_events module
+        print_config_info(archiver)
+        
+        # List existing archives
+        archives = archiver.list_archives()
+        if archives:
+            print("EXISTING ARCHIVES")
+            print("=" * 60)
+            print(f"Total archive files: {len(archives)}")
+            print("\nRecent archives:")
+            for arch in archives[-10:]:  # Show last 10
+                print(f"  • {arch['filename']}: {arch['event_count']} events "
+                      f"(updated: {arch['last_updated'][:10]})")
+            print("=" * 60)
+        else:
+            print("No archive files yet.")
+            print("Run 'archive-monthly' to create archives.")
+        
+        return 0
+        
+    except Exception as e:
+        print(f"✗ Error reading archive configuration: {e}")
+        return 1
+
+
 def cli_test(base_path, test_name=None, verbose=False, list_tests=False):
     """CLI: Run tests
     
@@ -1268,6 +1400,14 @@ def _execute_command(args, base_path, config):
         
         # Otherwise run as individual task
         return 0 if runner.run_task(task_name, task_args) else 1
+    
+    if command == 'archive-monthly':
+        # Archive old events based on config retention window
+        return cli_archive_monthly(base_path, config, dry_run='--dry-run' in (args.args or []))
+    
+    if command == 'archive-info':
+        # Show archiving configuration
+        return cli_archive_info(base_path, config)
     
     if command == 'review':
         app = EventManagerTUI()

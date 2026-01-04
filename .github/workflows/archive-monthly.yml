@@ -1,0 +1,239 @@
+name: Monthly Event Archiving
+
+# Archive old events on the first day of each month
+# Configuration is read from config.json dynamically
+
+on:
+  schedule:
+    # Run on first day of month at 02:00 UTC (configurable in config.json)
+    # This is the default; actual schedule comes from config.json
+    - cron: '0 2 1 * *'  # 02:00 UTC on day 1 of every month
+  
+  workflow_dispatch:  # Manual trigger
+    inputs:
+      dry_run:
+        description: 'Dry run (preview only, no changes)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+# Prevent concurrent archiving
+concurrency:
+  group: "event-archiving"
+  cancel-in-progress: false
+
+jobs:
+  archive:
+    name: Archive Old Events
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for proper git operations
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+      
+      - name: Read archiving configuration
+        id: config
+        run: |
+          echo "📋 Reading archiving configuration from config.json..."
+          
+          # Extract archiving config using jq
+          ENABLED=$(jq -r '.archiving.enabled // true' config.json)
+          RETENTION_DAYS=$(jq -r '.archiving.retention.active_window_days // 60' config.json)
+          SCHEDULE_DAY=$(jq -r '.archiving.schedule.day_of_month // 1' config.json)
+          SCHEDULE_TIME=$(jq -r '.archiving.schedule.time // "02:00"' config.json)
+          SCHEDULE_TZ=$(jq -r '.archiving.schedule.timezone // "UTC"' config.json)
+          ARCHIVE_PATH=$(jq -r '.archiving.organization.path // "assets/json/events/archived"' config.json)
+          
+          # Export to outputs
+          echo "enabled=$ENABLED" >> $GITHUB_OUTPUT
+          echo "retention_days=$RETENTION_DAYS" >> $GITHUB_OUTPUT
+          echo "schedule_day=$SCHEDULE_DAY" >> $GITHUB_OUTPUT
+          echo "schedule_time=$SCHEDULE_TIME" >> $GITHUB_OUTPUT
+          echo "schedule_tz=$SCHEDULE_TZ" >> $GITHUB_OUTPUT
+          echo "archive_path=$ARCHIVE_PATH" >> $GITHUB_OUTPUT
+          
+          # Display configuration
+          echo "✓ Archiving configuration:"
+          echo "  - Enabled: $ENABLED"
+          echo "  - Retention: $RETENTION_DAYS days"
+          echo "  - Schedule: Day $SCHEDULE_DAY at $SCHEDULE_TIME $SCHEDULE_TZ"
+          echo "  - Archive path: $ARCHIVE_PATH"
+          
+          # Add to job summary
+          echo "## 🗄️ Archiving Configuration" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Setting | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|---------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Enabled** | $ENABLED |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Retention** | $RETENTION_DAYS days |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Schedule** | Day $SCHEDULE_DAY at $SCHEDULE_TIME $SCHEDULE_TZ |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Archive Path** | \`$ARCHIVE_PATH\` |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+      
+      - name: Check if archiving is enabled
+        if: steps.config.outputs.enabled != 'true'
+        run: |
+          echo "ℹ️ Archiving is disabled in config.json"
+          echo "To enable: Set archiving.enabled = true in config.json"
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "⚠️ **Archiving Disabled**" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Archiving is disabled in config.json. To enable, set:" >> $GITHUB_STEP_SUMMARY
+          echo '```json' >> $GITHUB_STEP_SUMMARY
+          echo '{"archiving": {"enabled": true}}' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          exit 0
+      
+      - name: Show current archiving info
+        run: |
+          echo "📊 Current archiving status..."
+          python3 src/event_manager.py archive-info | tee archive_info.txt
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📊 Current Status" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat archive_info.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+      
+      - name: Run archiving (dry-run)
+        id: dry_run
+        run: |
+          echo "🔍 Running dry-run to preview archiving..."
+          python3 src/event_manager.py archive-monthly --dry-run | tee dry_run_output.txt
+          
+          # Extract key metrics from output
+          TOTAL=$(grep "Total events:" dry_run_output.txt | awk '{print $3}' || echo "0")
+          ARCHIVED=$(grep "Would archive:" dry_run_output.txt | awk '{print $3}' || echo "0")
+          ACTIVE=$(grep "Remaining active:" dry_run_output.txt | awk '{print $3}' || echo "0")
+          
+          echo "total=$TOTAL" >> $GITHUB_OUTPUT
+          echo "archived=$ARCHIVED" >> $GITHUB_OUTPUT
+          echo "active=$ACTIVE" >> $GITHUB_OUTPUT
+          
+          echo "✓ Dry-run complete:"
+          echo "  - Total events: $TOTAL"
+          echo "  - Would archive: $ARCHIVED events"
+          echo "  - Would remain active: $ACTIVE events"
+          
+          # Add to summary
+          echo "### 🔍 Dry-Run Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Count |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Total events** | $TOTAL |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Would archive** | $ARCHIVED |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Would remain active** | $ACTIVE |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+      
+      - name: Run actual archiving
+        id: archive
+        if: |
+          steps.config.outputs.enabled == 'true' &&
+          steps.dry_run.outputs.archived != '0' &&
+          github.event.inputs.dry_run != 'true'
+        run: |
+          echo "🗄️ Running actual archiving..."
+          python3 src/event_manager.py archive-monthly | tee archive_output.txt
+          
+          # Extract results
+          ARCHIVED=$(grep "Archived:" archive_output.txt | awk '{print $2}' || echo "0")
+          ACTIVE=$(grep "Remaining active:" archive_output.txt | awk '{print $3}' || echo "0")
+          
+          echo "archived=$ARCHIVED" >> $GITHUB_OUTPUT
+          echo "active=$ACTIVE" >> $GITHUB_OUTPUT
+          echo "completed=true" >> $GITHUB_OUTPUT
+          
+          echo "✓ Archiving complete:"
+          echo "  - Archived: $ARCHIVED events"
+          echo "  - Remaining active: $ACTIVE events"
+          
+          # Add to summary
+          echo "### ✅ Archiving Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Archived:** $ARCHIVED events" >> $GITHUB_STEP_SUMMARY
+          echo "- **Remaining active:** $ACTIVE events" >> $GITHUB_STEP_SUMMARY
+          echo "- **Archive location:** \`${{ steps.config.outputs.archive_path }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+      
+      - name: Commit and push changes
+        if: steps.archive.outputs.completed == 'true'
+        run: |
+          # Configure git
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          # Timestamp for commit message
+          TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M UTC')
+          ARCHIVED_COUNT="${{ steps.archive.outputs.archived }}"
+          
+          # Add all archive-related files
+          git add assets/json/events/
+          git add assets/json/events.json  # Updated active events list
+          
+          # Commit with descriptive message
+          git commit -m "chore: archive $ARCHIVED_COUNT old event(s) - $TIMESTAMP" \
+                     -m "" \
+                     -m "Automated monthly archiving:" \
+                     -m "- Archived events: $ARCHIVED_COUNT" \
+                     -m "- Retention window: ${{ steps.config.outputs.retention_days }} days" \
+                     -m "- Archive location: ${{ steps.config.outputs.archive_path }}" \
+                     -m "" \
+                     -m "[skip ci]"
+          
+          # Pull with rebase to handle concurrent changes
+          echo "⬇️ Pulling latest changes..."
+          if ! git pull --rebase origin main; then
+            echo "❌ Rebase failed - manual intervention required"
+            git rebase --abort || true
+            exit 1
+          fi
+          
+          # Push changes
+          echo "⬆️ Pushing archived events..."
+          git push
+          
+          echo "✓ Changes committed and pushed successfully"
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ **Changes committed and pushed**" >> $GITHUB_STEP_SUMMARY
+      
+      - name: No archiving needed
+        if: |
+          steps.config.outputs.enabled == 'true' &&
+          steps.dry_run.outputs.archived == '0'
+        run: |
+          echo "✓ No events to archive - all within retention window"
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ **No archiving needed**" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "All events are within the ${{ steps.config.outputs.retention_days }}-day retention window." >> $GITHUB_STEP_SUMMARY
+      
+      - name: Dry-run only
+        if: github.event.inputs.dry_run == 'true'
+        run: |
+          echo "🔍 Dry-run mode - no changes were made"
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🔍 **Dry-Run Mode**" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "No changes were made to events. Run without dry-run to archive." >> $GITHUB_STEP_SUMMARY

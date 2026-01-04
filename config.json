@@ -654,5 +654,34 @@
   "editor": {
     "require_approval": true,
     "auto_publish": false
+  },
+  
+  "_comment_archiving_section": "────────────────────────────────────────────────────────────────────────────────",
+  "_comment_archiving_help": "EVENT ARCHIVING - Configurable monthly archiving system",
+  "_comment_archiving_usage": "Archive old events to keep active list manageable and improve performance",
+  
+  "archiving": {
+    "enabled": true,
+    "schedule": {
+      "day_of_month": 1,
+      "_comment_day": "Which day of month to run archiving (1-28, default: 1 = first day)",
+      "time": "02:00",
+      "_comment_time": "Time in HH:MM format (24-hour clock, default: 02:00 = 2 AM)",
+      "timezone": "UTC",
+      "_comment_timezone": "Timezone for schedule (default: UTC)"
+    },
+    "retention": {
+      "active_window_days": 60,
+      "_comment_retention": "Events within this many days stay active, older events get archived",
+      "_comment_examples": "Examples: 30 (1 month), 60 (2 months), 90 (3 months)"
+    },
+    "organization": {
+      "group_by": "month",
+      "_comment_group": "How to organize archives (currently supports 'month' only)",
+      "format": "YYYYMM",
+      "_comment_format": "Filename format for archives (e.g., YYYYMM = 202601, YYYY-MM = 2026-01)",
+      "path": "assets/json/events/archived",
+      "_comment_path": "Directory where archived events are stored"
+    }
   }
 }
