@@ -25,12 +25,13 @@ import html
 # Configure module logger
 logger = logging.getLogger(__name__)
 
-# Import Lucide marker base64 map
+# Import Lucide icon maps (markers and dashboard icons)
 try:
-    from .lucide_markers import LUCIDE_MARKER_BASE64_MAP
+    from .lucide_markers import LUCIDE_MARKER_BASE64_MAP, DASHBOARD_ICONS_MAP
 except ImportError:
     # Fallback if lucide_markers module not available
     LUCIDE_MARKER_BASE64_MAP = {}
+    DASHBOARD_ICONS_MAP = {}
 
 try:
     from .linter import Linter
@@ -913,7 +914,8 @@ window.APP_CONFIG = {json.dumps(runtime_config, ensure_ascii=False)};
 window.__INLINE_EVENTS_DATA__ = {{ "events": {json.dumps(events, ensure_ascii=False)} }};
 window.EMBEDDED_CONTENT_EN = {json.dumps(content_en, ensure_ascii=False)};
 window.EMBEDDED_CONTENT_DE = {json.dumps(content_de, ensure_ascii=False)};
-window.MARKER_ICONS = {json.dumps(marker_icons, ensure_ascii=False)};'''
+window.MARKER_ICONS = {json.dumps(marker_icons, ensure_ascii=False)};
+window.DASHBOARD_ICONS = {json.dumps(DASHBOARD_ICONS_MAP, ensure_ascii=False)};'''
         
         # Config loader and fetch interceptor (legacy placeholders - not currently used)
         config_loader = ''
@@ -1040,6 +1042,8 @@ window.MARKER_ICONS = {json.dumps(marker_icons, ensure_ascii=False)};'''
         print("Generating marker icon map...")
         marker_icons = self.generate_marker_icon_map()
         print(f"✅ Embedded {len(marker_icons)} Lucide marker icons as base64 data URLs")
+        
+        print(f"✅ Embedded {len(DASHBOARD_ICONS_MAP)} dashboard icons")
         
         print(f"Building HTML ({len(events)} total events)...")
         
