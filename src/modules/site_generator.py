@@ -343,9 +343,6 @@ class SiteGenerator:
             ),
             'app_css': self.read_text_file(
                 self.base_path / "assets" / 'css' / 'style.css'
-            ),
-            'time_drawer_css': self.read_text_file(
-                self.base_path / "assets" / 'css' / 'time-drawer.css'
             )
         }
     
@@ -357,9 +354,6 @@ class SiteGenerator:
             ),
             'i18n_js': self.read_text_file(
                 self.base_path / "assets" / 'js' / 'i18n.js'
-            ),
-            'time_drawer_js': self.read_text_file(
-                self.base_path / "assets" / 'js' / 'time-drawer.js'
             ),
             'app_js': self.read_text_file(
                 self.base_path / "assets" / 'js' / 'app.js'
@@ -988,8 +982,7 @@ window.DASHBOARD_ICONS = {json.dumps(DASHBOARD_ICONS_MAP, ensure_ascii=False)};'
                 favicon=favicon,
                 design_tokens_css=design_tokens_css,
                 leaflet_css=stylesheets['leaflet_css'],
-                app_css=stylesheets['app_css'],
-                time_drawer_css=stylesheets['time_drawer_css']
+                app_css=stylesheets['app_css']
             ),
             html_body_open.format(
                 noscript_html=noscript_html
@@ -1017,7 +1010,6 @@ window.DASHBOARD_ICONS = {json.dumps(DASHBOARD_ICONS_MAP, ensure_ascii=False)};'
                 leaflet_js=scripts['leaflet_js'],
                 lucide_js=scripts.get('lucide_js', '// Lucide not available'),
                 i18n_js=scripts['i18n_js'],
-                time_drawer_js=scripts['time_drawer_js'],
                 app_js=scripts['app_js']
             )
         ]

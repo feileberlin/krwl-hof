@@ -14,7 +14,6 @@ class EventsApp {
         this.markers = [];
         this.config = null;
         this.currentEdgeDetail = null;
-        this.timeDrawer = null; // Time drawer for dynamic marker sizing
         this.currentEventIndex = null; // Track which event is currently displayed
         this.filters = {
             maxDistance: 5,
@@ -105,16 +104,6 @@ class EventsApp {
             console.warn('Map initialization failed:', error.message);
             // Ensure content is visible even if map fails
             this.showMainContent();
-        }
-        
-        // Initialize TimeDrawer if map is available
-        if (this.map && typeof TimeDrawer !== 'undefined') {
-            this.timeDrawer = new TimeDrawer(
-                this.map,
-                this.events,
-                () => this.getNextSunrise()
-            );
-            this.log('TimeDrawer initialized');
         }
         
         // Get user location
@@ -814,17 +803,7 @@ class EventsApp {
             this.markers = [];
         }
         
-        // Clear TimeDrawer markers if available
-        if (this.timeDrawer) {
-            this.timeDrawer.clearMarkers();
-        }
-        
         if (filteredEvents.length === 0) {
-            // No events to display on map
-            // Disable TimeDrawer when no events
-            if (this.timeDrawer) {
-                this.timeDrawer.disable();
-            }
             return;
         }
         
@@ -838,11 +817,6 @@ class EventsApp {
         
         // Fit map to show all markers
         this.fitMapToMarkers();
-        
-        // Enable/disable TimeDrawer based on filter and event count
-        if (this.timeDrawer) {
-            this.timeDrawer.enable(this.filters.timeFilter, filteredEvents.length);
-        }
     }
     
     updateFilterDescription(count) {
@@ -1128,13 +1102,6 @@ class EventsApp {
         marker.on('click', () => this.showEventDetail(event));
         
         this.markers.push(marker);
-        
-        // Register marker with TimeDrawer if available
-        if (this.timeDrawer) {
-            // Generate a unique ID if event doesn't have one
-            const eventId = event.id || `event_${event.title}_${event.start_time}`;
-            this.timeDrawer.registerMarker(eventId, marker, event);
-        }
     }
     
     navigateEvents(direction) {
@@ -1439,6 +1406,7 @@ class EventsApp {
             dashboardLogo.addEventListener('click', () => {
                 this.dashboardLastFocusedElement = document.activeElement;
                 dashboardMenu.classList.remove('hidden');
+                dashboardMenu.classList.add('visible');
                 dashboardLogo.setAttribute('aria-expanded', 'true');
                 this.updateDashboard(); // Refresh data when opening
                 // Move focus to close button
@@ -1455,6 +1423,7 @@ class EventsApp {
                     e.preventDefault();
                     this.dashboardLastFocusedElement = document.activeElement;
                     dashboardMenu.classList.remove('hidden');
+                    dashboardMenu.classList.add('visible');
                     dashboardLogo.setAttribute('aria-expanded', 'true');
                     this.updateDashboard();
                     // Move focus to close button
@@ -1470,6 +1439,7 @@ class EventsApp {
         if (closeDashboard && dashboardMenu) {
             // Close dashboard on close button
             closeDashboard.addEventListener('click', () => {
+                dashboardMenu.classList.remove('visible');
                 dashboardMenu.classList.add('hidden');
                 if (dashboardLogo) {
                     dashboardLogo.setAttribute('aria-expanded', 'false');
@@ -1484,9 +1454,13 @@ class EventsApp {
         }
         
         if (dashboardMenu) {
-            // Close dashboard on background click (more reliable detection)
+            // Close dashboard on background click (backdrop)
             dashboardMenu.addEventListener('click', (e) => {
-                if (e.target === e.currentTarget) {
+                // Check if click is on the backdrop (::before pseudo-element area)
+                // This works by checking if the click is outside the dashboard-content
+                const dashboardContent = dashboardMenu.querySelector('.dashboard-content');
+                if (dashboardContent && !dashboardContent.contains(e.target)) {
+                    dashboardMenu.classList.remove('visible');
                     dashboardMenu.classList.add('hidden');
                     if (dashboardLogo) {
                         dashboardLogo.setAttribute('aria-expanded', 'false');
@@ -1840,7 +1814,8 @@ class EventsApp {
                 if (eventDetail && !eventDetail.classList.contains('hidden')) {
                     eventDetail.classList.add('hidden');
                     e.preventDefault();
-                } else if (dashboardMenu && !dashboardMenu.classList.contains('hidden')) {
+                } else if (dashboardMenu && dashboardMenu.classList.contains('visible')) {
+                    dashboardMenu.classList.remove('visible');
                     dashboardMenu.classList.add('hidden');
                     if (dashboardLogo) {
                         dashboardLogo.setAttribute('aria-expanded', 'false');
