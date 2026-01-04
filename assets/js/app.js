@@ -2630,10 +2630,9 @@ class EventsApp {
                         
                         if (value === 'geolocation') {
                             // Switch to geolocation
+                            // Keep custom lat/lon in memory so user can switch back
                             this.filters.locationType = 'geolocation';
                             this.filters.selectedPredefinedLocation = null;
-                            this.filters.customLat = null;
-                            this.filters.customLon = null;
                             this.saveFiltersToCookie();
                             if (inputs) inputs.classList.add('hidden');
                             
@@ -2647,11 +2646,10 @@ class EventsApp {
                             
                         } else if (value.startsWith('predefined-')) {
                             // Switch to predefined location
+                            // Keep custom lat/lon in memory so user can switch back
                             const index = parseInt(value.split('-')[1]);
                             this.filters.locationType = 'predefined';
                             this.filters.selectedPredefinedLocation = index;
-                            this.filters.customLat = null;
-                            this.filters.customLon = null;
                             this.saveFiltersToCookie();
                             if (inputs) inputs.classList.add('hidden');
                             
@@ -2670,8 +2668,12 @@ class EventsApp {
                             this.filters.selectedPredefinedLocation = null;
                             if (inputs) {
                                 inputs.classList.remove('hidden');
-                                // Pre-fill with current location if available and no custom values set
-                                if (this.userLocation && !this.filters.customLat && !this.filters.customLon) {
+                                // Pre-fill inputs with saved custom values if they exist
+                                if (this.filters.customLat && this.filters.customLon) {
+                                    dropdown.querySelector('#custom-lat').value = this.filters.customLat.toFixed(4);
+                                    dropdown.querySelector('#custom-lon').value = this.filters.customLon.toFixed(4);
+                                } else if (this.userLocation) {
+                                    // Only fall back to current location if no custom values saved
                                     dropdown.querySelector('#custom-lat').value = this.userLocation.lat.toFixed(4);
                                     dropdown.querySelector('#custom-lon').value = this.userLocation.lon.toFixed(4);
                                 }

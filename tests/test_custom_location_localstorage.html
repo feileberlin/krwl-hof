@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Location localStorage Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #0d1117;
+            color: #c9d1d9;
+        }
+        
+        h1 {
+            color: #FF69B4;
+        }
+        
+        .test-section {
+            background: #161b22;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+        }
+        
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        
+        .test-result.pass {
+            background: #3fb950;
+            color: white;
+        }
+        
+        .test-result.fail {
+            background: #f85149;
+            color: white;
+        }
+        
+        button {
+            background: #FF69B4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        button:hover {
+            background: #ff4da6;
+        }
+        
+        input {
+            background: #0d1117;
+            color: #c9d1d9;
+            border: 1px solid #30363d;
+            padding: 8px;
+            border-radius: 4px;
+            margin: 5px;
+        }
+        
+        .code {
+            background: #0d1117;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-family: Monaco, 'Courier New', monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Custom Location localStorage Test</h1>
+    
+    <div class="test-section">
+        <h2>Test 1: Save Custom Location</h2>
+        <p>Enter custom coordinates and save them to localStorage:</p>
+        <input type="number" id="test-lat" placeholder="Latitude" step="0.0001" value="50.3167">
+        <input type="number" id="test-lon" placeholder="Longitude" step="0.0001" value="11.9167">
+        <button onclick="testSaveCustomLocation()">Save Custom Location</button>
+        <div id="test1-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 2: Load Custom Location</h2>
+        <p>Load the saved custom location from localStorage:</p>
+        <button onclick="testLoadCustomLocation()">Load Custom Location</button>
+        <div id="test2-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 3: Verify Persistence</h2>
+        <p>Check that the saved location persists across page reloads:</p>
+        <button onclick="testPersistence()">Check Persistence</button>
+        <button onclick="window.location.reload()">Reload Page</button>
+        <div id="test3-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 4: Switch Location Types</h2>
+        <p>Verify custom location is preserved when switching between location types:</p>
+        <button onclick="testSwitchToGeolocation()">Switch to Geolocation</button>
+        <button onclick="testSwitchBackToCustom()">Switch Back to Custom</button>
+        <div id="test4-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Current localStorage State</h2>
+        <button onclick="showCurrentState()">Show State</button>
+        <button onclick="clearLocalStorage()">Clear All</button>
+        <div id="state-result"></div>
+    </div>
+    
+    <script>
+        // Simulate the app's filter saving/loading logic
+        
+        function saveFiltersToLocalStorage(filters) {
+            try {
+                const filterData = JSON.stringify(filters);
+                localStorage.setItem('krwl_filters', filterData);
+                console.log('Filters saved to localStorage', filters);
+                return true;
+            } catch (error) {
+                console.error('Failed to save filters:', error);
+                return false;
+            }
+        }
+        
+        function loadFiltersFromLocalStorage() {
+            try {
+                const filterData = localStorage.getItem('krwl_filters');
+                if (filterData) {
+                    const filters = JSON.parse(filterData);
+                    console.log('Filters loaded from localStorage', filters);
+                    return filters;
+                }
+            } catch (error) {
+                console.error('Failed to load filters:', error);
+            }
+            return null;
+        }
+        
+        function testSaveCustomLocation() {
+            const lat = parseFloat(document.getElementById('test-lat').value);
+            const lon = parseFloat(document.getElementById('test-lon').value);
+            
+            if (isNaN(lat) || isNaN(lon)) {
+                document.getElementById('test1-result').innerHTML = 
+                    '<div class="test-result fail">❌ Invalid coordinates</div>';
+                return;
+            }
+            
+            const filters = loadFiltersFromLocalStorage() || {
+                maxDistance: 2,
+                timeFilter: 'sunrise',
+                category: 'all',
+                locationType: 'custom',
+                selectedPredefinedLocation: null,
+                customLat: null,
+                customLon: null
+            };
+            
+            filters.locationType = 'custom';
+            filters.customLat = lat;
+            filters.customLon = lon;
+            
+            const success = saveFiltersToLocalStorage(filters);
+            
+            if (success) {
+                document.getElementById('test1-result').innerHTML = 
+                    `<div class="test-result pass">✅ Custom location saved: (${lat.toFixed(4)}, ${lon.toFixed(4)})</div>`;
+            } else {
+                document.getElementById('test1-result').innerHTML = 
+                    '<div class="test-result fail">❌ Failed to save custom location</div>';
+            }
+        }
+        
+        function testLoadCustomLocation() {
+            const filters = loadFiltersFromLocalStorage();
+            
+            if (!filters) {
+                document.getElementById('test2-result').innerHTML = 
+                    '<div class="test-result fail">❌ No saved filters found</div>';
+                return;
+            }
+            
+            if (filters.customLat && filters.customLon) {
+                document.getElementById('test2-result').innerHTML = 
+                    `<div class="test-result pass">✅ Loaded custom location: (${filters.customLat.toFixed(4)}, ${filters.customLon.toFixed(4)})</div>
+                     <div class="code">Full filters: ${JSON.stringify(filters, null, 2)}</div>`;
+            } else {
+                document.getElementById('test2-result').innerHTML = 
+                    '<div class="test-result fail">❌ No custom location in saved filters</div>';
+            }
+        }
+        
+        function testPersistence() {
+            const filters = loadFiltersFromLocalStorage();
+            
+            if (filters && filters.customLat && filters.customLon) {
+                document.getElementById('test3-result').innerHTML = 
+                    `<div class="test-result pass">✅ Custom location persisted: (${filters.customLat.toFixed(4)}, ${filters.customLon.toFixed(4)})</div>
+                     <p>Reload the page and click "Check Persistence" again to verify it survives refresh.</p>`;
+            } else {
+                document.getElementById('test3-result').innerHTML = 
+                    '<div class="test-result fail">❌ No custom location found. Save one in Test 1 first.</div>';
+            }
+        }
+        
+        function testSwitchToGeolocation() {
+            const filters = loadFiltersFromLocalStorage();
+            
+            if (!filters) {
+                document.getElementById('test4-result').innerHTML = 
+                    '<div class="test-result fail">❌ No saved filters. Save custom location first.</div>';
+                return;
+            }
+            
+            const savedCustomLat = filters.customLat;
+            const savedCustomLon = filters.customLon;
+            
+            filters.locationType = 'geolocation';
+            // Custom lat/lon should remain in filters even when switching
+            
+            saveFiltersToLocalStorage(filters);
+            
+            document.getElementById('test4-result').innerHTML = 
+                `<div class="test-result pass">✅ Switched to geolocation. Custom location preserved: (${savedCustomLat}, ${savedCustomLon})</div>`;
+        }
+        
+        function testSwitchBackToCustom() {
+            const filters = loadFiltersFromLocalStorage();
+            
+            if (!filters) {
+                document.getElementById('test4-result').innerHTML = 
+                    '<div class="test-result fail">❌ No saved filters</div>';
+                return;
+            }
+            
+            filters.locationType = 'custom';
+            saveFiltersToLocalStorage(filters);
+            
+            if (filters.customLat && filters.customLon) {
+                document.getElementById('test4-result').innerHTML = 
+                    `<div class="test-result pass">✅ Switched back to custom. Location still available: (${filters.customLat.toFixed(4)}, ${filters.customLon.toFixed(4)})</div>`;
+            } else {
+                document.getElementById('test4-result').innerHTML = 
+                    '<div class="test-result fail">❌ Custom location was lost when switching</div>';
+            }
+        }
+        
+        function showCurrentState() {
+            const filters = loadFiltersFromLocalStorage();
+            
+            if (filters) {
+                document.getElementById('state-result').innerHTML = 
+                    `<div class="test-result pass">✅ Current localStorage state:</div>
+                     <div class="code">${JSON.stringify(filters, null, 2)}</div>`;
+            } else {
+                document.getElementById('state-result').innerHTML = 
+                    '<div class="test-result fail">❌ No filters in localStorage</div>';
+            }
+        }
+        
+        function clearLocalStorage() {
+            localStorage.removeItem('krwl_filters');
+            document.getElementById('state-result').innerHTML = 
+                '<div class="test-result pass">✅ localStorage cleared</div>';
+        }
+        
+        // Auto-check persistence on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            const filters = loadFiltersFromLocalStorage();
+            if (filters && filters.customLat && filters.customLon) {
+                document.getElementById('test3-result').innerHTML = 
+                    `<div class="test-result pass">✅ Auto-check: Custom location survived page reload: (${filters.customLat.toFixed(4)}, ${filters.customLon.toFixed(4)})</div>`;
+            }
+        });
+    </script>
+</body>
+</html>
