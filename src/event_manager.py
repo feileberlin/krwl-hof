@@ -226,6 +226,19 @@ COMMANDS:
     test scraper              Run specific test (e.g., test_scraper)
     test --verbose            Run tests with verbose output
     
+    utils                     List all utility commands
+    utils --list              List all utility commands
+    utils kiss-check          Check KISS compliance
+    utils verify-features     Verify features are present
+    utils config-edit         Launch config editor
+    
+    docs                      List all documentation tasks
+    docs --list               List all documentation tasks
+    docs readme               Generate README.md
+    docs demos                Generate demo events
+    docs generate             Run all generation tasks
+    docs validate             Run all validation tasks
+    
     archive                   Archive past events to archived_events.json
     load-examples             Load example data for development
     clear-data                Clear all event data
@@ -283,6 +296,17 @@ EXAMPLES:
     # Run tests with verbose output
     python3 event_manager.py test --verbose
     python3 event_manager.py test core --verbose
+    
+    # Run utilities
+    python3 event_manager.py utils --list
+    python3 event_manager.py utils kiss-check
+    python3 event_manager.py utils verify-features --verbose
+    
+    # Documentation tasks
+    python3 event_manager.py docs --list
+    python3 event_manager.py docs readme
+    python3 event_manager.py docs generate
+    python3 event_manager.py docs validate
     
     # Get help
     python3 event_manager.py --help
@@ -1226,6 +1250,44 @@ def _execute_command(args, base_path, config):
         test_name = test_args[0] if test_args else None
         
         return cli_test(base_path, test_name=test_name, verbose=verbose, list_tests=list_tests)
+    
+    if command == 'utils':
+        # Delegate to utility runner module (KISS: keep main CLI simple)
+        from modules.utility_runner import UtilityRunner
+        
+        runner = UtilityRunner(base_path)
+        
+        # Check for --list flag
+        if not args.args or '--list' in args.args:
+            runner.list_utilities()
+            return 0
+        
+        # Run specific utility with remaining args
+        utility_name = args.args[0]
+        utility_args = args.args[1:]
+        return 0 if runner.run_utility(utility_name, utility_args) else 1
+    
+    if command == 'docs':
+        # Delegate to documentation runner module (KISS: keep main CLI simple)
+        from modules.docs_runner import DocsRunner
+        
+        runner = DocsRunner(base_path)
+        
+        # Check for --list flag
+        if not args.args or '--list' in args.args:
+            runner.list_tasks()
+            return 0
+        
+        # Run specific task or category with remaining args
+        task_name = args.args[0]
+        task_args = args.args[1:]
+        
+        # Check if it's a category
+        if task_name in runner.DOCS_TASKS:
+            return 0 if runner.run_category(task_name) else 1
+        
+        # Otherwise run as individual task
+        return 0 if runner.run_task(task_name, task_args) else 1
     
     if command == 'review':
         app = EventManagerTUI()
