@@ -46,11 +46,28 @@ BLACKS & GREYS:
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-weight: 400;
     background: var(--color-bg-primary);
     color: var(--color-text-primary);
     overflow: hidden;
 }
+
+/* Typography - Roboto Font Weights */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700; /* Roboto Bold for headings */
+}
+
+strong, b {
+    font-weight: 700; /* Roboto Bold for emphasis */
+}
+
+/* Medium weight for sub-emphasis */
+.font-medium {
+    font-weight: 500; /* Roboto Medium */
+}
+
 
 #app {
     height: var(--app-height);
@@ -589,7 +606,7 @@ body {
     border-radius: 8px;
     padding: 1rem;
     margin-bottom: 1rem;
-    font-family: 'Monaco', 'Courier New', monospace;
+    font-family: 'Roboto Mono', 'Monaco', 'Courier New', monospace;
     position: relative;
 }
 
@@ -611,7 +628,7 @@ body {
 
 .debug-git-hash {
     font-size: 1.2em;
-    font-weight: bold;
+    font-weight: 700; /* Roboto Bold */
     color: #FF69B4;
     margin-bottom: 0.5rem;
     margin-top: 0.5rem;
@@ -645,6 +662,7 @@ body {
     color: #FF69B4;
     text-transform: uppercase;
     font-size: 0.9em;
+    font-weight: 700; /* Roboto Bold */
 }
 
 .debug-commit-message {
@@ -660,7 +678,7 @@ body {
 
 /* Unix top-style debug output - Barbie Edition */
 .debug-top-style {
-    font-family: 'Monaco', 'Courier New', monospace;
+    font-family: 'Roboto Mono', 'Monaco', 'Courier New', monospace;
     font-size: 0.85em;
     background: linear-gradient(180deg, #1a0a12 0%, #0d1117 100%);
     border: 2px solid #FF69B4;
@@ -672,7 +690,7 @@ body {
 
 .debug-top-header {
     color: #FF69B4;
-    font-weight: bold;
+    font-weight: 700; /* Roboto Bold */
     text-transform: uppercase;
     letter-spacing: 0.05em;
     border-bottom: 2px solid #FF69B4;
@@ -717,7 +735,7 @@ body {
     display: inline-block;
     padding: 3px 10px;
     border-radius: 3px;
-    font-weight: bold;
+    font-weight: 700; /* Roboto Bold */
     font-size: 0.95em;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -788,12 +806,12 @@ body {
 #debug-event-counts-archived,
 #debug-event-counts-total {
     color: #FF69B4;
-    font-weight: bold;
+    font-weight: 700; /* Roboto Bold */
 }
 
 #debug-caching.cache-enabled {
     color: #4CAF50;
-    font-weight: bold;
+    font-weight: 700; /* Roboto Bold */
     text-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
 }
 
