@@ -889,11 +889,14 @@ class EventsApp {
     
     getNextFullMoonMorning() {
         // Calculate the morning (6am) after the next full moon following next Sunday
-        const nextSunday = this.getNextSundayPrimetime();
+        // Create a new Date to avoid modifying the return value of getNextSundayPrimetime()
+        const nextSunday = new Date(this.getNextSundayPrimetime().getTime());
         // Set to start of Sunday for comparison
         nextSunday.setHours(0, 0, 0, 0);
         
         // Known full moon reference: January 6, 2000, 18:14 UTC
+        // Source: US Naval Observatory astronomical data
+        // Accuracy: ±12 hours (sufficient for event filtering, not astronomical precision)
         const knownFullMoon = new Date(Date.UTC(2000, 0, 6, 18, 14, 0));
         
         // Lunar cycle length in milliseconds (29.53058770576 days)
@@ -2021,6 +2024,10 @@ class EventsApp {
                     return;
                 }
                 
+                // TODO: Internationalize dropdown options
+                // Currently using hardcoded English text to match existing pattern
+                // Translation keys exist in content.json: time_ranges.sunday-primetime, time_ranges.full-moon
+                // Future: Use i18n.t('time_ranges.sunday-primetime') when i18n is fully integrated
                 const content = `
                     <select id="time-filter">
                         <option value="sunrise">Next Sunrise (6 AM)</option>
