@@ -812,6 +812,14 @@ class EventsApp {
                 }
                 return sunrise;
                 
+            case 'sunday-primetime':
+                // Next Sunday at 20:15 (prime time)
+                return this.getNextSundayPrimetime();
+                
+            case 'full-moon':
+                // Until 6am of the day following the next full moon after next Sunday
+                return this.getNextFullMoonMorning();
+                
             case '6h':
                 return new Date(now.getTime() + 6 * 60 * 60 * 1000);
                 
@@ -844,6 +852,72 @@ class EventsApp {
         }
         
         return sunrise;
+    }
+    
+    getNextSundayPrimetime() {
+        // Calculate next Sunday at 20:15 (prime time)
+        const now = new Date();
+        const result = new Date(now);
+        
+        // Get current day of week (0 = Sunday, 1 = Monday, etc.)
+        const currentDay = now.getDay();
+        
+        // Calculate days until next Sunday
+        let daysUntilSunday;
+        if (currentDay === 0) {
+            // It's Sunday - check if we're past 20:15
+            const currentTime = now.getHours() * 60 + now.getMinutes();
+            const primetimeMinutes = 20 * 60 + 15;
+            
+            if (currentTime >= primetimeMinutes) {
+                // Past 20:15 on Sunday, go to next Sunday
+                daysUntilSunday = 7;
+            } else {
+                // Before 20:15 on Sunday, use today
+                daysUntilSunday = 0;
+            }
+        } else {
+            // Calculate days to next Sunday (1-6 days ahead)
+            daysUntilSunday = 7 - currentDay;
+        }
+        
+        result.setDate(result.getDate() + daysUntilSunday);
+        result.setHours(20, 15, 0, 0);
+        
+        return result;
+    }
+    
+    getNextFullMoonMorning() {
+        // Calculate the morning (6am) after the next full moon following next Sunday
+        const nextSunday = this.getNextSundayPrimetime();
+        // Set to start of Sunday for comparison
+        nextSunday.setHours(0, 0, 0, 0);
+        
+        // Known full moon reference: January 6, 2000, 18:14 UTC
+        const knownFullMoon = new Date(Date.UTC(2000, 0, 6, 18, 14, 0));
+        
+        // Lunar cycle length in milliseconds (29.53058770576 days)
+        const lunarCycle = 29.53058770576 * 24 * 60 * 60 * 1000;
+        
+        // Calculate number of cycles since the known full moon
+        const now = new Date();
+        const timeSinceKnownFullMoon = now.getTime() - knownFullMoon.getTime();
+        const cyclesSinceKnown = Math.floor(timeSinceKnownFullMoon / lunarCycle);
+        
+        // Calculate approximate next full moons
+        let fullMoon = new Date(knownFullMoon.getTime() + cyclesSinceKnown * lunarCycle);
+        
+        // Find the first full moon after next Sunday
+        while (fullMoon <= nextSunday) {
+            fullMoon = new Date(fullMoon.getTime() + lunarCycle);
+        }
+        
+        // Set to 6am of the day after the full moon
+        const dayAfterFullMoon = new Date(fullMoon);
+        dayAfterFullMoon.setDate(dayAfterFullMoon.getDate() + 1);
+        dayAfterFullMoon.setHours(6, 0, 0, 0);
+        
+        return dayAfterFullMoon;
     }
     
     filterEvents() {
@@ -991,6 +1065,12 @@ class EventsApp {
             switch (this.filters.timeFilter) {
                 case 'sunrise':
                     timeDescription = 'till sunrise';
+                    break;
+                case 'sunday-primetime':
+                    timeDescription = "till Sunday's primetime";
+                    break;
+                case 'full-moon':
+                    timeDescription = 'till next full moon';
                     break;
                 case '6h':
                     timeDescription = 'in the next 6 hours';
@@ -1944,6 +2024,8 @@ class EventsApp {
                 const content = `
                     <select id="time-filter">
                         <option value="sunrise">Next Sunrise (6 AM)</option>
+                        <option value="sunday-primetime">Till Sunday's Primetime (20:15)</option>
+                        <option value="full-moon">Till Next Full Moon</option>
                         <option value="6h">Next 6 hours</option>
                         <option value="12h">Next 12 hours</option>
                         <option value="24h">Next 24 hours</option>
