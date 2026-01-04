@@ -1,1 +1,0 @@
-"""Core event management modules"""
