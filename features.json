@@ -954,13 +954,13 @@
     {
       "id": "event-archiving",
       "name": "Configurable Monthly Event Archiving",
-      "description": "Automatically archive old events based on configurable retention window (default: 60 days). Events are organized by month into archive files (e.g., 202601.json) to keep the active events list manageable and improve performance. Configuration is entirely in config.json with GitHub Actions integration for automated monthly runs.",
+      "description": "Automatically archive old events based on configurable retention window (default: 60 days). Events are organized by month into archive files (e.g., 202601.json) to keep the active events list manageable and improve performance. Configuration is entirely in config.json with GitHub Actions integration via unified website-maintenance workflow.",
       "category": "backend",
       "implemented": true,
       "files": [
         "src/modules/archive_events.py",
         "src/event_manager.py",
-        ".github/workflows/archive-monthly.yml",
+        ".github/workflows/website-maintenance.yml",
         "tests/test_archive_events.py"
       ],
       "config_keys": [
@@ -984,14 +984,14 @@
           "description": "CLI commands for archiving and configuration display"
         },
         {
-          "file": ".github/workflows/archive-monthly.yml",
-          "pattern": "schedule.*cron.*1 \\* \\*|archive-monthly|retention_days",
-          "description": "Monthly archiving workflow with dynamic config reading"
+          "file": ".github/workflows/website-maintenance.yml",
+          "pattern": "archive-monthly|retention_days",
+          "description": "Monthly archiving job in unified workflow"
         }
       ],
       "test_method": "automated",
       "test_file": "tests/test_archive_events.py",
-      "test_instructions": "1. Run archiving tests: python3 tests/test_archive_events.py\n2. Test dry-run: python3 src/event_manager.py archive-monthly --dry-run\n3. View configuration: python3 src/event_manager.py archive-info\n4. Test with different retention: Edit config.json → archiving.retention.active_window_days\n5. Verify archives created: Check assets/json/events/archived/ directory\n6. Test GitHub Actions: Trigger archive-monthly workflow manually with dry-run option",
+      "test_instructions": "1. Run archiving tests: python3 tests/test_archive_events.py\n2. Test dry-run: python3 src/event_manager.py archive-monthly --dry-run\n3. View configuration: python3 src/event_manager.py archive-info\n4. Test with different retention: Edit config.json → archiving.retention.active_window_days\n5. Verify archives created: Check assets/json/events/archived/ directory\n6. Test GitHub Actions: Trigger website-maintenance workflow with archive mode",
       "cli_command": "python3 src/event_manager.py archive-monthly --dry-run"
     }
   ]
