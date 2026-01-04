@@ -209,7 +209,9 @@ Users perceive smoothness when:
 - ✅ Start and end are gentle (not abrupt)
 - ✅ Multiple elements coordinate well
 
-**Our implementation passes all criteria.** ✅
+> Note: These perception criteria are derived from general UX/animation best practices and have not yet been validated by user testing specific to this implementation.
+
+**Our implementation is designed to satisfy all of the above criteria based on internal review.** For empirical validation in your context, conduct usability testing or user research focused on perceived animation smoothness. ✅
 
 ---
 

@@ -1491,15 +1491,27 @@ class EventsApp {
                 // Step 1: Expand filter bar (triggers CSS transition)
                 if (filterBar) {
                     filterBar.classList.add('dashboard-opening');
+                    
+                    // Step 2: Wait for expansion to complete using transitionend event
+                    await new Promise(resolve => {
+                        const handleTransitionEnd = (e) => {
+                            // Only resolve when the filter bar's transition ends (not child elements)
+                            if (e.target === filterBar) {
+                                filterBar.removeEventListener('transitionend', handleTransitionEnd);
+                                resolve();
+                            }
+                        };
+                        filterBar.addEventListener('transitionend', handleTransitionEnd);
+                        
+                        // Fallback timeout in case transitionend doesn't fire
+                        setTimeout(resolve, this.DASHBOARD_EXPANSION_DURATION + 100);
+                    });
                 }
-                
-                // Step 2: Wait for expansion to complete
-                await new Promise(resolve => setTimeout(resolve, this.DASHBOARD_EXPANSION_DURATION));
                 
                 // Step 3: Show dashboard and remove hidden class
                 dashboardMenu.classList.remove('hidden');
                 
-                // Force reflow to ensure transition works
+                // Force reflow to ensure CSS transition is applied
                 dashboardMenu.offsetHeight;
                 
                 // Step 4: Trigger fade-in animation
@@ -1508,16 +1520,31 @@ class EventsApp {
                 dashboardLogo.setAttribute('aria-expanded', 'true');
                 this.updateDashboard(); // Refresh data when opening
                 
-                // Move focus to close button after fade-in
+                // Move focus to close button after fade-in using transitionend
+                const handleDashboardTransitionEnd = (e) => {
+                    if (e.target === dashboardMenu || e.target.classList.contains('dashboard-content')) {
+                        dashboardMenu.removeEventListener('transitionend', handleDashboardTransitionEnd);
+                        if (closeDashboard) {
+                            closeDashboard.focus();
+                        }
+                        // Leaflet Best Practice: Invalidate map size after UI changes
+                        if (this.map) {
+                            this.map.invalidateSize({ animate: false });
+                        }
+                    }
+                };
+                dashboardMenu.addEventListener('transitionend', handleDashboardTransitionEnd);
+                
+                // Fallback timeout
                 setTimeout(() => {
-                    if (closeDashboard) {
+                    dashboardMenu.removeEventListener('transitionend', handleDashboardTransitionEnd);
+                    if (closeDashboard && document.activeElement !== closeDashboard) {
                         closeDashboard.focus();
                     }
-                    // Leaflet Best Practice: Invalidate map size after UI changes
                     if (this.map) {
                         this.map.invalidateSize({ animate: false });
                     }
-                }, this.DASHBOARD_FADE_DURATION);
+                }, this.DASHBOARD_FADE_DURATION + 100);
                 
                 // Add focus trap
                 document.addEventListener('keydown', this.dashboardTrapFocus);
@@ -1535,25 +1562,48 @@ class EventsApp {
                     // Step 1: Expand filter bar
                     if (filterBar) {
                         filterBar.classList.add('dashboard-opening');
+                        
+                        // Step 2: Wait for expansion using transitionend event
+                        await new Promise(resolve => {
+                            const handleTransitionEnd = (e) => {
+                                if (e.target === filterBar) {
+                                    filterBar.removeEventListener('transitionend', handleTransitionEnd);
+                                    resolve();
+                                }
+                            };
+                            filterBar.addEventListener('transitionend', handleTransitionEnd);
+                            
+                            // Fallback timeout
+                            setTimeout(resolve, this.DASHBOARD_EXPANSION_DURATION + 100);
+                        });
                     }
-                    
-                    // Step 2: Wait for expansion
-                    await new Promise(resolve => setTimeout(resolve, this.DASHBOARD_EXPANSION_DURATION));
                     
                     // Step 3: Show dashboard
                     dashboardMenu.classList.remove('hidden');
-                    dashboardMenu.offsetHeight; // Force reflow
+                    dashboardMenu.offsetHeight; // Force reflow to ensure CSS transition is applied
                     dashboardMenu.classList.add('visible');
                     
                     dashboardLogo.setAttribute('aria-expanded', 'true');
                     this.updateDashboard();
                     
-                    // Move focus after fade-in
+                    // Move focus after fade-in using transitionend
+                    const handleDashboardTransitionEnd = (e) => {
+                        if (e.target === dashboardMenu || e.target.classList.contains('dashboard-content')) {
+                            dashboardMenu.removeEventListener('transitionend', handleDashboardTransitionEnd);
+                            if (closeDashboard) {
+                                closeDashboard.focus();
+                            }
+                        }
+                    };
+                    dashboardMenu.addEventListener('transitionend', handleDashboardTransitionEnd);
+                    
+                    // Fallback timeout
                     setTimeout(() => {
-                        if (closeDashboard) {
+                        dashboardMenu.removeEventListener('transitionend', handleDashboardTransitionEnd);
+                        if (closeDashboard && document.activeElement !== closeDashboard) {
                             closeDashboard.focus();
                         }
-                    }, this.DASHBOARD_FADE_DURATION);
+                    }, this.DASHBOARD_FADE_DURATION + 100);
                     
                     // Add focus trap
                     document.addEventListener('keydown', this.dashboardTrapFocus);
@@ -1569,8 +1619,19 @@ class EventsApp {
                 // Step 1: Fade out dashboard
                 dashboardMenu.classList.remove('visible');
                 
-                // Step 2: Wait for fade to complete
-                await new Promise(resolve => setTimeout(resolve, this.DASHBOARD_FADE_DURATION));
+                // Step 2: Wait for fade to complete using transitionend
+                await new Promise(resolve => {
+                    const handleTransitionEnd = (e) => {
+                        if (e.target === dashboardMenu || e.target.classList.contains('dashboard-content')) {
+                            dashboardMenu.removeEventListener('transitionend', handleTransitionEnd);
+                            resolve();
+                        }
+                    };
+                    dashboardMenu.addEventListener('transitionend', handleTransitionEnd);
+                    
+                    // Fallback timeout
+                    setTimeout(resolve, this.DASHBOARD_FADE_DURATION + 100);
+                });
                 
                 // Step 3: Hide dashboard
                 dashboardMenu.classList.add('hidden');
@@ -1587,16 +1648,33 @@ class EventsApp {
                 // Remove focus trap
                 document.removeEventListener('keydown', this.dashboardTrapFocus);
                 
-                // Return focus to logo after collapse animation
-                setTimeout(() => {
-                    if (this.dashboardLastFocusedElement) {
-                        this.dashboardLastFocusedElement.focus();
-                    }
-                    // Leaflet Best Practice: Invalidate map size after UI changes
-                    if (this.map) {
-                        this.map.invalidateSize({ animate: false });
-                    }
-                }, this.DASHBOARD_EXPANSION_DURATION);
+                // Return focus to logo after collapse animation using transitionend
+                if (filterBar) {
+                    const handleCollapseEnd = (e) => {
+                        if (e.target === filterBar) {
+                            filterBar.removeEventListener('transitionend', handleCollapseEnd);
+                            if (this.dashboardLastFocusedElement) {
+                                this.dashboardLastFocusedElement.focus();
+                            }
+                            // Leaflet Best Practice: Invalidate map size after UI changes
+                            if (this.map) {
+                                this.map.invalidateSize({ animate: false });
+                            }
+                        }
+                    };
+                    filterBar.addEventListener('transitionend', handleCollapseEnd);
+                    
+                    // Fallback timeout
+                    setTimeout(() => {
+                        filterBar.removeEventListener('transitionend', handleCollapseEnd);
+                        if (this.dashboardLastFocusedElement && document.activeElement !== this.dashboardLastFocusedElement) {
+                            this.dashboardLastFocusedElement.focus();
+                        }
+                        if (this.map) {
+                            this.map.invalidateSize({ animate: false });
+                        }
+                    }, this.DASHBOARD_EXPANSION_DURATION + 100);
+                }
             });
         }
         
@@ -1608,7 +1686,17 @@ class EventsApp {
                     
                     // Fade out dashboard
                     dashboardMenu.classList.remove('visible');
-                    await new Promise(resolve => setTimeout(resolve, this.DASHBOARD_FADE_DURATION));
+                    
+                    await new Promise(resolve => {
+                        const handleTransitionEnd = (e) => {
+                            if (e.target === dashboardMenu || e.target.classList.contains('dashboard-content')) {
+                                dashboardMenu.removeEventListener('transitionend', handleTransitionEnd);
+                                resolve();
+                            }
+                        };
+                        dashboardMenu.addEventListener('transitionend', handleTransitionEnd);
+                        setTimeout(resolve, this.DASHBOARD_FADE_DURATION + 100);
+                    });
                     
                     // Hide dashboard
                     dashboardMenu.classList.add('hidden');
@@ -1625,12 +1713,25 @@ class EventsApp {
                     // Remove focus trap
                     document.removeEventListener('keydown', this.dashboardTrapFocus);
                     
-                    // Return focus after collapse
-                    setTimeout(() => {
-                        if (this.dashboardLastFocusedElement) {
-                            this.dashboardLastFocusedElement.focus();
-                        }
-                    }, this.DASHBOARD_EXPANSION_DURATION);
+                    // Return focus after collapse using transitionend
+                    if (filterBar) {
+                        const handleCollapseEnd = (e) => {
+                            if (e.target === filterBar) {
+                                filterBar.removeEventListener('transitionend', handleCollapseEnd);
+                                if (this.dashboardLastFocusedElement) {
+                                    this.dashboardLastFocusedElement.focus();
+                                }
+                            }
+                        };
+                        filterBar.addEventListener('transitionend', handleCollapseEnd);
+                        
+                        setTimeout(() => {
+                            filterBar.removeEventListener('transitionend', handleCollapseEnd);
+                            if (this.dashboardLastFocusedElement && document.activeElement !== this.dashboardLastFocusedElement) {
+                                this.dashboardLastFocusedElement.focus();
+                            }
+                        }, this.DASHBOARD_EXPANSION_DURATION + 100);
+                    }
                 }
             });
         }
@@ -1975,16 +2076,34 @@ class EventsApp {
                     eventDetail.classList.add('hidden');
                     e.preventDefault();
                 } else if (dashboardMenu && !dashboardMenu.classList.contains('hidden')) {
-                    // Close dashboard with animation
+                    // Close dashboard with animation using transitionend
                     const filterBar = document.getElementById('event-filter-bar');
                     
                     dashboardMenu.classList.remove('visible');
-                    setTimeout(() => {
-                        dashboardMenu.classList.add('hidden');
-                        if (filterBar) {
-                            filterBar.classList.remove('dashboard-opening');
+                    
+                    // Wait for dashboard fade using transitionend
+                    const handleDashboardFade = (event) => {
+                        if (event.target === dashboardMenu || event.target.classList.contains('dashboard-content')) {
+                            dashboardMenu.removeEventListener('transitionend', handleDashboardFade);
+                            
+                            dashboardMenu.classList.add('hidden');
+                            if (filterBar) {
+                                filterBar.classList.remove('dashboard-opening');
+                            }
                         }
-                    }, this.DASHBOARD_FADE_DURATION);
+                    };
+                    dashboardMenu.addEventListener('transitionend', handleDashboardFade);
+                    
+                    // Fallback timeout
+                    setTimeout(() => {
+                        dashboardMenu.removeEventListener('transitionend', handleDashboardFade);
+                        if (!dashboardMenu.classList.contains('hidden')) {
+                            dashboardMenu.classList.add('hidden');
+                            if (filterBar) {
+                                filterBar.classList.remove('dashboard-opening');
+                            }
+                        }
+                    }, this.DASHBOARD_FADE_DURATION + 100);
                     
                     if (dashboardLogo) {
                         dashboardLogo.setAttribute('aria-expanded', 'false');
@@ -1995,12 +2114,25 @@ class EventsApp {
                         document.removeEventListener('keydown', this.dashboardTrapFocus);
                     }
                     
-                    // Return focus after collapse
-                    setTimeout(() => {
-                        if (this.dashboardLastFocusedElement) {
-                            this.dashboardLastFocusedElement.focus();
-                        }
-                    }, this.DASHBOARD_FADE_DURATION + this.DASHBOARD_EXPANSION_DURATION);
+                    // Return focus after collapse using transitionend
+                    if (filterBar) {
+                        const handleCollapse = (event) => {
+                            if (event.target === filterBar) {
+                                filterBar.removeEventListener('transitionend', handleCollapse);
+                                if (this.dashboardLastFocusedElement) {
+                                    this.dashboardLastFocusedElement.focus();
+                                }
+                            }
+                        };
+                        filterBar.addEventListener('transitionend', handleCollapse);
+                        
+                        setTimeout(() => {
+                            filterBar.removeEventListener('transitionend', handleCollapse);
+                            if (this.dashboardLastFocusedElement && document.activeElement !== this.dashboardLastFocusedElement) {
+                                this.dashboardLastFocusedElement.focus();
+                            }
+                        }, this.DASHBOARD_FADE_DURATION + this.DASHBOARD_EXPANSION_DURATION + 100);
+                    }
                     
                     e.preventDefault();
                 }

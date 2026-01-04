@@ -3,7 +3,7 @@
 /* Interactive filter bar */
 #event-filter-bar {
     position: fixed;
-    /* Using 10px for optimal visual balance between compact (8px) and spacious (16px) */
+    /* Our standard spacing steps are 8px (compact) and 16px (spacious); 10px is an intentional deviation here to balance visibility with screen-edge spacing for the fixed filter bar. */
     top: 10px;
     left: 10px;
     right: auto;
