@@ -1214,3 +1214,177 @@ strong, b {
         font-size: 0.85rem;
     }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SPEECH BUBBLES - Event details shown on page load
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.speech-bubble {
+    position: absolute;
+    background: rgba(13, 17, 23, 0.95);
+    backdrop-filter: blur(10px);
+    border: 2px solid var(--color-primary);
+    border-radius: 12px;
+    padding: 12px;
+    width: 220px;
+    z-index: 1000;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5),
+                0 0 15px rgba(255, 105, 180, 0.4);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.3s ease;
+    opacity: 0;
+    pointer-events: auto;
+    font-size: 0.85rem;
+}
+
+.speech-bubble.visible {
+    opacity: 1;
+}
+
+.speech-bubble:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6),
+                0 0 20px rgba(255, 105, 180, 0.6);
+}
+
+/* Speech bubble headline - START TIME */
+.bubble-time-headline {
+    color: var(--color-primary);
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    line-height: 1.2;
+}
+
+/* Speech bubble date */
+.bubble-date {
+    color: var(--color-text-secondary);
+    font-size: 0.75rem;
+    margin-bottom: 8px;
+    line-height: 1.2;
+}
+
+/* Speech bubble title */
+.bubble-title {
+    color: var(--color-text-primary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 6px;
+    line-height: 1.3;
+}
+
+/* Speech bubble location */
+.bubble-location {
+    color: var(--color-text-secondary);
+    font-size: 0.8rem;
+    margin-bottom: 4px;
+    line-height: 1.2;
+}
+
+/* Speech bubble distance */
+.bubble-distance {
+    color: var(--color-text-tertiary);
+    font-size: 0.75rem;
+    margin-bottom: 8px;
+    line-height: 1.2;
+}
+
+/* Bookmark button in speech bubble */
+.bubble-bookmark {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: transparent;
+    border: none;
+    font-size: 1.3rem;
+    cursor: pointer;
+    padding: 4px;
+    line-height: 1;
+    transition: transform 0.2s ease;
+    z-index: 10;
+}
+
+.bubble-bookmark:hover {
+    transform: scale(1.2);
+}
+
+.bubble-bookmark.bookmarked {
+    animation: heartbeat 0.3s ease;
+}
+
+@keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+}
+
+/* Bookmark feedback notification */
+.bookmark-feedback {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 105, 180, 0.95);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    z-index: 2500;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    animation: slideUpFadeIn 0.3s ease;
+}
+
+.bookmark-feedback.fade-out {
+    animation: fadeOut 0.3s ease;
+    opacity: 0;
+}
+
+@keyframes slideUpFadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+/* Mobile adjustments for speech bubbles */
+@media (max-width: 768px) {
+    .speech-bubble {
+        width: 180px;
+        padding: 10px;
+        font-size: 0.75rem;
+    }
+    
+    .bubble-time-headline {
+        font-size: 1rem;
+    }
+    
+    .bubble-date {
+        font-size: 0.7rem;
+    }
+    
+    .bubble-title {
+        font-size: 0.8rem;
+    }
+    
+    .bubble-location,
+    .bubble-distance {
+        font-size: 0.7rem;
+    }
+    
+    .bubble-bookmark {
+        font-size: 1.1rem;
+    }
+}

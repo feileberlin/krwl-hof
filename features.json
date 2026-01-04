@@ -1060,6 +1060,80 @@
       ],
       "test_method": "manual",
       "test_instructions": "1. Open app in browser\n2. Verify no hardcoded 100vh/100vw in layers: grep -r '100vh\\|100vw' assets/css/*.css\n3. Test mobile: Open DevTools → Mobile view → Toggle device toolbar\n4. Test orientation: Rotate device/emulator from portrait to landscape\n5. Test address bar: Scroll on mobile to hide/show address bar\n6. Verify CSS variables: Open DevTools → Elements → :root → Check --app-width and --app-height\n7. Test resize: Resize browser window and verify all layers scale together\n8. Test keyboard: On mobile, focus input field to show keyboard, verify layers adjust\n9. Architecture analysis: Read docs/LAYER_ARCHITECTURE_ANALYSIS.md for design rationale"
+    },
+    {
+      "id": "speech-bubble-details",
+      "name": "Speech Bubble Event Details on Load",
+      "description": "Automatically show event details as speech bubbles on page load without requiring marker clicks. Bubbles display start time as headline with essential event information, intelligently positioned around markers.",
+      "category": "frontend",
+      "implemented": true,
+      "files": [
+        "assets/js/app.js",
+        "assets/css/style.css"
+      ],
+      "code_patterns": [
+        {
+          "file": "assets/js/app.js",
+          "pattern": "showAllSpeechBubbles|createSpeechBubble|calculateBubblePosition",
+          "description": "Speech bubble creation and positioning logic"
+        },
+        {
+          "file": "assets/css/style.css",
+          "pattern": "\\.speech-bubble|\\.bubble-time-headline|\\.bubble-bookmark",
+          "description": "Speech bubble styling with headline time display"
+        }
+      ],
+      "test_method": "manual",
+      "test_instructions": "1. Open app in browser\n2. Wait for events to load (500ms delay after markers appear)\n3. Verify speech bubbles appear automatically around markers\n4. Check that start time is displayed prominently as headline\n5. Verify bubbles show: time, date, title, location, distance\n6. Click bubble to open full event detail modal\n7. Test mobile responsiveness: bubbles should be smaller and stay within viewport\n8. Verify intelligent positioning: bubbles use spiral pattern to avoid marker overlap"
+    },
+    {
+      "id": "filter-persistence",
+      "name": "Filter Settings Persistence",
+      "description": "Save user's filter selections (category, time, distance, location) to browser localStorage and restore them on page reload. Provides seamless user experience across sessions.",
+      "category": "frontend",
+      "implemented": true,
+      "files": [
+        "assets/js/app.js"
+      ],
+      "code_patterns": [
+        {
+          "file": "assets/js/app.js",
+          "pattern": "saveFiltersToCookie|loadFiltersFromCookie|localStorage\\.setItem.*krwl_filters",
+          "description": "Filter persistence using localStorage"
+        }
+      ],
+      "test_method": "manual",
+      "test_instructions": "1. Open app in browser\n2. Change filters: select a category, change time filter, adjust distance\n3. Reload page (F5 or Ctrl+R)\n4. Verify all filter settings are restored to previous selections\n5. Test in incognito mode: filters should use defaults\n6. Check localStorage: Open DevTools → Application → Local Storage → Check krwl_filters key\n7. Test persistence across sessions: Close browser, reopen, verify filters are still saved"
+    },
+    {
+      "id": "event-bookmarks",
+      "name": "Event Bookmarking System",
+      "description": "Users can bookmark up to 15 events with a heart button. Bookmarked events remain visible regardless of filter settings. When limit is reached, oldest bookmark is automatically removed.",
+      "category": "frontend",
+      "implemented": true,
+      "files": [
+        "assets/js/app.js",
+        "assets/css/style.css"
+      ],
+      "code_patterns": [
+        {
+          "file": "assets/js/app.js",
+          "pattern": "toggleBookmark|isBookmarked|saveBookmarks|loadBookmarks|MAX_BOOKMARKS",
+          "description": "Bookmark management with 15-item limit"
+        },
+        {
+          "file": "assets/js/app.js",
+          "pattern": "if \\(this\\.isBookmarked\\(event\\.id\\)\\)",
+          "description": "Bookmarked events bypass filter restrictions"
+        },
+        {
+          "file": "assets/css/style.css",
+          "pattern": "\\.bubble-bookmark|\\.bookmark-feedback|@keyframes heartbeat",
+          "description": "Bookmark button styling and animations"
+        }
+      ],
+      "test_method": "manual",
+      "test_instructions": "1. Open app in browser\n2. Click heart button (🤍) on a speech bubble to bookmark\n3. Verify heart changes to ❤️ and feedback message appears\n4. Change filters to hide the event (e.g., wrong category)\n5. Verify bookmarked event still appears on map\n6. Bookmark 15 events total\n7. Try bookmarking a 16th event - oldest bookmark should be removed\n8. Reload page - verify bookmarks persist\n9. Click ❤️ to unbookmark - verify heart changes back to 🤍\n10. Check localStorage: Open DevTools → Application → Local Storage → Check krwl_bookmarks key (array with max 15 items)"
     }
   ]
 }

@@ -15,7 +15,16 @@ class EventsApp {
         this.config = null;
         this.currentEdgeDetail = null;
         this.currentEventIndex = null; // Track which event is currently displayed
-        this.filters = {
+        
+        // BOOKMARKS: Array of bookmarked event IDs (max 15)
+        this.bookmarks = this.loadBookmarks();
+        this.MAX_BOOKMARKS = 15;
+        
+        // Speech bubbles: Array of active speech bubble elements
+        this.speechBubbles = [];
+        
+        // Load saved filter settings from cookie or use defaults
+        this.filters = this.loadFiltersFromCookie() || {
             maxDistance: 2, // Default to 30 min walk (2 km)
             timeFilter: 'sunrise',
             category: 'all',
@@ -98,6 +107,111 @@ class EventsApp {
      */
     clearDOMCache() {
         this.domCache = {};
+    }
+    
+    /**
+     * COOKIE/LOCALSTORAGE UTILITIES
+     * Save and load filter settings and bookmarks
+     */
+    
+    /**
+     * Save current filter settings to cookie
+     */
+    saveFiltersToCookie() {
+        try {
+            const filterData = JSON.stringify(this.filters);
+            // Save to localStorage (more reliable than cookies for complex data)
+            localStorage.setItem('krwl_filters', filterData);
+            this.log('Filters saved to localStorage');
+        } catch (error) {
+            console.warn('Failed to save filters:', error);
+        }
+    }
+    
+    /**
+     * Load filter settings from cookie
+     * @returns {Object|null} Saved filter settings or null
+     */
+    loadFiltersFromCookie() {
+        try {
+            const filterData = localStorage.getItem('krwl_filters');
+            if (filterData) {
+                const filters = JSON.parse(filterData);
+                this.log('Filters loaded from localStorage', filters);
+                return filters;
+            }
+        } catch (error) {
+            console.warn('Failed to load filters:', error);
+        }
+        return null;
+    }
+    
+    /**
+     * Load bookmarks from localStorage
+     * @returns {Array} Array of bookmarked event IDs
+     */
+    loadBookmarks() {
+        try {
+            const bookmarksData = localStorage.getItem('krwl_bookmarks');
+            if (bookmarksData) {
+                const bookmarks = JSON.parse(bookmarksData);
+                this.log('Bookmarks loaded from localStorage', bookmarks);
+                return Array.isArray(bookmarks) ? bookmarks : [];
+            }
+        } catch (error) {
+            console.warn('Failed to load bookmarks:', error);
+        }
+        return [];
+    }
+    
+    /**
+     * Save bookmarks to localStorage
+     */
+    saveBookmarks() {
+        try {
+            const bookmarksData = JSON.stringify(this.bookmarks);
+            localStorage.setItem('krwl_bookmarks', bookmarksData);
+            this.log('Bookmarks saved to localStorage', this.bookmarks);
+        } catch (error) {
+            console.warn('Failed to save bookmarks:', error);
+        }
+    }
+    
+    /**
+     * Toggle bookmark for an event
+     * @param {string} eventId - Event ID to bookmark/unbookmark
+     * @returns {boolean} True if bookmarked, false if unbookmarked
+     */
+    toggleBookmark(eventId) {
+        const index = this.bookmarks.indexOf(eventId);
+        
+        if (index !== -1) {
+            // Remove bookmark
+            this.bookmarks.splice(index, 1);
+            this.saveBookmarks();
+            this.log('Bookmark removed:', eventId);
+            return false;
+        } else {
+            // Add bookmark (enforce 15-item limit)
+            if (this.bookmarks.length >= this.MAX_BOOKMARKS) {
+                // Remove oldest bookmark (first in array)
+                const removed = this.bookmarks.shift();
+                this.log('Max bookmarks reached, removed oldest:', removed);
+            }
+            this.bookmarks.push(eventId);
+            this.saveBookmarks();
+            this.log('Bookmark added:', eventId);
+            return true;
+        }
+    }
+    
+    /**
+     * Check if an event is bookmarked
+     * @param {string} eventId - Event ID to check
+     * @returns {boolean} True if bookmarked
+     */
+    isBookmarked(eventId) {
+        return this.bookmarks.includes(eventId);
     }
     
     async init() {
@@ -953,6 +1067,21 @@ class EventsApp {
         // Otherwise use geolocation (this.userLocation)
         
         const filtered = this.events.filter(event => {
+            // BOOKMARKS: Always include bookmarked events regardless of filters
+            if (this.isBookmarked(event.id)) {
+                // Calculate distance even for bookmarked events
+                if (referenceLocation && event.location) {
+                    const distance = this.calculateDistance(
+                        referenceLocation.lat,
+                        referenceLocation.lon,
+                        event.location.lat,
+                        event.location.lon
+                    );
+                    event.distance = distance;
+                }
+                return true;
+            }
+            
             // Filter by time
             const eventTime = new Date(event.start_time);
             if (eventTime > maxEventTime) {
@@ -1032,6 +1161,9 @@ class EventsApp {
             this.markers = [];
         }
         
+        // Clear existing speech bubbles
+        this.clearSpeechBubbles();
+        
         if (filteredEvents.length === 0) {
             return;
         }
@@ -1046,6 +1178,12 @@ class EventsApp {
         
         // Fit map to show all markers
         this.fitMapToMarkers();
+        
+        // Show speech bubbles for all visible events after a short delay
+        // (allows map to settle and markers to be positioned)
+        setTimeout(() => {
+            this.showAllSpeechBubbles(filteredEvents);
+        }, 500);
     }
     
     updateFilterDescription(count) {
@@ -1332,6 +1470,9 @@ class EventsApp {
             icon: customIcon
         }).addTo(this.map);
         
+        // Store event data on marker for speech bubble access
+        marker.eventData = event;
+        
         // Show edge detail on hover
         marker.on('mouseover', () => {
             this.showEventDetailAtEdge(event, marker);
@@ -1352,6 +1493,229 @@ class EventsApp {
         marker.on('click', () => this.showEventDetail(event));
         
         this.markers.push(marker);
+    }
+    
+    /**
+     * SPEECH BUBBLES: Show event details automatically on load
+     */
+    
+    /**
+     * Clear all speech bubbles from the map
+     */
+    clearSpeechBubbles() {
+        this.speechBubbles.forEach(bubble => {
+            if (bubble.parentNode) {
+                bubble.parentNode.removeChild(bubble);
+            }
+        });
+        this.speechBubbles = [];
+    }
+    
+    /**
+     * Show speech bubbles for all visible events
+     * @param {Array} events - Filtered events to display
+     */
+    showAllSpeechBubbles(events) {
+        // Limit number of bubbles to avoid clutter (show top 20 by distance)
+        const maxBubbles = 20;
+        const eventsToShow = events.slice(0, maxBubbles);
+        
+        eventsToShow.forEach((event, index) => {
+            // Find the marker for this event
+            const marker = this.markers.find(m => 
+                m.eventData && (
+                    (m.eventData.id && m.eventData.id === event.id) || 
+                    (m.eventData.title === event.title && m.eventData.start_time === event.start_time)
+                )
+            );
+            
+            if (marker) {
+                // Delay each bubble slightly for a nice cascading effect
+                setTimeout(() => {
+                    this.createSpeechBubble(event, marker, index);
+                }, index * 50);
+            }
+        });
+    }
+    
+    /**
+     * Create and position a speech bubble for an event
+     * @param {Object} event - Event data
+     * @param {Object} marker - Leaflet marker
+     * @param {number} index - Display order index
+     */
+    createSpeechBubble(event, marker, index) {
+        // Get marker position in screen coordinates
+        const markerPos = this.map.latLngToContainerPoint(marker.getLatLng());
+        
+        // Create bubble element
+        const bubble = document.createElement('div');
+        bubble.className = 'speech-bubble';
+        bubble.setAttribute('data-event-id', event.id);
+        
+        // Format start time nicely
+        const startTime = new Date(event.start_time);
+        const timeStr = startTime.toLocaleTimeString('en-US', { 
+            hour: 'numeric', 
+            minute: '2-digit',
+            hour12: true 
+        });
+        const dateStr = startTime.toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric'
+        });
+        
+        // Create bookmark button
+        const isBookmarked = this.isBookmarked(event.id);
+        const bookmarkClass = isBookmarked ? 'bookmarked' : '';
+        const bookmarkIcon = isBookmarked ? '❤️' : '🤍';
+        
+        // Build bubble HTML with start time as headline
+        bubble.innerHTML = `
+            <div class="bubble-time-headline">${timeStr}</div>
+            <div class="bubble-date">${dateStr}</div>
+            <div class="bubble-title">${this.truncateText(event.title, 50)}</div>
+            <div class="bubble-location">📍 ${this.truncateText(event.location.name, 30)}</div>
+            ${event.distance !== undefined ? `<div class="bubble-distance">🚶 ${event.distance.toFixed(1)} km</div>` : ''}
+            <button class="bubble-bookmark ${bookmarkClass}" data-event-id="${event.id}" title="Bookmark this event">
+                ${bookmarkIcon}
+            </button>
+        `;
+        
+        // Position bubble intelligently around marker
+        const position = this.calculateBubblePosition(markerPos, index);
+        bubble.style.left = position.x + 'px';
+        bubble.style.top = position.y + 'px';
+        
+        // Add click handler to show full details
+        bubble.addEventListener('click', (e) => {
+            // Don't trigger if clicking bookmark button
+            if (!e.target.classList.contains('bubble-bookmark')) {
+                this.showEventDetail(event);
+            }
+        });
+        
+        // Add bookmark button handler
+        const bookmarkBtn = bubble.querySelector('.bubble-bookmark');
+        bookmarkBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const nowBookmarked = this.toggleBookmark(event.id);
+            
+            // Update button appearance
+            if (nowBookmarked) {
+                bookmarkBtn.classList.add('bookmarked');
+                bookmarkBtn.textContent = '❤️';
+            } else {
+                bookmarkBtn.classList.remove('bookmarked');
+                bookmarkBtn.textContent = '🤍';
+            }
+            
+            // Show feedback
+            this.showBookmarkFeedback(nowBookmarked);
+        });
+        
+        // Add to map container
+        document.getElementById('map').appendChild(bubble);
+        this.speechBubbles.push(bubble);
+        
+        // Fade in animation
+        setTimeout(() => {
+            bubble.classList.add('visible');
+        }, 10);
+    }
+    
+    /**
+     * Calculate intelligent position for speech bubble around marker
+     * @param {Object} markerPos - {x, y} marker screen position
+     * @param {number} index - Bubble index for variation
+     * @returns {Object} {x, y} position for bubble
+     */
+    calculateBubblePosition(markerPos, index) {
+        const bubbleWidth = 220;
+        const bubbleHeight = 140;
+        const offset = 60; // Distance from marker
+        
+        // Use a spiral pattern to position bubbles
+        // Vary position based on index to create natural spread
+        const positions = [
+            { x: offset, y: -offset },      // Top right
+            { x: -offset, y: -offset },     // Top left
+            { x: offset, y: offset },       // Bottom right
+            { x: -offset, y: offset },      // Bottom left
+            { x: offset * 1.5, y: 0 },      // Right
+            { x: -offset * 1.5, y: 0 },     // Left
+            { x: 0, y: -offset * 1.5 },     // Top
+            { x: 0, y: offset * 1.5 }       // Bottom
+        ];
+        
+        const posIndex = index % positions.length;
+        const relPos = positions[posIndex];
+        
+        let x = markerPos.x + relPos.x;
+        let y = markerPos.y + relPos.y;
+        
+        // Keep bubble within viewport bounds
+        const mapContainer = document.getElementById('map');
+        const viewportWidth = mapContainer.clientWidth;
+        const viewportHeight = mapContainer.clientHeight;
+        
+        // Adjust if too far right
+        if (x + bubbleWidth > viewportWidth - 10) {
+            x = viewportWidth - bubbleWidth - 10;
+        }
+        
+        // Adjust if too far left
+        if (x < 10) {
+            x = 10;
+        }
+        
+        // Adjust if too far down
+        if (y + bubbleHeight > viewportHeight - 10) {
+            y = viewportHeight - bubbleHeight - 10;
+        }
+        
+        // Adjust if too far up
+        if (y < 10) {
+            y = 10;
+        }
+        
+        return { x, y };
+    }
+    
+    /**
+     * Truncate text to max length with ellipsis
+     * @param {string} text - Text to truncate
+     * @param {number} maxLength - Maximum length
+     * @returns {string} Truncated text
+     */
+    truncateText(text, maxLength) {
+        if (text.length <= maxLength) return text;
+        return text.substring(0, maxLength - 3) + '...';
+    }
+    
+    /**
+     * Show visual feedback when bookmarking
+     * @param {boolean} bookmarked - True if bookmarked, false if unbookmarked
+     */
+    showBookmarkFeedback(bookmarked) {
+        const message = bookmarked ? '❤️ Event bookmarked!' : '🤍 Bookmark removed';
+        
+        // Create temporary feedback element
+        const feedback = document.createElement('div');
+        feedback.className = 'bookmark-feedback';
+        feedback.textContent = message;
+        document.body.appendChild(feedback);
+        
+        // Remove after animation
+        setTimeout(() => {
+            feedback.classList.add('fade-out');
+            setTimeout(() => {
+                if (feedback.parentNode) {
+                    feedback.parentNode.removeChild(feedback);
+                }
+            }, 300);
+        }, 2000);
     }
     
     navigateEvents(direction) {
@@ -2038,6 +2402,7 @@ class EventsApp {
                 select.value = this.filters.category;
                 select.addEventListener('change', (e) => {
                     this.filters.category = e.target.value;
+                    this.saveFiltersToCookie();
                     this.displayEvents();
                     hideAllDropdowns();
                 });
@@ -2076,6 +2441,7 @@ class EventsApp {
                 select.value = this.filters.timeFilter;
                 select.addEventListener('change', (e) => {
                     this.filters.timeFilter = e.target.value;
+                    this.saveFiltersToCookie();
                     this.displayEvents();
                     hideAllDropdowns();
                 });
@@ -2106,6 +2472,7 @@ class EventsApp {
                 select.value = this.filters.maxDistance;
                 select.addEventListener('change', (e) => {
                     this.filters.maxDistance = parseFloat(e.target.value);
+                    this.saveFiltersToCookie();
                     this.displayEvents();
                     hideAllDropdowns();
                 });
@@ -2184,6 +2551,7 @@ class EventsApp {
                             this.filters.selectedPredefinedLocation = null;
                             this.filters.customLat = null;
                             this.filters.customLon = null;
+                            this.saveFiltersToCookie();
                             if (inputs) inputs.classList.add('hidden');
                             
                             // Center map on user location if available
@@ -2201,6 +2569,7 @@ class EventsApp {
                             this.filters.selectedPredefinedLocation = index;
                             this.filters.customLat = null;
                             this.filters.customLon = null;
+                            this.saveFiltersToCookie();
                             if (inputs) inputs.classList.add('hidden');
                             
                             // Center map on predefined location
@@ -2238,6 +2607,7 @@ class EventsApp {
                         if (!isNaN(lat) && !isNaN(lon) && lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180) {
                             this.filters.customLat = lat;
                             this.filters.customLon = lon;
+                            this.saveFiltersToCookie();
                             
                             // Update map view to custom location
                             if (this.map) {
