@@ -243,6 +243,7 @@ COMMANDS:
     archive                   Archive past events to archived_events.json
     load-examples             Load example data for development
     clear-data                Clear all event data
+    scraper-info              Show scraper capabilities (JSON output for workflows)
     
 OPTIONS:
     -h, --help               Show this help message
@@ -267,6 +268,9 @@ EXAMPLES:
     
     # Scrape events from sources
     python3 event_manager.py scrape
+    
+    # Show scraper capabilities (for workflow introspection)
+    python3 event_manager.py scraper-info
     
     # List all published events
     python3 event_manager.py list
@@ -1290,6 +1294,13 @@ def _execute_command(args, base_path, config):
     if command == 'review':
         app = EventManagerTUI()
         app.review_pending_events()
+        return 0
+    
+    if command == 'scraper-info':
+        # Output scraper capabilities as JSON for workflow consumption
+        scraper = EventScraper(config, base_path)
+        capabilities = scraper.get_scraper_capabilities()
+        print(json.dumps(capabilities, indent=2))
         return 0
     
     if command is None:

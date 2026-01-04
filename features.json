@@ -925,6 +925,37 @@
       ],
       "test_method": "check_files_exist",
       "cli_command": "python3 src/event_manager.py docs html-docs"
+    },
+    {
+      "id": "unified-workflow-wrapper",
+      "name": "Unified Workflow Wrapper (Adaptive)",
+      "description": "Single GitHub Actions workflow that automatically adapts to changes in event_scraper.py by introspecting scraper capabilities, configuration, and enabled sources at runtime. Combines scraping, building, and deployment into one intelligent workflow.",
+      "category": "infrastructure",
+      "implemented": true,
+      "files": [
+        ".github/workflows/website-maintenance.yml",
+        "src/modules/scraper.py"
+      ],
+      "config_keys": [
+        "scraping.sources",
+        "scraping.schedule.timezone",
+        "scraping.schedule.times"
+      ],
+      "code_patterns": [
+        {
+          "file": "src/modules/scraper.py",
+          "pattern": "get_scraper_capabilities|get_enabled_sources|get_scraping_schedule",
+          "description": "Scraper introspection methods for workflow adaptation"
+        },
+        {
+          "file": ".github/workflows/website-maintenance.yml",
+          "pattern": "discover-capabilities|scraper-info|CAPABILITIES",
+          "description": "Workflow job that introspects scraper at runtime"
+        }
+      ],
+      "test_method": "manual",
+      "test_instructions": "1. Test scraper introspection: python3 src/event_manager.py scraper-info\n2. Validate workflow syntax: python3 -c \"import yaml; yaml.safe_load(open('.github/workflows/website-maintenance.yml'))\"\n3. Trigger workflow manually via GitHub Actions UI with different task options\n4. Verify workflow adapts when scraping sources are added/modified in config.json",
+      "cli_command": "python3 src/event_manager.py scraper-info"
     }
   ]
 }

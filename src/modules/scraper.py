@@ -671,3 +671,62 @@ class EventScraper:
         save_pending_events(self.base_path, pending_data)
         
         return event
+    
+    def get_supported_source_types(self):
+        """
+        Get list of supported source types for workflow introspection
+        
+        Returns:
+            list: Supported source types (e.g., ['rss', 'html', 'api', 'facebook'])
+        """
+        return ['rss', 'html', 'api', 'facebook']
+    
+    def get_enabled_sources(self):
+        """
+        Get list of enabled sources from configuration
+        
+        Returns:
+            list: Enabled source names and types
+        """
+        enabled = []
+        for source in self.config.get('scraping', {}).get('sources', []):
+            if source.get('enabled', False):
+                enabled.append({
+                    'name': source['name'],
+                    'type': source.get('type', 'rss'),
+                    'url': source['url']
+                })
+        return enabled
+    
+    def get_scraping_schedule(self):
+        """
+        Get scraping schedule from configuration for workflow setup
+        
+        Returns:
+            dict: Schedule information (timezone, times)
+        """
+        return self.config.get('scraping', {}).get('schedule', {
+            'timezone': 'Europe/Berlin',
+            'times': ['04:00', '16:00']
+        })
+    
+    def get_scraper_capabilities(self):
+        """
+        Get comprehensive scraper capabilities for workflow adaptation
+        
+        Returns:
+            dict: Scraper capabilities including source types, methods, and configuration
+        """
+        capabilities = {
+            'supported_source_types': self.get_supported_source_types(),
+            'enabled_sources': self.get_enabled_sources(),
+            'schedule': self.get_scraping_schedule(),
+            'smart_scraper_available': SMART_SCRAPER_AVAILABLE,
+            'scraping_libraries_installed': SCRAPING_ENABLED,
+            'methods': {
+                'scrape_all_sources': 'Main method to scrape all configured sources',
+                'scrape_source': 'Scrape a single source',
+                'create_manual_event': 'Create event manually without scraping'
+            }
+        }
+        return capabilities
