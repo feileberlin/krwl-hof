@@ -215,11 +215,10 @@ strong, b {
     position: fixed;
     background: var(--barbie-shade-darkest);
     backdrop-filter: blur(10px);
-    border: 2px solid var(--color-border-primary);
-    border-radius: 8px;
+    border: none; /* Removed border */
+    border-radius: 4px; /* Reduced from 8px */
     padding: 0.5rem 0;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5),
-                0 0 10px rgba(255, 105, 180, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); /* Removed pink glow */
     z-index: 3000;
     min-width: 200px;
     white-space: normal;
