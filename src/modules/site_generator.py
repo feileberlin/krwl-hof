@@ -1023,8 +1023,8 @@ window.DASHBOARD_ICONS = {json.dumps(DASHBOARD_ICONS_MAP, ensure_ascii=False)};'
         Process:
         1. Ensures dependencies are present (Leaflet.js) - auto-fetches if missing
         2. Loads all configurations from config.json
-        3. Loads stylesheets (Leaflet CSS, app CSS, time-drawer CSS)
-        4. Loads JavaScript files (Leaflet, i18n, time-drawer, app.js)
+        3. Loads stylesheets (Leaflet CSS, app CSS)
+        4. Loads JavaScript files (Leaflet, i18n, app.js)
         5. Loads event data (real events + demo events)
         6. Loads translations (English and German)
         7. Builds HTML structure using templates with all assets inlined
