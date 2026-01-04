@@ -415,10 +415,30 @@ python3 tests/test_scraper.py --verbose
 
 ## 🌐 Internationalization (i18n)
 
-The app supports English and German:
+The app supports English and German with **URL-based language routing**:
 
-- `data/content.json` - English translations
-- `static/content.de.json` - German translations
+### Language URLs
+
+- **German (Default)**: `krwl.in/` - German is the default language at the root
+- **English**: `krwl.in/en/` - English is available at the `/en/` path
+
+**No language menu is provided** - language selection is purely URL-based. Users can switch languages by navigating to the appropriate URL.
+
+### Language Detection Priority
+
+The i18n system detects language in this order:
+
+1. **URL Path** (highest priority): `/en/` → English, `/` → German
+2. **Config Setting**: If URL doesn't specify, check `config.json`
+3. **Browser Language**: Auto-detect from browser settings
+4. **Default Fallback**: German (de)
+
+### Translation Files
+
+- `assets/json/i18n/content.json` - English translations
+- `assets/json/i18n/content.de.json` - German translations
+
+### Adding Translations
 
 Add translations using the key path format:
 ```json
@@ -430,6 +450,15 @@ Add translations using the key path format:
 ```
 
 In code: `i18n.t('section.key')`
+
+### Technical Details
+
+- The site generator (`site_generator.py`) creates two HTML files:
+  - `public/index.html` - German version (root)
+  - `public/en/index.html` - English version
+- Translation JSON files are copied to both directories
+- The `i18n.js` module handles URL detection and content loading
+- Relative paths are adjusted automatically for subdirectories
 
 ## 🧪 Advanced Features
 

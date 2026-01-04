@@ -1060,6 +1060,33 @@
       ],
       "test_method": "manual",
       "test_instructions": "1. Open app in browser\n2. Verify no hardcoded 100vh/100vw in layers: grep -r '100vh\\|100vw' assets/css/*.css\n3. Test mobile: Open DevTools → Mobile view → Toggle device toolbar\n4. Test orientation: Rotate device/emulator from portrait to landscape\n5. Test address bar: Scroll on mobile to hide/show address bar\n6. Verify CSS variables: Open DevTools → Elements → :root → Check --app-width and --app-height\n7. Test resize: Resize browser window and verify all layers scale together\n8. Test keyboard: On mobile, focus input field to show keyboard, verify layers adjust\n9. Architecture analysis: Read docs/LAYER_ARCHITECTURE_ANALYSIS.md for design rationale"
+    },
+    {
+      "id": "url-based-i18n",
+      "name": "URL-Based Internationalization (i18n)",
+      "description": "URL-based language routing with German as default (/) and English at (/en/). No language menu - purely URL-driven language selection.",
+      "category": "frontend",
+      "implemented": true,
+      "files": [
+        "assets/js/i18n.js",
+        "assets/json/i18n/content.json",
+        "assets/json/i18n/content.de.json",
+        "src/modules/site_generator.py"
+      ],
+      "code_patterns": [
+        {
+          "file": "assets/js/i18n.js",
+          "pattern": "detectLanguageFromURL|getContentBasePath",
+          "description": "URL path language detection and relative path handling"
+        },
+        {
+          "file": "src/modules/site_generator.py",
+          "pattern": "public/en/index.html|lang=",
+          "description": "Multi-language HTML generation"
+        }
+      ],
+      "test_method": "check_code_patterns",
+      "test_instructions": "1. Run translation tests: python3 tests/test_translations.py --verbose\n2. Generate site: python3 src/event_manager.py generate\n3. Verify two HTML files created:\n   - public/index.html (German, lang=\"de\")\n   - public/en/index.html (English, lang=\"en\")\n4. Check translation files copied to both directories\n5. Test URL detection:\n   - Open / → should default to German\n   - Open /en/ → should use English\n6. Verify no language menu in UI"
     }
   ]
 }
