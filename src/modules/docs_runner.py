@@ -24,7 +24,7 @@ class DocsRunner:
     DOCS_TASKS = {
         'generate': {
             'readme': {
-                'script': 'scripts/generate_readme.py',
+                'script': 'scripts/docstring_readme.py',
                 'description': 'Generate README.md from code and config',
                 'supports_args': ['--update-github-about'],
             },
@@ -37,7 +37,7 @@ class DocsRunner:
                 'description': 'Generate project screenshots',
             },
             'html-docs': {
-                'script': 'src/modules/docs_generator.py',
+                'script': 'src/modules/htmldocs_generator.py',
                 'description': 'Generate styled HTML documentation with Barbie Pink theme',
             },
         },

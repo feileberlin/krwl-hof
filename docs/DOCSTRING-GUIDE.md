@@ -229,7 +229,7 @@ python3 -c "from src.modules.archive_events import EventArchiver; help(EventArch
 
 ```bash
 # Auto-generate README from docstrings
-python3 scripts/generate_readme.py
+python3 scripts/docstring_readme.py
 
 # Extract API documentation
 pydoc src.modules.archive_events

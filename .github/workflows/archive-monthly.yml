@@ -187,14 +187,14 @@ jobs:
           git add assets/json/events.json  # Updated active events list
           
           # Commit with descriptive message
-          git commit -m "chore: archive $ARCHIVED_COUNT old event(s) - $TIMESTAMP
-
-Automated monthly archiving:
-- Archived events: $ARCHIVED_COUNT
-- Retention window: ${{ steps.config.outputs.retention_days }} days
-- Archive location: ${{ steps.config.outputs.archive_path }}
-
-[skip ci]"
+          git commit -m "chore: archive $ARCHIVED_COUNT old event(s) - $TIMESTAMP" \
+                     -m "" \
+                     -m "Automated monthly archiving:" \
+                     -m "- Archived events: $ARCHIVED_COUNT" \
+                     -m "- Retention window: ${{ steps.config.outputs.retention_days }} days" \
+                     -m "- Archive location: ${{ steps.config.outputs.archive_path }}" \
+                     -m "" \
+                     -m "[skip ci]"
           
           # Pull with rebase to handle concurrent changes
           echo "⬇️ Pulling latest changes..."
