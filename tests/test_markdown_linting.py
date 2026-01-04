@@ -154,11 +154,12 @@ Another line.
     
     try:
         # Run with --fix
-        result = subprocess.run(
+        subprocess.run(
             ['python3', 'scripts/lint_markdown.py', temp_file, '--fix'],
             cwd=base_path,
             capture_output=True,
-            text=True
+            text=True,
+            check=True
         )
         
         # Read fixed file

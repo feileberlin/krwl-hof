@@ -81,13 +81,18 @@ class MarkdownLinter:
         in_code_block = False
         
         for i, line in enumerate(lines, 1):
-            # Track code blocks
+            # Track fenced code blocks (```), which we always skip for heading checks
             if line.strip().startswith('```'):
                 in_code_block = not in_code_block
                 continue
             
-            # Skip code blocks
+            # Skip lines inside fenced code blocks
             if in_code_block:
+                continue
+            
+            # Skip indented code blocks (4+ leading spaces)
+            leading_spaces = len(line) - len(line.lstrip(' '))
+            if leading_spaces >= 4:
                 continue
             
             # Check for ATX-style headings
@@ -129,11 +134,13 @@ class MarkdownLinter:
             if in_code_block or line.startswith('    '):
                 continue
             
-            # Track tables
+            # Track tables - a line is part of a table if it contains pipes
+            # Reset table mode if current line doesn't contain a pipe (unless it's blank)
             if '|' in line:
                 in_table = True
-            elif in_table and not line.strip():
+            elif line.strip():  # Non-empty line without pipe
                 in_table = False
+            # Empty lines don't change table state
             
             # Skip tables, URLs, and headings
             if in_table or line.startswith('#') or 'http' in line:
@@ -150,19 +157,26 @@ class MarkdownLinter:
     def _check_code_blocks(self, lines: List[str]):
         """Check that fenced code blocks have language tags"""
         in_code_block = False
+        opening_backticks = 0
         
         for i, line in enumerate(lines, 1):
-            if line.strip().startswith('```'):
+            stripped = line.strip()
+            if stripped.startswith('```'):
+                # Count backticks at the start
+                backtick_count = len(stripped) - len(stripped.lstrip('`'))
+                
                 if not in_code_block:
                     # Opening fence - check for language tag
-                    if line.strip() == '```':
+                    if stripped == '`' * backtick_count:
                         self.warnings.append(
                             f"Line {i}: Code block without language tag (e.g., ```python)"
                         )
                     in_code_block = True
-                else:
-                    # Closing fence
+                    opening_backticks = backtick_count
+                elif backtick_count >= opening_backticks:
+                    # Closing fence - must have same or more backticks
                     in_code_block = False
+                    opening_backticks = 0
     
     def _check_trailing_whitespace(self, lines: List[str]):
         """Check for trailing whitespace"""
