@@ -5,8 +5,8 @@ on:
     branches:
       - main
     paths:
-      - 'event-data/events.json'       # Canonical events data (source)
-      - 'event-data/events.demo.json'  # Demo events data (source)
+      - 'assets/json/events.json'       # Canonical events data (source)
+      - 'assets/json/events.demo.json'  # Demo events data (source)
   workflow_dispatch:  # Allow manual trigger
 
 permissions:
@@ -44,7 +44,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./target
+          path: ./public
 
   deploy:
     environment:

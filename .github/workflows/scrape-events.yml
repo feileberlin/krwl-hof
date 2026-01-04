@@ -52,7 +52,7 @@ jobs:
       - name: Check for changes
         id: check_changes
         run: |
-          if [[ -n $(git status --porcelain event-data/) ]]; then
+          if [[ -n $(git status --porcelain assets/json/) ]]; then
             echo "changes_detected=true" >> $GITHUB_OUTPUT
             echo "✓ New events detected"
           else
@@ -63,9 +63,9 @@ jobs:
       - name: Count pending events
         id: count_pending
         run: |
-          if [ -f event-data/pending_events.json ]; then
+          if [ -f assets/json/pending_events.json ]; then
             # Count pending events using Python
-            COUNT=$(python3 -c "import json; data = json.load(open('event-data/pending_events.json')); print(len(data.get('pending_events', [])))")
+            COUNT=$(python3 -c "import json; data = json.load(open('assets/json/pending_events.json')); print(len(data.get('pending_events', [])))")
             echo "pending_count=$COUNT" >> $GITHUB_OUTPUT
             echo "ℹ Pending events: $COUNT"
           else
@@ -77,7 +77,7 @@ jobs:
         if: steps.check_changes.outputs.changes_detected == 'true'
         run: |
           TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M UTC')
-          git add event-data/
+          git add assets/json/
           git commit -m "chore: automated event scraping - $TIMESTAMP"
           git push
           echo "✓ Changes committed and pushed"
