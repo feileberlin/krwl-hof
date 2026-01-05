@@ -1471,11 +1471,6 @@ class EventsApp {
         Array.from(categorySelect.options).forEach(option => {
             const value = option.value;
             
-            // Skip the placeholder option
-            if (value === '') {
-                return;
-            }
-            
             // Store original label on first run
             if (!option.hasAttribute('data-original-label')) {
                 let cleanLabel = option.textContent.trim();
@@ -1491,8 +1486,6 @@ class EventsApp {
                 option.textContent = `${totalCount} ${originalLabel}`;
             } else {
                 const count = categoryCounts[value] || 0;
-                // Format: "{count} {icon} {label}" or just "{count} {label}" if no icon
-                // For now, keep it simple: "{count} {label}"
                 option.textContent = `${count} ${originalLabel}`;
             }
         });
@@ -1506,16 +1499,16 @@ class EventsApp {
         const categorySelect = document.getElementById('category-filter');
         if (!categorySelect) return;
         
-        // Clear existing options except placeholder
-        while (categorySelect.options.length > 1) {
-            categorySelect.remove(1);
+        // Clear existing options
+        while (categorySelect.options.length > 0) {
+            categorySelect.remove(0);
         }
         
         // Add "All Categories" option
         const allOption = document.createElement('option');
         allOption.value = 'all';
-        allOption.setAttribute('data-original-label', 'events');
-        allOption.textContent = 'events';
+        allOption.setAttribute('data-original-label', 'all categories');
+        allOption.textContent = 'all categories';
         categorySelect.appendChild(allOption);
         
         // Get all unique categories from events
@@ -1537,7 +1530,10 @@ class EventsApp {
             categorySelect.appendChild(option);
         });
         
-        // Set up change event listener with reset-after-selection pattern
+        // Set initial value to current filter
+        categorySelect.value = this.filters.category || 'all';
+        
+        // Set up change event listener - no reset, keep selection visible
         categorySelect.addEventListener('change', () => {
             const selected = categorySelect.value;
             if (selected) {
@@ -1545,12 +1541,7 @@ class EventsApp {
                 this.filters.category = selected;
                 this.saveFiltersToCookie();
                 this.displayEvents();
-                
-                // CRITICAL: Reset to placeholder (krawlist_revisited pattern)
-                // Use setTimeout to ensure reset happens after display completes
-                setTimeout(() => {
-                    categorySelect.value = '';
-                }, 0);
+                // Keep the selection visible (no reset)
             }
         });
         
