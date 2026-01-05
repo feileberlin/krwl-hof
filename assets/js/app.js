@@ -531,10 +531,106 @@ class EventsApp {
             debugHistoricalCache.title = 'Historical events are cached in the backend during scraping to improve performance';
         }
         
+        // Detect and display event duplicates
+        this.updateDuplicateWarnings();
+        
         // Show debug section after data is loaded
         if (debugSection && debugSection.style.display === 'none') {
             debugSection.style.display = 'block';
         }
+    }
+    
+    /**
+     * Detect duplicate events and update dashboard warnings
+     * 
+     * Duplicates are identified by:
+     * 1. Same event ID
+     * 2. Same title AND start time AND location
+     */
+    updateDuplicateWarnings() {
+        const debugDuplicates = document.getElementById('debug-duplicates');
+        if (!debugDuplicates) return;
+        
+        // Detect duplicates
+        const duplicates = this.detectDuplicateEvents();
+        
+        if (duplicates.length > 0) {
+            // Show warning with count and details
+            const duplicateCount = duplicates.reduce((sum, dup) => sum + dup.count - 1, 0);
+            debugDuplicates.innerHTML = `
+                <strong class="duplicate-warning">⚠️ ${duplicateCount} duplicate${duplicateCount !== 1 ? 's' : ''} detected</strong>
+                <div class="duplicate-details">
+                    ${duplicates.map(dup => `
+                        <div class="duplicate-item">
+                            <strong>${dup.title}</strong> (${dup.count}x)
+                            <div class="duplicate-hint">${dup.start_time} at ${dup.location}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            debugDuplicates.style.display = 'block';
+            debugDuplicates.className = 'debug-duplicates warning';
+        } else {
+            // No duplicates - show success message or hide
+            debugDuplicates.innerHTML = '<strong class="duplicate-ok">✓ No duplicates</strong>';
+            debugDuplicates.className = 'debug-duplicates ok';
+            debugDuplicates.style.display = 'block';
+        }
+    }
+    
+    /**
+     * Detect duplicate events in the events array
+     * 
+     * @returns {Array} Array of duplicate event info with count
+     */
+    detectDuplicateEvents() {
+        if (!this.events || this.events.length === 0) {
+            return [];
+        }
+        
+        // Track events by unique key
+        const eventMap = new Map();
+        
+        this.events.forEach(event => {
+            // Create unique key based on:
+            // 1. Event ID (if available)
+            // 2. Title + start_time + location (for events without ID)
+            let key;
+            if (event.id) {
+                key = `id:${event.id}`;
+            } else {
+                const locationKey = event.location ? 
+                    `${event.location.lat},${event.location.lon}` : 
+                    'no-location';
+                key = `${event.title}|${event.start_time}|${locationKey}`;
+            }
+            
+            if (!eventMap.has(key)) {
+                eventMap.set(key, {
+                    title: event.title,
+                    start_time: event.start_time ? new Date(event.start_time).toLocaleString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric', 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                    }) : 'unknown',
+                    location: event.location?.name || 'unknown location',
+                    count: 1,
+                    events: [event]
+                });
+            } else {
+                const existing = eventMap.get(key);
+                existing.count++;
+                existing.events.push(event);
+            }
+        });
+        
+        // Filter to only duplicates (count > 1)
+        const duplicates = Array.from(eventMap.values())
+            .filter(item => item.count > 1)
+            .sort((a, b) => b.count - a.count); // Sort by count descending
+        
+        return duplicates;
     }
     
     async checkPendingEvents() {
