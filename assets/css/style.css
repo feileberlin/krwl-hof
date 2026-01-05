@@ -171,11 +171,11 @@ strong, b {
     text-align: center;
 }
 
-/* Category filter select - ecoBarbie styling */
+/* Category filter select */
 #event-filter-bar .filter-bar-select {
     background: transparent;
     border: none;
-    color: #FF69B4; /* ecoBarbie pink for selected */
+    color: inherit;
     font: inherit;
     padding: 0;
     text-decoration: underline;
@@ -188,22 +188,20 @@ strong, b {
 }
 
 #event-filter-bar .filter-bar-select:hover {
-    color: #FF69B4;
+    color: var(--color-text-primary);
     text-shadow: 0 0 15px rgba(255, 105, 180, 0.8);
     text-decoration-style: solid;
 }
 
 #event-filter-bar .filter-bar-select:focus {
     outline: none;
-    color: #FF69B4;
+    color: var(--color-text-primary);
     text-shadow: 0 0 15px rgba(255, 105, 180, 0.8);
 }
 
 #event-filter-bar .filter-bar-select option {
     background: var(--color-bg-primary);
-    color: rgba(255, 105, 180, 0.6); /* Lighter ecoBarbie pink for unselected options */
-    border: none;
-    padding: 0.5rem;
+    color: var(--color-text-primary);
 }
 
 /* Filter logo button */
