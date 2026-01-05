@@ -366,19 +366,20 @@
     },
     {
       "id": "custom-location",
-      "name": "Custom Location Override",
-      "description": "Allow users to set custom location instead of using geolocation",
+      "name": "Custom Location Override with localStorage Persistence",
+      "description": "Allow users to set custom location instead of using geolocation. Custom coordinates persist in browser localStorage across sessions and location type switches.",
       "category": "frontend",
       "implemented": true,
       "files": [
         "assets/js/app.js",
-        "assets/html/filter-nav.html"
+        "assets/html/filter-nav.html",
+        "docs/custom-location-persistence.md"
       ],
       "code_patterns": [
         {
           "file": "assets/js/app.js",
-          "pattern": "useCustomLocation|custom-location|customLat|customLon",
-          "description": "Custom location functionality"
+          "pattern": "useCustomLocation|custom-location|customLat|customLon|saveFiltersToCookie|loadFiltersFromCookie",
+          "description": "Custom location functionality with localStorage persistence"
         },
         {
           "file": "assets/html/filter-nav.html",

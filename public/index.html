@@ -989,6 +989,57 @@ strong, b {
     color: #B05F8E; /* Medium tone - muted */
 }
 
+/* Duplicate event warnings */
+.debug-duplicates {
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+.debug-duplicates.warning {
+    background: rgba(217, 119, 6, 0.15); /* Warning orange */
+    border: 1px solid rgba(217, 119, 6, 0.3);
+}
+
+.debug-duplicates.ok {
+    background: rgba(34, 197, 94, 0.15); /* Success green */
+    border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.duplicate-warning {
+    color: #f59e0b; /* Warning color */
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.duplicate-ok {
+    color: #22c55e; /* Success color */
+}
+
+.duplicate-details {
+    margin-top: 0.5rem;
+    font-size: 0.85em;
+}
+
+.duplicate-item {
+    margin: 0.5rem 0;
+    padding: 0.5rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+.duplicate-item strong {
+    color: #FF69B4; /* Primary pink */
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.duplicate-hint {
+    color: #8b949e; /* Secondary text */
+    font-size: 0.9em;
+}
+
 .debug-size-details {
     margin-top: 0.25rem;
 }
@@ -1466,6 +1517,11 @@ multiple sources.</p>
               <strong>Hist:</strong> <span id="debug-historical-cache">none</span>
             </div>
           </div>
+        </div>
+        
+        <!-- Duplicate event warnings -->
+        <div id="debug-duplicates" class="debug-duplicates" style="display: none;">
+          Loading duplicate check...
         </div>
         
         <!-- Size breakdown - collapsible -->
@@ -2302,10 +2358,106 @@ class EventsApp {
             debugHistoricalCache.title = 'Historical events are cached in the backend during scraping to improve performance';
         }
         
+        // Detect and display event duplicates
+        this.updateDuplicateWarnings();
+        
         // Show debug section after data is loaded
         if (debugSection && debugSection.style.display === 'none') {
             debugSection.style.display = 'block';
         }
+    }
+    
+    /**
+     * Detect duplicate events and update dashboard warnings
+     * 
+     * Duplicates are identified by:
+     * 1. Same event ID
+     * 2. Same title AND start time AND location
+     */
+    updateDuplicateWarnings() {
+        const debugDuplicates = document.getElementById('debug-duplicates');
+        if (!debugDuplicates) return;
+        
+        // Detect duplicates
+        const duplicates = this.detectDuplicateEvents();
+        
+        if (duplicates.length > 0) {
+            // Show warning with count and details
+            const duplicateCount = duplicates.reduce((sum, dup) => sum + dup.count - 1, 0);
+            debugDuplicates.innerHTML = `
+                <strong class="duplicate-warning">⚠️ ${duplicateCount} duplicate${duplicateCount !== 1 ? 's' : ''} detected</strong>
+                <div class="duplicate-details">
+                    ${duplicates.map(dup => `
+                        <div class="duplicate-item">
+                            <strong>${dup.title}</strong> (${dup.count}x)
+                            <div class="duplicate-hint">${dup.start_time} at ${dup.location}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            debugDuplicates.style.display = 'block';
+            debugDuplicates.className = 'debug-duplicates warning';
+        } else {
+            // No duplicates - show success message or hide
+            debugDuplicates.innerHTML = '<strong class="duplicate-ok">✓ No duplicates</strong>';
+            debugDuplicates.className = 'debug-duplicates ok';
+            debugDuplicates.style.display = 'block';
+        }
+    }
+    
+    /**
+     * Detect duplicate events in the events array
+     * 
+     * @returns {Array} Array of duplicate event info with count
+     */
+    detectDuplicateEvents() {
+        if (!this.events || this.events.length === 0) {
+            return [];
+        }
+        
+        // Track events by unique key
+        const eventMap = new Map();
+        
+        this.events.forEach(event => {
+            // Create unique key based on:
+            // 1. Event ID (if available)
+            // 2. Title + start_time + location (for events without ID)
+            let key;
+            if (event.id) {
+                key = `id:${event.id}`;
+            } else {
+                const locationKey = event.location ? 
+                    `${event.location.lat},${event.location.lon}` : 
+                    'no-location';
+                key = `${event.title}|${event.start_time}|${locationKey}`;
+            }
+            
+            if (!eventMap.has(key)) {
+                eventMap.set(key, {
+                    title: event.title,
+                    start_time: event.start_time ? new Date(event.start_time).toLocaleString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric', 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                    }) : 'unknown',
+                    location: event.location?.name || 'unknown location',
+                    count: 1,
+                    events: [event]
+                });
+            } else {
+                const existing = eventMap.get(key);
+                existing.count++;
+                existing.events.push(event);
+            }
+        });
+        
+        // Filter to only duplicates (count > 1)
+        const duplicates = Array.from(eventMap.values())
+            .filter(item => item.count > 1)
+            .sort((a, b) => b.count - a.count); // Sort by count descending
+        
+        return duplicates;
     }
     
     async checkPendingEvents() {
@@ -4476,6 +4628,7 @@ class EventsApp {
                         
                         if (value === 'geolocation') {
                             // Switch to geolocation
+                            // Keep custom lat/lon in memory so user can switch back
                             this.filters.locationType = 'geolocation';
                             this.filters.selectedPredefinedLocation = null;
                             this.filters.customLat = null;
@@ -4493,6 +4646,7 @@ class EventsApp {
                             
                         } else if (value.startsWith('predefined-')) {
                             // Switch to predefined location
+                            // Keep custom lat/lon in memory so user can switch back
                             const index = parseInt(value.split('-')[1]);
                             this.filters.locationType = 'predefined';
                             this.filters.selectedPredefinedLocation = index;
@@ -4516,8 +4670,12 @@ class EventsApp {
                             this.filters.selectedPredefinedLocation = null;
                             if (inputs) {
                                 inputs.classList.remove('hidden');
-                                // Pre-fill with current location if available and no custom values set
-                                if (this.userLocation && !this.filters.customLat && !this.filters.customLon) {
+                                // Pre-fill inputs with saved custom values if they exist
+                                if (this.filters.customLat && this.filters.customLon) {
+                                    dropdown.querySelector('#custom-lat').value = this.filters.customLat.toFixed(4);
+                                    dropdown.querySelector('#custom-lon').value = this.filters.customLon.toFixed(4);
+                                } else if (this.userLocation) {
+                                    // Only fall back to current location if no custom values saved
                                     dropdown.querySelector('#custom-lat').value = this.userLocation.lat.toFixed(4);
                                     dropdown.querySelector('#custom-lon').value = this.userLocation.lon.toFixed(4);
                                 }
