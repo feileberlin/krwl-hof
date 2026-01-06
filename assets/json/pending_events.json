@@ -197,7 +197,58 @@
       "url": "https://event.frankenpost.de/detail.php?event_id=3028886",
       "category": null,
       "tags": []
+    },
+    {
+      "id": "html_frankenpost_-2294901471050805624",
+      "title": "Madame Butterfly in Walhall \u201eFest\u2013Spiele\" 1945\u20131950",
+      "description": "06.Januar10:00",
+      "location": {
+        "name": "Hof",
+        "lat": 50.3167,
+        "lon": 11.9167
+      },
+      "start_time": "2026-01-06T18:00:00",
+      "end_time": null,
+      "status": "pending",
+      "source": "Frankenpost",
+      "url": "https://event.frankenpost.de/detail.php?event_id=3153008",
+      "category": null,
+      "tags": []
+    },
+    {
+      "id": "html_frankenpost_7929756233752067484",
+      "title": "Spot(t)-Light. Richard Wagner in der zeitgen\u00f6ssischen Karikatur",
+      "description": "Dienstag,06.01.2026,10:00 Uhr",
+      "location": {
+        "name": "Hof",
+        "lat": 50.3167,
+        "lon": 11.9167
+      },
+      "start_time": "2026-01-06T18:00:00",
+      "end_time": null,
+      "status": "pending",
+      "source": "Frankenpost",
+      "url": "https://event.frankenpost.de/detail.php?event_id=3152961",
+      "category": null,
+      "tags": []
+    },
+    {
+      "id": "html_frankenpost_-3812448421094652598",
+      "title": "Weihnachtlicher Stadtrundgang",
+      "description": "Dienstag,06.01.2026,10:30 Uhr",
+      "location": {
+        "name": "Hof",
+        "lat": 50.3167,
+        "lon": 11.9167
+      },
+      "start_time": "2026-01-06T18:00:00",
+      "end_time": null,
+      "status": "pending",
+      "source": "Frankenpost",
+      "url": "https://event.frankenpost.de/detail.php?event_id=3214209",
+      "category": null,
+      "tags": []
     }
   ],
-  "last_scraped": "2026-01-04T23:06:24.295435"
+  "last_scraped": "2026-01-06T03:57:11.876929"
 }
