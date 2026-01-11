@@ -1,0 +1,33 @@
+{
+  "_comment": "Accepted dresscode values from MSN Weather",
+  "_description": "Only dresscodes in this list will be shown to users. This prevents displaying invalid or unexpected values.",
+  
+  "accepted_dresscodes": [
+    "Light jacket",
+    "Light jacket recommended",
+    "Coat recommended",
+    "Heavy coat",
+    "Heavy coat recommended",
+    "Winter coat",
+    "Winter coat recommended",
+    "Sweater",
+    "Sweater recommended",
+    "Long sleeves",
+    "Long sleeves recommended",
+    "Short sleeves",
+    "T-shirt weather",
+    "Dress warmly",
+    "Dress in layers",
+    "Light clothing",
+    "Warm clothing",
+    "Waterproof jacket",
+    "Raincoat recommended",
+    "Umbrella recommended",
+    "Light layers",
+    "Medium layers",
+    "Heavy layers"
+  ],
+  
+  "_comment_matching": "Matching is case-insensitive and supports partial matching",
+  "_comment_fallback": "If no match is found, dresscode will not be displayed to users"
+}

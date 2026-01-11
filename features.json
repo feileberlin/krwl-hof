@@ -1088,6 +1088,45 @@
       ],
       "test_method": "check_code_patterns",
       "test_instructions": "1. Run translation tests: python3 tests/test_translations.py --verbose\n2. Generate site: python3 src/event_manager.py generate\n3. Verify two HTML files created:\n   - public/index.html (German, lang=\"de\")\n   - public/en/index.html (English, lang=\"en\")\n4. Check translation files copied to both directories\n5. Test URL detection:\n   - Open / → should default to German\n   - Open /en/ → should use English\n6. Verify no language menu in UI"
+    },
+    {
+      "id": "weather-dresscode",
+      "name": "Weather Dresscode Display",
+      "description": "Scrape current weather conditions from MSN Weather and display dresscode recommendations in filter bar. Validates dresscodes against accepted list. Hourly caching prevents excessive requests.",
+      "category": "backend",
+      "implemented": true,
+      "files": [
+        "src/modules/weather_scraper.py",
+        "assets/json/weather_dresscodes.json",
+        "assets/html/filter-nav.html",
+        "assets/js/app.js",
+        "assets/css/style.css"
+      ],
+      "config_keys": [
+        "weather.enabled",
+        "weather.cache_hours",
+        "weather.locations",
+        "weather.display.show_in_filter_bar"
+      ],
+      "code_patterns": [
+        {
+          "file": "src/modules/weather_scraper.py",
+          "pattern": "class WeatherScraper|_extract_dresscode|_validate_dresscode",
+          "description": "Weather scraper with dresscode extraction and validation"
+        },
+        {
+          "file": "assets/js/app.js",
+          "pattern": "loadWeather|displayWeatherDresscode|weather_cache.json",
+          "description": "Frontend weather loading and display"
+        },
+        {
+          "file": "assets/html/filter-nav.html",
+          "pattern": "filter-bar-weather|weather-chip",
+          "description": "Weather chip in filter bar"
+        }
+      ],
+      "test_method": "check_code_patterns",
+      "test_instructions": "1. Run weather scraper: python3 src/event_manager.py scrape-weather\n2. Verify cache created: assets/json/weather_cache.json\n3. Check dresscode is validated against accepted list\n4. Generate site: python3 src/event_manager.py build production\n5. Open site and verify weather chip appears at end of filter bar\n6. Verify dresscode text is displayed (e.g., '15°C • Light jacket')\n7. Test hourly caching: run scrape-weather again within 1 hour, should use cache\n8. Force refresh: python3 src/event_manager.py scrape-weather --force"
     }
   ]
 }

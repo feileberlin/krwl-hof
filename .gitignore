@@ -96,3 +96,6 @@ public/index.html
 data/*.json
 !data/*.template.json
 !data/i18n/*.json
+
+# Weather cache - regenerated hourly
+assets/json/weather_cache.json

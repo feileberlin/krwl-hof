@@ -224,6 +224,8 @@ COMMANDS:
     (no command)              Launch interactive TUI (default)
     setup                     Show detailed setup instructions for your own site
     scrape                    Scrape events from configured sources
+    scrape-weather            Scrape current weather and dresscode (hourly cache)
+    scrape-weather --force    Force refresh weather data (bypass cache)
     review                    Review pending events interactively
     publish EVENT_ID          Publish a specific pending event
     reject EVENT_ID           Reject a specific pending event
@@ -688,6 +690,60 @@ def cli_scrape(base_path, config):
     new_events = scraper.scrape_all_sources()
     print(f"✓ Scraped {len(new_events)} new events")
     return 0
+
+
+def cli_scrape_weather(base_path, config, force_refresh=False):
+    """CLI: Scrape current weather and dresscode"""
+    from modules.weather_scraper import WeatherScraper
+    
+    print("Scraping weather data...")
+    
+    # Check if weather is enabled
+    if not config.get('weather', {}).get('enabled', False):
+        print("⚠ Weather scraping is disabled in config.json")
+        return 1
+    
+    scraper = WeatherScraper(base_path, config)
+    
+    # Get all configured locations
+    locations = config.get('weather', {}).get('locations', [])
+    if not locations:
+        print("⚠ No weather locations configured")
+        return 1
+    
+    print(f"Scraping weather for {len(locations)} location(s)...")
+    
+    success_count = 0
+    for location in locations:
+        location_name = location.get('name')
+        lat = location.get('lat')
+        lon = location.get('lon')
+        
+        print(f"\nFetching weather for {location_name}...")
+        
+        weather_data = scraper.get_weather(
+            location_name=location_name,
+            lat=lat,
+            lon=lon,
+            force_refresh=force_refresh
+        )
+        
+        if weather_data:
+            dresscode = weather_data.get('dresscode')
+            temperature = weather_data.get('temperature')
+            
+            if dresscode:
+                print(f"✓ Dresscode: {dresscode}")
+                if temperature:
+                    print(f"  Temperature: {temperature}")
+                success_count += 1
+            else:
+                print(f"⚠ No valid dresscode found (may not be in accepted list)")
+        else:
+            print(f"✗ Failed to fetch weather for {location_name}")
+    
+    print(f"\n✓ Successfully scraped weather for {success_count}/{len(locations)} location(s)")
+    return 0 if success_count > 0 else 1
 
 
 def cli_list_events(base_path):
@@ -1530,6 +1586,9 @@ def _execute_command(args, base_path, config):
     
     if command == 'scrape':
         return cli_scrape(base_path, config)
+    
+    if command == 'scrape-weather':
+        return cli_scrape_weather(base_path, config, force_refresh='--force' in (args.args or []))
     
     if command == 'list':
         return cli_list_events(base_path)

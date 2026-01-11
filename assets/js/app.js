@@ -290,6 +290,9 @@ class EventsApp {
             this.showMainContent();
         }
         
+        // Load weather (optional, won't break if it fails)
+        await this.loadWeather();
+        
         // Setup event listeners (always run, even if map fails)
         this.setupEventListeners();
         
@@ -862,6 +865,87 @@ class EventsApp {
             console.error('Error loading events:', error);
             this.events = [];
         }
+    }
+    
+    async loadWeather() {
+        /**
+         * Load current weather dresscode from cache.
+         * Weather is scraped hourly by backend and cached in weather_cache.json.
+         * Only displays dresscode if it's in the accepted list (validated by backend).
+         */
+        try {
+            // Check if weather feature is enabled in config
+            if (!this.config.weather?.display?.show_in_filter_bar) {
+                this.log('Weather display is disabled in config');
+                return;
+            }
+            
+            this.log('Loading weather data...');
+            
+            // Fetch weather cache
+            const response = await fetch('weather_cache.json');
+            if (!response.ok) {
+                this.log('Weather cache not found, skipping');
+                return;
+            }
+            
+            const weatherCache = await response.json();
+            
+            // Get weather for default location (first location in cache)
+            const cacheKeys = Object.keys(weatherCache);
+            if (cacheKeys.length === 0) {
+                this.log('Weather cache is empty');
+                return;
+            }
+            
+            // Get the first (or default) location's weather
+            const defaultKey = cacheKeys.find(key => key.includes('Hof')) || cacheKeys[0];
+            const weatherEntry = weatherCache[defaultKey];
+            
+            if (!weatherEntry || !weatherEntry.data) {
+                this.log('No weather data in cache entry');
+                return;
+            }
+            
+            const weatherData = weatherEntry.data;
+            const dresscode = weatherData.dresscode;
+            
+            // Display dresscode if available
+            if (dresscode) {
+                this.displayWeatherDresscode(dresscode, weatherData.temperature);
+            } else {
+                this.log('No dresscode in weather data');
+            }
+            
+        } catch (error) {
+            // Weather is optional, so just log the error and continue
+            console.warn('Failed to load weather:', error);
+        }
+    }
+    
+    displayWeatherDresscode(dresscode, temperature) {
+        /**
+         * Display weather dresscode in filter bar.
+         * Shows at the end of the filter bar after location.
+         */
+        const weatherChip = this.getCachedElement('#filter-bar-weather');
+        if (!weatherChip) {
+            console.warn('Weather chip element not found');
+            return;
+        }
+        
+        // Format display text
+        let displayText = dresscode;
+        if (temperature) {
+            displayText = `${temperature} • ${dresscode}`;
+        }
+        
+        // Update chip content and show it
+        weatherChip.textContent = displayText;
+        weatherChip.style.display = '';  // Remove display:none
+        weatherChip.setAttribute('title', `Current weather: ${dresscode}`);
+        
+        this.log('Weather dresscode displayed:', displayText);
     }
     
     processTemplateEvents(events) {
