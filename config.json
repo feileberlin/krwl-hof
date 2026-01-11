@@ -683,5 +683,32 @@
       "path": "assets/json/events/archived",
       "_comment_path": "Directory where archived events are stored"
     }
+  },
+  
+  "_comment_weather_section": "────────────────────────────────────────────────────────────────────────────────",
+  "_comment_weather_help": "WEATHER SCRAPING - Current weather conditions and dresscode",
+  "_comment_weather_usage": "Scrapes MSN Weather hourly for dresscode recommendations",
+  
+  "weather": {
+    "enabled": true,
+    "cache_hours": 1,
+    "_comment_cache": "Cache weather data for this many hours (default: 1 hour)",
+    "timeout": 10,
+    "_comment_timeout": "Request timeout in seconds",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+    "_comment_user_agent": "User-Agent string for HTTP requests (update periodically to match current browsers)",
+    "locations": [
+      {
+        "name": "Hof",
+        "lat": 50.3167,
+        "lon": 11.9167,
+        "display_name": "Hof"
+      }
+    ],
+    "_comment_locations": "Locations to fetch weather for (default: Hof area)",
+    "display": {
+      "show_in_filter_bar": true,
+      "_comment_display": "Show weather dresscode in filter bar"
+    }
   }
 }

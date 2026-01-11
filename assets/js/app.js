@@ -290,6 +290,9 @@ class EventsApp {
             this.showMainContent();
         }
         
+        // Load weather (optional, won't break if it fails)
+        await this.loadWeather();
+        
         // Setup event listeners (always run, even if map fails)
         this.setupEventListeners();
         
@@ -862,6 +865,65 @@ class EventsApp {
             console.error('Error loading events:', error);
             this.events = [];
         }
+    }
+    
+    async loadWeather() {
+        /**
+         * Load weather dresscode from cache. Simple KISS implementation.
+         */
+        try {
+            if (!this.config.weather?.display?.show_in_filter_bar) {
+                return;
+            }
+            
+            const response = await fetch('weather_cache.json');
+            if (!response.ok) return;
+            
+            const cache = await response.json();
+            const cacheKeys = Object.keys(cache);
+            if (cacheKeys.length === 0) return;
+            
+            // Use first entry (or Hof if available)
+            const key = cacheKeys.find(k => k.includes('Hof')) || cacheKeys[0];
+            const entry = cache[key];
+            
+            if (entry?.data?.dresscode) {
+                this.displayWeatherDresscode(entry.data.dresscode, entry.data.temperature);
+            }
+        } catch (error) {
+            console.warn('Weather load failed:', error);
+        }
+    }
+    
+    displayWeatherDresscode(dresscode, temperature) {
+        /**
+         * Display weather dresscode in filter bar.
+         * Shows at the end of the filter bar after location.
+         * Displays only dresscode by default, temperature shown on hover.
+         * Weather chip is informational only (not a filter).
+         */
+        const weatherChip = this.getCachedElement('#filter-bar-weather');
+        if (!weatherChip) {
+            console.warn('Weather chip element not found');
+            return;
+        }
+        
+        // Display only dresscode text (temperature shown on hover via title)
+        weatherChip.textContent = dresscode;
+        
+        // Store temperature in data attribute for potential future use
+        if (temperature) {
+            weatherChip.setAttribute('data-temperature', temperature);
+            // Show temperature on hover via title attribute
+            weatherChip.setAttribute('title', `${temperature} • ${dresscode}`);
+        } else {
+            weatherChip.setAttribute('title', dresscode);
+        }
+        
+        // Show the chip
+        weatherChip.style.display = '';  // Remove display:none
+        
+        this.log('Weather dresscode displayed:', dresscode, temperature ? `(${temperature})` : '');
     }
     
     processTemplateEvents(events) {

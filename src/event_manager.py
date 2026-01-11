@@ -224,6 +224,8 @@ COMMANDS:
     (no command)              Launch interactive TUI (default)
     setup                     Show detailed setup instructions for your own site
     scrape                    Scrape events from configured sources
+    scrape-weather            Scrape current weather and dresscode (hourly cache)
+    scrape-weather --force    Force refresh weather data (bypass cache)
     review                    Review pending events interactively
     publish EVENT_ID          Publish a specific pending event
     reject EVENT_ID           Reject a specific pending event
@@ -688,6 +690,32 @@ def cli_scrape(base_path, config):
     new_events = scraper.scrape_all_sources()
     print(f"✓ Scraped {len(new_events)} new events")
     return 0
+
+
+def cli_scrape_weather(base_path, config, force_refresh=False):
+    """CLI: Scrape current weather and dresscode (KISS: single location - Hof)"""
+    from modules.weather_scraper import WeatherScraper
+    
+    print("Scraping weather data for Hof...")
+    
+    # Check if weather is enabled
+    if not config.get('weather', {}).get('enabled', False):
+        print("⚠ Weather scraping is disabled in config.json")
+        return 1
+    
+    scraper = WeatherScraper(base_path, config)
+    
+    # Scrape for Hof only (KISS)
+    weather_data = scraper.get_weather(location_name="Hof", force_refresh=force_refresh)
+    
+    if weather_data and weather_data.get('dresscode'):
+        print(f"✓ Dresscode: {weather_data['dresscode']}")
+        if weather_data.get('temperature'):
+            print(f"  Temperature: {weather_data['temperature']}")
+        return 0
+    else:
+        print("✗ Failed to fetch weather or no valid dresscode found")
+        return 1
 
 
 def cli_list_events(base_path):
@@ -1530,6 +1558,9 @@ def _execute_command(args, base_path, config):
     
     if command == 'scrape':
         return cli_scrape(base_path, config)
+    
+    if command == 'scrape-weather':
+        return cli_scrape_weather(base_path, config, force_refresh='--force' in (args.args or []))
     
     if command == 'list':
         return cli_list_events(base_path)
