@@ -693,10 +693,10 @@ def cli_scrape(base_path, config):
 
 
 def cli_scrape_weather(base_path, config, force_refresh=False):
-    """CLI: Scrape current weather and dresscode"""
+    """CLI: Scrape current weather and dresscode (KISS: single location - Hof)"""
     from modules.weather_scraper import WeatherScraper
     
-    print("Scraping weather data...")
+    print("Scraping weather data for Hof...")
     
     # Check if weather is enabled
     if not config.get('weather', {}).get('enabled', False):
@@ -705,63 +705,17 @@ def cli_scrape_weather(base_path, config, force_refresh=False):
     
     scraper = WeatherScraper(base_path, config)
     
-    # Collect all locations to scrape: weather.locations + map.predefined_locations
-    locations_to_scrape = []
+    # Scrape for Hof only (KISS)
+    weather_data = scraper.get_weather(location_name="Hof", force_refresh=force_refresh)
     
-    # Add explicitly configured weather locations
-    weather_locations = config.get('weather', {}).get('locations', [])
-    locations_to_scrape.extend(weather_locations)
-    
-    # Add predefined map locations (so weather is available when user switches locations)
-    predefined_locations = config.get('map', {}).get('predefined_locations', [])
-    for loc in predefined_locations:
-        # Add if not already in list (avoid duplicates)
-        if not any(l.get('name') == loc.get('display_name') or 
-                   (l.get('lat') == loc.get('lat') and l.get('lon') == loc.get('lon'))
-                   for l in locations_to_scrape):
-            locations_to_scrape.append({
-                'name': loc.get('display_name', loc.get('name')),
-                'lat': loc.get('lat'),
-                'lon': loc.get('lon')
-            })
-    
-    if not locations_to_scrape:
-        print("⚠ No weather locations configured")
+    if weather_data and weather_data.get('dresscode'):
+        print(f"✓ Dresscode: {weather_data['dresscode']}")
+        if weather_data.get('temperature'):
+            print(f"  Temperature: {weather_data['temperature']}")
+        return 0
+    else:
+        print("✗ Failed to fetch weather or no valid dresscode found")
         return 1
-    
-    print(f"Scraping weather for {len(locations_to_scrape)} location(s)...")
-    
-    success_count = 0
-    for location in locations_to_scrape:
-        location_name = location.get('name')
-        lat = location.get('lat')
-        lon = location.get('lon')
-        
-        print(f"\nFetching weather for {location_name}...")
-        
-        weather_data = scraper.get_weather(
-            location_name=location_name,
-            lat=lat,
-            lon=lon,
-            force_refresh=force_refresh
-        )
-        
-        if weather_data:
-            dresscode = weather_data.get('dresscode')
-            temperature = weather_data.get('temperature')
-            
-            if dresscode:
-                print(f"✓ Dresscode: {dresscode}")
-                if temperature:
-                    print(f"  Temperature: {temperature}")
-                success_count += 1
-            else:
-                print(f"⚠ No valid dresscode found (may not be in accepted list)")
-        else:
-            print(f"✗ Failed to fetch weather for {location_name}")
-    
-    print(f"\n✓ Successfully scraped weather for {success_count}/{len(locations_to_scrape)} location(s)")
-    return 0 if success_count > 0 else 1
 
 
 def cli_list_events(base_path):

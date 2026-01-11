@@ -1,9 +1,8 @@
 """
-Weather Scraper Module - MSN Weather Integration
+Weather Scraper Module - KISS Implementation
 
-Scrapes current weather conditions and dressing recommendations from MSN Weather.
-Extracts dresscode information from dressingIndex aria-label attribute.
-Implements hourly caching to minimize API/scraping load.
+Simple weather dresscode scraper for MSN Weather.
+Extracts dresscode, validates against whitelist, caches for 1 hour.
 """
 
 import os
@@ -17,446 +16,175 @@ logger = logging.getLogger(__name__)
 
 
 class WeatherScraper:
-    """
-    Scrapes and caches weather dresscode information from MSN Weather.
-    
-    Hourly caching prevents excessive requests and improves performance.
-    Dresscode is extracted from the dressingIndex element's aria-label attribute.
-    """
+    """Simple weather dresscode scraper with hourly caching."""
     
     def __init__(self, base_path=None, config=None):
-        """
-        Initialize weather scraper with configuration.
-        
-        Args:
-            base_path: Base path for data files
-            config: Configuration dict with weather settings
-        """
         self.base_path = base_path or os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
         self.config = config or {}
         
-        # Cache file location
-        self.cache_dir = os.path.join(self.base_path, 'assets', 'json')
-        self.cache_file = os.path.join(self.cache_dir, 'weather_cache.json')
+        # Paths
+        json_dir = os.path.join(self.base_path, 'assets', 'json')
+        self.cache_file = os.path.join(json_dir, 'weather_cache.json')
+        self.dresscodes_file = os.path.join(json_dir, 'weather_dresscodes.json')
         
-        # Accepted dresscodes file
-        self.dresscodes_file = os.path.join(self.base_path, 'assets', 'json', 'weather_dresscodes.json')
+        # Load accepted dresscodes
         self.accepted_dresscodes = self._load_accepted_dresscodes()
         
-        # Weather configuration
+        # Config
         weather_config = self.config.get('weather', {})
-        self.locations = weather_config.get('locations', [])
         self.cache_hours = weather_config.get('cache_hours', 1)
         self.timeout = weather_config.get('timeout', 10)
         self.user_agent = weather_config.get('user_agent', 
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36')
-        
-        # MSN Weather URL template
-        self.msn_weather_url = "https://www.msn.com/en-us/weather/forecast/in-{city},{region},{country}"
-        
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')
+    
     def get_weather(self, location_name=None, lat=None, lon=None, force_refresh=False):
-        """
-        Get weather dresscode for a location.
-        
-        Args:
-            location_name: Location name (e.g., "Hof")
-            lat: Latitude (optional, for geo-based lookup)
-            lon: Longitude (optional, for geo-based lookup)
-            force_refresh: If True, bypass cache and fetch fresh data
-            
-        Returns:
-            Dict with weather data including dresscode, temperature, conditions
-        """
-        # Check cache first (unless force refresh)
+        """Get weather for location, using cache if available."""
+        # Check cache
         if not force_refresh:
-            cached_data = self._load_cache()
-            if cached_data:
-                cache_key = self._get_cache_key(location_name, lat, lon)
-                if cache_key in cached_data:
-                    entry = cached_data[cache_key]
-                    # Check if cache is still valid (within cache_hours)
-                    cache_time = datetime.fromisoformat(entry['timestamp'])
-                    if datetime.now() - cache_time < timedelta(hours=self.cache_hours):
-                        logger.info(f"Using cached weather for {cache_key}")
-                        return entry['data']
+            cached = self._get_from_cache(location_name, lat, lon)
+            if cached:
+                return cached
         
-        # Fetch fresh weather data
-        weather_data = self._scrape_weather(location_name, lat, lon)
+        # Scrape fresh data
+        weather_data = self._scrape_weather(location_name or "Hof")
         
         # Save to cache
         if weather_data:
-            self._save_cache(location_name, lat, lon, weather_data)
+            self._save_to_cache(location_name, lat, lon, weather_data)
         
         return weather_data
     
-    def _scrape_weather(self, location_name, lat, lon):
-        """
-        Scrape weather data from MSN Weather.
-        
-        Args:
-            location_name: Location name
-            lat: Latitude
-            lon: Longitude
-            
-        Returns:
-            Dict with dresscode and weather info, or None if scraping fails
-        """
+    def _scrape_weather(self, location_name):
+        """Scrape weather from MSN Weather."""
         try:
-            # Build URL for location
-            if location_name:
-                # Use location name (e.g., "Hof, Bavaria, Germany")
-                url = self._build_msn_url(location_name)
-            elif lat and lon:
-                # Use coordinates (use first configured location as fallback)
-                location_name = self.locations[0]['name'] if self.locations else "Hof"
-                url = self._build_msn_url(location_name)
-            else:
-                logger.error("No location specified for weather scraping")
-                return None
+            # Build URL (simplified - always use Hof, Bavaria, Germany)
+            url = f"https://www.msn.com/en-us/weather/forecast/in-Hof,Bavaria,Germany"
             
-            logger.info(f"Fetching weather from: {url}")
-            
-            # Fetch page with headers to avoid bot detection
-            headers = {
-                'User-Agent': self.user_agent
-            }
-            response = requests.get(url, headers=headers, timeout=self.timeout)
+            # Fetch page
+            response = requests.get(url, headers={'User-Agent': self.user_agent}, timeout=self.timeout)
             response.raise_for_status()
             
             # Parse HTML
             soup = BeautifulSoup(response.content, 'html.parser')
             
-            # Extract dresscode from dressingIndex aria-label
+            # Extract dresscode
             dresscode = self._extract_dresscode(soup)
+            if not dresscode or not self._is_valid_dresscode(dresscode):
+                return None
             
-            # Extract additional weather info
+            # Extract temperature (optional)
             temperature = self._extract_temperature(soup)
-            conditions = self._extract_conditions(soup)
             
-            weather_data = {
+            return {
                 'dresscode': dresscode,
                 'temperature': temperature,
-                'conditions': conditions,
                 'location': location_name,
                 'timestamp': datetime.now().isoformat()
             }
             
-            logger.info(f"Weather scraped successfully: {dresscode}")
-            return weather_data
-            
-        except requests.RequestException as e:
-            logger.error(f"Failed to fetch weather data: {e}")
-            return None
         except Exception as e:
-            logger.error(f"Error scraping weather: {e}")
+            logger.error(f"Weather scraping failed: {e}")
             return None
     
     def _extract_dresscode(self, soup):
-        """
-        Extract dresscode from dressingIndex element's aria-label.
-        Validates against accepted dresscodes list.
-        
-        Args:
-            soup: BeautifulSoup object
-            
-        Returns:
-            Dresscode string if valid, or None if not found or not accepted
-        """
-        try:
-            # Look for dressingIndex element with aria-label
-            # Try multiple possible selectors
-            selectors = [
-                '[data-id="dressingIndex"]',
-                '.dressingIndex',
-                '#dressingIndex',
-                '[aria-label*="dressing"]',
-                '[aria-label*="dress"]'
-            ]
-            
-            for selector in selectors:
-                elements = soup.select(selector)
-                for element in elements:
-                    aria_label = element.get('aria-label', '')
-                    if aria_label and ('dress' in aria_label.lower() or 'clothing' in aria_label.lower()):
-                        logger.info(f"Found dresscode in aria-label: {aria_label}")
-                        parsed_dresscode = self._parse_dresscode(aria_label)
-                        # Validate against accepted list
-                        if parsed_dresscode and self._validate_dresscode(parsed_dresscode):
-                            return parsed_dresscode
-                        else:
-                            logger.warning(f"Dresscode '{parsed_dresscode}' not in accepted list, skipping")
-            
-            # Fallback: Look for any text content about dressing
-            text_elements = soup.find_all(text=lambda t: t and ('dress' in t.lower() or 'wear' in t.lower()))
-            if text_elements:
-                for text in text_elements:
-                    text_str = str(text).strip()
-                    if len(text_str) > 10 and len(text_str) < 200:  # Reasonable length
-                        logger.info(f"Found dresscode in text: {text_str}")
-                        parsed_dresscode = self._parse_dresscode(text_str)
-                        # Validate against accepted list
-                        if parsed_dresscode and self._validate_dresscode(parsed_dresscode):
-                            return parsed_dresscode
-                        else:
-                            logger.warning(f"Dresscode '{parsed_dresscode}' not in accepted list, skipping")
-            
-            logger.warning("No valid dresscode found in page")
-            return None
-            
-        except Exception as e:
-            logger.error(f"Error extracting dresscode: {e}")
-            return None
-    
-    def _parse_dresscode(self, text):
-        """
-        Parse and simplify dresscode text.
-        
-        Args:
-            text: Raw dresscode text
-            
-        Returns:
-            Simplified dresscode string
-        """
-        # Clean up the text
-        text = text.strip()
-        
-        # Extract key recommendation (e.g., "Light jacket recommended" -> "Light jacket")
-        # Common patterns: "X recommended", "Wear X", "Dress for X"
-        if 'recommended' in text.lower():
-            parts = text.lower().split('recommended')
-            if parts[0]:
-                return parts[0].strip().title()
-        
-        if 'wear' in text.lower():
-            parts = text.lower().split('wear')
-            if len(parts) > 1:
-                return parts[1].strip()[:50].title()
-        
-        # If no pattern matched, return first reasonable chunk
-        if len(text) > 100:
-            return text[:100] + "..."
-        
-        return text
-    
-    def _extract_temperature(self, soup):
-        """
-        Extract current temperature from page.
-        
-        Args:
-            soup: BeautifulSoup object
-            
-        Returns:
-            Temperature string (e.g., "15°C"), or None
-        """
-        try:
-            # Common temperature selectors on MSN Weather
-            selectors = [
-                '.temperature',
-                '[data-id="temperature"]',
-                '.current-temp',
-                'span[class*="temp"]'
-            ]
-            
-            for selector in selectors:
-                elements = soup.select(selector)
-                for element in elements:
-                    temp_text = element.get_text().strip()
-                    # Check if text contains degree symbol or has numeric content
-                    if temp_text and ('°' in temp_text or any(c.isdigit() for c in temp_text)):
-                        return temp_text
-            
-            return None
-            
-        except Exception as e:
-            logger.error(f"Error extracting temperature: {e}")
-            return None
-    
-    def _extract_conditions(self, soup):
-        """
-        Extract weather conditions (e.g., "Partly cloudy").
-        
-        Args:
-            soup: BeautifulSoup object
-            
-        Returns:
-            Conditions string, or None
-        """
-        try:
-            # Common condition selectors
-            selectors = [
-                '.weather-condition',
-                '[data-id="condition"]',
-                '.current-condition',
-                'span[class*="condition"]'
-            ]
-            
-            for selector in selectors:
-                elements = soup.select(selector)
-                for element in elements:
-                    condition_text = element.get_text().strip()
-                    if condition_text and len(condition_text) > 3 and len(condition_text) < 50:
-                        return condition_text
-            
-            return None
-            
-        except Exception as e:
-            logger.error(f"Error extracting conditions: {e}")
-            return None
-    
-    def _load_accepted_dresscodes(self):
-        """
-        Load list of accepted dresscodes from JSON file.
-        
-        Returns:
-            List of accepted dresscode strings (lowercase for matching)
-        """
-        try:
-            if os.path.exists(self.dresscodes_file):
-                with open(self.dresscodes_file, 'r', encoding='utf-8') as f:
-                    data = json.load(f)
-                    dresscodes = data.get('accepted_dresscodes', [])
-                    # Convert to lowercase for case-insensitive matching
-                    return [dc.lower() for dc in dresscodes]
-            else:
-                logger.warning(f"Dresscodes file not found: {self.dresscodes_file}")
-                return []
-        except Exception as e:
-            logger.error(f"Error loading accepted dresscodes: {e}")
-            return []
-    
-    def _validate_dresscode(self, dresscode):
-        """
-        Validate dresscode against accepted list.
-        Uses case-insensitive partial matching.
-        
-        Args:
-            dresscode: Dresscode string to validate
-            
-        Returns:
-            True if dresscode is accepted, False otherwise
-        """
-        if not dresscode or not self.accepted_dresscodes:
-            return False
-        
-        dresscode_lower = dresscode.lower().strip()
-        
-        # Exact match (case-insensitive)
-        if dresscode_lower in self.accepted_dresscodes:
-            return True
-        
-        # Partial match - check if any accepted dresscode is contained in the scraped value
-        # or if the scraped value is contained in any accepted dresscode
-        for accepted in self.accepted_dresscodes:
-            if accepted in dresscode_lower or dresscode_lower in accepted:
-                return True
-        
-        return False
-    
-    def _build_msn_url(self, location_name):
-        """
-        Build MSN Weather URL for location.
-        
-        Args:
-            location_name: Location name (e.g., "Hof")
-            
-        Returns:
-            MSN Weather URL string
-        """
-        # For this project, default to Hof, Bavaria, Germany
-        # In the future, this could be more dynamic
-        city = "Hof"
-        region = "Bavaria"
-        country = "Germany"
-        
-        # URL encode spaces and special characters
-        city_encoded = city.replace(" ", "%20")
-        region_encoded = region.replace(" ", "%20")
-        country_encoded = country.replace(" ", "%20")
-        
-        return f"https://www.msn.com/en-us/weather/forecast/in-{city_encoded},{region_encoded},{country_encoded}"
-    
-    def _get_cache_key(self, location_name, lat, lon):
-        """
-        Generate cache key for location.
-        
-        Args:
-            location_name: Location name
-            lat: Latitude
-            lon: Longitude
-            
-        Returns:
-            Cache key string
-        """
-        if location_name:
-            return f"location_{location_name}"
-        elif lat and lon:
-            return f"coords_{lat}_{lon}"
-        else:
-            return "default"
-    
-    def _load_cache(self):
-        """
-        Load weather cache from file.
-        
-        Returns:
-            Dict with cached weather data, or None
-        """
-        try:
-            if os.path.exists(self.cache_file):
-                with open(self.cache_file, 'r', encoding='utf-8') as f:
-                    return json.load(f)
-        except Exception as e:
-            logger.error(f"Error loading weather cache: {e}")
-        
+        """Extract dresscode from page."""
+        # Try aria-label on dressingIndex elements
+        for selector in ['[data-id="dressingIndex"]', '[aria-label*="dress"]']:
+            elements = soup.select(selector)
+            for element in elements:
+                aria_label = element.get('aria-label', '')
+                if 'dress' in aria_label.lower():
+                    return self._clean_dresscode(aria_label)
         return None
     
-    def _save_cache(self, location_name, lat, lon, weather_data):
-        """
-        Save weather data to cache.
-        
-        Args:
-            location_name: Location name
-            lat: Latitude
-            lon: Longitude
-            weather_data: Weather data dict
-        """
+    def _clean_dresscode(self, text):
+        """Clean and simplify dresscode text."""
+        text = text.strip()
+        # Remove "recommended" suffix
+        if 'recommended' in text.lower():
+            text = text.lower().split('recommended')[0].strip().title()
+        return text[:100]  # Limit length
+    
+    def _extract_temperature(self, soup):
+        """Extract temperature from page."""
+        for selector in ['.temperature', '[data-id="temperature"]']:
+            elements = soup.select(selector)
+            for element in elements:
+                temp = element.get_text().strip()
+                if '°' in temp or any(c.isdigit() for c in temp):
+                    return temp
+        return None
+    
+    def _load_accepted_dresscodes(self):
+        """Load accepted dresscodes list."""
+        try:
+            with open(self.dresscodes_file, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                return [dc.lower() for dc in data.get('accepted_dresscodes', [])]
+        except:
+            return []
+    
+    def _is_valid_dresscode(self, dresscode):
+        """Check if dresscode is in accepted list."""
+        if not dresscode or not self.accepted_dresscodes:
+            return False
+        dresscode_lower = dresscode.lower().strip()
+        # Exact or partial match
+        return any(acc in dresscode_lower or dresscode_lower in acc 
+                   for acc in self.accepted_dresscodes)
+    
+    def _get_from_cache(self, location_name, lat, lon):
+        """Get weather from cache if valid."""
+        try:
+            if not os.path.exists(self.cache_file):
+                return None
+            
+            with open(self.cache_file, 'r', encoding='utf-8') as f:
+                cache = json.load(f)
+            
+            # Find matching entry
+            key = self._cache_key(location_name, lat, lon)
+            entry = cache.get(key)
+            
+            if not entry:
+                return None
+            
+            # Check if expired
+            cached_time = datetime.fromisoformat(entry['timestamp'])
+            if datetime.now() - cached_time >= timedelta(hours=self.cache_hours):
+                return None
+            
+            return entry['data']
+        except:
+            return None
+    
+    def _save_to_cache(self, location_name, lat, lon, weather_data):
+        """Save weather to cache."""
         try:
             # Load existing cache
-            cached_data = self._load_cache() or {}
+            cache = {}
+            if os.path.exists(self.cache_file):
+                with open(self.cache_file, 'r', encoding='utf-8') as f:
+                    cache = json.load(f)
             
-            # Add new entry
-            cache_key = self._get_cache_key(location_name, lat, lon)
-            cached_data[cache_key] = {
+            # Add/update entry
+            key = self._cache_key(location_name, lat, lon)
+            cache[key] = {
                 'timestamp': datetime.now().isoformat(),
                 'data': weather_data
             }
             
-            # Save to file
-            os.makedirs(self.cache_dir, exist_ok=True)
+            # Save
+            os.makedirs(os.path.dirname(self.cache_file), exist_ok=True)
             with open(self.cache_file, 'w', encoding='utf-8') as f:
-                json.dump(cached_data, f, indent=2, ensure_ascii=False)
-            
-            logger.info(f"Weather cache saved for {cache_key}")
-            
+                json.dump(cache, f, indent=2, ensure_ascii=False)
         except Exception as e:
-            logger.error(f"Error saving weather cache: {e}")
+            logger.error(f"Cache save failed: {e}")
     
-    def scrape_all_locations(self):
-        """
-        Scrape weather for all configured locations.
-        
-        Returns:
-            Dict mapping location names to weather data
-        """
-        results = {}
-        
-        for location in self.locations:
-            location_name = location.get('name')
-            lat = location.get('lat')
-            lon = location.get('lon')
-            
-            weather_data = self.get_weather(location_name, lat, lon)
-            if weather_data:
-                results[location_name] = weather_data
-        
-        return results
+    def _cache_key(self, location_name, lat, lon):
+        """Generate cache key."""
+        if location_name:
+            return f"location_{location_name}"
+        elif lat and lon:
+            return f"coords_{lat}_{lon}"
+        return "default"
