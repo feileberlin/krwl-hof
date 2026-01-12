@@ -1092,15 +1092,17 @@
     {
       "id": "weather-dresscode",
       "name": "Weather Dresscode Display",
-      "description": "Scrape current weather conditions from MSN Weather and display dresscode recommendations in filter bar. Validates dresscodes against accepted list. Hourly caching prevents excessive requests.",
+      "description": "Scrape current weather conditions from MSN Weather and display dresscode recommendations in filter bar. Weather data is inlined in HTML as window.WEATHER_CACHE. Validates dresscodes against accepted list. Hourly caching prevents excessive requests. Can be triggered manually via GitHub Actions workflow.",
       "category": "backend",
       "implemented": true,
       "files": [
         "src/modules/weather_scraper.py",
+        "src/modules/site_generator.py",
         "assets/json/weather_dresscodes.json",
         "assets/html/filter-nav.html",
         "assets/js/app.js",
-        "assets/css/style.css"
+        "assets/css/style.css",
+        ".github/workflows/website-maintenance.yml"
       ],
       "config_keys": [
         "weather.enabled",
@@ -1116,17 +1118,27 @@
         },
         {
           "file": "assets/js/app.js",
-          "pattern": "loadWeather|displayWeatherDresscode|weather_cache.json",
-          "description": "Frontend weather loading and display"
+          "pattern": "loadWeather|displayWeatherDresscode|window.WEATHER_CACHE",
+          "description": "Frontend weather loading from inlined cache"
         },
         {
           "file": "assets/html/filter-nav.html",
           "pattern": "filter-bar-weather|weather-chip",
           "description": "Weather chip in filter bar"
+        },
+        {
+          "file": "src/modules/site_generator.py",
+          "pattern": "load_weather_cache|window.WEATHER_CACHE",
+          "description": "Weather cache inlined in HTML"
+        },
+        {
+          "file": ".github/workflows/website-maintenance.yml",
+          "pattern": "scrape-weather|Scrape Weather",
+          "description": "GitHub Actions workflow for weather scraping"
         }
       ],
       "test_method": "check_code_patterns",
-      "test_instructions": "1. Run weather scraper: python3 src/event_manager.py scrape-weather\n2. Verify cache created: assets/json/weather_cache.json\n3. Check dresscode is validated against accepted list\n4. Generate site: python3 src/event_manager.py build production\n5. Open site and verify weather chip appears at end of filter bar\n6. Verify dresscode text is displayed (e.g., '15°C • Light jacket')\n7. Test hourly caching: run scrape-weather again within 1 hour, should use cache\n8. Force refresh: python3 src/event_manager.py scrape-weather --force"
+      "test_instructions": "1. Run weather scraper: python3 src/event_manager.py scrape-weather\n2. Verify cache created: assets/json/weather_cache.json\n3. Check dresscode is validated against accepted list\n4. Generate site: python3 src/event_manager.py generate\n5. Verify window.WEATHER_CACHE is embedded in public/index.html\n6. Open site and verify weather chip appears at end of filter bar\n7. Verify dresscode text is displayed (e.g., '15°C • Light jacket')\n8. Test hourly caching: run scrape-weather again within 1 hour, should use cache\n9. Force refresh: python3 src/event_manager.py scrape-weather --force\n10. Test GitHub Actions: Go to Actions → Website Maintenance (Unified) → Run workflow → Select 'scrape-weather'"
     }
   ]
 }
