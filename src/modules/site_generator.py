@@ -118,16 +118,58 @@ class SiteGenerator:
         self.assets_dir = self.base_path / 'assets'  # Source assets
         self.dependencies_dir.mkdir(parents=True, exist_ok=True)
         
-        # Auto-detect debug comments based on environment
-        # Development mode: enable debug comments for better debugging
-        # Production/CI mode: disable debug comments for smaller file size
+        # Debug comments detection with force override support
+        # Priority: 1) Environment variable, 2) Config file, 3) Auto-detection
+        self.enable_debug_comments = self._detect_debug_comments()
+    
+    def _detect_debug_comments(self) -> bool:
+        """
+        Detect whether debug comments should be enabled.
+        
+        Priority order (KISS approach):
+        1. Environment variable DEBUG_COMMENTS (for GitHub Actions override)
+        2. Config file debug_comments.force_enabled setting
+        3. Automatic environment detection (development=on, production/ci=off)
+        
+        Returns:
+            True if debug comments should be enabled, False otherwise
+        """
+        import os
+        
+        # Priority 1: Check environment variable (GitHub Actions support)
+        debug_env = os.environ.get('DEBUG_COMMENTS', '').lower()
+        if debug_env in ('true', '1', 'yes', 'on'):
+            logger.info("Debug comments FORCE ENABLED via environment variable DEBUG_COMMENTS")
+            return True
+        elif debug_env in ('false', '0', 'no', 'off'):
+            logger.info("Debug comments FORCE DISABLED via environment variable DEBUG_COMMENTS")
+            return False
+        
+        # Priority 2: Check config file setting
+        try:
+            if load_config is not None:
+                config = load_config(self.base_path)
+                force_enabled = config.get('debug_comments', {}).get('force_enabled', False)
+                if force_enabled:
+                    logger.info("Debug comments FORCE ENABLED via config.json")
+                    return True
+        except Exception as e:
+            logger.warning(f"Could not load debug_comments config: {e}")
+        
+        # Priority 3: Auto-detection based on environment
         try:
             from .utils import is_production, is_ci
             # Enable debug comments only in development (not production, not CI)
-            self.enable_debug_comments = not is_production() and not is_ci()
+            is_dev = not is_production() and not is_ci()
+            if is_dev:
+                logger.info("Debug comments AUTO-ENABLED (development mode)")
+            else:
+                logger.info("Debug comments AUTO-DISABLED (production/CI mode)")
+            return is_dev
         except ImportError:
             # Fallback: assume production (disable debug comments)
-            self.enable_debug_comments = False
+            logger.warning("Could not import environment detection, disabling debug comments")
+            return False
     
     # ==================== Dependency Management ====================
     

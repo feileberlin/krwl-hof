@@ -2,20 +2,26 @@
 
 ## Overview
 
-The KRWL HOF event manager automatically adds debug comments to generated HTML files to help developers understand where embedded resources come from. This feature is **automatically controlled by the environment** - no manual configuration needed!
+The KRWL HOF event manager automatically adds debug comments to generated HTML files to help developers understand where embedded resources come from. This feature is **automatically controlled by the environment** with **optional force override** for troubleshooting!
 
 ## How It Works
 
-### Automatic Environment Detection
+### Automatic Environment Detection with Force Override (KISS)
 
-Debug comments are automatically:
-- ✅ **ENABLED** in **development mode** (local development)
-- ❌ **DISABLED** in **production/CI mode** (deployed sites)
+Debug comments are controlled by a simple 3-level priority system:
 
-The system uses the same environment detection as the rest of the application (see `src/modules/utils.py`):
-- **Development**: Running locally on developer's machine
-- **Production**: Vercel, Netlify, Heroku, Railway, Render, Fly.io, Google Cloud Run, AWS, or explicit `ENVIRONMENT=production`
-- **CI**: GitHub Actions, GitLab CI, Travis CI, CircleCI, Jenkins, etc.
+1. **🎯 Environment Variable** (highest priority - for GitHub Actions)
+   - Set `DEBUG_COMMENTS=true` to force enable
+   - Set `DEBUG_COMMENTS=false` to force disable
+   
+2. **⚙️ Config File Setting** (second priority - for local override)
+   - Edit `config.json`: set `"debug_comments": {"force_enabled": true}`
+   
+3. **🤖 Auto-Detection** (default behavior)
+   - ✅ **Development** (local machine) → Debug comments **ENABLED**
+   - ❌ **Production/CI** (deployed/CI) → Debug comments **DISABLED**
+
+**No configuration needed for normal use** - it just works! Use override only when troubleshooting production issues.
 
 ### What Gets Debug Comments?
 
@@ -95,33 +101,112 @@ window.__INLINE_EVENTS_DATA__ = { "events": [ /* ... */ ] };
 
 ## How to Enable/Disable Debug Comments
 
-### Enable Debug Comments (Development Mode)
+### Default Behavior (No Configuration)
 
-Simply run the generation locally on your development machine:
+Simply run the generation locally or in CI:
 
 ```bash
 # On your local machine (NOT in CI)
 python3 src/event_manager.py generate
+# → Debug comments AUTO-ENABLED
+
+# In CI/production
+python3 src/event_manager.py generate
+# → Debug comments AUTO-DISABLED
 ```
 
-The system will auto-detect development environment and enable debug comments.
+### Force Enable Debug Comments (Override)
 
-### Disable Debug Comments (Production Mode)
+**Method 1: Environment Variable (GitHub Actions)**
 
-Debug comments are automatically disabled when:
+Set the `DEBUG_COMMENTS` environment variable:
 
-1. **Deploying to hosting platforms** (Vercel, Netlify, etc.)
-   - Just deploy normally - comments disabled automatically
+```bash
+# Local testing with forced debug
+export DEBUG_COMMENTS=true
+python3 src/event_manager.py generate
 
-2. **Running in CI/CD pipelines**
-   - GitHub Actions, GitLab CI, etc. auto-disable comments
+# Or inline
+DEBUG_COMMENTS=true python3 src/event_manager.py generate
+```
 
-3. **Forcing production mode locally**
-   ```bash
-   # Set environment variable to force production mode
-   export ENVIRONMENT=production
-   python3 src/event_manager.py generate
-   ```
+**In GitHub Actions workflow:**
+
+```yaml
+- name: Generate HTML with debug comments
+  env:
+    DEBUG_COMMENTS: true  # Force enable debug comments
+  run: |
+    python3 src/event_manager.py generate
+```
+
+**Or use workflow dispatch input:**
+
+1. Go to Actions → "Auto-Generate HTML on Merge"
+2. Click "Run workflow"
+3. Select `force_debug_comments: true`
+4. HTML will be generated with debug comments in CI!
+
+**Method 2: Config File (Local Override)**
+
+Edit `config.json`:
+
+```json
+{
+  "debug_comments": {
+    "force_enabled": true  // Set to true to force enable
+  }
+}
+```
+
+Then regenerate:
+
+```bash
+python3 src/event_manager.py generate
+```
+
+### Force Disable Debug Comments
+
+**Method 1: Environment Variable**
+
+```bash
+# Force disable even in development
+export DEBUG_COMMENTS=false
+python3 src/event_manager.py generate
+```
+
+**Method 2: Config File**
+
+Leave `force_enabled: false` (default) in `config.json` - auto-detection will disable in production/CI.
+
+### Priority Order (KISS)
+
+The system checks in this order:
+
+1. **Environment variable `DEBUG_COMMENTS`** (if set, overrides everything)
+2. **Config file `debug_comments.force_enabled`** (if true, overrides auto-detection)
+3. **Auto-detection** (development=on, production/ci=off)
+
+**Example scenarios:**
+
+```bash
+# Scenario 1: Force enable in CI (for troubleshooting)
+DEBUG_COMMENTS=true python3 src/event_manager.py generate
+# → Debug comments ON (even though CI normally disables)
+
+# Scenario 2: Force disable in development (testing production output)
+DEBUG_COMMENTS=false python3 src/event_manager.py generate
+# → Debug comments OFF (even though development normally enables)
+
+# Scenario 3: Config override
+# config.json: "force_enabled": true
+python3 src/event_manager.py generate
+# → Debug comments ON (regardless of environment)
+
+# Scenario 4: Normal auto-detection (no overrides)
+python3 src/event_manager.py generate
+# → Development: ON, Production/CI: OFF
+```
 
 ## Configuration
 
