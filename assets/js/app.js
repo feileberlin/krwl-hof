@@ -1381,8 +1381,9 @@ class EventsApp {
             this.markers = [];
         }
         
-        // Clear existing speech bubbles
+        // Clear existing speech bubbles and reset occupied positions
         this.clearSpeechBubbles();
+        this.occupiedBubblePositions = []; // Reset collision detection for new layout
         
         if (filteredEvents.length === 0) {
             return;
@@ -2060,119 +2061,116 @@ class EventsApp {
     }
     
     /**
-     * Calculate intelligent position for speech bubble around marker
+     * Calculate position for speech bubble with collision detection
+     * KISS approach: Random placement with overlap prevention
+     * 
      * @param {Object} markerPos - {x, y} marker screen position
-     * @param {number} index - Bubble index for variation (global)
-     * @param {number} groupSize - Number of events at this location (default: 1)
-     * @param {number} groupIndex - Index within the co-located group (default: 0)
+     * @param {number} index - Bubble index (used for fallback seed)
+     * @param {number} groupSize - Number of events at this location (unused, kept for API compatibility)
+     * @param {number} groupIndex - Index within group (unused, kept for API compatibility)
      * @returns {Object} {x, y} position for bubble
      */
     calculateBubblePosition(markerPos, index, groupSize = 1, groupIndex = 0) {
         const bubbleWidth = 220;
         const bubbleHeight = 140;
-        
-        // Base offset distance from marker
-        let baseOffset = 60;
-        
-        // For co-located events (multiple events at same location),
-        // use wider spacing to distribute them more effectively
-        if (groupSize > 1) {
-            // Increase spacing based on how many events share this location
-            // More events = wider spread to avoid overlap
-            baseOffset = 80 + (Math.min(groupSize - 1, 5) * 20);
-            
-            // Use a circular distribution pattern for co-located events
-            const angle = (groupIndex / groupSize) * 2 * Math.PI;
-            
-            // Add variation based on group size to create layered circles
-            const radiusMultiplier = 1 + Math.floor(groupIndex / 8) * 0.5;
-            const radius = baseOffset * radiusMultiplier;
-            
-            // Calculate position on circle
-            const relPos = {
-                x: Math.cos(angle) * radius,
-                y: Math.sin(angle) * radius
-            };
-            
-            let x = markerPos.x + relPos.x;
-            let y = markerPos.y + relPos.y;
-            
-            // Keep bubble within viewport bounds
-            const mapContainer = document.getElementById('map');
-            const viewportWidth = mapContainer.clientWidth;
-            const viewportHeight = mapContainer.clientHeight;
-            
-            // Adjust if too far right
-            if (x + bubbleWidth > viewportWidth - 10) {
-                x = viewportWidth - bubbleWidth - 10;
-            }
-            
-            // Adjust if too far left
-            if (x < 10) {
-                x = 10;
-            }
-            
-            // Adjust if too far down
-            if (y + bubbleHeight > viewportHeight - 10) {
-                y = viewportHeight - bubbleHeight - 10;
-            }
-            
-            // Adjust if too far up
-            if (y < 10) {
-                y = 10;
-            }
-            
-            return { x, y };
-        }
-        
-        // For single events (not co-located), use the original spiral pattern
-        const offset = baseOffset;
-        
-        // Use a spiral pattern to position bubbles
-        // Vary position based on index to create natural spread
-        const positions = [
-            { x: offset, y: -offset },      // Top right
-            { x: -offset, y: -offset },     // Top left
-            { x: offset, y: offset },       // Bottom right
-            { x: -offset, y: offset },      // Bottom left
-            { x: offset * 1.5, y: 0 },      // Right
-            { x: -offset * 1.5, y: 0 },     // Left
-            { x: 0, y: -offset * 1.5 },     // Top
-            { x: 0, y: offset * 1.5 }       // Bottom
-        ];
-        
-        const posIndex = index % positions.length;
-        const relPos = positions[posIndex];
-        
-        let x = markerPos.x + relPos.x;
-        let y = markerPos.y + relPos.y;
-        
-        // Keep bubble within viewport bounds
         const mapContainer = document.getElementById('map');
         const viewportWidth = mapContainer.clientWidth;
         const viewportHeight = mapContainer.clientHeight;
+        const margin = 10;
+        const padding = 15; // Minimum spacing between bubbles
         
-        // Adjust if too far right
-        if (x + bubbleWidth > viewportWidth - 10) {
-            x = viewportWidth - bubbleWidth - 10;
+        // Initialize occupied positions array if not exists
+        if (!this.occupiedBubblePositions) {
+            this.occupiedBubblePositions = [];
         }
         
-        // Adjust if too far left
-        if (x < 10) {
-            x = 10;
+        // Helper: Check if two rectangles overlap (with padding for spacing)
+        const overlaps = (x1, y1, x2, y2) => {
+            return !(x1 + bubbleWidth + padding < x2 || 
+                     x2 + bubbleWidth + padding < x1 || 
+                     y1 + bubbleHeight + padding < y2 || 
+                     y2 + bubbleHeight + padding < y1);
+        };
+        
+        // Try multiple random positions until we find one that doesn't overlap
+        const maxAttempts = 100;
+        let attempt = 0;
+        
+        while (attempt < maxAttempts) {
+            // Generate completely random offset from marker (chaotic distribution)
+            // Distance: 60-200px from marker for wide natural spread
+            const distance = 60 + Math.random() * 140;
+            // Angle: Fully random 0-360 degrees for unpredictable placement
+            // No index bias - ensures different arrangement on every page load
+            const angle = Math.random() * 2 * Math.PI;
+            
+            // Calculate position
+            let x = markerPos.x + Math.cos(angle) * distance;
+            let y = markerPos.y + Math.sin(angle) * distance;
+            
+            // Clamp to viewport bounds
+            x = Math.max(margin, Math.min(x, viewportWidth - bubbleWidth - margin));
+            y = Math.max(margin, Math.min(y, viewportHeight - bubbleHeight - margin));
+            
+            // Check for overlaps with existing bubbles
+            let hasOverlap = false;
+            for (const occupied of this.occupiedBubblePositions) {
+                if (overlaps(x, y, occupied.x, occupied.y)) {
+                    hasOverlap = true;
+                    break;
+                }
+            }
+            
+            // If no overlap, use this position
+            if (!hasOverlap) {
+                this.occupiedBubblePositions.push({ x, y });
+                return { x, y };
+            }
+            
+            attempt++;
         }
         
-        // Adjust if too far down
-        if (y + bubbleHeight > viewportHeight - 10) {
-            y = viewportHeight - bubbleHeight - 10;
+        // Fallback: Try random positions at increasing distances from marker
+        // This ensures bubbles always appear even if map is very crowded
+        const spiralAttempts = 30;
+        for (let i = 0; i < spiralAttempts; i++) {
+            const spiralRadius = 80 + (i * 30); // Wider spacing in spiral
+            // Use random angle instead of golden angle for truly random placement each time
+            const spiralAngle = Math.random() * 2 * Math.PI;
+            
+            let x = markerPos.x + Math.cos(spiralAngle) * spiralRadius;
+            let y = markerPos.y + Math.sin(spiralAngle) * spiralRadius;
+            
+            // Clamp to viewport bounds
+            x = Math.max(margin, Math.min(x, viewportWidth - bubbleWidth - margin));
+            y = Math.max(margin, Math.min(y, viewportHeight - bubbleHeight - margin));
+            
+            // Check for overlaps
+            let hasOverlap = false;
+            for (const occupied of this.occupiedBubblePositions) {
+                if (overlaps(x, y, occupied.x, occupied.y)) {
+                    hasOverlap = true;
+                    break;
+                }
+            }
+            
+            if (!hasOverlap) {
+                this.occupiedBubblePositions.push({ x, y });
+                return { x, y };
+            }
         }
         
-        // Adjust if too far up
-        if (y < 10) {
-            y = 10;
-        }
+        // Last resort: Force placement with offset grid to minimize overlaps
+        // This should rarely be reached but ensures bubbles always render
+        const gridSize = 250; // Grid cell size (bubbleWidth + padding)
+        const gridX = (index % 6) * gridSize + margin; // 6 columns
+        const gridY = Math.floor(index / 6) * 160 + margin; // Stacked rows
         
-        return { x, y };
+        const forceX = Math.min(gridX, viewportWidth - bubbleWidth - margin);
+        const forceY = Math.min(gridY, viewportHeight - bubbleHeight - margin);
+        
+        this.occupiedBubblePositions.push({ x: forceX, y: forceY });
+        return { x: forceX, y: forceY };
     }
     
     /**
