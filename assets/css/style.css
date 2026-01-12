@@ -1369,20 +1369,63 @@ strong, b {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5),
                 0 0 15px rgba(255, 105, 180, 0.4);
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.3s ease;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                box-shadow 0.3s ease, 
+                opacity 0.4s ease,
+                filter 0.3s ease;
     opacity: 0;
     pointer-events: auto;
     font-size: 0.85rem;
+    /* Organic appearance */
+    transform-origin: center;
+    will-change: transform;
 }
 
+/* Add subtle animation on appear */
 .speech-bubble.visible {
     opacity: 1;
+    animation: bubbleAppear 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
+@keyframes bubbleAppear {
+    0% {
+        opacity: 0;
+        transform: scale(0.8) translateY(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Natural hover with slight rotation */
 .speech-bubble:hover {
-    transform: scale(1.05);
+    transform: scale(1.05) rotate(0.5deg);
     box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6),
                 0 0 20px rgba(255, 105, 180, 0.6);
+    filter: brightness(1.1);
+}
+
+/* Add nth-child variations for organic feel */
+.speech-bubble:nth-child(3n+1) {
+    animation-delay: 0.05s;
+}
+
+.speech-bubble:nth-child(3n+2) {
+    animation-delay: 0.1s;
+}
+
+.speech-bubble:nth-child(3n) {
+    animation-delay: 0.15s;
+}
+
+/* Subtle rotation variations on hover for different bubbles */
+.speech-bubble:nth-child(even):hover {
+    transform: scale(1.05) rotate(-0.5deg);
+}
+
+.speech-bubble:nth-child(3n):hover {
+    transform: scale(1.05) rotate(1deg);
 }
 
 /* Speech bubble headline - START TIME */

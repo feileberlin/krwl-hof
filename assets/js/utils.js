@@ -26,7 +26,13 @@ class EventUtils {
         const templateEngine = new TemplateEngine(this.config);
         return templateEngine.processTemplateEvents(events, filterModule);
     }
-
+    
+    /**
+     * Format date as ISO 8601 string
+     * @param {Date} date - Date to format
+     * @returns {string} Formatted date string (YYYY-MM-DDTHH:MM:SS)
+     */
+    formatDateTime(date) {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');

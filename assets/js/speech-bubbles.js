@@ -172,8 +172,8 @@ class SpeechBubbles {
     }
     
     /**
-     * Calculate simple grid-based position for speech bubble
-     * KISS: Replaces 100-line complex algorithm with predictable grid layout
+     * Calculate natural staggered position for speech bubble
+     * KISS: CSS-friendly positioning with organic stagger effect
      * @param {Object} markerPos - {x, y} marker screen position
      * @param {number} index - Bubble index
      * @returns {Object} {x, y} position for bubble
@@ -198,13 +198,25 @@ class SpeechBubbles {
         const col = index % columns;
         const row = Math.floor(index / columns);
         
-        // Calculate x, y from grid
-        let x = col * cellWidth + margin;
+        // Add natural stagger: alternate rows offset by half cell width
+        // Creates organic "brick wall" pattern instead of rigid grid
+        const rowOffset = (row % 2) * (cellWidth / 2);
+        
+        // Calculate x, y with stagger
+        let x = col * cellWidth + margin + rowOffset;
         let y = row * cellHeight + margin;
         
+        // Add subtle random offset (±5px) for organic feel - still deterministic
+        const seed = (index * 13 + 7) % 100; // Pseudo-random from index
+        const randomX = (seed % 11) - 5; // -5 to +5 px
+        const randomY = ((seed * 17) % 11) - 5; // -5 to +5 px
+        
+        x += randomX;
+        y += randomY;
+        
         // Clamp to viewport bounds
-        x = Math.min(x, viewportWidth - bubbleWidth - margin);
-        y = Math.min(y, viewportHeight - bubbleHeight - margin);
+        x = Math.max(margin, Math.min(x, viewportWidth - bubbleWidth - margin));
+        y = Math.max(margin, Math.min(y, viewportHeight - bubbleHeight - margin));
         
         return { x, y };
     }
