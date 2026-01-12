@@ -1329,22 +1329,38 @@ window.DASHBOARD_ICONS = {json.dumps(DASHBOARD_ICONS_MAP, ensure_ascii=False)};'
             }
         }
         
+        # Add weather to runtime config if enabled (simplified: single location weather embedded in config)
+        weather_config = primary_config.get('weather', {})
+        if weather_config.get('enabled', False):
+            # Extract current weather from weather_cache if available
+            weather_data = None
+            if weather_cache and isinstance(weather_cache, dict):
+                # Get first available weather entry (simplified: single location)
+                for key, entry in weather_cache.items():
+                    if isinstance(entry, dict) and entry.get('data'):
+                        weather_data = entry['data']
+                        break
+            
+            runtime_config['weather'] = {
+                'enabled': True,
+                'display': weather_config.get('display', {}),
+                'data': weather_data  # Current weather data or None
+            }
+        else:
+            runtime_config['weather'] = {'enabled': False}
+        
         # Calculate debug information
         debug_info = self.calculate_debug_info(primary_config, events)
         
-        # Ensure weather_cache is a dict (default to empty if None)
-        if weather_cache is None:
-            weather_cache = {}
-        
         # Prepare embedded data for frontend
         # All data is embedded by backend - frontend does NOT fetch config.json or events
+        # Note: WEATHER_CACHE is now deprecated, weather data is in APP_CONFIG.weather.data
         embedded_data = f'''// Data embedded by backend (site_generator.py) - frontend does NOT fetch files
 // config.json is backend-only, frontend uses this minimal runtime config
 window.APP_CONFIG = {json.dumps(runtime_config, ensure_ascii=False)};
 window.__INLINE_EVENTS_DATA__ = {{ "events": {json.dumps(events, ensure_ascii=False)} }};
 window.EMBEDDED_CONTENT_EN = {json.dumps(content_en, ensure_ascii=False)};
 window.EMBEDDED_CONTENT_DE = {json.dumps(content_de, ensure_ascii=False)};
-window.WEATHER_CACHE = {json.dumps(weather_cache, ensure_ascii=False)};
 window.MARKER_ICONS = {json.dumps(marker_icons, ensure_ascii=False)};
 window.DASHBOARD_ICONS = {json.dumps(DASHBOARD_ICONS_MAP, ensure_ascii=False)};
 window.DEBUG_INFO = {json.dumps(debug_info, ensure_ascii=False)};'''
