@@ -8,6 +8,10 @@
 # EXCEPT index.html (the generated file)
 !index.html
 
+# EXCEPT en/ subdirectory (English language version)
+!en/
+!en/index.html
+
 # EXCEPT docs/ directory (generated documentation)
 !docs/
 !docs/**
