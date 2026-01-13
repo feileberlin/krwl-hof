@@ -605,7 +605,24 @@
       "url": "https://event.frankenpost.de/detail.php?event_id=3161894",
       "category": null,
       "tags": []
+    },
+    {
+      "id": "html_frankenpost_-9064079562053131687",
+      "title": "Kunstausstellung: Stephan Klenner-Otto  - Von Jean Paul zu E.T.A. Hofmann",
+      "description": "Dienstag,13.01.2026,08:00 Uhr",
+      "location": {
+        "name": "Hof",
+        "lat": 50.3167,
+        "lon": 11.9167
+      },
+      "start_time": "2026-01-13T18:00:00",
+      "end_time": null,
+      "status": "pending",
+      "source": "Frankenpost",
+      "url": "https://event.frankenpost.de/detail.php?event_id=3236166",
+      "category": null,
+      "tags": []
     }
   ],
-  "last_scraped": "2026-01-13T03:57:24.520658"
+  "last_scraped": "2026-01-13T15:15:31.856704"
 }
