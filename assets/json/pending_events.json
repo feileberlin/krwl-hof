@@ -554,7 +554,58 @@
       "url": "https://event.frankenpost.de/detail.php?event_id=3028886",
       "category": null,
       "tags": []
+    },
+    {
+      "id": "html_frankenpost_4302521329855976042",
+      "title": "Schaufensterausstellung Arquitectura",
+      "description": "13.Januar00:00",
+      "location": {
+        "name": "Hof",
+        "lat": 50.3167,
+        "lon": 11.9167
+      },
+      "start_time": "2026-01-13T18:00:00",
+      "end_time": null,
+      "status": "pending",
+      "source": "Frankenpost",
+      "url": "https://event.frankenpost.de/detail.php?event_id=3240115",
+      "category": null,
+      "tags": []
+    },
+    {
+      "id": "html_frankenpost_-5204226856310146596",
+      "title": "Fatigue-Sprechstunde - nach Anmeldung unter Tel. 09281-540090",
+      "description": "Dienstag,13.01.2026,09:00 Uhr",
+      "location": {
+        "name": "Hof",
+        "lat": 50.3167,
+        "lon": 11.9167
+      },
+      "start_time": "2026-01-13T18:00:00",
+      "end_time": null,
+      "status": "pending",
+      "source": "Frankenpost",
+      "url": "https://event.frankenpost.de/detail.php?event_id=3156442",
+      "category": null,
+      "tags": []
+    },
+    {
+      "id": "html_frankenpost_3204646366284117890",
+      "title": "Offenes Mama wundersam Caf\u00e9",
+      "description": "Dienstag,13.01.2026,09:00 Uhr",
+      "location": {
+        "name": "Hof",
+        "lat": 50.3167,
+        "lon": 11.9167
+      },
+      "start_time": "2026-01-13T18:00:00",
+      "end_time": null,
+      "status": "pending",
+      "source": "Frankenpost",
+      "url": "https://event.frankenpost.de/detail.php?event_id=3161894",
+      "category": null,
+      "tags": []
     }
   ],
-  "last_scraped": "2026-01-12T04:06:03.651886"
+  "last_scraped": "2026-01-13T03:57:24.520658"
 }
