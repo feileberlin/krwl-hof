@@ -10,6 +10,11 @@
  * KISS: Single responsibility - map management only
  */
 
+// Constants for marker spiderfying (offsetting markers at same location)
+const MARKER_OFFSET_RADIUS = 0.0003;  // ~30 meters offset for spiderfied markers
+const MARKER_OFFSET_ANGLE = 60;       // Degrees between each offset marker
+const LOCATION_PRECISION = 4;         // Decimal places for location grouping (~11m precision)
+
 class MapManager {
     constructor(config, storage) {
         this.config = config;
@@ -17,6 +22,7 @@ class MapManager {
         this.map = null;
         this.markers = [];
         this.userLocation = null;
+        this.locationCounts = {}; // Track markers at same location for offset
     }
     
     /**
@@ -203,7 +209,7 @@ class MapManager {
     addEventMarker(event, onClick) {
         if (!this.map || !event.location) return null;
         
-        // Get marker icon based on category
+        // Get marker icon based on category (uses SVG filename pattern: marker-{category})
         const category = event.category || 'default';
         const iconUrl = window.MARKER_ICONS && window.MARKER_ICONS[`marker-${category}`] || 
             window.MARKER_ICONS && window.MARKER_ICONS['marker-default'] ||
@@ -216,8 +222,26 @@ class MapManager {
             popupAnchor: [0, -48]
         });
         
-        const marker = L.marker([event.location.lat, event.location.lon], {
-            icon: markerIcon
+        // Calculate offset for markers at same location (spiderfying)
+        const locationKey = `${event.location.lat.toFixed(LOCATION_PRECISION)}_${event.location.lon.toFixed(LOCATION_PRECISION)}`;
+        if (!this.locationCounts[locationKey]) {
+            this.locationCounts[locationKey] = 0;
+        }
+        const offsetIndex = this.locationCounts[locationKey];
+        this.locationCounts[locationKey]++;
+        
+        // Apply circular offset if there are multiple markers at same location
+        let lat = event.location.lat;
+        let lon = event.location.lon;
+        if (offsetIndex > 0) {
+            const angle = (offsetIndex * MARKER_OFFSET_ANGLE) * (Math.PI / 180);
+            lat += MARKER_OFFSET_RADIUS * Math.cos(angle);
+            lon += MARKER_OFFSET_RADIUS * Math.sin(angle);
+        }
+        
+        const marker = L.marker([lat, lon], {
+            icon: markerIcon,
+            customData: { id: event.id }
         }).addTo(this.map);
         
         // Add bookmark class if bookmarked
@@ -225,7 +249,7 @@ class MapManager {
             marker._icon.classList.add('bookmarked-marker');
         }
         
-        // Store event data on marker
+        // Store event data on marker (for backward compatibility)
         marker.eventData = event;
         
         // Add click handler
@@ -264,6 +288,7 @@ class MapManager {
             this.markers[i].remove();
         }
         this.markers = [];
+        this.locationCounts = {}; // Reset location tracking for offset calculation
         this.log('All markers cleared');
     }
     

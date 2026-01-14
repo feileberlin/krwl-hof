@@ -89,7 +89,7 @@
   "_comment_kiss": "KEEP IT SIMPLE: Change this ONE line to switch environments completely!",
   "_comment_separator": "═══════════════════════════════════════════════════════════════════════════════",
   
-  "environment": "auto",
+  "environment": "development",
   
   "_comment_environment_detection": "═══════════════════════════════════════════════════════════════════════════════",
   "_comment_auto_behavior": "AUTO-DETECTION (when environment='auto') - Behavior changes based on detected environment",
@@ -385,8 +385,8 @@
   
   "map": {
     "default_center": {
-      "lat": 50.3167,
-      "lon": 11.9167
+      "lat": 49.9440,
+      "lon": 11.5760
     },
     "default_zoom": 13,
     "tile_provider": "https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png",
