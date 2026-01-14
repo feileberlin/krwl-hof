@@ -24,7 +24,7 @@ class MapManager {
      * @returns {boolean} True if Leaflet is loaded
      */
     isLeafletAvailable() {
-        return typeof L !== 'undefined' && L.map;
+        return typeof L !== 'undefined' && typeof L.map === 'function';
     }
     
     /**
