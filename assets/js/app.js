@@ -132,6 +132,7 @@ class EventsApp {
         
         // Setup event listeners
         this.setupEventListeners();
+        this.initializeIcons();
         
         // Check for pending events
         await this.checkPendingEvents();
@@ -162,6 +163,12 @@ class EventsApp {
             }
         } catch (error) {
             console.error('Failed to show main content:', error);
+        }
+    }
+
+    initializeIcons() {
+        if (window.lucide && typeof window.lucide.createIcons === 'function') {
+            window.lucide.createIcons();
         }
     }
     
