@@ -14,9 +14,14 @@ const BUBBLE_HEIGHT = 140;
 const BUBBLE_MARGIN = 15;
 
 // Positioning constants
-const MARKER_VERTICAL_OFFSET = 50; // Pixels above marker
-const BASE_SPREAD_OFFSET = 60;     // Minimum distance from marker
-const SPREAD_FACTOR = 40;          // Additional spread per bubble
+const MARKER_VERTICAL_OFFSET = 50;     // Pixels above marker
+const BASE_SPREAD_OFFSET = 60;         // Minimum distance from marker
+const SPREAD_FACTOR = 40;              // Additional spread per bubble
+const HORIZONTAL_SPREAD_MULTIPLIER = 1.2; // Wider horizontal spread
+
+// Filter bar constants
+const FILTER_BAR_PADDING = 20;         // Extra padding below filter bar
+const DEFAULT_FILTER_BAR_HEIGHT = 60;  // Fallback if filter bar not found
 
 // Organic variation seeds (prime numbers for better distribution)
 const SEED_MULTIPLIER_X = 17;
@@ -259,7 +264,7 @@ class SpeechBubbles {
     calculateMarkerRelativePosition(markerPos, index) {
         // Get filter bar height dynamically to avoid overlap
         const filterBar = document.getElementById('event-filter-bar');
-        const filterBarHeight = filterBar ? filterBar.offsetHeight + 20 : 60;
+        const filterBarHeight = filterBar ? filterBar.offsetHeight + FILTER_BAR_PADDING : DEFAULT_FILTER_BAR_HEIGHT;
         
         // Get map dimensions
         const mapContainer = document.getElementById('map');
@@ -275,7 +280,7 @@ class SpeechBubbles {
         
         // Calculate offset from marker position
         // Spread mostly upward and sideways (like leaves on a tree)
-        const offsetX = Math.cos(angle) * offset * 1.2;
+        const offsetX = Math.cos(angle) * offset * HORIZONTAL_SPREAD_MULTIPLIER;
         const offsetY = -Math.abs(Math.sin(angle) * offset) - MARKER_VERTICAL_OFFSET;
         
         // Position bubble relative to marker
