@@ -10,6 +10,11 @@
  * KISS: Single responsibility - map management only
  */
 
+// Constants for marker spiderfying (offsetting markers at same location)
+const MARKER_OFFSET_RADIUS = 0.0003;  // ~30 meters offset for spiderfied markers
+const MARKER_OFFSET_ANGLE = 60;       // Degrees between each offset marker
+const LOCATION_PRECISION = 4;         // Decimal places for location grouping (~11m precision)
+
 class MapManager {
     constructor(config, storage) {
         this.config = config;
@@ -218,7 +223,7 @@ class MapManager {
         });
         
         // Calculate offset for markers at same location (spiderfying)
-        const locationKey = `${event.location.lat.toFixed(4)}_${event.location.lon.toFixed(4)}`;
+        const locationKey = `${event.location.lat.toFixed(LOCATION_PRECISION)}_${event.location.lon.toFixed(LOCATION_PRECISION)}`;
         if (!this.locationCounts[locationKey]) {
             this.locationCounts[locationKey] = 0;
         }
@@ -229,10 +234,9 @@ class MapManager {
         let lat = event.location.lat;
         let lon = event.location.lon;
         if (offsetIndex > 0) {
-            const offsetRadius = 0.0003; // ~30 meters offset
-            const angle = (offsetIndex * 60) * (Math.PI / 180); // 60 degree increments
-            lat += offsetRadius * Math.cos(angle);
-            lon += offsetRadius * Math.sin(angle);
+            const angle = (offsetIndex * MARKER_OFFSET_ANGLE) * (Math.PI / 180);
+            lat += MARKER_OFFSET_RADIUS * Math.cos(angle);
+            lon += MARKER_OFFSET_RADIUS * Math.sin(angle);
         }
         
         const marker = L.marker([lat, lon], {
