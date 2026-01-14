@@ -611,6 +611,8 @@ class EventScraper:
         """
         Validate event data using Pydantic and add to pending if valid
         
+        Uses AI categorization (if enabled) to assign category before validation.
+        
         Args:
             event_data: Event dictionary to validate
             pending_data: Pending events data structure
@@ -620,6 +622,18 @@ class EventScraper:
         """
         try:
             from .models import validate_event_data
+            from .event_schema import EventSchema
+            
+            # Add category using AI if not already present
+            if 'category' not in event_data or not event_data['category']:
+                # Initialize EventSchema with AI categorization
+                schema = EventSchema(self.config, self.base_path)
+                
+                # Infer category (uses AI if available)
+                event_data['category'] = schema._infer_category(
+                    event_data.get('title', ''),
+                    event_data.get('description', '')
+                )
             
             # Validate event structure
             validated_event = validate_event_data(event_data)
@@ -628,7 +642,7 @@ class EventScraper:
             event_dict = validated_event.model_dump()
             pending_data['pending_events'].append(event_dict)
             
-            logger.debug(f"Event validated and added: {event_dict['title']}")
+            logger.debug(f"Event validated and added: {event_dict['title']} (category: {event_dict.get('category', 'none')})")
             return True
             
         except ValueError as e:

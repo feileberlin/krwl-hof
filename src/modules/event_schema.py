@@ -221,11 +221,31 @@ class EventSchema:
     
     Handles event validation, migration, and schema enforcement.
     Provides category-to-icon mapping for tree-shaking.
+    Optionally uses AI categorization for improved accuracy.
     """
     
-    def __init__(self):
+    def __init__(self, config: Optional[Dict[str, Any]] = None, base_path: Optional[Path] = None):
+        """Initialize EventSchema.
+        
+        Args:
+            config: Configuration dictionary (optional, for AI categorization)
+            base_path: Base path for data files (optional, for AI categorization)
+        """
         self.categories = EVENT_CATEGORIES
         self.icon_map = CATEGORY_ICON_MAP
+        self.ai_categorizer = None
+        
+        # Initialize AI categorizer if config provided
+        if config and base_path:
+            try:
+                from .ai_categorizer import AICategorizer
+                self.ai_categorizer = AICategorizer(config, base_path)
+                if self.ai_categorizer.is_available():
+                    logger.info("AI categorization enabled for EventSchema")
+            except ImportError:
+                logger.debug("AI categorization not available")
+            except Exception as e:
+                logger.warning(f"Failed to initialize AI categorizer: {e}")
     
     def validate_event(self, event: Dict[str, Any]) -> Tuple[bool, List[str]]:
         """
@@ -316,8 +336,7 @@ class EventSchema:
         """
         Infer event category from title and description.
         
-        Uses keyword matching to guess the most likely category.
-        Falls back to 'default' if no match found.
+        Uses AI categorization if available, falls back to keyword matching.
         
         Args:
             title: Event title
@@ -326,6 +345,16 @@ class EventSchema:
         Returns:
             Category string
         """
+        # Try AI categorization first if available
+        if self.ai_categorizer and self.ai_categorizer.is_available():
+            try:
+                category, confidence, method = self.ai_categorizer.categorize_event(title, description)
+                logger.debug(f"Categorized as '{category}' using {method} (confidence: {confidence:.2f})")
+                return category
+            except Exception as e:
+                logger.warning(f"AI categorization failed, using keyword fallback: {e}")
+        
+        # Keyword-based fallback (original implementation)
         text = f"{title} {description}".lower()
         
         # Keyword to category mapping
@@ -518,18 +547,21 @@ def validate_events_file(file_path: Path) -> Tuple[bool, List[str], List[Dict]]:
         return False, [f"Failed to load events file: {e}"], []
 
 
-def migrate_events_file(file_path: Path, backup: bool = True) -> int:
+def migrate_events_file(file_path: Path, backup: bool = True, config: Optional[Dict[str, Any]] = None, base_path: Optional[Path] = None) -> int:
     """
     Migrate all events in a file to new schema.
     
     Args:
         file_path: Path to events.json file
         backup: Whether to create backup before migration
+        config: Configuration dict (optional, for AI categorization)
+        base_path: Base path for data files (optional, for AI categorization)
         
     Returns:
         Number of events migrated
     """
-    schema = EventSchema()
+    # Initialize EventSchema with or without AI categorization
+    schema = EventSchema(config, base_path) if (config and base_path) else EventSchema()
     
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
