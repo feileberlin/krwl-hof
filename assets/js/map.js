@@ -20,23 +20,69 @@ class MapManager {
     }
     
     /**
+     * Check if Leaflet is available
+     * @returns {boolean} True if Leaflet is loaded
+     */
+    isLeafletAvailable() {
+        return typeof L !== 'undefined' && typeof L.map === 'function';
+    }
+    
+    /**
      * Initialize Leaflet map
      * @param {string} containerId - DOM element ID for map container
+     * @returns {boolean} True if map initialized successfully
      */
     initMap(containerId = 'map') {
+        // Check if Leaflet is available
+        if (!this.isLeafletAvailable()) {
+            console.warn('Leaflet library not available - map cannot be initialized');
+            this.showMapFallback(containerId);
+            return false;
+        }
+        
         const center = this.config.map.default_center;
         
-        // Disable zoom controls - use keyboard shortcuts or pinch zoom
-        this.map = L.map(containerId, {
-            zoomControl: false,
-            attributionControl: false
-        }).setView([center.lat, center.lon], this.config.map.default_zoom);
+        try {
+            // Disable zoom controls - use keyboard shortcuts or pinch zoom
+            this.map = L.map(containerId, {
+                zoomControl: false,
+                attributionControl: false
+            }).setView([center.lat, center.lon], this.config.map.default_zoom);
+            
+            L.tileLayer(this.config.map.tile_provider, {
+                attribution: this.config.map.attribution
+            }).addTo(this.map);
+            
+            this.log('Map initialized', center);
+            return true;
+        } catch (error) {
+            console.error('Map initialization error:', error);
+            this.showMapFallback(containerId);
+            return false;
+        }
+    }
+    
+    /**
+     * Show fallback message when map cannot be initialized
+     * @param {string} containerId - DOM element ID for map container
+     */
+    showMapFallback(containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
         
-        L.tileLayer(this.config.map.tile_provider, {
-            attribution: this.config.map.attribution
-        }).addTo(this.map);
-        
-        this.log('Map initialized', center);
+        // Create fallback message
+        const fallback = document.createElement('div');
+        fallback.className = 'map-fallback';
+        fallback.innerHTML = `
+            <div class="map-fallback-content">
+                <div class="map-fallback-icon">🗺️</div>
+                <h2>Map Loading...</h2>
+                <p>The interactive map is loading. If this message persists, the map library may be blocked by your browser or network.</p>
+                <p class="map-fallback-note">Events are still available in the filter bar above.</p>
+            </div>
+        `;
+        container.appendChild(fallback);
+        this.log('Map fallback displayed');
     }
     
     /**

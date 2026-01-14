@@ -36,6 +36,10 @@ class SpeechBubbles {
      */
     showAllSpeechBubbles(events, markers, map) {
         if (!events || events.length === 0) return;
+        if (!markers || markers.length === 0 || !map) {
+            this.log('Cannot show speech bubbles: markers or map not available');
+            return;
+        }
         
         this.clearSpeechBubbles();
         
@@ -47,7 +51,7 @@ class SpeechBubbles {
         // Create bubbles with simple grid positioning
         eventItems.forEach((item, index) => {
             const marker = markers.find(m => 
-                m.options.customData && m.options.customData.id === item.event.id
+                m && m.options && m.options.customData && m.options.customData.id === item.event.id
             );
             
             if (marker) {

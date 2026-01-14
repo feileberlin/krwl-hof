@@ -99,15 +99,17 @@ class EventsApp {
         this.showMainContent();
         
         // Initialize map via MapManager
+        let mapInitialized = false;
         try {
-            this.mapManager.initMap('map');
-            this.mapManager.setupLeafletEventPrevention();
+            mapInitialized = this.mapManager.initMap('map');
+            if (mapInitialized) {
+                this.mapManager.setupLeafletEventPrevention();
+            }
         } catch (error) {
             console.warn('Map initialization failed:', error.message);
-            this.showMainContent();
         }
         
-        // Get user location via MapManager
+        // Get user location via MapManager (still works without map for filtering)
         this.mapManager.getUserLocation(
             (location) => {
                 this.displayEvents();
