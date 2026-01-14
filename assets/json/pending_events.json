@@ -622,7 +622,58 @@
       "url": "https://event.frankenpost.de/detail.php?event_id=3236166",
       "category": null,
       "tags": []
+    },
+    {
+      "id": "html_frankenpost_8217203280817221069",
+      "title": "Schaufensterausstellung Arquitectura",
+      "description": "14.Januar00:00",
+      "location": {
+        "name": "Hof",
+        "lat": 50.3167,
+        "lon": 11.9167
+      },
+      "start_time": "2026-01-14T18:00:00",
+      "end_time": null,
+      "status": "pending",
+      "source": "Frankenpost",
+      "url": "https://event.frankenpost.de/detail.php?event_id=3240115",
+      "category": null,
+      "tags": []
+    },
+    {
+      "id": "html_frankenpost_2054260792218653141",
+      "title": "Treffpunkt f\u00fcr Senioren:",
+      "description": "Mittwoch,14.01.2026,",
+      "location": {
+        "name": "Hof",
+        "lat": 50.3167,
+        "lon": 11.9167
+      },
+      "start_time": "2026-01-14T18:00:00",
+      "end_time": null,
+      "status": "pending",
+      "source": "Frankenpost",
+      "url": "https://event.frankenpost.de/detail.php?event_id=3234273",
+      "category": null,
+      "tags": []
+    },
+    {
+      "id": "html_frankenpost_-960507334181787057",
+      "title": "Die Anmeldungen laufen zur 32. Schwimm - Gau- und Stadtmeisterschaften 2026",
+      "description": "Mittwoch,14.01.2026,08:00 Uhr",
+      "location": {
+        "name": "Hof",
+        "lat": 50.3167,
+        "lon": 11.9167
+      },
+      "start_time": "2026-01-14T18:00:00",
+      "end_time": null,
+      "status": "pending",
+      "source": "Frankenpost",
+      "url": "https://event.frankenpost.de/detail.php?event_id=3226978",
+      "category": null,
+      "tags": []
     }
   ],
-  "last_scraped": "2026-01-13T15:15:31.856704"
+  "last_scraped": "2026-01-14T04:03:54.864330"
 }
