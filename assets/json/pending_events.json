@@ -673,7 +673,58 @@
       "url": "https://event.frankenpost.de/detail.php?event_id=3226978",
       "category": null,
       "tags": []
+    },
+    {
+      "id": "html_frankenpost_2685001236798047798",
+      "title": "Schaufensterausstellung Arquitectura",
+      "description": "15.Januar00:00",
+      "location": {
+        "name": "Hof",
+        "lat": 50.3167,
+        "lon": 11.9167
+      },
+      "start_time": "2026-01-15T18:00:00",
+      "end_time": null,
+      "status": "pending",
+      "source": "Frankenpost",
+      "url": "https://event.frankenpost.de/detail.php?event_id=3240115",
+      "category": null,
+      "tags": []
+    },
+    {
+      "id": "html_frankenpost_3368070622015238927",
+      "title": "F\u00fchrung durch die Wohnr\u00e4ume der Sommerresidenz der Markgr\u00e4fin Caroline",
+      "description": "Donnerstag,15.01.2026,",
+      "location": {
+        "name": "Hof",
+        "lat": 50.3167,
+        "lon": 11.9167
+      },
+      "start_time": "2026-01-15T18:00:00",
+      "end_time": null,
+      "status": "pending",
+      "source": "Frankenpost",
+      "url": "https://event.frankenpost.de/detail.php?event_id=3185852",
+      "category": null,
+      "tags": []
+    },
+    {
+      "id": "html_frankenpost_4240821882790170228",
+      "title": "Kunst in Bayreuth - Werke der 1940er bis 1960er Jahre - aus den Sammlungen und Stiftungen im Kunstmuseum",
+      "description": "Donnerstag,15.01.2026,",
+      "location": {
+        "name": "Hof",
+        "lat": 50.3167,
+        "lon": 11.9167
+      },
+      "start_time": "2026-01-15T18:00:00",
+      "end_time": null,
+      "status": "pending",
+      "source": "Frankenpost",
+      "url": "https://event.frankenpost.de/detail.php?event_id=3119599",
+      "category": null,
+      "tags": []
     }
   ],
-  "last_scraped": "2026-01-14T04:03:54.864330"
+  "last_scraped": "2026-01-14T23:50:36.543086"
 }
