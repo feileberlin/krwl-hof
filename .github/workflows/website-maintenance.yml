@@ -294,12 +294,24 @@ jobs:
             echo "ℹ No weather changes"
           fi
       
-      - name: Commit and push weather cache
+      - name: Update weather in HTML (fast update, no rebuild)
+        if: steps.check_changes.outputs.changes_detected == 'true'
+        run: |
+          echo "⚡ Updating weather data in HTML without full rebuild..."
+          
+          # Fast update: inject weather data into existing HTML
+          if python3 src/event_manager.py update-weather; then
+            echo "✓ Weather data updated in HTML"
+          else
+            echo "⚠️ Weather update in HTML failed (will need full rebuild)"
+          fi
+      
+      - name: Commit and push weather cache and HTML
         if: steps.check_changes.outputs.changes_detected == 'true'
         run: |
           TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M UTC')
-          git add assets/json/weather_cache.json
-          git commit -m "chore: update weather cache - $TIMESTAMP"
+          git add assets/json/weather_cache.json public/index.html
+          git commit -m "chore: update weather data - $TIMESTAMP [skip ci]"
           
           # Pull with rebase to handle concurrent changes
           if ! git pull --rebase origin main; then
@@ -309,7 +321,7 @@ jobs:
           fi
           
           git push
-          echo "✓ Weather cache committed and pushed"
+          echo "✓ Weather cache and HTML committed and pushed"
       
       - name: Generate weather summary
         run: |
@@ -335,6 +347,12 @@ jobs:
           else
             echo "**Status:** ⚠️ Weather scraping failed" >> $GITHUB_STEP_SUMMARY
           fi
+      
+      - name: Upload artifact (fast weather update)
+        if: steps.check_changes.outputs.changes_detected == 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./public
 
   # Job 3: Update events data (fast path for event changes)
   update-events:
@@ -433,11 +451,12 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    needs: [update-events, full-rebuild]
+    needs: [update-events, full-rebuild, scrape-weather]
     if: |
       always() &&
       (needs.update-events.result == 'success' || 
-       needs.full-rebuild.result == 'success')
+       needs.full-rebuild.result == 'success' ||
+       needs.scrape-weather.result == 'success')
     
     steps:
       - name: Deploy to GitHub Pages

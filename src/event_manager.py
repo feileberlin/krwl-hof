@@ -241,6 +241,7 @@ COMMANDS:
                               - Lints and validates content
                               - Outputs: public/index.html (self-contained)
     update                    Update events data in existing site (fast)
+    update-weather            Update weather data in existing site (fast, no rebuild)
     dependencies fetch        Fetch third-party dependencies
     dependencies check        Check if dependencies are present
     
@@ -1615,6 +1616,10 @@ def _execute_command(args, base_path, config):
     if command == 'update':
         generator = SiteGenerator(base_path)
         return 0 if generator.update_events_data() else 1
+    
+    if command == 'update-weather':
+        generator = SiteGenerator(base_path)
+        return 0 if generator.update_weather_data() else 1
     
     if command == 'dependencies':
         return _execute_dependencies_command(args, base_path)
