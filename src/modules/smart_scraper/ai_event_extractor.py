@@ -14,7 +14,7 @@ from ..event_schema import EVENT_CATEGORIES
 
 logger = logging.getLogger(__name__)
 
-# Prefer explicit local_llm (event extraction prompt) before generic Ollama provider.
+# Prefer explicit local_llm (extraction prompt) before generic Ollama fallback.
 LOCAL_PROVIDER_ORDER: Tuple[str, ...] = ("local_llm", "ollama")
 
 
@@ -123,6 +123,11 @@ class LocalEventExtractor:
 
         context = "\n\n".join(part for part in parts if part).strip()
         if len(context) > self.max_context_chars:
+            logger.debug(
+                "Truncating AI context from %d to %d characters",
+                len(context),
+                self.max_context_chars
+            )
             truncated = context[:self.max_context_chars]
             if " " in truncated:
                 truncated = truncated.rsplit(" ", 1)[0]

@@ -1,4 +1,4 @@
-"""Local LLM AI provider for on-device event extraction."""
+"""Ollama-backed local LLM AI provider for on-device event extraction."""
 
 from typing import Dict, Any, Optional
 from .ollama import OllamaProvider
@@ -28,5 +28,5 @@ class LocalLLMProvider(OllamaProvider):
         )
 
 
-# Backwards compatibility alias (old class name)
+# Deprecated alias for legacy imports (remove in next major release).
 Local_llmProvider = LocalLLMProvider
