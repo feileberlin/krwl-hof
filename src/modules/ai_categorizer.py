@@ -26,6 +26,9 @@ logger = logging.getLogger(__name__)
 
 # Keyword to category mapping for fallback categorization
 # Ordered by priority - more specific categories first
+# NOTE: This is an intentional subset of EVENT_CATEGORIES (88 total).
+# Covers ~20 most common categories. AI categorization handles the full set.
+# Missing categories gracefully fall back to 'default'.
 KEYWORD_CATEGORY_MAP = {
     'tech': ['tech', 'technology', 'digital', 'software', 'coding', 'hackathon', 'developer', 'developers'],
     'workshops': ['workshop', 'class', 'training', 'learn', 'course', 'seminar', 'tutorial'],

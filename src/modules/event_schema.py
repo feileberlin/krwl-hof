@@ -230,6 +230,10 @@ class EventSchema:
         Args:
             config: Configuration dictionary (optional, for AI categorization)
             base_path: Base path for data files (optional, for AI categorization)
+            
+        Note:
+            Both config and base_path must be provided together for AI categorization.
+            If only one is provided, AI categorization will be disabled.
         """
         self.categories = EVENT_CATEGORIES
         self.icon_map = CATEGORY_ICON_MAP
