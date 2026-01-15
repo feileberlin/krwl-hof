@@ -75,13 +75,25 @@ class SmartScraper:
             
             # Register with factory functions
             self.registry.register('rss', 
-                lambda cfg, opts: rss.RSSSource(cfg, opts))
+                lambda cfg, opts, base_path=self.base_path,
+                ai_providers=self.ai_providers: rss.RSSSource(
+                    cfg, opts, base_path=base_path, ai_providers=ai_providers
+                ))
             self.registry.register('html', 
-                lambda cfg, opts: html.HTMLSource(cfg, opts))
+                lambda cfg, opts, base_path=self.base_path,
+                ai_providers=self.ai_providers: html.HTMLSource(
+                    cfg, opts, base_path=base_path, ai_providers=ai_providers
+                ))
             self.registry.register('api', 
-                lambda cfg, opts: api.APISource(cfg, opts))
+                lambda cfg, opts, base_path=self.base_path,
+                ai_providers=self.ai_providers: api.APISource(
+                    cfg, opts, base_path=base_path, ai_providers=ai_providers
+                ))
             self.registry.register('atom', 
-                lambda cfg, opts: atom.AtomSource(cfg, opts))
+                lambda cfg, opts, base_path=self.base_path,
+                ai_providers=self.ai_providers: atom.AtomSource(
+                    cfg, opts, base_path=base_path, ai_providers=ai_providers
+                ))
         except ImportError as e:
             print(f"⚠ Some web sources unavailable: {e}", file=sys.stderr)
     
@@ -105,8 +117,13 @@ class SmartScraper:
                 try:
                     source_class = getattr(social, class_name, None)
                     if source_class:
-                        self.registry.register(platform_type, 
-                            lambda cfg, opts, cls=source_class: cls(cfg, opts))
+                        self.registry.register(
+                            platform_type,
+                            lambda cfg, opts, cls=source_class, base_path=self.base_path,
+                            ai_providers=self.ai_providers: cls(
+                                cfg, opts, base_path=base_path, ai_providers=ai_providers
+                            )
+                        )
                 except AttributeError:
                     pass  # Platform not yet implemented
         except ImportError:

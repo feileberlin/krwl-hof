@@ -114,6 +114,8 @@ def extract_dates(text: str) -> List[str]:
         # German formats
         r'\d{1,2}\.\d{1,2}\.\d{4}',  # DD.MM.YYYY
         r'\d{1,2}\.\d{1,2}\.\d{2}(?!\d)',  # DD.MM.YY
+        r'\d{1,2}\.\d{1,2}\.(?!\d)',  # DD.MM.
+        r'\d{1,2}\.\d{1,2}(?!\.\d)',  # DD.MM
         r'\d{1,2}\.\s*(?:Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)\s*\d{4}',
         r'\d{1,2}\.\s*(?:Jan|Feb|Mär|Apr|Mai|Jun|Jul|Aug|Sep|Okt|Nov|Dez)\.?\s*\d{4}',
         # English formats
@@ -125,6 +127,8 @@ def extract_dates(text: str) -> List[str]:
         r'(?:Mo|Di|Mi|Do|Fr|Sa|So)[.,]?\s*\d{1,2}\.\d{1,2}\.(?:\d{4}|\d{2})?',
         # Relative dates (German)
         r'(?:heute|morgen|übermorgen)',
+        # Relative dates (English)
+        r'(?:today|tomorrow|day after tomorrow)',
         # Date ranges
         r'\d{1,2}\.\s*[-–]\s*\d{1,2}\.\d{1,2}\.\d{4}',  # DD.-DD.MM.YYYY
     ]

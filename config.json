@@ -202,6 +202,7 @@
         "notes": "Kunstkneipe",
         "options": {
           "filter_ads": true,
+          "scan_posts": true,
           "max_days_ahead": 90,
           "category": "art",
           "default_location": {
@@ -219,6 +220,7 @@
         "notes": "Kunstverein",
         "options": {
           "filter_ads": true,
+          "scan_posts": true,
           "max_days_ahead": 90,
           "category": "art",
           "default_location": {
@@ -236,6 +238,7 @@
         "notes": "Punkrock",
         "options": {
           "filter_ads": true,
+          "scan_posts": true,
           "max_days_ahead": 120,
           "category": "music",
           "default_location": {
@@ -307,6 +310,7 @@
         "notes": "Kunstkneipe",
         "options": {
           "filter_ads": true,
+          "scan_posts": true,
           "max_days_ahead": 90,
           "category": "art",
           "default_location": {
@@ -324,6 +328,7 @@
         "notes": "Off-Theater",
         "options": {
           "filter_ads": true,
+          "scan_posts": true,
           "max_days_ahead": 120,
           "category": "theater",
           "default_location": {
@@ -359,6 +364,7 @@
         "notes": "Privatbrauerei",
         "options": {
           "filter_ads": true,
+          "scan_posts": true,
           "max_days_ahead": 120,
           "category": "food-drink",
           "default_location": {

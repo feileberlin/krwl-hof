@@ -8,6 +8,7 @@ Provides:
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Dict, List, Optional, Any, Callable
 import re
 
@@ -92,18 +93,24 @@ class SourceOptions:
 class BaseSource(ABC):
     """Abstract base class for all source scrapers."""
     
-    def __init__(self, source_config: Dict[str, Any], options: SourceOptions):
+    def __init__(self, source_config: Dict[str, Any], options: SourceOptions,
+                 base_path: Optional[Path] = None,
+                 ai_providers: Optional[Dict[str, Any]] = None):
         """Initialize source scraper.
         
         Args:
             source_config: Source configuration from data/config.json
             options: SourceOptions instance
+            base_path: Base path for data files (optional)
+            ai_providers: Optional AI provider mapping
         """
         self.source_config = source_config
         self.options = options
         self.name = source_config.get('name', 'Unknown')
         self.url = source_config.get('url', '')
         self.source_type = source_config.get('type', 'unknown')
+        self.base_path = Path(base_path) if base_path else None
+        self.ai_providers = ai_providers or {}
     
     @abstractmethod
     def scrape(self) -> List[Dict[str, Any]]:

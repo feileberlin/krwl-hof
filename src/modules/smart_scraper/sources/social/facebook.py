@@ -9,12 +9,21 @@ Facebook API credentials. It respects rate limits and follows ethical
 scraping practices.
 """
 
-from typing import Dict, Any, List, Optional
+from __future__ import annotations
+
+from typing import Dict, Any, List, Optional, TYPE_CHECKING
+from pathlib import Path
 from datetime import datetime, timedelta
 from urllib.parse import urljoin, urlparse, parse_qs
 import re
+import json
 import hashlib
 from ...base import BaseSource, SourceOptions
+from ...date_utils import resolve_relative_date, extract_time_from_text, resolve_year_for_date
+from ...source_cache import SourceCache
+
+if TYPE_CHECKING:
+    from bs4 import BeautifulSoup
 
 try:
     import requests
@@ -44,11 +53,25 @@ class FacebookSource(BaseSource):
     - OCR scanning of posted images for event flyers
     - Date/time extraction from post text and images
     - German and English language support
+    - When scan_posts is enabled, processes the full timeline feed
     """
     
-    def __init__(self, source_config: Dict[str, Any], options: SourceOptions):
-        super().__init__(source_config, options)
+    DEFAULT_TITLE_PREFIX = "Event from "
+    
+    def __init__(self, source_config: Dict[str, Any], options: SourceOptions,
+                 base_path: Optional[Path] = None,
+                 ai_providers: Optional[Dict[str, Any]] = None):
+        super().__init__(
+            source_config,
+            options,
+            base_path=base_path,
+            ai_providers=ai_providers
+        )
         self.available = SCRAPING_AVAILABLE
+        options_config = source_config.get('options') or {}
+        self.scan_posts = bool(options_config.get('scan_posts', False))
+        self.force_scan = bool(options_config.get('force_scan', False))
+        self.post_cache = self._init_post_cache()
         
         # Initialize session with realistic headers
         if self.available:
@@ -70,13 +93,13 @@ class FacebookSource(BaseSource):
                     'ocr_enabled': True,
                     'languages': ['eng', 'deu']
                 }
-                self.image_analyzer = ImageAnalyzer(img_config)
+                self.image_analyzer = ImageAnalyzer(img_config, ai_providers=self.ai_providers)
             except Exception as e:
                 print(f"    ⚠ Image analyzer init failed: {e}")
         
         # OCR settings
-        self.ocr_enabled = source_config.get('options', {}).get('ocr_enabled', True)
-        self.min_ocr_confidence = source_config.get('options', {}).get('min_ocr_confidence', 0.3)
+        self.ocr_enabled = options_config.get('ocr_enabled', True)
+        self.min_ocr_confidence = options_config.get('min_ocr_confidence', 0.3)
     
     def scrape(self) -> List[Dict[str, Any]]:
         """Scrape events from Facebook page.
@@ -96,6 +119,9 @@ class FacebookSource(BaseSource):
         if url_type == 'events':
             # Direct events page
             events.extend(self._scrape_events_page())
+            if self.scan_posts:
+                page_url = self._get_page_url(self.url)
+                events.extend(self._scrape_page_posts(page_url=page_url))
         elif url_type == 'page':
             # Regular page - look for posts with event info
             events.extend(self._scrape_page_posts())
@@ -159,7 +185,7 @@ class FacebookSource(BaseSource):
         
         return events
     
-    def _scrape_page_posts(self) -> List[Dict[str, Any]]:
+    def _scrape_page_posts(self, page_url: Optional[str] = None) -> List[Dict[str, Any]]:
         """Scrape posts from a Facebook page that may contain event info.
         
         Returns:
@@ -168,7 +194,8 @@ class FacebookSource(BaseSource):
         events = []
         
         # Try mobile version
-        mobile_url = self._get_mobile_url(self.url)
+        base_url = page_url or self.url
+        mobile_url = self._get_mobile_url(base_url)
         
         try:
             response = self.session.get(mobile_url, timeout=15)
@@ -179,10 +206,7 @@ class FacebookSource(BaseSource):
             posts = self._extract_posts(soup)
             
             # Process each post for event information
-            for post in posts:
-                event = self._convert_post_to_event(post)
-                if event:
-                    events.append(event)
+            events.extend(self._process_posts(posts))
             
         except Exception as e:
             print(f"    ⚠ Page posts scrape error: {e}")
@@ -195,8 +219,8 @@ class FacebookSource(BaseSource):
         Returns:
             List of event dictionaries
         """
-        # Similar to page posts
-        return self._scrape_page_posts()
+        # Similar to page posts, but normalize to base profile URL
+        return self._scrape_page_posts(page_url=self._get_page_url(self.url))
     
     def _get_mobile_url(self, url: str) -> str:
         """Convert URL to mobile Facebook version.
@@ -208,6 +232,94 @@ class FacebookSource(BaseSource):
             Mobile Facebook URL
         """
         return url.replace('www.facebook.com', 'm.facebook.com').replace('facebook.com', 'm.facebook.com')
+    
+    def _get_page_url(self, url: str) -> str:
+        """Convert event URLs to base page URLs for post scraping."""
+        parsed = urlparse(url)
+        path_parts = [part for part in parsed.path.split('/') if part]
+        if 'events' in path_parts:
+            path_parts = path_parts[:path_parts.index('events')]
+        if 'upcoming_hosted_events' in path_parts:
+            path_parts = path_parts[:path_parts.index('upcoming_hosted_events')]
+        new_path = f"/{'/'.join(path_parts)}" if path_parts else ''
+        return parsed._replace(path=new_path, params='', query='', fragment='').geturl()
+    
+    def _init_post_cache(self) -> Optional[SourceCache]:
+        """Initialize persistent cache for processed posts."""
+        if not self.base_path:
+            return None
+        
+        cache_dir = self.base_path / "data" / "scraper_cache"
+        source_slug = self.name.lower().replace(' ', '_')
+        cache_path = cache_dir / f"facebook_posts_{source_slug}.json"
+        cache = SourceCache(cache_path=cache_path)
+        cache.load()
+        return cache
+    
+    def _get_post_cache_key(self, post: Dict[str, Any]) -> Optional[str]:
+        """Build a stable cache key for a post."""
+        text = post.get('text', '') or ''
+        timestamp = post.get('timestamp') or ''
+        links = post.get('links', []) or []
+        images = post.get('images', []) or []
+        if not any([text, timestamp, links, images]):
+            return None
+        
+        payload = {
+            "name": self.name,
+            "timestamp": timestamp,
+            "text": text,
+            "links": links,
+            "images": images
+        }
+        hash_input = json.dumps(payload, sort_keys=True, ensure_ascii=False)
+        return hashlib.md5(hash_input.encode("utf-8")).hexdigest()
+    
+    def _should_skip_post(self, post_key: Optional[str]) -> bool:
+        """Check if post should be skipped based on cache."""
+        if not post_key or not self.post_cache or self.force_scan:
+            return False
+        return self.post_cache.is_processed(post_key)
+    
+    def _process_posts(self, posts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Convert posts to events with caching."""
+        events = []
+        
+        for post in posts:
+            post_key = self._get_post_cache_key(post)
+            if self._should_skip_post(post_key):
+                continue
+            
+            event = self._convert_post_to_event(post)
+            if event:
+                events.append(event)
+                if self.post_cache and post_key:
+                    self.post_cache.mark_processed(post_key)
+        
+        if self.post_cache:
+            self.post_cache.save()
+        
+        return events
+    
+    def _is_future_event(self, start_time: Optional[str]) -> bool:
+        """Check if start_time is in the future."""
+        if not start_time:
+            return True
+        
+        try:
+            event_date = datetime.fromisoformat(str(start_time).replace('Z', '+00:00'))
+        except (ValueError, TypeError, AttributeError):
+            return False
+        
+        if event_date.tzinfo is None:
+            now = datetime.now()
+        else:
+            now = datetime.now(event_date.tzinfo)
+        return event_date >= now
+    
+    def _is_past_start_time(self, start_time: Optional[str]) -> bool:
+        """Check if start_time exists and is in the past."""
+        return bool(start_time) and not self._is_future_event(start_time)
     
     def _extract_events_from_html(self, soup: BeautifulSoup) -> List[Dict[str, Any]]:
         """Extract events from HTML soup.
@@ -231,7 +343,7 @@ class FacebookSource(BaseSource):
         for selector in selectors:
             items = soup.select(selector)
             if items:
-                for item in items[:20]:  # Limit to 20
+                for item in items:
                     event = self._parse_event_element(item)
                     if event:
                         events.append(event)
@@ -263,7 +375,7 @@ class FacebookSource(BaseSource):
         for selector in selectors:
             items = soup.select(selector)
             if items:
-                for item in items[:10]:  # Limit posts to analyze
+                for item in items:
                     post = self._parse_post_element(item)
                     if post:
                         posts.append(post)
@@ -494,7 +606,7 @@ class FacebookSource(BaseSource):
                     break
         
         if not title:
-            title = f"Event from {self.name}"
+            title = self._default_event_title()
         
         # Extract date/time - combine text and image data
         start_time = None
@@ -509,6 +621,24 @@ class FacebookSource(BaseSource):
         # Fallback to post text
         if not start_time:
             start_time = self._extract_datetime_from_text(post.get('text', ''))
+        
+        if self._is_past_start_time(start_time):
+            return None
+        
+        if not start_time:
+            ai_text = ' '.join(
+                value for value in [
+                    post.get('text', ''),
+                    image_data.get('ocr_text') if image_data else ''
+                ] if value
+            )
+            ai_details = self._ai_extract_event_details(ai_text)
+            if ai_details:
+                start_time = ai_details.get('start_time')
+                if title == self._default_event_title() and ai_details.get('title'):
+                    title = ai_details['title']
+                if self._is_past_start_time(start_time):
+                    return None
         
         # Default to next week if no date found
         if not start_time:
@@ -535,6 +665,8 @@ class FacebookSource(BaseSource):
         # Generate ID
         event_id = self._generate_event_id(title, start_time)
         
+        link_url = self._get_post_link(post)
+        
         return {
             'id': event_id,
             'title': title[:200],
@@ -542,7 +674,7 @@ class FacebookSource(BaseSource):
             'location': self._get_default_location(),
             'start_time': start_time,
             'end_time': None,
-            'url': post.get('links', [None])[0] or self.url,
+            'url': link_url or self.url,
             'source': self.name,
             'category': category,
             'scraped_at': datetime.now().isoformat(),
@@ -550,6 +682,54 @@ class FacebookSource(BaseSource):
             'extraction_method': 'ocr_flyer' if image_data else 'text_analysis',
             'ocr_confidence': image_data.get('ocr_confidence') if image_data else None
         }
+    
+    def _default_event_title(self) -> str:
+        """Build the default event title string."""
+        return f"{self.DEFAULT_TITLE_PREFIX}{self.name}"
+    
+    def _get_post_link(self, post: Dict[str, Any]) -> Optional[str]:
+        """Get first link from post data."""
+        links = post.get('links') or []
+        return links[0] if links else None
+    
+    def _get_ai_provider(self):
+        """Get configured AI provider for extraction."""
+        if not self.ai_providers:
+            return None
+        
+        provider = None
+        if self.options.ai_provider:
+            provider = self.ai_providers.get(self.options.ai_provider)
+        if not provider:
+            provider = next(iter(self.ai_providers.values()), None)
+        if not provider:
+            return None
+        
+        if hasattr(provider, 'is_available') and not provider.is_available():
+            return None
+        
+        return provider
+    
+    def _ai_extract_event_details(self, text: str) -> Optional[Dict[str, Any]]:
+        """Use AI provider to extract event details from text."""
+        if not text:
+            return None
+        
+        provider = self._get_ai_provider()
+        if not provider:
+            return None
+        
+        prompt = self.options.ai_prompt or (
+            "Extract event details and return JSON with fields: title, start_time, "
+            "end_time, url, location. Convert relative dates like 'tomorrow' to "
+            "ISO datetime."
+        )
+        
+        try:
+            return provider.extract_event_info(text, prompt)
+        except Exception as e:
+            print(f"      AI extraction error: {e}")
+            return None
     
     def _extract_datetime_from_text(self, text: str) -> Optional[str]:
         """Extract datetime from text.
@@ -568,6 +748,7 @@ class FacebookSource(BaseSource):
             (r'(\d{1,2})\.(\d{1,2})\.(\d{4})', 'DMY4'),
             (r'(\d{1,2})\.(\d{1,2})\.(\d{2})(?!\d)', 'DMY2'),
             (r'(\d{4})-(\d{2})-(\d{2})', 'YMD'),
+            (r'(\d{1,2})\.(\d{1,2})(?:\.(?!\d)|$)', 'DM'),
         ]
         
         date_match = None
@@ -581,7 +762,17 @@ class FacebookSource(BaseSource):
                 break
         
         if not date_match:
-            return None
+            relative_date = resolve_relative_date(text)
+            if not relative_date:
+                return None
+            
+            hour, minute = 20, 0  # Default time
+            time_match = extract_time_from_text(text)
+            if time_match:
+                hour, minute = time_match
+            
+            dt = datetime(relative_date.year, relative_date.month, relative_date.day, hour, minute)
+            return dt.isoformat()
         
         # Parse date
         try:
@@ -590,23 +781,17 @@ class FacebookSource(BaseSource):
                 day, month, year = int(groups[0]), int(groups[1]), int(groups[2])
             elif date_format == 'DMY2':
                 day, month, year = int(groups[0]), int(groups[1]), 2000 + int(groups[2])
+            elif date_format == 'DM':
+                day, month = int(groups[0]), int(groups[1])
+                year = resolve_year_for_date(month, day)
             else:  # YMD
                 year, month, day = int(groups[0]), int(groups[1]), int(groups[2])
             
             # Extract time
             hour, minute = 20, 0  # Default time
-            time_patterns = [
-                r'(\d{1,2})[:\.](\d{2})\s*(?:uhr)?',
-                r'(\d{1,2})\s*uhr',
-            ]
-            
-            for pattern in time_patterns:
-                time_match = re.search(pattern, text.lower())
-                if time_match:
-                    groups = time_match.groups()
-                    hour = int(groups[0])
-                    minute = int(groups[1]) if len(groups) > 1 else 0
-                    break
+            time_match = extract_time_from_text(text)
+            if time_match:
+                hour, minute = time_match
             
             dt = datetime(year, month, day, hour, minute)
             return dt.isoformat()
@@ -628,6 +813,17 @@ class FacebookSource(BaseSource):
             # Try to parse date
             day, month, year = None, None, None
             
+            relative_date = resolve_relative_date(date_str)
+            if relative_date:
+                hour, minute = 20, 0
+                if time_str:
+                    time_match = extract_time_from_text(time_str)
+                    if time_match:
+                        hour, minute = time_match
+                
+                dt = datetime(relative_date.year, relative_date.month, relative_date.day, hour, minute)
+                return dt.isoformat()
+            
             # DD.MM.YYYY or DD.MM.YY
             match = re.match(r'(\d{1,2})\.(\d{1,2})\.(\d{2,4})', date_str)
             if match:
@@ -638,15 +834,21 @@ class FacebookSource(BaseSource):
                     year += 2000
             
             if not all([day, month, year]):
+                match = re.match(r'(\d{1,2})\.(\d{1,2})(?:\.(?!\d)|$)', date_str)
+                if match:
+                    day = int(match.group(1))
+                    month = int(match.group(2))
+                    year = resolve_year_for_date(month, day)
+            
+            if not all([day, month, year]):
                 return None
             
             # Parse time
             hour, minute = 20, 0
             if time_str:
-                time_match = re.search(r'(\d{1,2})[:\.]?(\d{2})?', time_str)
+                time_match = extract_time_from_text(time_str)
                 if time_match:
-                    hour = int(time_match.group(1))
-                    minute = int(time_match.group(2)) if time_match.group(2) else 0
+                    hour, minute = time_match
             
             dt = datetime(year, month, day, hour, minute)
             return dt.isoformat()
