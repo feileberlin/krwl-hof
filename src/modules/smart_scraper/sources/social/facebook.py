@@ -295,7 +295,10 @@ class FacebookSource(BaseSource):
         except (ValueError, TypeError, AttributeError):
             return True
         
-        now = datetime.now(event_date.tzinfo)
+        if event_date.tzinfo is None:
+            now = datetime.now()
+        else:
+            now = datetime.now(event_date.tzinfo)
         return event_date >= now
     
     def _extract_events_from_html(self, soup: BeautifulSoup) -> List[Dict[str, Any]]:
@@ -647,7 +650,7 @@ class FacebookSource(BaseSource):
             'location': self._get_default_location(),
             'start_time': start_time,
             'end_time': None,
-            'url': (post.get('links') or [None])[0] or self.url,
+            'url': next(iter(post.get('links', [])), None) or self.url,
             'source': self.name,
             'category': category,
             'scraped_at': datetime.now().isoformat(),
