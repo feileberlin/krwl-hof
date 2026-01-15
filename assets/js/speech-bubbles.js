@@ -220,8 +220,14 @@ class SpeechBubbles {
         const duplicateBadge = duplicateCount > 1 ? 
             `<div class="bubble-duplicate-badge" title="${duplicateCount} duplicate events">×${duplicateCount}</div>` : '';
         
+        // Demo/Fake badge (show "Fake" for demo events only)
+        const isDemoEvent = event.source === 'demo';
+        const demoBadge = isDemoEvent ? 
+            `<div class="bubble-demo-badge" title="Demo event for testing">Fake</div>` : '';
+        
         bubble.innerHTML = `
             ${duplicateBadge}
+            ${demoBadge}
             <div class="bubble-time-headline">${timeStr}</div>
             <div class="bubble-date">${dateStr}</div>
             <div class="bubble-title">${this.truncateText(event.title, 50)}</div>
