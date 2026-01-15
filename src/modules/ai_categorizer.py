@@ -19,10 +19,32 @@ Usage:
 """
 
 import logging
-from typing import Dict, Any, Optional, Tuple
+from typing import Dict, Any, Optional, Tuple, List
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
+
+# Keyword to category mapping for fallback categorization
+# Ordered by priority - more specific categories first
+KEYWORD_CATEGORY_MAP = {
+    'tech': ['tech', 'technology', 'digital', 'software', 'coding', 'hackathon', 'developer', 'developers'],
+    'workshops': ['workshop', 'class', 'training', 'learn', 'course', 'seminar', 'tutorial'],
+    'music': ['music', 'concert', 'band', 'orchestra', 'song', 'singer', 'rock', 'jazz'],
+    'theatre': ['theatre', 'theater', 'play', 'drama', 'performance', 'stage show'],
+    'sports': ['sport', 'game', 'match', 'tournament', 'competition', 'team', 'football', 'soccer'],
+    'arts': ['art', 'exhibition', 'gallery', 'paint', 'draw', 'sculpture', 'contemporary'],
+    'shopping': ['market', 'shopping', 'bazaar', 'sale', 'shop', 'store', 'vendor', 'christmas market'],
+    'food': ['restaurant', 'dining', 'culinary', 'chef', 'meal', 'cuisine'],
+    'festivals': ['festival', 'celebration', 'carnival', 'fest'],
+    'museum': ['museum', 'history', 'heritage', 'artifact'],
+    'church': ['church', 'religious', 'worship', 'prayer', 'spiritual'],
+    'park': ['park', 'nature', 'garden', 'outdoor', 'recreation'],
+    'library': ['library', 'book', 'reading', 'literature'],
+    'health': ['health', 'wellness', 'medical', 'fitness', 'gym'],
+    'family': ['family', 'kids', 'children', 'youth', 'child'],
+    'business': ['business', 'networking', 'conference', 'professional', 'corporate'],
+    'community': ['community', 'meetup', 'gathering', 'social event'],  # Generic terms last
+}
 
 
 class AICategorizer:
@@ -162,49 +184,36 @@ class AICategorizer:
         """
         text = f"{title} {description}".lower()
         
-        # Keyword to category mapping (ordered by priority - more specific first)
-        keyword_map = {
-            'tech': ['tech', 'technology', 'digital', 'software', 'coding', 'hackathon', 'developer', 'developers'],
-            'workshops': ['workshop', 'class', 'training', 'learn', 'course', 'seminar', 'tutorial'],
-            'music': ['music', 'concert', 'band', 'orchestra', 'song', 'singer', 'rock', 'jazz'],
-            'theatre': ['theatre', 'theater', 'play', 'drama', 'performance', 'stage show'],
-            'sports': ['sport', 'game', 'match', 'tournament', 'competition', 'team', 'football', 'soccer'],
-            'arts': ['art', 'exhibition', 'gallery', 'paint', 'draw', 'sculpture', 'contemporary'],
-            'shopping': ['market', 'shopping', 'bazaar', 'sale', 'shop', 'store', 'vendor', 'christmas market'],
-            'food': ['restaurant', 'dining', 'culinary', 'chef', 'meal', 'cuisine'],
-            'festivals': ['festival', 'celebration', 'carnival', 'fest'],
-            'museum': ['museum', 'history', 'heritage', 'artifact'],
-            'church': ['church', 'religious', 'worship', 'prayer', 'spiritual'],
-            'park': ['park', 'nature', 'garden', 'outdoor', 'recreation'],
-            'library': ['library', 'book', 'reading', 'literature'],
-            'health': ['health', 'wellness', 'medical', 'fitness', 'gym'],
-            'family': ['family', 'kids', 'children', 'youth', 'child'],
-            'business': ['business', 'networking', 'conference', 'professional', 'corporate'],
-            'community': ['community', 'meetup', 'gathering', 'social event'],  # Keep more generic terms last
-        }
-        
-        # Check for keyword matches with scoring
-        matches = []
-        for category, keywords in keyword_map.items():
-            # Count how many keywords match
-            match_count = sum(1 for keyword in keywords if keyword in text)
-            if match_count > 0:
-                # Score based on number of matches and keyword specificity
-                score = match_count / len(keywords)
-                matches.append((category, score))
+        # Score each category by keyword matches
+        matches = self._score_categories(text)
         
         # Return best match or default
         if matches:
-            # Sort by score (descending)
-            matches.sort(key=lambda x: x[1], reverse=True)
             best_category, best_score = matches[0]
-            confidence = min(0.9, 0.6 + best_score * 0.3)  # Scale confidence
+            confidence = min(0.9, 0.6 + best_score * 0.3)
             logger.debug(f"Keyword categorized as '{best_category}' (score: {best_score:.2f})")
             return best_category, confidence, 'keyword'
         
-        # No match found
         logger.debug("No keyword match, using default category")
         return 'default', 0.5, 'keyword'
+    
+    def _score_categories(self, text: str) -> List[Tuple[str, float]]:
+        """Score categories based on keyword matches.
+        
+        Args:
+            text: Lowercased event text
+            
+        Returns:
+            List of (category, score) tuples sorted by score descending
+        """
+        scores = []
+        for category, keywords in KEYWORD_CATEGORY_MAP.items():
+            match_count = sum(1 for keyword in keywords if keyword in text)
+            if match_count > 0:
+                score = match_count / len(keywords)
+                scores.append((category, score))
+        
+        return sorted(scores, key=lambda x: x[1], reverse=True)
     
     def is_available(self) -> bool:
         """Check if AI categorization is available.
