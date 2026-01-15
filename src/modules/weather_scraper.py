@@ -8,6 +8,7 @@ Extracts dresscode, validates against whitelist, caches for 1 hour.
 import os
 import json
 import requests
+from urllib.parse import quote
 from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 import logging
@@ -45,8 +46,8 @@ class WeatherScraper:
             if cached:
                 return cached
         
-        # Scrape fresh data
-        weather_data = self._scrape_weather(location_name or "Hof")
+        # Scrape fresh data using coordinates if provided
+        weather_data = self._scrape_weather(location_name, lat, lon)
         
         # Save to cache
         if weather_data:
@@ -54,11 +55,25 @@ class WeatherScraper:
         
         return weather_data
     
-    def _scrape_weather(self, location_name):
-        """Scrape weather from MSN Weather."""
+    def _scrape_weather(self, location_name, lat=None, lon=None):
+        """Scrape weather from MSN Weather using coordinates."""
         try:
-            # Build URL (simplified - always use Hof, Bavaria, Germany)
-            url = f"https://www.msn.com/en-us/weather/forecast/in-Hof,Bavaria,Germany"
+            # Build URL using coordinates if provided, otherwise use location name
+            if lat is not None and lon is not None:
+                # Round coordinates to 4 decimal places for URL compatibility and caching consistency
+                lat_rounded = round(float(lat), 4)
+                lon_rounded = round(float(lon), 4)
+                # MSN Weather accepts "lat,lon" format in the location URL
+                url = f"https://www.msn.com/en-us/weather/forecast/in-{lat_rounded},{lon_rounded}"
+            elif location_name:
+                # Fallback to location name (URL-encoded)
+                encoded_location = quote(location_name)
+                url = f"https://www.msn.com/en-us/weather/forecast/in-{encoded_location}"
+            else:
+                # Default fallback
+                url = "https://www.msn.com/en-us/weather/forecast/in-Hof,Bavaria,Germany"
+            
+            logger.debug(f"Fetching weather from: {url}")
             
             # Fetch page
             response = requests.get(url, headers={'User-Agent': self.user_agent}, timeout=self.timeout)
@@ -186,5 +201,8 @@ class WeatherScraper:
         if location_name:
             return f"location_{location_name}"
         elif lat and lon:
-            return f"coords_{lat}_{lon}"
+            # Round coordinates to 4 decimal places for consistency with URL generation
+            lat_rounded = round(float(lat), 4)
+            lon_rounded = round(float(lon), 4)
+            return f"coords_{lat_rounded}_{lon_rounded}"
         return "default"
