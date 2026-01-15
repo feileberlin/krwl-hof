@@ -75,9 +75,16 @@ EVENT_SCHEMA = {
             "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}"
         },
         "end_time": {
-            "type": ["string", "null"],
             "description": "Event end time in ISO 8601 format (optional)",
-            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}"
+            "oneOf": [
+                {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}"
+                },
+                {
+                    "type": "null"
+                }
+            ]
         },
         "url": {
             "type": "string",
@@ -111,31 +118,20 @@ EVENT_SCHEMA = {
             "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}"
         },
         "relative_time": {
-            "oneOf": [
-                {
-                    "type": "object",
-                    "description": "Relative time configuration for demo events",
-                    "properties": {
-                        "type": {
-                            "type": "string",
-                            "enum": ["offset", "fixed"]
-                        },
-                        "minutes": {
-                            "type": "number"
-                        },
-                        "duration_hours": {
-                            "type": "number"
-                        }
-                    }
-                },
-                {
+            "description": "Relative time configuration for demo events, or human-readable relative time, or null.",
+            "type": ["object", "string", "null"],
+            "properties": {
+                "type": {
                     "type": "string",
-                    "description": "Human-readable relative time"
+                    "enum": ["offset", "fixed"]
                 },
-                {
-                    "type": "null"
+                "minutes": {
+                    "type": "number"
+                },
+                "duration_hours": {
+                    "type": "number"
                 }
-            ]
+            }
         },
         "marker_icon": {
             "type": "string",
