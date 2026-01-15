@@ -225,7 +225,7 @@
     position: absolute;
     top: -8px;
     left: -8px;
-    background: #ff6b6b;
+    background: var(--color-error);  /* EcoBarbie-compliant error color */
     color: white;
     font-size: 0.75rem;
     font-weight: 700;
