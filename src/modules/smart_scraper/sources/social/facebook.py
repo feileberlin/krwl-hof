@@ -589,6 +589,26 @@ class FacebookSource(BaseSource):
         
         return None
     
+    def _extract_time_from_text(self, text: str) -> Optional[tuple]:
+        """Extract time from text, returning (hour, minute) if found."""
+        if not text:
+            return None
+        
+        time_patterns = [
+            r'(\d{1,2})[:\.](\d{2})\s*(?:uhr)?',
+            r'(\d{1,2})\s*uhr',
+        ]
+        
+        for pattern in time_patterns:
+            time_match = re.search(pattern, text.lower())
+            if time_match:
+                groups = time_match.groups()
+                hour = int(groups[0])
+                minute = int(groups[1]) if len(groups) > 1 else 0
+                return hour, minute
+        
+        return None
+    
     def _get_ai_provider(self):
         """Get configured AI provider for extraction."""
         if not self.ai_providers:
@@ -646,10 +666,6 @@ class FacebookSource(BaseSource):
             (r'(\d{1,2})\.(\d{1,2})\.(\d{2})(?!\d)', 'DMY2'),
             (r'(\d{4})-(\d{2})-(\d{2})', 'YMD'),
         ]
-        time_patterns = [
-            r'(\d{1,2})[:\.](\d{2})\s*(?:uhr)?',
-            r'(\d{1,2})\s*uhr',
-        ]
         
         date_match = None
         date_format = None
@@ -667,13 +683,9 @@ class FacebookSource(BaseSource):
                 return None
             
             hour, minute = 20, 0  # Default time
-            for pattern in time_patterns:
-                time_match = re.search(pattern, text.lower())
-                if time_match:
-                    groups = time_match.groups()
-                    hour = int(groups[0])
-                    minute = int(groups[1]) if len(groups) > 1 else 0
-                    break
+            time_match = self._extract_time_from_text(text)
+            if time_match:
+                hour, minute = time_match
             
             dt = datetime(relative_date.year, relative_date.month, relative_date.day, hour, minute)
             return dt.isoformat()
@@ -690,13 +702,9 @@ class FacebookSource(BaseSource):
             
             # Extract time
             hour, minute = 20, 0  # Default time
-            for pattern in time_patterns:
-                time_match = re.search(pattern, text.lower())
-                if time_match:
-                    groups = time_match.groups()
-                    hour = int(groups[0])
-                    minute = int(groups[1]) if len(groups) > 1 else 0
-                    break
+            time_match = self._extract_time_from_text(text)
+            if time_match:
+                hour, minute = time_match
             
             dt = datetime(year, month, day, hour, minute)
             return dt.isoformat()
@@ -722,10 +730,9 @@ class FacebookSource(BaseSource):
             if relative_date:
                 hour, minute = 20, 0
                 if time_str:
-                    time_match = re.search(r'(\d{1,2})[:\.]?(\d{2})?', time_str)
+                    time_match = self._extract_time_from_text(time_str)
                     if time_match:
-                        hour = int(time_match.group(1))
-                        minute = int(time_match.group(2)) if time_match.group(2) else 0
+                        hour, minute = time_match
                 
                 dt = datetime(relative_date.year, relative_date.month, relative_date.day, hour, minute)
                 return dt.isoformat()
