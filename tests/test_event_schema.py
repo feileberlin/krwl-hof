@@ -75,7 +75,7 @@ EVENT_SCHEMA = {
             "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}"
         },
         "end_time": {
-            "type": "string",
+            "type": ["string", "null"],
             "description": "Event end time in ISO 8601 format (optional)",
             "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}"
         },
@@ -87,12 +87,13 @@ EVENT_SCHEMA = {
         "category": {
             "type": "string",
             "description": "Event category for filtering",
-            "enum": ["on-stage", "pub-game", "festival", "workshop", "market", "sports", "community", "other"]
+            "enum": ["on-stage", "pub-game", "festival", "workshop", "market", "sports", "community", "other", 
+                     "art", "arts", "music", "theater", "culture", "education", "food", "food-drink", "palace"]
         },
         "source": {
             "type": "string",
-            "description": "Source of the event data",
-            "enum": ["manual", "rss", "api", "html", "facebook", "demo"]
+            "description": "Source name of the event data (e.g., 'Frankenpost', 'Galeriehaus', 'manual')",
+            "minLength": 1
         },
         "status": {
             "type": "string",
@@ -103,6 +104,38 @@ EVENT_SCHEMA = {
             "type": "string",
             "description": "When the event was published",
             "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}"
+        },
+        "scraped_at": {
+            "type": "string",
+            "description": "When the event was scraped from the source",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}"
+        },
+        "relative_time": {
+            "oneOf": [
+                {
+                    "type": "object",
+                    "description": "Relative time configuration for demo events",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": ["offset", "fixed"]
+                        },
+                        "minutes": {
+                            "type": "number"
+                        },
+                        "duration_hours": {
+                            "type": "number"
+                        }
+                    }
+                },
+                {
+                    "type": "string",
+                    "description": "Human-readable relative time"
+                },
+                {
+                    "type": "null"
+                }
+            ]
         },
         "marker_icon": {
             "type": "string",

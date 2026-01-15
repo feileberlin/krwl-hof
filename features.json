@@ -19,6 +19,28 @@
       "test_method": "check_files_exist"
     },
     {
+      "id": "facebook-flyer-ocr",
+      "name": "Facebook Flyer OCR Scraping",
+      "description": "Extract event information from Facebook page flyer images using OCR (Optical Character Recognition). Automatically scans posted images for dates, times, event names, and keywords.",
+      "category": "backend",
+      "implemented": true,
+      "files": [
+        "src/modules/smart_scraper/sources/social/facebook.py",
+        "src/modules/smart_scraper/image_analyzer/ocr.py",
+        "src/modules/smart_scraper/image_analyzer/analyzer.py"
+      ],
+      "config_keys": [
+        "scraping.sources"
+      ],
+      "dependencies": {
+        "python": ["Pillow>=10.0.0", "pytesseract>=0.3.10", "exifread>=3.0.0"],
+        "system": ["tesseract-ocr", "tesseract-ocr-deu", "tesseract-ocr-eng"]
+      },
+      "test_method": "run_custom_test",
+      "test_file": "tests/test_ocr_availability.py",
+      "documentation": "README.md section: 📸 Facebook Flyer Scraping with OCR"
+    },
+    {
       "id": "editor-workflow",
       "name": "Editor Workflow",
       "description": "Review, edit, approve, or reject events before publishing",
