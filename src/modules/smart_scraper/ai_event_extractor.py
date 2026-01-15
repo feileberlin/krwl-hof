@@ -14,6 +14,7 @@ from ..event_schema import EVENT_CATEGORIES
 
 logger = logging.getLogger(__name__)
 
+# Prefer explicit local_llm (event extraction prompt) before generic Ollama provider.
 LOCAL_PROVIDER_ORDER: Tuple[str, ...] = ("local_llm", "ollama")
 
 
@@ -122,7 +123,10 @@ class LocalEventExtractor:
 
         context = "\n\n".join(part for part in parts if part).strip()
         if len(context) > self.max_context_chars:
-            context = context[:self.max_context_chars].rstrip()
+            truncated = context[:self.max_context_chars]
+            if " " in truncated:
+                truncated = truncated.rsplit(" ", 1)[0]
+            context = truncated.rstrip()
         return context
 
     def _build_prompt(self) -> str:

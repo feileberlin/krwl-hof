@@ -754,9 +754,12 @@ class FacebookSource(BaseSource):
             return None
         
         ai_details = None
-        needs_ai = not start_time or title == self._default_event_title()
-        needs_ai = needs_ai or not self._get_post_link(post)
-        needs_ai = needs_ai or not self.options.category
+        needs_ai = (
+            not start_time
+            or title == self._default_event_title()
+            or not self._get_post_link(post)
+            or not self.options.category
+        )
         if needs_ai:
             ai_details = self._ai_extract_event_details(post, image_data)
             if ai_details:
@@ -805,7 +808,7 @@ class FacebookSource(BaseSource):
         location = self._get_default_location() or {}
         if image_data and image_data.get('location'):
             location = image_data['location']
-        if ai_details and ai_details.get('location'):
+        if ai_details and isinstance(ai_details.get('location'), dict):
             for key, value in ai_details['location'].items():
                 if value is not None and not location.get(key):
                     location[key] = value
