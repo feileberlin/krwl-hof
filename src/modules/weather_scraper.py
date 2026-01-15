@@ -8,7 +8,7 @@ Extracts dresscode, validates against whitelist, caches for 1 hour.
 import os
 import json
 import requests
-import urllib.parse
+from urllib.parse import quote
 from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 import logging
@@ -60,11 +60,14 @@ class WeatherScraper:
         try:
             # Build URL using coordinates if provided, otherwise use location name
             if lat is not None and lon is not None:
+                # Round coordinates to 4 decimal places for URL compatibility and caching consistency
+                lat_rounded = round(float(lat), 4)
+                lon_rounded = round(float(lon), 4)
                 # MSN Weather accepts "lat,lon" format in the location URL
-                url = f"https://www.msn.com/en-us/weather/forecast/in-{lat},{lon}"
+                url = f"https://www.msn.com/en-us/weather/forecast/in-{lat_rounded},{lon_rounded}"
             elif location_name:
                 # Fallback to location name (URL-encoded)
-                encoded_location = urllib.parse.quote(location_name)
+                encoded_location = quote(location_name)
                 url = f"https://www.msn.com/en-us/weather/forecast/in-{encoded_location}"
             else:
                 # Default fallback
@@ -198,5 +201,8 @@ class WeatherScraper:
         if location_name:
             return f"location_{location_name}"
         elif lat and lon:
-            return f"coords_{lat}_{lon}"
+            # Round coordinates to 4 decimal places for consistency with URL generation
+            lat_rounded = round(float(lat), 4)
+            lon_rounded = round(float(lon), 4)
+            return f"coords_{lat_rounded}_{lon_rounded}"
         return "default"
