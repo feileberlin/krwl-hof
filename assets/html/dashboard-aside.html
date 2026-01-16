@@ -6,10 +6,12 @@
        aria-hidden="true">
   <div class="dashboard-content">
     <div class="dashboard-header">
-      <div class="dashboard-logo">{logo_svg}</div>
+      <div class="dashboard-logo">
+        {logo_svg}
+        <h2 id="dashboard-title">{app_name}</h2>
+      </div>
       <button id="close-dashboard" aria-label="Close menu">&times;</button>
     </div>
-    <h2 id="dashboard-title">{app_name}</h2>
     
     <!-- Pending Events Notification -->
     <div id="pending-notification" class="pending-notification" style="display: none;" role="alert" aria-live="polite">
