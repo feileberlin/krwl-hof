@@ -368,6 +368,9 @@ class CityDetector:
         """
         Extract city name from text (venue name or address).
         
+        Uses word boundary matching to avoid false matches
+        (e.g., "Bahnhof" should NOT match "Hof").
+        
         Args:
             text: Text to search for city name
             
@@ -379,9 +382,12 @@ class CityDetector:
         
         text_lower = text.lower()
         
-        # Check for city names in text
+        # Check for city names as complete words (word boundaries)
+        # This prevents "Bahnhof" from matching "Hof"
         for city_key, city_data in CityDetector.KNOWN_CITIES.items():
-            if city_key in text_lower:
+            # Use word boundary regex to match complete words only
+            pattern = r'\b' + re.escape(city_key) + r'\b'
+            if re.search(pattern, text_lower):
                 return city_data['name']
         
         return None
