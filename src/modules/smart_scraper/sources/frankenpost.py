@@ -60,6 +60,15 @@ class FrankenpostSource(BaseSource):
         # Load verified locations database for coordinate normalization
         self.verified_locations = self._load_verified_locations(base_path)
         
+        # Initialize location tracker for collecting unverified locations
+        self.location_tracker = None
+        if base_path:
+            try:
+                from ...location_tracker import LocationTracker
+                self.location_tracker = LocationTracker(Path(base_path))
+            except ImportError:
+                pass  # Module not available, tracking disabled
+        
         if self.available:
             self.session = requests.Session()
             self.session.headers.update({
@@ -95,6 +104,13 @@ class FrankenpostSource(BaseSource):
                     
         except Exception as e:
             print(f"    Frankenpost scraping error: {str(e)}")
+        
+        # Save tracked unverified locations and show hints
+        if self.location_tracker:
+            self.location_tracker.save()
+            hint = self.location_tracker.get_hint_message()
+            if hint:
+                print(f"\n  {hint}")
         
         return events
     
@@ -201,7 +217,7 @@ class FrankenpostSource(BaseSource):
         
         Looks for:
         - H3 + Strong tag patterns for structured location
-        - Iframe coordinates from embedded maps
+        - Iframe coordinates from embedded maps (Google Maps, OpenStreetMap, Apple Maps)
         - Location/Ort labels and their values
         - Address patterns (Street Number, ZIP City)
         - Venue name patterns
@@ -273,6 +289,13 @@ class FrankenpostSource(BaseSource):
                     if osm_match2:
                         latitude = float(osm_match2.group(1))
                         longitude = float(osm_match2.group(2))
+                        break
+                    
+                    # Try Apple Maps patterns: ll=lat,lon or ?ll=lat,lon
+                    apple_match = re.search(r'[?&]?ll=(-?\d+\.\d+),(-?\d+\.\d+)', src_original)
+                    if apple_match:
+                        latitude = float(apple_match.group(1))
+                        longitude = float(apple_match.group(2))
                         break
         
         # Strategy 3: Look for location-related labels and fields
@@ -445,6 +468,7 @@ class FrankenpostSource(BaseSource):
         
         Checks verified_locations.json for exact or case-insensitive name match.
         Returns verified coordinates if found, original location otherwise.
+        Tracks unverified locations via LocationTracker module.
         
         Args:
             location: Location dict with name, lat, lon
@@ -471,7 +495,10 @@ class FrankenpostSource(BaseSource):
                 print(f"    ℹ Using verified coordinates for: {location_name}")
                 return verified
         
-        # No match - return original
+        # No match - track as unverified for editor review
+        if self.location_tracker:
+            self.location_tracker.track_location(location, source='Frankenpost')
+        
         return location
     def _extract_description(self, soup) -> str:
         """Extract event description from detail page."""
