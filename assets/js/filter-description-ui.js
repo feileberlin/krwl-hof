@@ -13,9 +13,9 @@ class FilterDescriptionUI {
         
         // Lookup tables for filter descriptions (KISS: replace switch statements)
         this.TIME_DESCRIPTIONS = {
-            'sunrise': 'till sunrise',
-            'sunday-primetime': "till Sunday's primetime",
-            'full-moon': 'till next full moon',
+            'sunrise': 'til sunrise',
+            'sunday-primetime': "til Sunday's primetime",
+            'full-moon': 'til full moon',
             '6h': 'in the next 6 hours',
             '12h': 'in the next 12 hours',
             '24h': 'in the next 24 hours',
@@ -67,20 +67,11 @@ class FilterDescriptionUI {
         const element = document.getElementById('filter-bar-time-range');
         if (!element) return;
         
-        let description = this.TIME_DESCRIPTIONS[timeFilter] || 'upcoming';
+        // Simple descriptions for filter bar button (no extra info)
+        const description = this.TIME_DESCRIPTIONS[timeFilter] || 'upcoming';
         
-        // Add countdown for sunday-primetime and full-moon filters
-        if (window.APP_CONFIG && window.APP_CONFIG.time_filters) {
-            const timeFilters = window.APP_CONFIG.time_filters;
-            
-            if (timeFilter === 'sunday-primetime' && timeFilters.sunday && timeFilters.sunday.enabled) {
-                const days = timeFilters.sunday.days_until;
-                description = `${description} (${days} day${days !== 1 ? 's' : ''})`;
-            } else if (timeFilter === 'full-moon' && timeFilters.full_moon && timeFilters.full_moon.enabled) {
-                const days = timeFilters.full_moon.days_until;
-                description = `${description} (${days} day${days !== 1 ? 's' : ''})`;
-            }
-        }
+        // Note: Detailed info (dates/times) is shown in dropdown options only
+        // See event-listeners.js setupTimeFilter() for dropdown labels
         
         element.textContent = `[${description}]`;
     }

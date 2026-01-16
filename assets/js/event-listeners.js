@@ -204,17 +204,48 @@ class EventListeners {
     }
     
     setupTimeFilter(timeTextEl) {
-        const timeRanges = [
-            { label: 'Next Sunrise (6 AM)', value: 'sunrise' },
-            { label: "Till Sunday's Primetime (20:15)", value: 'sunday-primetime' },
-            { label: 'Till Next Full Moon', value: 'full-moon' },
-            { label: 'All upcoming events', value: 'all' }
-        ];
+        // Function to generate time range options with calculated dates/times
+        const getTimeRanges = () => {
+            const baseRanges = [
+                { label: 'til sunrise', value: 'sunrise', detailLabel: 'til sunrise (6 AM)' },
+                { label: "til Sunday's primetime", value: 'sunday-primetime' },
+                { label: 'til full moon', value: 'full-moon' },
+                { label: 'upcoming', value: 'all', detailLabel: 'upcoming (all events)' }
+            ];
+            
+            // Add calculated dates/times from APP_CONFIG if available
+            if (window.APP_CONFIG && window.APP_CONFIG.time_filters) {
+                const timeFilters = window.APP_CONFIG.time_filters;
+                
+                return baseRanges.map(range => {
+                    if (range.value === 'sunday-primetime' && timeFilters.sunday && timeFilters.sunday.enabled) {
+                        const date = timeFilters.sunday.date_formatted; // e.g., "January 18"
+                        return { ...range, label: `til Sunday's primetime (${date})` };
+                    } else if (range.value === 'full-moon' && timeFilters.full_moon && timeFilters.full_moon.enabled) {
+                        const days = timeFilters.full_moon.days_until;
+                        // Calculate actual date from days
+                        const fullMoonDate = new Date();
+                        fullMoonDate.setDate(fullMoonDate.getDate() + days);
+                        const dateStr = fullMoonDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+                        return { ...range, label: `til full moon (${dateStr})` };
+                    } else if (range.detailLabel) {
+                        return { ...range, label: range.detailLabel };
+                    }
+                    return range;
+                });
+            }
+            
+            // Fallback if APP_CONFIG not available
+            return baseRanges.map(r => ({
+                ...r,
+                label: r.detailLabel || r.label
+            }));
+        };
         
         new CustomDropdown(
             timeTextEl,
-            timeRanges,
-            this.app.filters.timeFilter,
+            getTimeRanges,
+            () => this.app.filters.timeFilter,
             (value) => {
                 this.app.filters.timeFilter = value;
                 this.app.storage.saveFiltersToCookie(this.app.filters);

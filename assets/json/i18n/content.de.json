@@ -28,13 +28,13 @@
       "festivals": "festival"
     },
     "time_ranges": {
-      "sunrise": "bis sonnenaufgang",
-      "sunday-primetime": "bis sonntag zur primetime",
-      "full-moon": "bis zum nächsten vollmond",
-      "6h": "in den nächsten 6 stunden",
-      "12h": "in den nächsten 12 stunden",
-      "24h": "in den nächsten 24 stunden",
-      "48h": "in den nächsten 48 stunden",
+      "sunrise": "bis Sonnenaufgang",
+      "sunday-primetime": "bis Sonntag zur Primetime",
+      "full-moon": "bis Vollmond",
+      "6h": "in den nächsten 6 Stunden",
+      "12h": "in den nächsten 12 Stunden",
+      "24h": "in den nächsten 24 Stunden",
+      "48h": "in den nächsten 48 Stunden",
       "all": "bevorstehend"
     },
     "distances": {
