@@ -317,6 +317,19 @@ def test_no_publish_incomplete():
             'start_time': '2026-01-22T15:00:00',
             'source': 'Frankenpost'
         },
+        # Underground event with address_hidden flag (SHOULD BE VALID)
+        {
+            'id': 'underground_1',
+            'title': 'Secret Underground Rave',
+            'location': {
+                'name': 'TBA (announced to attendees)',
+                'address_hidden': True,  # Address intentionally hidden
+                'lat': 50.3167,
+                'lon': 11.9167
+            },
+            'start_time': '2026-01-30T23:00:00',
+            'source': 'Underground'
+        },
     ]
     
     passed = 0
@@ -325,8 +338,6 @@ def test_no_publish_incomplete():
     for event in incomplete_events:
         result = validate_event(event)
         
-        # First two should fail validation (missing coords, None coords)
-        # Third should pass validation but show warning
         event_id = event.get('id')
         
         if event_id == 'frankenpost_1':
@@ -359,6 +370,20 @@ def test_no_publish_incomplete():
             else:
                 print(f"  ⚠ {event_id}: Valid but no warning for needs_review")
                 passed += 1  # Accept but note
+        elif event_id == 'underground_1':
+            # Underground event with address_hidden - should be valid with warning
+            if result.is_valid:
+                has_hidden_warning = any('hidden' in str(w.message).lower() for w in result.warnings)
+                if has_hidden_warning:
+                    print(f"  ✓ {event_id}: Valid with warning (address hidden for underground event)")
+                    passed += 1
+                else:
+                    print(f"  ⚠ {event_id}: Valid but no warning about hidden address")
+                    passed += 1  # Accept but note
+            else:
+                print(f"  ✗ {event_id}: Underground event blocked (should allow address_hidden)")
+                print(f"    Errors: {[e.message for e in result.errors]}")
+                failed += 1
     
     print(f"\nResults: {passed} passed, {failed} failed")
     

@@ -253,9 +253,13 @@ class EventValidator:
         
         Location MUST have:
         - name (non-empty string)
-        - address (full German address: Street Number, ZIP City) - REQUIRED
+        - address (full German address) - REQUIRED unless address_hidden=true
         - lat (valid latitude -90 to 90)
         - lon (valid longitude -180 to 180)
+        
+        Special Cases:
+        - address_hidden=true: Address not required (underground/secret events)
+        - needs_review=true: Validation passes but warns editor
         
         Returns:
             Tuple of (errors, warnings)
@@ -271,6 +275,9 @@ class EventValidator:
             errors.append(ValidationError('location', f'Location must be dict, got {type(location).__name__}', severity='error'))
             return errors, warnings
         
+        # Check for special flags
+        address_hidden = location.get('address_hidden', False)
+        
         # Validate location name
         if 'name' not in location:
             errors.append(ValidationError('location.name', 'Location name is required', severity='error'))
@@ -281,24 +288,32 @@ class EventValidator:
         else:
             # Check for generic/placeholder names
             generic_names = ['Unknown', 'Unknown Location', 'Hof', 'Bayreuth', 'Selb']
-            if location['name'] in generic_names:
+            if location['name'] in generic_names and not address_hidden:
                 warnings.append(ValidationError('location.name', f'Generic location name "{location["name"]}" should be more specific', severity='warning'))
         
-        # Validate address (REQUIRED)
-        if 'address' not in location:
-            errors.append(ValidationError('location.address', 'Address is required', severity='error'))
-        elif not location['address']:
-            errors.append(ValidationError('location.address', 'Address cannot be empty', severity='error'))
-        elif not isinstance(location['address'], str):
-            errors.append(ValidationError('location.address', f'Address must be string, got {type(location["address"]).__name__}', severity='error'))
+        # Validate address (REQUIRED unless address_hidden=true)
+        if address_hidden:
+            # Underground/secret event - address intentionally hidden
+            if location.get('address'):
+                warnings.append(ValidationError('location.address', 'Address marked as hidden but provided (will be hidden from public)', severity='warning'))
+            else:
+                warnings.append(ValidationError('location.address', 'Address intentionally hidden (underground/secret event)', severity='warning'))
         else:
-            # Validate address format (German: Street Number, ZIP City)
-            address = location['address']
-            # Check for basic address components
-            has_number = any(char.isdigit() for char in address)
-            has_comma = ',' in address
-            if not (has_number and has_comma):
-                warnings.append(ValidationError('location.address', 'Address should include street number and city (format: Street Number, ZIP City)', severity='warning'))
+            # Normal event - address required
+            if 'address' not in location:
+                errors.append(ValidationError('location.address', 'Address is required (use address_hidden=true for secret events)', severity='error'))
+            elif not location['address']:
+                errors.append(ValidationError('location.address', 'Address cannot be empty (use address_hidden=true for secret events)', severity='error'))
+            elif not isinstance(location['address'], str):
+                errors.append(ValidationError('location.address', f'Address must be string, got {type(location["address"]).__name__}', severity='error'))
+            else:
+                # Validate address format (German: Street Number, ZIP City)
+                address = location['address']
+                # Check for basic address components
+                has_number = any(char.isdigit() for char in address)
+                has_comma = ',' in address
+                if not (has_number and has_comma):
+                    warnings.append(ValidationError('location.address', 'Address should include street number and city (format: Street Number, ZIP City)', severity='warning'))
         
         # Validate latitude
         if 'lat' not in location:
