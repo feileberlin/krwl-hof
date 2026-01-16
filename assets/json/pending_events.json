@@ -792,7 +792,262 @@
       "url": "https://event.frankenpost.de/detail.php?event_id=3152961",
       "category": "default",
       "tags": []
+    },
+    {
+      "id": "html_frankenpost_492da05adac14ea5",
+      "title": "Seniorentreffen \"Kumm rei\"",
+      "description": "Jetzt ganz einfach dabei sein.",
+      "location": {
+        "name": "ATSV-Heim am Eisteich",
+        "lat": 50.3167,
+        "lon": 11.9167
+      },
+      "start_time": "2026-01-16T18:00:00",
+      "end_time": null,
+      "status": "pending",
+      "source": "Frankenpost",
+      "url": "https://event.frankenpost.de/detail.php?event_id=3225510",
+      "category": "default",
+      "tags": []
+    },
+    {
+      "id": "html_frankenpost_a3bd0dbcc7e70e56",
+      "title": "Churmusik am Nachmittag",
+      "description": "Jetzt ganz einfach dabei sein.",
+      "location": {
+        "name": "KunstWandelhalle",
+        "lat": 50.3167,
+        "lon": 11.9167
+      },
+      "start_time": "2026-01-16T18:00:00",
+      "end_time": null,
+      "status": "pending",
+      "source": "Frankenpost",
+      "url": "https://event.frankenpost.de/detail.php?event_id=2110527",
+      "category": "default",
+      "tags": []
+    },
+    {
+      "id": "html_frankenpost_0d452882916357db",
+      "title": "Tag der offenen T\u00fcr",
+      "description": "Jetzt ganz einfach dabei sein.",
+      "location": {
+        "name": "BRK-Kindertagesst\u00e4tte Lindenstra\u00dfe",
+        "lat": 50.3167,
+        "lon": 11.9167
+      },
+      "start_time": "2026-01-16T18:00:00",
+      "end_time": null,
+      "status": "pending",
+      "source": "Frankenpost",
+      "url": "https://event.frankenpost.de/detail.php?event_id=3239289",
+      "category": "default",
+      "tags": []
+    },
+    {
+      "id": "html_frankenpost_bf40c9d52b56292c",
+      "title": "Schnupperkegeln f\u00fcr Kids ab 9 bis 16 Jahre",
+      "description": "Jetzt ganz einfach dabei sein.",
+      "location": {
+        "name": "Sch\u00fctzengilde Bayreuth - Kegelbahnanlage",
+        "lat": 49.944,
+        "lon": 11.576
+      },
+      "start_time": "2026-01-16T18:00:00",
+      "end_time": null,
+      "status": "pending",
+      "source": "Frankenpost",
+      "url": "https://event.frankenpost.de/detail.php?event_id=3239530",
+      "category": "default",
+      "tags": []
+    },
+    {
+      "id": "html_frankenpost_a689331079fc1eea",
+      "title": "Eisdisco, 14 bis 16 Uhr, \u00f6ffentlicher Lauf",
+      "description": "Jetzt ganz einfach dabei sein.",
+      "location": {
+        "name": "Eisteich",
+        "lat": 50.3167,
+        "lon": 11.9167
+      },
+      "start_time": "2026-01-16T18:00:00",
+      "end_time": null,
+      "status": "pending",
+      "source": "Frankenpost",
+      "url": "https://event.frankenpost.de/detail.php?event_id=2309743",
+      "category": "default",
+      "tags": []
+    },
+    {
+      "id": "html_frankenpost_d7c1dc9975b4e555",
+      "title": "Stammtisch M\u00fcnchberg der Offenen Hilfen der Lebenshilfe Hof",
+      "description": "Jetzt ganz einfach dabei sein.",
+      "location": {
+        "name": "Hopfenh\u00e4usla",
+        "lat": 50.3167,
+        "lon": 11.9167
+      },
+      "start_time": "2026-01-16T18:00:00",
+      "end_time": null,
+      "status": "pending",
+      "source": "Frankenpost",
+      "url": "https://event.frankenpost.de/detail.php?event_id=3239609",
+      "category": "default",
+      "tags": []
+    },
+    {
+      "id": "html_frankenpost_43188e25560b5ffc",
+      "title": "Vernissage zur Femeinschaftsausstellung \"Heimat III\" des Kunstvereins Hochfranken Selb e.V.",
+      "description": "Jetzt ganz einfach dabei sein.",
+      "location": {
+        "name": "MAKkultur",
+        "lat": 50.3167,
+        "lon": 11.9167
+      },
+      "start_time": "2026-01-16T18:00:00",
+      "end_time": null,
+      "status": "pending",
+      "source": "Frankenpost",
+      "url": "https://event.frankenpost.de/detail.php?event_id=3229653",
+      "category": "default",
+      "tags": []
+    },
+    {
+      "id": "html_frankenpost_6deee683e63e291a",
+      "title": "HEIMAT 3 Ausstellung mit Arbeiten der Mitglieds K\u00fcnstler des Kunstverein Hochfranken Selb e.V.",
+      "description": "Jetzt ganz einfach dabei sein.",
+      "location": {
+        "name": "MAKkultur",
+        "lat": 50.3167,
+        "lon": 11.9167
+      },
+      "start_time": "2026-01-16T18:00:00",
+      "end_time": null,
+      "status": "pending",
+      "source": "Frankenpost",
+      "url": "https://event.frankenpost.de/detail.php?event_id=3237570",
+      "category": "default",
+      "tags": []
+    },
+    {
+      "id": "html_frankenpost_e81e06e60fb22263",
+      "title": "Vorstellung der Kandidaten der CSU Konradsreuth f\u00fcr die Kommunalwahl 2026",
+      "description": "Jetzt ganz einfach dabei sein.",
+      "location": {
+        "name": "FCK-Sportheim",
+        "lat": 50.3167,
+        "lon": 11.9167
+      },
+      "start_time": "2026-01-16T18:00:00",
+      "end_time": null,
+      "status": "pending",
+      "source": "Frankenpost",
+      "url": "https://event.frankenpost.de/detail.php?event_id=3237872",
+      "category": "default",
+      "tags": []
+    },
+    {
+      "id": "html_frankenpost_a772ff2e6676fc8b",
+      "title": "Jahreshauptversammlung",
+      "description": "Jetzt ganz einfach dabei sein.",
+      "location": {
+        "name": "Siedlerhaisla am Hopfengarten",
+        "lat": 50.3167,
+        "lon": 11.9167
+      },
+      "start_time": "2026-01-16T18:00:00",
+      "end_time": null,
+      "status": "pending",
+      "source": "Frankenpost",
+      "url": "https://event.frankenpost.de/detail.php?event_id=3230990",
+      "category": "default",
+      "tags": []
+    },
+    {
+      "id": "html_frankenpost_12bf531be7be6ed7",
+      "title": "Zammhoggn & Anpacken: SPD Helmbrechts l\u00e4dt zum Gespr\u00e4ch",
+      "description": "Jetzt ganz einfach dabei sein.",
+      "location": {
+        "name": "Sportheim",
+        "lat": 50.3167,
+        "lon": 11.9167
+      },
+      "start_time": "2026-01-16T18:00:00",
+      "end_time": null,
+      "status": "pending",
+      "source": "Frankenpost",
+      "url": "https://event.frankenpost.de/detail.php?event_id=3235119",
+      "category": "default",
+      "tags": []
+    },
+    {
+      "id": "html_frankenpost_7e00d4102c2b6ad6",
+      "title": "Wahlveranstaltung der Unabh\u00e4ngigen Liste Stammbach",
+      "description": "Jetzt ganz einfach dabei sein.",
+      "location": {
+        "name": "Feuerwehrhaus Querenbach",
+        "lat": 50.3167,
+        "lon": 11.9167
+      },
+      "start_time": "2026-01-16T18:00:00",
+      "end_time": null,
+      "status": "pending",
+      "source": "Frankenpost",
+      "url": "https://event.frankenpost.de/detail.php?event_id=3240549",
+      "category": "default",
+      "tags": []
+    },
+    {
+      "id": "html_frankenpost_1e4eda5b6b9e752f",
+      "title": "Herzerw\u00e4rmergeschichten und Wortgeschenke",
+      "description": "Jetzt ganz einfach dabei sein.",
+      "location": {
+        "name": "Meister B\u00e4r Hotel",
+        "lat": 50.3167,
+        "lon": 11.9167
+      },
+      "start_time": "2026-01-16T18:00:00",
+      "end_time": null,
+      "status": "pending",
+      "source": "Frankenpost",
+      "url": "https://event.frankenpost.de/detail.php?event_id=3239269",
+      "category": "default",
+      "tags": []
+    },
+    {
+      "id": "html_frankenpost_e6d968c6536d9900",
+      "title": "Die CSU M\u00fcnchberg vor Ort",
+      "description": "Jetzt ganz einfach dabei sein.",
+      "location": {
+        "name": "Kuhstall",
+        "lat": 50.3167,
+        "lon": 11.9167
+      },
+      "start_time": "2026-01-16T18:00:00",
+      "end_time": null,
+      "status": "pending",
+      "source": "Frankenpost",
+      "url": "https://event.frankenpost.de/detail.php?event_id=3236182",
+      "category": "default",
+      "tags": []
+    },
+    {
+      "id": "html_frankenpost_449beeb898807da1",
+      "title": "Niedecken: Zwischen Start & Ziel",
+      "description": "Jetzt ganz einfach dabei sein.",
+      "location": {
+        "name": "K\u00f6nig Albert Theater",
+        "lat": 50.3167,
+        "lon": 11.9167
+      },
+      "start_time": "2026-01-16T18:00:00",
+      "end_time": null,
+      "status": "pending",
+      "source": "Frankenpost",
+      "url": "https://event.frankenpost.de/detail.php?event_id=3107748",
+      "category": "arts",
+      "tags": []
     }
   ],
-  "last_scraped": "2026-01-16T15:14:30.299754"
+  "last_scraped": "2026-01-16T19:19:42.370055"
 }
