@@ -1,5 +1,6 @@
 """AI Providers - Multiple AI backends for content extraction."""
 
+import importlib
 from typing import Dict, Any
 
 
@@ -29,7 +30,8 @@ def _load_provider(name: str, module_name: str, class_name: str, provider_config
         Provider instance or None if import fails
     """
     try:
-        module = __import__(f'.{module_name}', fromlist=[class_name], package=__package__)
+        # Use importlib.import_module for proper relative imports (recommended over __import__)
+        module = importlib.import_module(f'.{module_name}', package=__package__)
         provider_class = getattr(module, class_name)
         return provider_class(provider_config)
     except (ImportError, AttributeError):
