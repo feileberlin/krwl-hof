@@ -185,7 +185,10 @@ def generate_demo_events_from_templates(real_events, now):
         next_sunrise = now.replace(hour=6, minute=0, second=0, microsecond=0)
     
     # Define useful time scenarios for testing (expanded with sunrise edge cases and timezone tests)
-    # Format: (offset, suffix, title_label, description, tz_offset[, relative_time_spec])
+    # Format:
+    #   (offset, suffix, title_label, description, tz_offset, relative_time_spec)
+    #   (offset, suffix, title_label, description, tz_offset)
+    #   (offset, suffix, title_label, description)
     time_scenarios = [
         # Current time scenarios (basic functionality)
         (timedelta(minutes=-30), "happening_now", "Live now", "Live now — drop in for the current highlights", 0, {"type": "offset", "minutes": -30, "duration_hours": 2}),
