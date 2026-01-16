@@ -2,518 +2,495 @@
   "events": [
     {
       "id": "demo_happening_now",
-      "title": "[DEMO] Kunst in Bayreuth - Werke der 1940er bis 1960er Jahre - aus den Sammlungen und Stiftungen im Kunstmuseum",
-      "description": "Event happening now. Donnerstag,01.01.2026,",
+      "title": "[DEMO] Kunst in Bayreuth - Werke der 1940er bis 1960er Jahre - aus den Sammlungen und Stiftungen im Kunstmuseum — Live now",
+      "description": "Live now — drop in for the current highlights. Donnerstag,01.01.2026,",
       "location": {
-        "name": "Regionalzeitung",
-        "lat": 50.3167,
-        "lon": 11.9167
+        "name": "Kunstmuseum Bayreuth, Maximilianstraße 33, 95444 Bayreuth",
+        "lat": 49.944,
+        "lon": 11.5747
       },
-      "start_time": "2026-01-02T13:42:41",
-      "end_time": "2026-01-02T15:42:41",
+      "start_time": "2026-01-16T04:05:41",
+      "end_time": "2026-01-16T06:05:41",
       "url": "https://event.frankenpost.de/detail.php?event_id=3119599",
       "source": "demo",
       "status": "published",
-      "published_at": "2026-01-02T14:12:41",
+      "published_at": "2026-01-16T04:35:41",
       "relative_time": {
         "type": "offset",
         "minutes": -30,
         "duration_hours": 2
-      },
-      "category": "on-stage"
+      }
     },
     {
       "id": "demo_started_5min_ago",
-      "title": "[DEMO] Ausstellung zum Fotowettbewerb: Zeig mir deine Lebenswerte Stadt (bis 7. Januar 2026)",
-      "description": "Started 5 minutes ago. Donnerstag,01.01.2026,",
+      "title": "[DEMO] Ausstellung zum Fotowettbewerb: Zeig mir deine Lebenswerte Stadt (bis 7. Januar 2026) — Just started",
+      "description": "Just started — doors opened a few minutes ago. Donnerstag,01.01.2026,",
       "location": {
-        "name": "Regionalzeitung",
-        "lat": 50.3167,
-        "lon": 11.9167
+        "name": "RW21 Volkshochschule Bayreuth, Richard-Wagner-Str. 21, 95444 Bayreuth",
+        "lat": 49.9454,
+        "lon": 11.5771
       },
-      "start_time": "2026-01-02T14:07:41",
-      "end_time": "2026-01-02T16:07:41",
+      "start_time": "2026-01-16T04:30:41",
+      "end_time": "2026-01-16T06:30:41",
       "url": "https://event.frankenpost.de/detail.php?event_id=3202184",
       "source": "demo",
       "status": "published",
-      "published_at": "2026-01-02T14:12:41",
+      "published_at": "2026-01-16T04:35:41",
       "relative_time": {
         "type": "offset",
         "minutes": -5,
         "duration_hours": 2
-      },
-      "category": "music"
+      }
     },
     {
       "id": "demo_starting_5min",
-      "title": "[DEMO] Führung durch die Wohnräume der Sommerresidenz der Markgräfin Caroline",
-      "description": "Starting in 5 minutes. 01.Januar",
+      "title": "[DEMO] Führung durch die Wohnräume der Sommerresidenz der Markgräfin Caroline — Starts in 5 min",
+      "description": "Starts in 5 minutes — grab your spot. 01.Januar",
       "location": {
-        "name": "Regionalzeitung",
-        "lat": 50.3167,
-        "lon": 11.9167
+        "name": "Schloss Carolinenruhe, Colmdorf 8, 95448 Bayreuth",
+        "lat": 49.93047,
+        "lon": 11.5674
       },
-      "start_time": "2026-01-02T14:17:41",
-      "end_time": "2026-01-02T16:17:41",
+      "start_time": "2026-01-16T04:40:41",
+      "end_time": "2026-01-16T06:40:41",
       "url": "https://event.frankenpost.de/detail.php?event_id=3185852",
       "source": "demo",
       "status": "published",
-      "published_at": "2026-01-02T14:12:41",
+      "published_at": "2026-01-16T04:35:41",
       "relative_time": {
         "type": "offset",
         "minutes": 5,
         "duration_hours": 2
-      },
-      "category": "sports"
+      }
     },
     {
       "id": "demo_starting_15min",
-      "title": "[DEMO] Test Community Gathering",
-      "description": "Starting in 15 minutes. A test event for approval flow testing",
+      "title": "[DEMO] Community Meetup at Test Venue — Starts in 15 min",
+      "description": "Starts in 15 minutes — meet at the entrance. Friendly community meetup with introductions, snacks, and local tips.",
       "location": {
         "name": "Test Venue Berlin",
         "lat": 52.52,
         "lon": 13.405
       },
-      "start_time": "2026-01-02T14:27:41",
-      "end_time": "2026-01-02T16:27:41",
+      "start_time": "2026-01-16T04:50:41",
+      "end_time": "2026-01-16T06:50:41",
       "url": "https://example.com/test-event",
       "source": "demo",
       "status": "published",
-      "published_at": "2026-01-02T14:12:41",
+      "published_at": "2026-01-16T04:35:41",
       "relative_time": {
         "type": "offset",
         "minutes": 15,
         "duration_hours": 2
-      },
-      "category": "workshop"
+      }
     },
     {
       "id": "demo_starting_30min",
-      "title": "[DEMO] Kunst in Bayreuth - Werke der 1940er bis 1960er Jahre - aus den Sammlungen und Stiftungen im Kunstmuseum",
-      "description": "Starting in 30 minutes. Donnerstag,01.01.2026,",
+      "title": "[DEMO] Kunst in Bayreuth - Werke der 1940er bis 1960er Jahre - aus den Sammlungen und Stiftungen im Kunstmuseum — Starts in 30 min",
+      "description": "Starts in 30 minutes — settle in with a quick coffee. Donnerstag,01.01.2026,",
       "location": {
-        "name": "Regionalzeitung",
-        "lat": 50.3167,
-        "lon": 11.9167
+        "name": "Kunstmuseum Bayreuth, Maximilianstraße 33, 95444 Bayreuth",
+        "lat": 49.944,
+        "lon": 11.5747
       },
-      "start_time": "2026-01-02T14:42:41",
-      "end_time": "2026-01-02T16:42:41",
+      "start_time": "2026-01-16T05:05:41",
+      "end_time": "2026-01-16T07:05:41",
       "url": "https://event.frankenpost.de/detail.php?event_id=3119599",
       "source": "demo",
       "status": "published",
-      "published_at": "2026-01-02T14:12:41",
+      "published_at": "2026-01-16T04:35:41",
       "relative_time": {
         "type": "offset",
         "minutes": 30,
         "duration_hours": 2
-      },
-      "category": "food"
+      }
     },
     {
       "id": "demo_in_1hour",
-      "title": "[DEMO] Ausstellung zum Fotowettbewerb: Zeig mir deine Lebenswerte Stadt (bis 7. Januar 2026)",
-      "description": "Event starting in 1 hour. Donnerstag,01.01.2026,",
+      "title": "[DEMO] Ausstellung zum Fotowettbewerb: Zeig mir deine Lebenswerte Stadt (bis 7. Januar 2026) — Starts in 1 hour",
+      "description": "Starts in 1 hour — plan your evening ahead. Donnerstag,01.01.2026,",
       "location": {
-        "name": "Regionalzeitung",
-        "lat": 50.3167,
-        "lon": 11.9167
+        "name": "RW21 Volkshochschule Bayreuth, Richard-Wagner-Str. 21, 95444 Bayreuth",
+        "lat": 49.9454,
+        "lon": 11.5771
       },
-      "start_time": "2026-01-02T15:12:41",
-      "end_time": "2026-01-02T17:12:41",
+      "start_time": "2026-01-16T05:35:41",
+      "end_time": "2026-01-16T07:35:41",
       "url": "https://event.frankenpost.de/detail.php?event_id=3202184",
       "source": "demo",
       "status": "published",
-      "published_at": "2026-01-02T14:12:41",
+      "published_at": "2026-01-16T04:35:41",
       "relative_time": {
         "type": "offset",
         "hours": 1,
         "duration_hours": 2
-      },
-      "category": "market"
+      }
     },
     {
       "id": "demo_in_2hours",
-      "title": "[DEMO] Führung durch die Wohnräume der Sommerresidenz der Markgräfin Caroline",
-      "description": "Event in 2 hours. 01.Januar",
+      "title": "[DEMO] Führung durch die Wohnräume der Sommerresidenz der Markgräfin Caroline — Starts in 2 hours",
+      "description": "Starts in 2 hours — add it to your calendar. 01.Januar",
       "location": {
-        "name": "Regionalzeitung",
-        "lat": 50.3167,
-        "lon": 11.9167
+        "name": "Schloss Carolinenruhe, Colmdorf 8, 95448 Bayreuth",
+        "lat": 49.93047,
+        "lon": 11.5674
       },
-      "start_time": "2026-01-02T16:12:41",
-      "end_time": "2026-01-02T18:12:41",
+      "start_time": "2026-01-16T06:35:41",
+      "end_time": "2026-01-16T08:35:41",
       "url": "https://event.frankenpost.de/detail.php?event_id=3185852",
       "source": "demo",
       "status": "published",
-      "published_at": "2026-01-02T14:12:41",
+      "published_at": "2026-01-16T04:35:41",
       "relative_time": {
         "type": "offset",
         "hours": 2,
         "duration_hours": 2
-      },
-      "category": "art"
+      }
     },
     {
       "id": "demo_this_evening",
-      "title": "[DEMO] Test Community Gathering",
-      "description": "Event this evening. A test event for approval flow testing",
+      "title": "[DEMO] Community Meetup at Test Venue — This evening",
+      "description": "This evening — unwind with a relaxed session. Friendly community meetup with introductions, snacks, and local tips.",
       "location": {
         "name": "Test Venue Berlin",
         "lat": 52.52,
         "lon": 13.405
       },
-      "start_time": "2026-01-02T18:12:41",
-      "end_time": "2026-01-02T20:12:41",
+      "start_time": "2026-01-16T08:35:41",
+      "end_time": "2026-01-16T10:35:41",
       "url": "https://example.com/test-event",
       "source": "demo",
       "status": "published",
-      "published_at": "2026-01-02T14:12:41",
+      "published_at": "2026-01-16T04:35:41",
       "relative_time": {
         "type": "offset",
         "hours": 4,
         "duration_hours": 2
-      },
-      "category": "on-stage"
+      }
     },
     {
       "id": "demo_just_ended",
-      "title": "[DEMO] Kunst in Bayreuth - Werke der 1940er bis 1960er Jahre - aus den Sammlungen und Stiftungen im Kunstmuseum",
-      "description": "Event that just ended. Donnerstag,01.01.2026,",
+      "title": "[DEMO] Kunst in Bayreuth - Werke der 1940er bis 1960er Jahre - aus den Sammlungen und Stiftungen im Kunstmuseum — Just ended",
+      "description": "Just ended — highlights and recap available. Donnerstag,01.01.2026,",
       "location": {
-        "name": "Regionalzeitung",
-        "lat": 50.3167,
-        "lon": 11.9167
+        "name": "Kunstmuseum Bayreuth, Maximilianstraße 33, 95444 Bayreuth",
+        "lat": 49.944,
+        "lon": 11.5747
       },
-      "start_time": "2026-01-02T12:02:41",
-      "end_time": "2026-01-02T14:02:41",
+      "start_time": "2026-01-16T02:25:41",
+      "end_time": "2026-01-16T04:25:41",
       "url": "https://event.frankenpost.de/detail.php?event_id=3119599",
       "source": "demo",
       "status": "published",
-      "published_at": "2026-01-02T14:12:41",
+      "published_at": "2026-01-16T04:35:41",
       "relative_time": {
         "type": "offset",
         "hours": -2,
         "minutes": -10,
         "duration_hours": 2
-      },
-      "category": "music"
+      }
     },
     {
       "id": "demo_very_soon",
-      "title": "[DEMO] Ausstellung zum Fotowettbewerb: Zeig mir deine Lebenswerte Stadt (bis 7. Januar 2026)",
-      "description": "Event very soon. Donnerstag,01.01.2026,",
+      "title": "[DEMO] Ausstellung zum Fotowettbewerb: Zeig mir deine Lebenswerte Stadt (bis 7. Januar 2026) — Very soon",
+      "description": "Very soon — warm-up and introductions are underway. Donnerstag,01.01.2026,",
       "location": {
-        "name": "Regionalzeitung",
-        "lat": 50.3167,
-        "lon": 11.9167
+        "name": "RW21 Volkshochschule Bayreuth, Richard-Wagner-Str. 21, 95444 Bayreuth",
+        "lat": 49.9454,
+        "lon": 11.5771
       },
-      "start_time": "2026-01-02T14:57:41",
-      "end_time": "2026-01-02T16:57:41",
+      "start_time": "2026-01-16T05:20:41",
+      "end_time": "2026-01-16T07:20:41",
       "url": "https://event.frankenpost.de/detail.php?event_id=3202184",
       "source": "demo",
       "status": "published",
-      "published_at": "2026-01-02T14:12:41",
+      "published_at": "2026-01-16T04:35:41",
       "relative_time": {
         "type": "offset",
         "minutes": 45,
         "duration_hours": 2
-      },
-      "category": "sports"
+      }
     },
     {
       "id": "demo_utc_plus1",
-      "title": "[DEMO] Führung durch die Wohnräume der Sommerresidenz der Markgräfin Caroline (TZ: +1.0)",
-      "description": "Event in UTC+1 timezone. 01.Januar",
+      "title": "[DEMO] Führung durch die Wohnräume der Sommerresidenz der Markgräfin Caroline — UTC+1 local time (TZ: +1.0)",
+      "description": "Timezone demo in UTC+1 — shows local start time. 01.Januar",
       "location": {
-        "name": "Regionalzeitung",
-        "lat": 50.3167,
-        "lon": 11.9167
+        "name": "Schloss Carolinenruhe, Colmdorf 8, 95448 Bayreuth",
+        "lat": 49.93047,
+        "lon": 11.5674
       },
-      "start_time": "2026-01-02T15:12:41+01:00",
-      "end_time": "2026-01-02T17:12:41+01:00",
+      "start_time": "2026-01-16T05:35:41+01:00",
+      "end_time": "2026-01-16T07:35:41+01:00",
       "url": "https://event.frankenpost.de/detail.php?event_id=3185852",
       "source": "demo",
       "status": "published",
-      "published_at": "2026-01-02T14:12:41",
+      "published_at": "2026-01-16T04:35:41",
       "relative_time": {
         "type": "offset",
         "hours": 1,
         "duration_hours": 2,
         "timezone_offset": 1
-      },
-      "category": "workshop"
+      }
     },
     {
       "id": "demo_utc_plus2",
-      "title": "[DEMO] Test Community Gathering (TZ: +2.0)",
-      "description": "Event in UTC+2 timezone. A test event for approval flow testing",
+      "title": "[DEMO] Community Meetup at Test Venue — UTC+2 local time (TZ: +2.0)",
+      "description": "Timezone demo in UTC+2 — local time check. Friendly community meetup with introductions, snacks, and local tips.",
       "location": {
         "name": "Test Venue Berlin",
         "lat": 52.52,
         "lon": 13.405
       },
-      "start_time": "2026-01-02T15:12:41+02:00",
-      "end_time": "2026-01-02T17:12:41+02:00",
+      "start_time": "2026-01-16T05:35:41+02:00",
+      "end_time": "2026-01-16T07:35:41+02:00",
       "url": "https://example.com/test-event",
       "source": "demo",
       "status": "published",
-      "published_at": "2026-01-02T14:12:41",
+      "published_at": "2026-01-16T04:35:41",
       "relative_time": {
         "type": "offset",
         "hours": 1,
         "duration_hours": 2,
         "timezone_offset": 2
-      },
-      "category": "food"
+      }
     },
     {
       "id": "demo_utc_minus5",
-      "title": "[DEMO] Kunst in Bayreuth - Werke der 1940er bis 1960er Jahre - aus den Sammlungen und Stiftungen im Kunstmuseum (TZ: -5.0)",
-      "description": "Event in UTC-5 timezone (EST). Donnerstag,01.01.2026,",
+      "title": "[DEMO] Kunst in Bayreuth - Werke der 1940er bis 1960er Jahre - aus den Sammlungen und Stiftungen im Kunstmuseum — UTC-5 local time (TZ: -5.0)",
+      "description": "Timezone demo in UTC-5 (EST) — local time check. Donnerstag,01.01.2026,",
       "location": {
-        "name": "Regionalzeitung",
-        "lat": 50.3167,
-        "lon": 11.9167
+        "name": "Kunstmuseum Bayreuth, Maximilianstraße 33, 95444 Bayreuth",
+        "lat": 49.944,
+        "lon": 11.5747
       },
-      "start_time": "2026-01-02T15:12:41-05:00",
-      "end_time": "2026-01-02T17:12:41-05:00",
+      "start_time": "2026-01-16T05:35:41-05:00",
+      "end_time": "2026-01-16T07:35:41-05:00",
       "url": "https://event.frankenpost.de/detail.php?event_id=3119599",
       "source": "demo",
       "status": "published",
-      "published_at": "2026-01-02T14:12:41",
+      "published_at": "2026-01-16T04:35:41",
       "relative_time": {
         "type": "offset",
         "hours": 1,
         "duration_hours": 2,
         "timezone_offset": -5
-      },
-      "category": "market"
+      }
     },
     {
       "id": "demo_utc_plus9",
-      "title": "[DEMO] Ausstellung zum Fotowettbewerb: Zeig mir deine Lebenswerte Stadt (bis 7. Januar 2026) (TZ: +9.0)",
-      "description": "Event in UTC+9 timezone (JST). Donnerstag,01.01.2026,",
+      "title": "[DEMO] Ausstellung zum Fotowettbewerb: Zeig mir deine Lebenswerte Stadt (bis 7. Januar 2026) — UTC+9 local time (TZ: +9.0)",
+      "description": "Timezone demo in UTC+9 (JST) — local time check. Donnerstag,01.01.2026,",
       "location": {
-        "name": "Regionalzeitung",
-        "lat": 50.3167,
-        "lon": 11.9167
+        "name": "RW21 Volkshochschule Bayreuth, Richard-Wagner-Str. 21, 95444 Bayreuth",
+        "lat": 49.9454,
+        "lon": 11.5771
       },
-      "start_time": "2026-01-02T15:12:41+09:00",
-      "end_time": "2026-01-02T17:12:41+09:00",
+      "start_time": "2026-01-16T05:35:41+09:00",
+      "end_time": "2026-01-16T07:35:41+09:00",
       "url": "https://event.frankenpost.de/detail.php?event_id=3202184",
       "source": "demo",
       "status": "published",
-      "published_at": "2026-01-02T14:12:41",
+      "published_at": "2026-01-16T04:35:41",
       "relative_time": {
         "type": "offset",
         "hours": 1,
         "duration_hours": 2,
         "timezone_offset": 9
-      },
-      "category": "art"
+      }
     },
     {
       "id": "demo_utc_plus530",
-      "title": "[DEMO] Führung durch die Wohnräume der Sommerresidenz der Markgräfin Caroline (TZ: +5.5)",
-      "description": "Event in UTC+5:30 (IST). 01.Januar",
+      "title": "[DEMO] Führung durch die Wohnräume der Sommerresidenz der Markgräfin Caroline — UTC+5:30 local time (TZ: +5.5)",
+      "description": "Timezone demo in UTC+5:30 (IST) — local time check. 01.Januar",
       "location": {
-        "name": "Regionalzeitung",
-        "lat": 50.3167,
-        "lon": 11.9167
+        "name": "Schloss Carolinenruhe, Colmdorf 8, 95448 Bayreuth",
+        "lat": 49.93047,
+        "lon": 11.5674
       },
-      "start_time": "2026-01-02T14:42:41+05:30",
-      "end_time": "2026-01-02T16:42:41+05:30",
+      "start_time": "2026-01-16T05:05:41+05:30",
+      "end_time": "2026-01-16T07:05:41+05:30",
       "url": "https://event.frankenpost.de/detail.php?event_id=3185852",
       "source": "demo",
       "status": "published",
-      "published_at": "2026-01-02T14:12:41",
+      "published_at": "2026-01-16T04:35:41",
       "relative_time": {
         "type": "offset",
         "minutes": 30,
         "duration_hours": 2,
         "timezone_offset": 5.5
-      },
-      "category": "on-stage"
+      }
     },
     {
       "id": "demo_before_sunrise_5min",
-      "title": "[DEMO] Test Community Gathering",
-      "description": "Ends 5min before sunrise. A test event for approval flow testing",
+      "title": "[DEMO] Community Meetup at Test Venue — Ends before sunrise",
+      "description": "Ends 5 minutes before sunrise — late-night session. Friendly community meetup with introductions, snacks, and local tips.",
       "location": {
         "name": "Test Venue Berlin",
         "lat": 52.52,
         "lon": 13.405
       },
-      "start_time": "2026-01-03T04:00:00",
-      "end_time": "2026-01-03T05:55:00",
+      "start_time": "2026-01-16T04:00:00",
+      "end_time": "2026-01-16T05:55:00",
       "url": "https://example.com/test-event",
       "source": "demo",
       "status": "published",
-      "published_at": "2026-01-02T14:12:41",
+      "published_at": "2026-01-16T04:35:41",
       "relative_time": {
         "type": "sunrise_relative",
         "end_offset_minutes": -5,
         "start_offset_hours": -2
-      },
-      "category": "music"
+      }
     },
     {
       "id": "demo_at_sunrise",
-      "title": "[DEMO] Kunst in Bayreuth - Werke der 1940er bis 1960er Jahre - aus den Sammlungen und Stiftungen im Kunstmuseum",
-      "description": "Ends at sunrise. Donnerstag,01.01.2026,",
+      "title": "[DEMO] Kunst in Bayreuth - Werke der 1940er bis 1960er Jahre - aus den Sammlungen und Stiftungen im Kunstmuseum — Ends at sunrise",
+      "description": "Ends at sunrise — early-bird finale. Donnerstag,01.01.2026,",
       "location": {
-        "name": "Regionalzeitung",
-        "lat": 50.3167,
-        "lon": 11.9167
+        "name": "Kunstmuseum Bayreuth, Maximilianstraße 33, 95444 Bayreuth",
+        "lat": 49.944,
+        "lon": 11.5747
       },
-      "start_time": "2026-01-03T04:30:00",
-      "end_time": "2026-01-03T06:00:00",
+      "start_time": "2026-01-16T04:30:00",
+      "end_time": "2026-01-16T06:00:00",
       "url": "https://event.frankenpost.de/detail.php?event_id=3119599",
       "source": "demo",
       "status": "published",
-      "published_at": "2026-01-02T14:12:41",
+      "published_at": "2026-01-16T04:35:41",
       "relative_time": {
         "type": "sunrise_relative",
         "end_offset_minutes": 0,
         "start_offset_hours": -1.5
-      },
-      "category": "sports"
+      }
     },
     {
       "id": "demo_after_sunrise_5min",
-      "title": "[DEMO] Ausstellung zum Fotowettbewerb: Zeig mir deine Lebenswerte Stadt (bis 7. Januar 2026)",
-      "description": "Ends 5min after sunrise. Donnerstag,01.01.2026,",
+      "title": "[DEMO] Ausstellung zum Fotowettbewerb: Zeig mir deine Lebenswerte Stadt (bis 7. Januar 2026) — Ends after sunrise",
+      "description": "Ends 5 minutes after sunrise — should be filtered. Donnerstag,01.01.2026,",
       "location": {
-        "name": "Regionalzeitung",
-        "lat": 50.3167,
-        "lon": 11.9167
+        "name": "RW21 Volkshochschule Bayreuth, Richard-Wagner-Str. 21, 95444 Bayreuth",
+        "lat": 49.9454,
+        "lon": 11.5771
       },
-      "start_time": "2026-01-03T05:00:00",
-      "end_time": "2026-01-03T06:05:00",
+      "start_time": "2026-01-16T05:00:00",
+      "end_time": "2026-01-16T06:05:00",
       "url": "https://event.frankenpost.de/detail.php?event_id=3202184",
       "source": "demo",
       "status": "published",
-      "published_at": "2026-01-02T14:12:41",
+      "published_at": "2026-01-16T04:35:41",
       "relative_time": {
         "type": "sunrise_relative",
         "end_offset_minutes": 5,
         "start_offset_hours": -1
-      },
-      "category": "workshop"
+      }
     },
     {
       "id": "demo_crossing_sunrise",
-      "title": "[DEMO] Führung durch die Wohnräume der Sommerresidenz der Markgräfin Caroline",
-      "description": "Crosses sunrise boundary. 01.Januar",
+      "title": "[DEMO] Führung durch die Wohnräume der Sommerresidenz der Markgräfin Caroline — Crosses sunrise",
+      "description": "Crosses sunrise — spans pre-dawn into morning. 01.Januar",
       "location": {
-        "name": "Regionalzeitung",
-        "lat": 50.3167,
-        "lon": 11.9167
+        "name": "Schloss Carolinenruhe, Colmdorf 8, 95448 Bayreuth",
+        "lat": 49.93047,
+        "lon": 11.5674
       },
-      "start_time": "2026-01-03T04:00:00",
-      "end_time": "2026-01-03T07:00:00",
+      "start_time": "2026-01-16T04:00:00",
+      "end_time": "2026-01-16T07:00:00",
       "url": "https://event.frankenpost.de/detail.php?event_id=3185852",
       "source": "demo",
       "status": "published",
-      "published_at": "2026-01-02T14:12:41",
+      "published_at": "2026-01-16T04:35:41",
       "relative_time": {
         "type": "sunrise_relative",
         "start_offset_hours": -2,
         "end_offset_hours": 1
-      },
-      "category": "food"
+      }
     },
     {
       "id": "demo_starting_before_sunrise",
-      "title": "[DEMO] Test Community Gathering",
-      "description": "Starts 30min before sunrise. A test event for approval flow testing",
+      "title": "[DEMO] Community Meetup at Test Venue — Starts before sunrise",
+      "description": "Starts 30 minutes before sunrise — early meetup. Friendly community meetup with introductions, snacks, and local tips.",
       "location": {
         "name": "Test Venue Berlin",
         "lat": 52.52,
         "lon": 13.405
       },
-      "start_time": "2026-01-03T05:30:00",
-      "end_time": "2026-01-03T06:30:00",
+      "start_time": "2026-01-16T05:30:00",
+      "end_time": "2026-01-16T06:30:00",
       "url": "https://example.com/test-event",
       "source": "demo",
       "status": "published",
-      "published_at": "2026-01-02T14:12:41",
+      "published_at": "2026-01-16T04:35:41",
       "relative_time": {
         "type": "sunrise_relative",
         "start_offset_minutes": -30,
         "end_offset_minutes": 30
-      },
-      "category": "market"
+      }
     },
     {
       "id": "demo_starting_after_sunrise",
-      "title": "[DEMO] Kunst in Bayreuth - Werke der 1940er bis 1960er Jahre - aus den Sammlungen und Stiftungen im Kunstmuseum",
-      "description": "Starts 30min after sunrise. Donnerstag,01.01.2026,",
+      "title": "[DEMO] Kunst in Bayreuth - Werke der 1940er bis 1960er Jahre - aus den Sammlungen und Stiftungen im Kunstmuseum — Starts after sunrise",
+      "description": "Starts 30 minutes after sunrise — morning session. Donnerstag,01.01.2026,",
       "location": {
-        "name": "Regionalzeitung",
-        "lat": 50.3167,
-        "lon": 11.9167
+        "name": "Kunstmuseum Bayreuth, Maximilianstraße 33, 95444 Bayreuth",
+        "lat": 49.944,
+        "lon": 11.5747
       },
-      "start_time": "2026-01-03T06:30:00",
-      "end_time": "2026-01-03T08:00:00",
+      "start_time": "2026-01-16T06:30:00",
+      "end_time": "2026-01-16T08:00:00",
       "url": "https://event.frankenpost.de/detail.php?event_id=3119599",
       "source": "demo",
       "status": "published",
-      "published_at": "2026-01-02T14:12:41",
+      "published_at": "2026-01-16T04:35:41",
       "relative_time": {
         "type": "sunrise_relative",
         "start_offset_minutes": 30,
         "end_offset_hours": 2
-      },
-      "category": "art"
+      }
     },
     {
       "id": "demo_all_night",
-      "title": "[DEMO] Ausstellung zum Fotowettbewerb: Zeig mir deine Lebenswerte Stadt (bis 7. Januar 2026)",
-      "description": "All night until sunrise. Donnerstag,01.01.2026,",
+      "title": "[DEMO] Ausstellung zum Fotowettbewerb: Zeig mir deine Lebenswerte Stadt (bis 7. Januar 2026) — All night",
+      "description": "All-night event until sunrise — overnight hangout. Donnerstag,01.01.2026,",
       "location": {
-        "name": "Regionalzeitung",
-        "lat": 50.3167,
-        "lon": 11.9167
+        "name": "RW21 Volkshochschule Bayreuth, Richard-Wagner-Str. 21, 95444 Bayreuth",
+        "lat": 49.9454,
+        "lon": 11.5771
       },
-      "start_time": "2026-01-02T22:00:00",
-      "end_time": "2026-01-03T00:00:00",
+      "start_time": "2026-01-15T22:00:00",
+      "end_time": "2026-01-16T00:00:00",
       "url": "https://event.frankenpost.de/detail.php?event_id=3202184",
       "source": "demo",
       "status": "published",
-      "published_at": "2026-01-02T14:12:41",
+      "published_at": "2026-01-16T04:35:41",
       "relative_time": {
         "type": "sunrise_relative",
         "start_offset_hours": -8,
         "end_offset_minutes": 0
-      },
-      "category": "on-stage"
+      }
     },
     {
       "id": "demo_far_away",
-      "title": "[DEMO] Kunst in Bayreuth - Werke der 1940er bis 1960er Jahre - aus den Sammlungen und Stiftungen im Kunstmuseum",
-      "description": "Event 250km away for distance testing. Donnerstag,01.01.2026,",
+      "title": "[DEMO] Kunst in Bayreuth - Werke der 1940er bis 1960er Jahre - aus den Sammlungen und Stiftungen im Kunstmuseum — 250 km away",
+      "description": "Distance test: 250 km away in Berlin for long-range filtering. Donnerstag,01.01.2026,",
       "location": {
         "name": "Berlin Alexanderplatz (Demo - Far)",
         "lat": 52.52,
         "lon": 13.405
       },
-      "start_time": "2026-01-02T16:12:41",
-      "end_time": "2026-01-02T18:12:41",
+      "start_time": "2026-01-16T06:35:41",
+      "end_time": "2026-01-16T08:35:41",
       "url": "https://event.frankenpost.de/detail.php?event_id=3119599",
       "source": "demo",
       "status": "published",
-      "published_at": "2026-01-02T14:12:41",
+      "published_at": "2026-01-16T04:35:41",
       "relative_time": {
         "type": "offset",
         "hours": 2,
         "duration_hours": 2
-      },
-      "category": "music"
+      }
     }
   ],
-  "last_updated": "2026-01-02T14:12:41",
-  "demo_generated_at": "2026-01-02T14:12:41",
+  "last_updated": "2026-01-16T04:35:41",
+  "demo_generated_at": "2026-01-16T04:35:41",
   "note": "Demo events generated from real event templates with current timestamps for testing"
 }
