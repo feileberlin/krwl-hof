@@ -14,6 +14,61 @@ from pathlib import Path
 from typing import Dict, Any, Optional, Tuple
 
 
+def round_coordinate(coord: float) -> float:
+    """
+    Round coordinate to exactly 4 decimal places.
+    
+    Standard for all coordinates in this software to ensure consistency
+    and prevent duplicate locations with slightly different precision.
+    
+    Why 4 decimal places?
+    - At latitude ~50° (Hof, Germany): 
+      - 4 decimals = ~11m latitude, ~7m longitude precision
+      - Meets the requirement of ~10 meters accuracy
+      - Perfect for venue-level location accuracy
+    - Prevents duplicates when same venue scraped with slightly different coords
+    
+    Example:
+    - Theater Hof scraped as (50.320012, 11.918034) → (50.3200, 11.9180)
+    - Theater Hof scraped as (50.319987, 11.917965) → (50.3200, 11.9180)
+    - Result: Both point to same location on map (no duplicates!)
+    
+    Args:
+        coord: Coordinate value (latitude or longitude)
+        
+    Returns:
+        Coordinate rounded to 4 decimal places
+    """
+    return round(coord, 4)
+
+
+def validate_coordinate_precision(coord: float, name: str = "coordinate") -> float:
+    """
+    Validate and enforce 4 decimal place precision for coordinates.
+    
+    Raises ValueError if coordinate has more than 4 decimal places.
+    Use this for validating verified_locations.json and config files.
+    
+    Args:
+        coord: Coordinate value to validate
+        name: Name of coordinate for error message
+        
+    Returns:
+        Validated coordinate (rounded to 4 decimals if needed)
+        
+    Raises:
+        ValueError: If coordinate precision is invalid
+    """
+    rounded = round(coord, 4)
+    # Check if rounding changed the value (meaning it had > 4 decimals)
+    if abs(coord - rounded) > 1e-10:  # Small tolerance for floating point
+        raise ValueError(
+            f"{name} must have exactly 4 decimal places. "
+            f"Got {coord}, should be {rounded}"
+        )
+    return rounded
+
+
 class CoordinateExtractor:
     """Extract coordinates from various map iframe sources."""
     
@@ -21,6 +76,8 @@ class CoordinateExtractor:
     def extract_from_iframe(iframe_src: str) -> Optional[Tuple[float, float]]:
         """
         Extract lat/lon coordinates from map iframe URL.
+        
+        Coordinates are automatically rounded to 4 decimal places for consistency.
         
         Supports:
         - Google Maps: ?q=lat,lon, @lat,lon, &q=lat,lon
@@ -31,7 +88,7 @@ class CoordinateExtractor:
             iframe_src: The iframe src URL string
             
         Returns:
-            Tuple of (latitude, longitude) or None if no coordinates found
+            Tuple of (latitude, longitude) rounded to 4 decimals, or None if not found
         """
         if not iframe_src:
             return None
@@ -39,22 +96,30 @@ class CoordinateExtractor:
         # Google Maps patterns: ?q=lat,lon or @lat,lon
         google_match = re.search(r'[?&@]q?=?(-?\d+\.\d+),(-?\d+\.\d+)', iframe_src)
         if google_match:
-            return float(google_match.group(1)), float(google_match.group(2))
+            lat = round_coordinate(float(google_match.group(1)))
+            lon = round_coordinate(float(google_match.group(2)))
+            return lat, lon
         
         # OpenStreetMap pattern: ?mlat=lat&mlon=lon
         osm_match1 = re.search(r'mlat=(-?\d+\.\d+)&mlon=(-?\d+\.\d+)', iframe_src)
         if osm_match1:
-            return float(osm_match1.group(1)), float(osm_match1.group(2))
+            lat = round_coordinate(float(osm_match1.group(1)))
+            lon = round_coordinate(float(osm_match1.group(2)))
+            return lat, lon
         
         # OpenStreetMap pattern: #map=zoom/lat/lon
         osm_match2 = re.search(r'#map=\d+/(-?\d+\.\d+)/(-?\d+\.\d+)', iframe_src)
         if osm_match2:
-            return float(osm_match2.group(1)), float(osm_match2.group(2))
+            lat = round_coordinate(float(osm_match2.group(1)))
+            lon = round_coordinate(float(osm_match2.group(2)))
+            return lat, lon
         
         # Apple Maps pattern: ll=lat,lon or ?ll=lat,lon
         apple_match = re.search(r'[?&]?ll=(-?\d+\.\d+),(-?\d+\.\d+)', iframe_src)
         if apple_match:
-            return float(apple_match.group(1)), float(apple_match.group(2))
+            lat = round_coordinate(float(apple_match.group(1)))
+            lon = round_coordinate(float(apple_match.group(2)))
+            return lat, lon
         
         return None
 

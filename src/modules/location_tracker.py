@@ -73,6 +73,8 @@ class LocationTracker:
         """
         Track an unverified location.
         
+        Coordinates are automatically rounded to 4 decimal places for consistency.
+        
         Args:
             location: Location dict with name, lat, lon
             source: Source scraper name (for reference)
@@ -91,12 +93,16 @@ class LocationTracker:
         if location_name in generic_names:
             return
         
+        # Round coordinates to 4 decimal places
+        lat = round(location.get('lat'), 4) if location.get('lat') is not None else None
+        lon = round(location.get('lon'), 4) if location.get('lon') is not None else None
+        
         # Add or update entry
         if location_name not in self.unverified_locations:
             self.unverified_locations[location_name] = {
                 'name': location_name,
-                'lat': location.get('lat'),
-                'lon': location.get('lon'),
+                'lat': lat,
+                'lon': lon,
                 'address': location.get('address'),
                 'occurrence_count': 1,
                 'sources': [source],
@@ -113,10 +119,10 @@ class LocationTracker:
             if source not in entry.get('sources', []):
                 entry.setdefault('sources', []).append(source)
             
-            # Update coordinates if provided (helps identify inconsistencies)
-            if location.get('lat') and location.get('lon'):
-                entry['lat'] = location.get('lat')
-                entry['lon'] = location.get('lon')
+            # Update coordinates if provided (rounded to 4 decimals)
+            if lat is not None and lon is not None:
+                entry['lat'] = lat
+                entry['lon'] = lon
     
     def save(self):
         """Save unverified locations to JSON file."""

@@ -273,29 +273,29 @@ class FrankenpostSource(BaseSource):
                     # Try Google Maps patterns: ?q=lat,lon or @lat,lon or [?&]q=lat,lon
                     google_match = re.search(r'[?&@]q?=?(-?\d+\.\d+),(-?\d+\.\d+)', src_original)
                     if google_match:
-                        latitude = float(google_match.group(1))
-                        longitude = float(google_match.group(2))
+                        latitude = round(float(google_match.group(1)), 4)
+                        longitude = round(float(google_match.group(2)), 4)
                         break
                     
                     # Try OpenStreetMap pattern: ?mlat=lat&mlon=lon
                     osm_match1 = re.search(r'mlat=(-?\d+\.\d+)&mlon=(-?\d+\.\d+)', src_original)
                     if osm_match1:
-                        latitude = float(osm_match1.group(1))
-                        longitude = float(osm_match1.group(2))
+                        latitude = round(float(osm_match1.group(1)), 4)
+                        longitude = round(float(osm_match1.group(2)), 4)
                         break
                     
                     # Try OpenStreetMap pattern: #map=zoom/lat/lon
                     osm_match2 = re.search(r'#map=\d+/(-?\d+\.\d+)/(-?\d+\.\d+)', src_original)
                     if osm_match2:
-                        latitude = float(osm_match2.group(1))
-                        longitude = float(osm_match2.group(2))
+                        latitude = round(float(osm_match2.group(1)), 4)
+                        longitude = round(float(osm_match2.group(2)), 4)
                         break
                     
                     # Try Apple Maps patterns: ll=lat,lon or ?ll=lat,lon
                     apple_match = re.search(r'[?&]?ll=(-?\d+\.\d+),(-?\d+\.\d+)', src_original)
                     if apple_match:
-                        latitude = float(apple_match.group(1))
-                        longitude = float(apple_match.group(2))
+                        latitude = round(float(apple_match.group(1)), 4)
+                        longitude = round(float(apple_match.group(2)), 4)
                         break
         
         # Strategy 3: Look for location-related labels and fields

@@ -1,6 +1,7 @@
 {
   "_comment": "Verified locations database for coordinate normalization",
   "_description": "Maps location names to verified geocoordinates to prevent duplicates from slightly different coordinates",
+  "_coordinate_precision": "All coordinates MUST have exactly 4 decimal places (≈10m accuracy). Example: 50.3200, not 50.32 or 50.32001",
   "locations": {
     "Kunstmuseum Bayreuth": {
       "name": "Kunstmuseum Bayreuth",
