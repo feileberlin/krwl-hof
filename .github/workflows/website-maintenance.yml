@@ -249,7 +249,7 @@ jobs:
     
     outputs:
       weather_scraped: ${{ steps.scrape_weather.outputs.weather_scraped }}
-      artifact_uploaded: ${{ steps.upload_artifact.outputs.artifact_uploaded }}
+      artifact_uploaded: ${{ steps.set_artifact_uploaded_output.outputs.artifact_uploaded }}
     
     steps:
       - name: Checkout repository
