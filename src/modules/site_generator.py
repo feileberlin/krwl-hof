@@ -1761,6 +1761,34 @@ window.DASHBOARD_ICONS = {json.dumps(DASHBOARD_ICONS_MAP, ensure_ascii=False)};'
         else:
             runtime_config['weather'] = {'enabled': False}
         
+        # Add moon phase and Sunday data for time filters
+        try:
+            from .moon_phase import (
+                get_days_until_full_moon,
+                get_days_until_sunday,
+                get_next_sunday_date,
+                get_next_sunday_formatted
+            )
+            
+            runtime_config['time_filters'] = {
+                'full_moon': {
+                    'days_until': get_days_until_full_moon(),
+                    'enabled': True
+                },
+                'sunday': {
+                    'days_until': get_days_until_sunday(),
+                    'date_iso': get_next_sunday_date(),
+                    'date_formatted': get_next_sunday_formatted(),
+                    'enabled': True
+                }
+            }
+        except Exception as e:
+            logger.warning(f"Failed to calculate moon phase/Sunday data: {e}")
+            runtime_config['time_filters'] = {
+                'full_moon': {'enabled': False},
+                'sunday': {'enabled': False}
+            }
+        
         # Calculate debug information
         debug_info = self.calculate_debug_info(primary_config, events)
         
