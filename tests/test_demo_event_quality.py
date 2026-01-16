@@ -7,6 +7,7 @@ Ensures demo events are unique, descriptive, and free of placeholder copy.
 
 import json
 import sys
+from collections import Counter
 from pathlib import Path
 
 
@@ -35,7 +36,8 @@ def test_unique_titles():
         return False
 
     titles = [event.get("title", "").strip() for event in events]
-    duplicates = {title for title in titles if title and titles.count(title) > 1}
+    title_counts = Counter(title for title in titles if title)
+    duplicates = {title for title, count in title_counts.items() if count > 1}
 
     if duplicates:
         print("❌ Duplicate demo titles found:")

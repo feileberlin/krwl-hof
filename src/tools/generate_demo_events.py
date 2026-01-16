@@ -42,6 +42,11 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import random
 
+DEMO_PLACEHOLDER_TITLE = "Test Community Gathering"
+DEMO_PLACEHOLDER_TITLE_REPLACEMENT = "Community Meetup at Test Venue"
+DEMO_PLACEHOLDER_DESCRIPTION_PHRASE = "test event for approval flow testing"
+DEMO_PLACEHOLDER_DESCRIPTION_REPLACEMENT = "Friendly community meetup with introductions, snacks, and local tips."
+
 def cleanup_old_files(base_dir="."):
     """Remove old unnecessary files before generating new ones."""
     base_path = Path(base_dir)
@@ -166,11 +171,11 @@ def generate_demo_events_from_templates(real_events, now):
         title = template.get("title", "Demo Event")
         description = template.get("description", "Demo event based on real data.")
 
-        if "Test Community Gathering" in title:
-            title = "Community Meetup at Test Venue"
+        if DEMO_PLACEHOLDER_TITLE in title:
+            title = DEMO_PLACEHOLDER_TITLE_REPLACEMENT
 
-        if "test event" in description.lower():
-            description = "Friendly community meetup with introductions, snacks, and local tips."
+        if DEMO_PLACEHOLDER_DESCRIPTION_PHRASE in description.lower():
+            description = DEMO_PLACEHOLDER_DESCRIPTION_REPLACEMENT
 
         return title, description
 
