@@ -17,8 +17,7 @@ except ImportError:
 # Import reviewer notes system for flagging ambiguous locations
 try:
     from ...reviewer_notes import (
-        ReviewerNotes, 
-        LocationExtractionHelper,
+        ReviewerNotes,
         enhance_event_with_location_confidence
     )
     REVIEWER_NOTES_AVAILABLE = True
@@ -166,8 +165,13 @@ class FrankenpostSource(BaseSource):
         # Parse date
         start_time = self._extract_date(date_text)
         
+        # Use hashlib for stable, consistent hash values across runs
+        import hashlib
+        event_id_base = f"{title}{start_time}".encode('utf-8')
+        event_hash = hashlib.md5(event_id_base).hexdigest()[:16]
+        
         event = {
-            'id': f"html_frankenpost_{hash(title + start_time)}",
+            'id': f"html_frankenpost_{event_hash}",
             'title': title[:200],
             'description': description,
             'location': location,
@@ -278,11 +282,8 @@ class FrankenpostSource(BaseSource):
             if default_loc:
                 location = default_loc
             else:
-                location = {
-                    'name': 'Hof',
-                    'lat': 50.3167,
-                    'lon': 11.9167
-                }
+                # This should never happen if config is properly set, but provide minimal fallback
+                raise ValueError("No location found and no default_location configured")
         elif full_address and not location_name:
             # If we have a full address, use it as the name
             location = self._estimate_coordinates(full_address)

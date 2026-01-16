@@ -25,7 +25,7 @@ import sys
 import json
 import argparse
 from pathlib import Path
-from typing import Dict, Any, List, Optional, Tuple
+from typing import Dict, Any, Optional
 from datetime import datetime
 
 try:
@@ -456,14 +456,14 @@ class ScraperFieldMapper:
         
         Generates a compact JSON file that can be used in GitHub Actions.
         """
-        mapping_file = self.mappings_dir / f"{source_name.lower()}_mapping.json"
+        input_mapping_file = self.mappings_dir / f"{source_name.lower()}_mapping.json"
         
-        if not mapping_file.exists():
+        if not input_mapping_file.exists():
             print(f"❌ No mapping found for: {source_name}")
-            print(f"   Looking for: {mapping_file}")
+            print(f"   Looking for: {input_mapping_file}")
             return
         
-        with open(mapping_file, 'r') as f:
+        with open(input_mapping_file, 'r') as f:
             config = json.load(f)
         
         # Create CI-friendly format

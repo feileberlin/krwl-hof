@@ -185,11 +185,12 @@ class SmartScraper:
             List of event dictionaries
         """
         source_type = source.get('type', 'html')
-        source_name = source.get('name', '')
+        source_name = str(source.get('name', '')).strip().lower()
         
-        # Check for custom source handlers first (by source name)
-        # This allows overriding default handlers for specific sites
-        if 'frankenpost' in source_name.lower():
+        # Check for custom source handlers first (by exact source name)
+        # This allows overriding default handlers for specific sites while
+        # avoiding accidental matches when names merely contain "frankenpost".
+        if source_name == 'frankenpost':
             source_type = 'frankenpost'
         
         # Get source-specific options

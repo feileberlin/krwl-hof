@@ -20,12 +20,10 @@ Usage:
     python3 src/modules/custom_source_manager.py document MySource
 """
 
-import json
 import sys
 import argparse
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, Any, List, Optional
 
 
 class CustomSourceManager:
@@ -108,7 +106,6 @@ class CustomSourceManager:
                              location_strategy: str) -> str:
         """Generate source handler code from template."""
         class_name = self._to_pascal_case(name) + 'Source'
-        snake_name = self._to_snake_case(name)
         
         # Select template based on location strategy
         if location_strategy == 'detail_page':

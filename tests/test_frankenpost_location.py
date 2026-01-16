@@ -26,6 +26,12 @@ def test_location_extraction():
         'type': 'frankenpost'
     }
     options = SourceOptions()
+    # Set default location to avoid ValueError when no location is found
+    options.default_location = {
+        'name': 'Hof',
+        'lat': 50.3167,
+        'lon': 11.9167
+    }
     scraper = FrankenpostSource(config, options)
     
     # Test cases with different HTML patterns
@@ -79,7 +85,7 @@ def test_location_extraction():
         soup = BeautifulSoup(test_case['html'], 'lxml')
         
         try:
-            location = scraper._extract_location_from_detail(soup)
+            location, extraction_details = scraper._extract_location_from_detail(soup)
             
             # Check if location was extracted
             if not location or not location.get('name'):
@@ -121,6 +127,12 @@ def test_coordinate_estimation():
         'type': 'frankenpost'
     }
     options = SourceOptions()
+    # Set default location to avoid ValueError
+    options.default_location = {
+        'name': 'Hof',
+        'lat': 50.3167,
+        'lon': 11.9167
+    }
     scraper = FrankenpostSource(config, options)
     
     test_cities = [
