@@ -1,16 +1,12 @@
 /**
- * DashboardUI Module
+ * DashboardUI Module - Reorganized Debug Cockpit
  * 
- * Handles dashboard debug information display:
- * - Git commit information
- * - Deployment time
- * - Event counts
- * - Environment status
- * - File sizes and breakdown
- * - Cache statistics
- * - Duplicate warnings
+ * Handles dashboard debug information display with improved structure:
+ * - Deployment info (git commit, environment, deployment time)
+ * - Data & Performance (events, caching, file size, DOM cache)
+ * - Warnings (duplicates, unpublished events)
  * 
- * KISS: Single responsibility - dashboard UI updates
+ * KISS: Single responsibility - dashboard UI updates with clean structure
  */
 
 class DashboardUI {
@@ -26,15 +22,22 @@ class DashboardUI {
     update(duplicateStats = null) {
         const debugInfo = window.DEBUG_INFO || {};
         
+        // Deployment section
         this.updateGitInfo(debugInfo);
-        this.updateDeploymentInfo(debugInfo);
-        this.updateEventCounts(debugInfo);
+        this.updateDeploymentTime(debugInfo);
         this.updateEnvironmentInfo(debugInfo);
-        this.updateCachingInfo(debugInfo);
+        
+        // Data & Performance section
+        this.updateEventCounts(debugInfo);
         this.updateFileSizeInfo(debugInfo);
+        this.updateCachingInfo(debugInfo);
+        this.updateDOMCacheInfo();
         this.updateSizeBreakdown(debugInfo);
-        this.updateCacheStatistics();
-        this.updateDuplicateWarnings(duplicateStats);
+        
+        // Warnings section
+        this.updateWarnings(duplicateStats);
+        
+        // Show the debug section
         this.showDebugSection();
     }
     
@@ -48,12 +51,12 @@ class DashboardUI {
         
         const commitMessage = document.getElementById('debug-commit-message');
         if (commitMessage) {
-            commitMessage.textContent = git.message || 'unknown';
+            commitMessage.textContent = git.message || 'No commit message';
             commitMessage.title = git.message || 'No commit message';
         }
     }
     
-    updateDeploymentInfo(debugInfo) {
+    updateDeploymentTime(debugInfo) {
         const deploymentTime = document.getElementById('debug-deployment-time');
         if (!deploymentTime || !debugInfo.deployment_time) return;
         
@@ -66,16 +69,6 @@ class DashboardUI {
         }
     }
     
-    updateEventCounts(debugInfo) {
-        if (!debugInfo.event_counts) return;
-        
-        const counts = debugInfo.event_counts;
-        this.setElementText('debug-event-counts-published', counts.published || 0);
-        this.setElementText('debug-event-counts-pending', counts.pending || 0);
-        this.setElementText('debug-event-counts-archived', counts.archived || 0);
-        this.setElementText('debug-event-counts-total', counts.total || 0);
-    }
-    
     updateEnvironmentInfo(debugInfo) {
         const debugEnvironment = document.getElementById('debug-environment');
         if (!debugEnvironment) return;
@@ -86,7 +79,7 @@ class DashboardUI {
                           'UNKNOWN';
         
         debugEnvironment.textContent = environment.toUpperCase();
-        debugEnvironment.className = 'debug-env-badge';
+        debugEnvironment.className = 'debug-value debug-env-badge';
         
         const envLower = environment.toLowerCase();
         if (envLower.includes('dev')) {
@@ -98,17 +91,13 @@ class DashboardUI {
         }
     }
     
-    updateCachingInfo(debugInfo) {
-        const debugCaching = document.getElementById('debug-caching');
-        if (!debugCaching) return;
+    updateEventCounts(debugInfo) {
+        if (!debugInfo.event_counts) return;
         
-        const cacheEnabled = debugInfo.cache_enabled;
-        if (cacheEnabled !== undefined) {
-            debugCaching.textContent = cacheEnabled ? 'Enabled' : 'Disabled';
-            debugCaching.className = cacheEnabled ? 'cache-enabled' : 'cache-disabled';
-        } else {
-            debugCaching.textContent = 'Unknown';
-        }
+        const counts = debugInfo.event_counts;
+        this.setElementText('debug-event-counts-published', counts.published || 0);
+        this.setElementText('debug-event-counts-pending', counts.pending || 0);
+        this.setElementText('debug-event-counts-archived', counts.archived || 0);
     }
     
     updateFileSizeInfo(debugInfo) {
@@ -117,16 +106,34 @@ class DashboardUI {
         
         const sizes = debugInfo.html_sizes;
         const totalKB = (sizes.total / 1024).toFixed(1);
+        debugFileSize.textContent = `${totalKB} KB`;
         
         if (debugInfo.cache_enabled && debugInfo.cache_file_size) {
             const cacheKB = (debugInfo.cache_file_size / 1024).toFixed(1);
-            debugFileSize.textContent = `${totalKB} KB (HTML) | ${cacheKB} KB (Cache)`;
-            debugFileSize.title = `Cache file: ${debugInfo.cache_file_path || 'unknown'}`;
+            debugFileSize.title = `HTML: ${totalKB} KB, Cache: ${cacheKB} KB`;
+        }
+    }
+    
+    updateCachingInfo(debugInfo) {
+        const debugCaching = document.getElementById('debug-caching');
+        if (!debugCaching) return;
+        
+        const cacheEnabled = debugInfo.cache_enabled;
+        if (cacheEnabled !== undefined) {
+            debugCaching.textContent = cacheEnabled ? 'Enabled' : 'Disabled';
+            debugCaching.className = cacheEnabled ? 'debug-value cache-enabled' : 'debug-value cache-disabled';
         } else {
-            debugFileSize.textContent = `${totalKB} KB (HTML only)`;
-            if (!debugInfo.cache_enabled) {
-                debugFileSize.title = 'Caching disabled - showing HTML size only';
-            }
+            debugCaching.textContent = 'Unknown';
+            debugCaching.className = 'debug-value';
+        }
+    }
+    
+    updateDOMCacheInfo() {
+        const debugDOMCache = document.getElementById('debug-dom-cache');
+        if (debugDOMCache && this.utils) {
+            const cacheSize = Object.keys(this.utils.domCache || {}).length;
+            debugDOMCache.textContent = `${cacheSize} elements`;
+            debugDOMCache.title = `DOM elements cached: ${Object.keys(this.utils.domCache || {}).join(', ') || 'none'}`;
         }
     }
     
@@ -136,7 +143,7 @@ class DashboardUI {
         
         const sizes = debugInfo.html_sizes;
         const components = [
-            { name: 'Events', size: sizes.events_data },
+            { name: 'Events Data', size: sizes.events_data },
             { name: 'Scripts', size: sizes.scripts },
             { name: 'Styles', size: sizes.stylesheets },
             { name: 'Translations', size: sizes.translations },
@@ -146,64 +153,67 @@ class DashboardUI {
         
         components.sort((a, b) => b.size - a.size);
         
-        // Show top 3
         let breakdownHTML = '<ul class="debug-size-list">';
-        for (let i = 0; i < 3 && i < components.length; i++) {
-            const comp = components[i];
+        components.forEach(comp => {
             const kb = (comp.size / 1024).toFixed(1);
             const percent = ((comp.size / sizes.total) * 100).toFixed(1);
             breakdownHTML += `<li>${comp.name}: ${kb} KB (${percent}%)</li>`;
-        }
+        });
         breakdownHTML += '</ul>';
         
         debugSizeBreakdown.innerHTML = breakdownHTML;
-        
-        // Full breakdown in title
-        const fullBreakdown = components.map(c => 
-            `${c.name}: ${(c.size / 1024).toFixed(1)} KB (${((c.size / sizes.total) * 100).toFixed(1)}%)`
-        ).join('\n');
-        debugSizeBreakdown.title = `Full breakdown:\n${fullBreakdown}`;
     }
     
-    updateCacheStatistics() {
-        const debugDOMCache = document.getElementById('debug-dom-cache');
-        if (debugDOMCache && this.utils) {
-            const cacheSize = Object.keys(this.utils.domCache || {}).length;
-            const cacheStatus = cacheSize > 0 ? `${cacheSize} elements cached` : 'No elements cached';
-            debugDOMCache.textContent = cacheStatus;
-            debugDOMCache.title = `DOM elements cached: ${Object.keys(this.utils.domCache || {}).join(', ') || 'none'}`;
+    updateWarnings(duplicateStats) {
+        const warningsContainer = document.getElementById('debug-warnings-container');
+        const duplicateWarnings = document.getElementById('debug-duplicate-warnings');
+        const unpublishedWarnings = document.getElementById('debug-unpublished-warnings');
+        
+        let hasWarnings = false;
+        
+        // Update duplicate warnings
+        if (duplicateStats && duplicateStats.total > 0) {
+            hasWarnings = true;
+            this.updateDuplicateWarnings(duplicateStats, duplicateWarnings);
+        } else if (duplicateWarnings) {
+            duplicateWarnings.style.display = 'none';
         }
         
-        const debugHistoricalCache = document.getElementById('debug-historical-cache');
-        if (debugHistoricalCache) {
-            debugHistoricalCache.textContent = 'Backend (Python)';
-            debugHistoricalCache.title = 'Historical events are cached in the backend during scraping to improve performance';
+        // Check if unpublished warnings exist (populated by app.js)
+        if (unpublishedWarnings && unpublishedWarnings.style.display !== 'none') {
+            hasWarnings = true;
+        }
+        
+        // Show/hide warnings container
+        if (warningsContainer) {
+            warningsContainer.style.display = hasWarnings ? 'block' : 'none';
         }
     }
     
-    updateDuplicateWarnings(duplicateStats) {
-        const duplicatesContainer = document.getElementById('debug-duplicates-container');
-        if (!duplicatesContainer) return;
+    updateDuplicateWarnings(duplicateStats, warningElement) {
+        if (!warningElement) return;
         
-        if (!duplicateStats || duplicateStats.total === 0) {
-            duplicatesContainer.style.display = 'none';
-            return;
-        }
+        warningElement.style.display = 'block';
         
-        duplicatesContainer.style.display = 'block';
+        const stats = duplicateStats;
+        const warningMessage = `⚠️ ${stats.total} duplicate event${stats.total > 1 ? 's' : ''} found across ${stats.events} event${stats.events > 1 ? 's' : ''}`;
         
-        this.setElementText('debug-duplicates-count', duplicateStats.total);
-        this.setElementText('debug-duplicates-events', duplicateStats.events);
+        let detailsHTML = '';
+        const displayLimit = 5;
+        stats.details.slice(0, displayLimit).forEach(d => {
+            const shortTitle = d.title.length > 40 ? d.title.substring(0, 40) + '...' : d.title;
+            detailsHTML += `<li><strong>${shortTitle}</strong>: ${d.count} duplicates</li>`;
+        });
         
-        const detailsList = document.getElementById('debug-duplicates-details');
-        if (detailsList && duplicateStats.details) {
-            let html = '<ul>';
-            duplicateStats.details.forEach(d => {
-                html += `<li><strong>${d.title.substring(0, 40)}...</strong>: ${d.count} duplicates</li>`;
-            });
-            html += '</ul>';
-            detailsList.innerHTML = html;
-        }
+        const moreText = stats.details.length > displayLimit ? `<li>...and ${stats.details.length - displayLimit} more</li>` : '';
+        
+        warningElement.innerHTML = `
+            <div class="debug-duplicate-warning-header">${warningMessage}</div>
+            <ul class="debug-duplicate-list">
+                ${detailsHTML}
+                ${moreText}
+            </ul>
+        `;
     }
     
     showDebugSection() {

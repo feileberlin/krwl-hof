@@ -32,82 +32,100 @@ multiple sources.</p>
     </div>
     
     <div id="dashboard-debug-section" class="dashboard-section" style="display: none;">
-      <h3><i class="dashboard-section-icon" data-lucide="bug" aria-hidden="true"></i> Debug Info</h3>
+      <h3><i class="dashboard-section-icon" data-lucide="bug" aria-hidden="true"></i> Debug Cockpit</h3>
       
-      <!-- Git Commit - Last Commit -->
-      <div id="debug-git-stamp" class="debug-git-stamp">
-        <div class="debug-git-title">Last commit</div>
-        <div class="debug-git-hash">
-          <i class="debug-git-icon" data-lucide="git-commit" aria-hidden="true"></i>
-          <span id="debug-commit-hash">unknown</span>
+      <!-- Deployment Info -->
+      <div class="debug-group">
+        <div class="debug-group-header">
+          <i data-lucide="git-commit" aria-hidden="true"></i>
+          <strong>Deployment</strong>
         </div>
-        <div class="debug-git-details">
-          <div><strong>Author:</strong> <span id="debug-commit-author">unknown</span></div>
-          <div><strong>Date:</strong> <span id="debug-commit-date">unknown</span></div>
-          <div class="debug-commit-message" id="debug-commit-message" title="">unknown</div>
+        <div class="debug-group-content">
+          <div class="debug-info-row">
+            <span class="debug-label">Commit:</span>
+            <span id="debug-commit-hash" class="debug-value monospace">unknown</span>
+          </div>
+          <div class="debug-info-row">
+            <span class="debug-label">Author:</span>
+            <span id="debug-commit-author" class="debug-value">unknown</span>
+          </div>
+          <div class="debug-info-row">
+            <span class="debug-label">Date:</span>
+            <span id="debug-commit-date" class="debug-value">unknown</span>
+          </div>
+          <div class="debug-info-row">
+            <span class="debug-label">Message:</span>
+            <span id="debug-commit-message" class="debug-value debug-commit-msg">unknown</span>
+          </div>
+          <div class="debug-info-row">
+            <span class="debug-label">Deployed:</span>
+            <span id="debug-deployment-time" class="debug-value">unknown</span>
+          </div>
+          <div class="debug-info-row">
+            <span class="debug-label">Environment:</span>
+            <span id="debug-environment" class="debug-value debug-env-badge">UNKNOWN</span>
+          </div>
         </div>
       </div>
       
-      <!-- Unix top-style output -->
-      <div class="debug-top-style">
-        <div class="debug-top-header">
-          KRWL HOF - <span id="debug-deployment-time">unknown</span>
+      <!-- Data & Performance Info -->
+      <div class="debug-group">
+        <div class="debug-group-header">
+          <i data-lucide="activity" aria-hidden="true"></i>
+          <strong>Data & Performance</strong>
+        </div>
+        <div class="debug-group-content">
+          <div class="debug-info-row">
+            <span class="debug-label">Published Events:</span>
+            <span id="debug-event-counts-published" class="debug-value highlight">0</span>
+          </div>
+          <div class="debug-info-row">
+            <span class="debug-label">Pending Events:</span>
+            <span id="debug-event-counts-pending" class="debug-value">0</span>
+          </div>
+          <div class="debug-info-row">
+            <span class="debug-label">Archived Events:</span>
+            <span id="debug-event-counts-archived" class="debug-value">0</span>
+          </div>
+          <div class="debug-info-row">
+            <span class="debug-label">HTML Size:</span>
+            <span id="debug-file-size" class="debug-value">unknown</span>
+          </div>
+          <div class="debug-info-row">
+            <span class="debug-label">Caching:</span>
+            <span id="debug-caching" class="debug-value">unknown</span>
+          </div>
+          <div class="debug-info-row">
+            <span class="debug-label">DOM Cache:</span>
+            <span id="debug-dom-cache" class="debug-value">0 elements</span>
+          </div>
         </div>
         
-        <!-- Compact two-column layout -->
-        <div class="debug-top-grid">
-          <div class="debug-top-row">
-            <div class="debug-top-cell">
-              <strong>Events:</strong> <span id="debug-event-counts-published">0</span>/<span id="debug-event-counts-pending">0</span>/<span id="debug-event-counts-archived">0</span>
-              <div class="debug-hint">pub/pend/arch</div>
-            </div>
-            <div class="debug-top-cell">
-              <strong>Env:</strong> <span id="debug-environment" class="debug-env-badge">UNKNOWN</span>
-            </div>
+        <!-- Size breakdown - collapsible details -->
+        <details class="debug-details">
+          <summary class="debug-details-summary">Size Breakdown</summary>
+          <div id="debug-size-breakdown" class="debug-details-content">
+            <ul class="debug-size-list">
+              <li>Loading...</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+      
+      <!-- Warnings Section -->
+      <div id="debug-warnings-container" class="debug-group debug-warnings" style="display: none;">
+        <div class="debug-group-header warning">
+          <i data-lucide="alert-triangle" aria-hidden="true"></i>
+          <strong>Warnings</strong>
+        </div>
+        <div class="debug-group-content">
+          <!-- Unpublished Events Warning -->
+          <div id="debug-unpublished-warnings" class="debug-warning-item" style="display: none;">
+            <div id="debug-unpublished-content"></div>
           </div>
           
-          <div class="debug-top-row">
-            <div class="debug-top-cell">
-              <strong>Cache:</strong> <span id="debug-caching">unknown</span>
-            </div>
-            <div class="debug-top-cell">
-              <strong>Size:</strong> <span id="debug-file-size">unknown</span>
-            </div>
-          </div>
-          
-          <div class="debug-top-row">
-            <div class="debug-top-cell">
-              <strong>DOM:</strong> <span id="debug-dom-cache">0</span>
-            </div>
-            <div class="debug-top-cell">
-              <strong>Hist:</strong> <span id="debug-historical-cache">none</span>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Duplicate event warnings -->
-        <div id="debug-duplicates" class="debug-duplicates" style="display: none;">
-          Loading duplicate check...
-        </div>
-        
-        <!-- Size breakdown - collapsible -->
-        <div class="debug-top-breakdown">
-          <strong>index.html size breakdown:</strong>
-          <div id="debug-size-breakdown" class="debug-size-details">Loading...</div>
-        </div>
-        
-        <!-- Duplicate warnings -->
-        <div id="debug-duplicate-warnings" class="debug-duplicate-warnings" style="display: none;">
-          <!-- Populated by JavaScript when duplicates are detected -->
-        </div>
-        
-        <!-- Unpublished Events Warnings -->
-        <div id="debug-unpublished-warnings" class="debug-unpublished-warnings" style="display: none;">
-          <div class="debug-warning-header">
-            <i class="debug-warning-icon" data-lucide="alert-circle" aria-hidden="true"></i>
-            <strong>Unpublished Events</strong>
-          </div>
-          <div id="debug-unpublished-content" class="debug-warning-content">
+          <!-- Duplicate Events Warning -->
+          <div id="debug-duplicate-warnings" class="debug-warning-item" style="display: none;">
             <!-- Populated by JavaScript -->
           </div>
         </div>
