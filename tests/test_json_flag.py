@@ -96,19 +96,17 @@ def test_json_flag_no_stderr_logs():
     
     stderr = result.stderr
     
-    # Check that stderr is empty or minimal (no INFO/ERROR logs)
-    # Note: Import-time warnings might still appear, but they should be minimal
+    # With --json flag, there should be NO log messages in stderr
     log_prefixes = ['INFO:', 'ERROR:', 'WARNING:', 'DEBUG:']
     
     # Count log lines in stderr
     log_lines = [line for line in stderr.split('\n') if any(line.startswith(prefix) for prefix in log_prefixes)]
     
     if log_lines:
-        print(f"⚠️  Found {len(log_lines)} log line(s) in stderr (should be 0 with --json flag):")
+        print(f"❌ Found {len(log_lines)} log line(s) in stderr (expected 0 with --json flag):")
         for line in log_lines[:5]:  # Show first 5
             print(f"  {line}")
-        # For now, just warn but don't fail (some import-time logs might be unavoidable)
-        print("⚠️  Warning: Some logs still present (but this is non-critical)")
+        return False
     else:
         print("✓ No INFO/ERROR/WARNING logs in stderr")
     

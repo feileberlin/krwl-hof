@@ -98,10 +98,9 @@ jobs:
           
           # Get scraper capabilities via CLI with --json flag for clean output
           # The --json flag suppresses all logging to ensure pure JSON
-          if ! CAPABILITIES=$(python3 src/event_manager.py scraper-info --json 2>&1); then
+          if ! CAPABILITIES=$(python3 src/event_manager.py scraper-info --json); then
             echo "❌ Error: scraper-info command failed"
             echo "Exit code: $?"
-            echo "Output: $CAPABILITIES"
             exit 1
           fi
           
@@ -113,7 +112,7 @@ jobs:
             echo ""
             echo "Attempting to extract JSON from output..."
             # Try to extract JSON from mixed output (fallback)
-            CAPABILITIES=$(echo "$CAPABILITIES" | grep -A 9999 '^{' | head -n -0)
+            CAPABILITIES=$(echo "$CAPABILITIES" | sed -n '/^{/,$p')
             if ! echo "$CAPABILITIES" | jq empty 2>/dev/null; then
               echo "❌ Could not extract valid JSON. Using safe defaults."
               # Use safe fallback values

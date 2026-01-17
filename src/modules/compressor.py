@@ -31,7 +31,8 @@ try:
     BROTLI_AVAILABLE = True
 except ImportError:
     BROTLI_AVAILABLE = False
-    # Note: Warning is printed only when compression is actually attempted,
+    BROTLI_IMPORT_ERROR = "Brotli not available. Install with: pip install brotli"
+    # Note: Warning is logged in compress_brotli method (line ~155),
     # not at import time to avoid interference with other commands
 
 

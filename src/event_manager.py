@@ -1770,26 +1770,12 @@ def _execute_command(args, base_path, config):
     
     if command == 'scraper-info':
         # Output scraper capabilities as JSON for workflow consumption
-        # Ensure clean JSON output by suppressing all logging temporarily
-        import logging
-        
-        # Save current logging level
-        root_logger = logging.getLogger()
-        original_level = root_logger.level
-        
-        # Temporarily silence all logging for clean JSON output
-        # This ensures no INFO/ERROR messages contaminate the JSON
-        root_logger.setLevel(logging.CRITICAL)
-        
-        try:
-            scraper = EventScraper(config, base_path)
-            capabilities = scraper.get_scraper_capabilities()
-            # Output pure JSON to stdout only
-            print(json.dumps(capabilities, indent=2))
-            return 0
-        finally:
-            # Restore original logging level
-            root_logger.setLevel(original_level)
+        # Note: Uses global --json flag for logging suppression if provided
+        scraper = EventScraper(config, base_path)
+        capabilities = scraper.get_scraper_capabilities()
+        # Output pure JSON to stdout only
+        print(json.dumps(capabilities, indent=2))
+        return 0
     
     # Production Optimization Commands
     if command == 'schema':
