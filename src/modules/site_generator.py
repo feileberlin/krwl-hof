@@ -1771,6 +1771,7 @@ window.DASHBOARD_ICONS = {json.dumps(DASHBOARD_ICONS_MAP, ensure_ascii=False)};'
         
         # Build embedded data strings with individual wrapping
         app_config_json = json.dumps(runtime_config, ensure_ascii=False, indent=2 if self.enable_debug_comments else None)
+        app_config_size_kb = len(app_config_json.encode('utf-8')) / 1024
         events_json = json.dumps(events, ensure_ascii=False, indent=2 if self.enable_debug_comments else None)
         marker_icons_json = json.dumps(marker_icons, ensure_ascii=False, indent=2 if self.enable_debug_comments else None)
         dashboard_icons_json = json.dumps(DASHBOARD_ICONS_MAP, ensure_ascii=False, indent=2 if self.enable_debug_comments else None)
@@ -1802,19 +1803,19 @@ window.DASHBOARD_ICONS = {json.dumps(DASHBOARD_ICONS_MAP, ensure_ascii=False)};'
             embedded_data = f'''// Data embedded by backend (site_generator.py) - frontend does NOT fetch files
 // config.json is backend-only, frontend uses this minimal runtime config
 
-{app_config_wrapped}
+/* APP_CONFIG: {app_config_size_kb:.2f} KB */
 window.APP_CONFIG = {app_config_json};
 
-{events_wrapped}
+/* EVENTS: {len(events)} published events */
 window.__INLINE_EVENTS_DATA__ = {{ "events": {events_json} }};
 
-{marker_icons_wrapped}
+/* MARKER_ICONS: {len(marker_icons)} map markers */
 window.MARKER_ICONS = {marker_icons_json};
 
-{dashboard_icons_wrapped}
+/* DASHBOARD_ICONS: {len(DASHBOARD_ICONS_MAP)} UI icons */
 window.DASHBOARD_ICONS = {dashboard_icons_json};
 
-{debug_info_wrapped}
+/* DEBUG_INFO */
 window.DEBUG_INFO = {debug_info_json};'''
         else:
             # No debug comments - compact format
