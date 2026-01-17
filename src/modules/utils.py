@@ -8,6 +8,7 @@ from datetime import datetime
 
 # Configure module logger
 logger = logging.getLogger(__name__)
+FILTER_SENTENCE_EFFECTS = ('terminal', 'typewriter')
 
 
 def is_ci():
@@ -177,7 +178,7 @@ def validate_config(config: dict) -> None:
     filter_sentence = config.get('filter_sentence')
     if filter_sentence:
         effect = filter_sentence.get('effect')
-        if effect and effect not in ('terminal', 'typewriter'):
+        if effect and effect not in FILTER_SENTENCE_EFFECTS:
             raise ConfigurationError(
                 'filter_sentence.effect',
                 "Effect must be 'terminal' or 'typewriter'"

@@ -12,9 +12,11 @@ sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
 from modules.utils import validate_config
 from modules.exceptions import ConfigurationError
 
+BASE_PATH = Path(__file__).parent.parent
+
 
 def test_filter_sentence_config_valid():
-    config_path = Path(__file__).parent.parent / 'config.json'
+    config_path = BASE_PATH / 'config.json'
     with open(config_path, 'r', encoding='utf-8') as handle:
         config = json.load(handle)
     try:
@@ -25,7 +27,7 @@ def test_filter_sentence_config_valid():
 
 
 def test_filter_sentence_config_invalid():
-    config_path = Path(__file__).parent.parent / 'config.json'
+    config_path = BASE_PATH / 'config.json'
     with open(config_path, 'r', encoding='utf-8') as handle:
         config = json.load(handle)
     invalid_effect_rejected = False
@@ -49,7 +51,7 @@ def test_filter_sentence_config_invalid():
 
 
 def test_filter_sentence_ui_hooks():
-    js_path = Path(__file__).parent.parent / 'assets' / 'js' / 'filter-description-ui.js'
+    js_path = BASE_PATH / 'assets' / 'js' / 'filter-description-ui.js'
     content = js_path.read_text(encoding='utf-8')
     required_tokens = ['filterEffect', 'prefers-reduced-motion', 'typeText']
     missing = [token for token in required_tokens if token not in content]

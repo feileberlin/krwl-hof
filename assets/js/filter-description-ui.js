@@ -59,8 +59,7 @@ class FilterDescriptionUI {
         clearTimeout(element._typingTimer);
         const minTypoLength = 6;
         const defaultTypoIndex = 3;
-        const maxTypoIndex = Math.max(text.length - 2, 1);
-        const typoIndex = text.length > minTypoLength ? Math.min(defaultTypoIndex, maxTypoIndex) : -1;
+        const typoIndex = text.length > minTypoLength ? Math.min(defaultTypoIndex, text.length - 2) : -1;
         const typoChar = typoIndex > -1 ? 'x' : '';
         const frames = [];
         for (let i = 1; i <= text.length; i++) {

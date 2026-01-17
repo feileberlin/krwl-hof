@@ -1751,15 +1751,13 @@ window.DASHBOARD_ICONS = {json.dumps(DASHBOARD_ICONS_MAP, ensure_ascii=False)};'
         else:
             runtime_config['weather'] = {'enabled': False}
 
-        required_styles = ['leaflet_css', 'app_css']
-        for key in required_styles:
-            if not stylesheets.get(key):
-                logger.warning(f"Missing stylesheet content for '{key}' during HTML build")
+        def warn_missing_assets(asset_map, required_keys, label):
+            for key in required_keys:
+                if not asset_map.get(key):
+                    logger.warning(f"Missing {label} content for '{key}' during HTML build")
 
-        required_scripts = ['leaflet_js', 'app_js']
-        for key in required_scripts:
-            if not scripts.get(key):
-                logger.warning(f"Missing script content for '{key}' during HTML build")
+        warn_missing_assets(stylesheets, ['leaflet_css', 'app_css'], 'stylesheet')
+        warn_missing_assets(scripts, ['leaflet_js', 'app_js'], 'script')
 
         leaflet_css = stylesheets.get('leaflet_css', '')
         app_css = stylesheets.get('app_css', '')
