@@ -403,7 +403,9 @@ class EventListeners {
                     
                     const userLocation = this.app.mapManager?.userLocation;
                     if (userLocation) {
-                        this.app.mapManager.centerMap(userLocation.lat, userLocation.lon);
+                        // Center map with zoom based on current distance filter
+                        const distanceKm = this.app.filters.maxDistance;
+                        this.app.mapManager.centerMap(userLocation.lat, userLocation.lon, null, distanceKm);
                     }
                     
                     this.app.displayEvents();
@@ -420,7 +422,9 @@ class EventListeners {
                     this.app.filters.selectedPredefinedLocation = index;
                     this.app.storage.saveFiltersToCookie(this.app.filters);
                     
-                    this.app.mapManager?.centerMap(selectedLoc.lat, selectedLoc.lon);
+                    // Center map with zoom based on current distance filter
+                    const distanceKm = this.app.filters.maxDistance;
+                    this.app.mapManager?.centerMap(selectedLoc.lat, selectedLoc.lon, null, distanceKm);
                     this.app.displayEvents();
                 }
             }
