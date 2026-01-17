@@ -53,6 +53,21 @@ except ImportError:
     # Fallback if utils is not available
     load_config = None
 
+# Import Jinja2 helper for JSON and HTML templating
+try:
+    from .jinja2_helper import (
+        render_json_template, 
+        is_jinja2_available, 
+        Jinja2TemplateHelper,
+        HtmlTemplateHelper
+    )
+    JINJA2_AVAILABLE = is_jinja2_available()
+except ImportError:
+    JINJA2_AVAILABLE = False
+    render_json_template = None
+    Jinja2TemplateHelper = None
+    HtmlTemplateHelper = None
+
 
 # Third-party dependencies to fetch (stored under lib/)
 # Note: Lucide icons are NOT part of these dependencies anymore – they are provided
@@ -1221,7 +1236,14 @@ window.DASHBOARD_ICONS = {json.dumps(DASHBOARD_ICONS_MAP, ensure_ascii=False)};'
         return future_events
     
     def build_noscript_html(self, events: List[Dict], app_name: str) -> str:
-        """Build complete noscript HTML with event list."""
+        """
+        Build complete noscript HTML with event list using Jinja2 template.
+        
+        Uses assets/html/templates/noscript-content.html.j2 template with:
+        - Loops for event list rendering
+        - Conditionals for running events badge
+        - Filters for safe HTML output
+        """
         import locale
         
         future_events = self.filter_and_sort_future_events(events)
@@ -1235,7 +1257,36 @@ window.DASHBOARD_ICONS = {json.dumps(DASHBOARD_ICONS_MAP, ensure_ascii=False)};'
             except locale.Error:
                 pass  # Use system default if neither works
         
-        # Header
+        # Prepare event data with formatted dates for template
+        template_events = []
+        for event_item in future_events:
+            event_start_time = event_item['start_time']
+            template_events.append({
+                'event': event_item['event'],
+                'is_running': event_item['is_running'],
+                'date_formatted': event_start_time.strftime('%A, %B %d, %Y'),
+                'time_formatted': event_start_time.strftime('%I:%M %p').lstrip('0')
+            })
+        
+        # Try to use Jinja2 template
+        if JINJA2_AVAILABLE and HtmlTemplateHelper:
+            try:
+                html_helper = HtmlTemplateHelper(self.base_path)
+                return html_helper.render(
+                    'noscript-content.html.j2',
+                    app_name=app_name,
+                    events=template_events
+                )
+            except FileNotFoundError:
+                logger.warning("Noscript template not found, using fallback")
+            except Exception as e:
+                logger.warning(f"Jinja2 template error: {e}, using fallback")
+        
+        # Fallback to inline HTML building
+        return self._build_noscript_html_fallback(app_name, template_events)
+    
+    def _build_noscript_html_fallback(self, app_name: str, events: List[Dict]) -> str:
+        """Fallback noscript HTML builder when Jinja2 template unavailable."""
         html_parts = [
             '<div style="max-width:1200px;margin:0 auto;padding:2rem;background:#1a1a1a;color:#fff;font-family:sans-serif">',
             f'<h1 style="color:#D689B8;margin-bottom:1rem">{html.escape(app_name)}</h1>',
@@ -1245,28 +1296,22 @@ window.DASHBOARD_ICONS = {json.dumps(DASHBOARD_ICONS_MAP, ensure_ascii=False)};'
             '</div>'
         ]
         
-        # Events or empty message
-        if not future_events:
+        if not events:
             html_parts.append('<p style="color:#888;text-align:center;padding:2rem">No upcoming events.</p>')
         else:
-            html_parts.append(f'<h2 style="color:#D689B8;font-size:1.5rem;margin-bottom:1.5rem">Upcoming Events <span style="color:#888;font-size:1rem">({len(future_events)} events)</span></h2>')
+            html_parts.append(f'<h2 style="color:#D689B8;font-size:1.5rem;margin-bottom:1.5rem">Upcoming Events <span style="color:#888;font-size:1rem">({len(events)} events)</span></h2>')
             html_parts.append('<div style="display:flex;flex-direction:column;gap:1.5rem">')
             
-            for event_item in future_events:
-                event_data = event_item['event']
-                event_start_time = event_item['start_time']
-                event_is_running = event_item['is_running']
-                
-                # Badge and link text (hardcoded English)
-                running_badge = '<span style="background:#D689B8;color:#fff;padding:0.25rem 0.75rem;border-radius:4px;font-size:0.85rem;font-weight:600;margin-left:0.5rem">HAPPENING NOW</span>' if event_is_running else ''
-                
+            for item in events:
+                event_data = item['event']
+                running_badge = '<span style="background:#D689B8;color:#fff;padding:0.25rem 0.75rem;border-radius:4px;font-size:0.85rem;font-weight:600;margin-left:0.5rem">HAPPENING NOW</span>' if item['is_running'] else ''
                 event_link = f'<a href="{html.escape(event_data.get("url", ""))}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background:#D689B8;color:#fff;padding:0.5rem 1rem;border-radius:5px;text-decoration:none;font-weight:600">View Event Details →</a>' if event_data.get('url') else ''
                 
                 html_parts.append(f'''<article style="background:#2a2a2a;border-radius:8px;padding:1.5rem;border-left:4px solid #D689B8">
 <h3 style="color:#D689B8;margin:0 0 0.75rem 0;font-size:1.25rem">{html.escape(event_data.get('title', 'Untitled'))}{running_badge}</h3>
 <div style="color:#ccc;margin-bottom:1rem">
-<p style="margin:0.25rem 0"><strong style="color:#E8A5C8">📅 Date:</strong> {html.escape(event_start_time.strftime('%A, %B %d, %Y'))}</p>
-<p style="margin:0.25rem 0"><strong style="color:#E8A5C8">🕐 Time:</strong> {html.escape(event_start_time.strftime('%I:%M %p').lstrip('0'))}</p>
+<p style="margin:0.25rem 0"><strong style="color:#E8A5C8">📅 Date:</strong> {html.escape(item['date_formatted'])}</p>
+<p style="margin:0.25rem 0"><strong style="color:#E8A5C8">🕐 Time:</strong> {html.escape(item['time_formatted'])}</p>
 <p style="margin:0.25rem 0"><strong style="color:#E8A5C8">📍 Location:</strong> {html.escape(event_data.get('location', {}).get('name', 'Unknown'))}</p>
 </div>
 <p style="color:#ddd;line-height:1.6;margin-bottom:1rem">{html.escape(event_data.get('description', ''))}</p>
@@ -1275,7 +1320,6 @@ window.DASHBOARD_ICONS = {json.dumps(DASHBOARD_ICONS_MAP, ensure_ascii=False)};'
             
             html_parts.append('</div>')
         
-        # Footer
         html_parts.extend([
             '<footer style="margin-top:2rem;padding-top:2rem;border-top:1px solid #3a3a3a;color:#888;text-align:center">',
             '<p style="margin:0">Enable JavaScript for best experience.</p>',
@@ -1587,6 +1631,163 @@ window.DASHBOARD_ICONS = {json.dumps(DASHBOARD_ICONS_MAP, ensure_ascii=False)};'
         
         return debug_info
     
+    def build_runtime_config_with_jinja2(
+        self,
+        primary_config: Dict,
+        weather_cache: Dict = None
+    ) -> Dict:
+        """
+        Build runtime config using Jinja2 templates.
+        
+        Uses declarative JSON templates instead of programmatic dict building.
+        Jinja2 provides full templating power: loops, conditionals, filters.
+        Falls back to traditional approach if Jinja2 is not available.
+        
+        Args:
+            primary_config: Primary configuration dict
+            weather_cache: Optional weather cache data
+            
+        Returns:
+            Runtime config dictionary for frontend
+        """
+        # Check if Jinja2 is available
+        if not JINJA2_AVAILABLE or render_json_template is None or Jinja2TemplateHelper is None:
+            logger.debug("Jinja2 not available, using traditional config building")
+            return self._build_runtime_config_fallback(primary_config, weather_cache)
+        
+        try:
+            helper = Jinja2TemplateHelper(self.base_path)
+            
+            # Build base runtime config using template
+            runtime_config = helper.render(
+                'runtime_config_base',
+                debug_enabled=primary_config.get('debug', False),
+                environment=primary_config.get('app', {}).get('environment', 'unknown'),
+                map_config=primary_config.get('map', {}),
+                data_source=primary_config.get('data', {}).get('source', 'real'),
+                data_sources=primary_config.get('data', {}).get('sources', {})
+            )
+            
+            # Build weather config using template
+            weather_config = primary_config.get('weather', {})
+            if weather_config.get('enabled', False):
+                weather_data = None
+                if weather_cache and isinstance(weather_cache, dict):
+                    for key, entry in weather_cache.items():
+                        if isinstance(entry, dict) and entry.get('data'):
+                            weather_data = entry['data']
+                            break
+                
+                runtime_config['weather'] = helper.render(
+                    'weather_config',
+                    weather_enabled=True,
+                    display_config=weather_config.get('display', {}),
+                    weather_data=weather_data
+                )
+            else:
+                runtime_config['weather'] = {'enabled': False}
+            
+            # Build time filters using template
+            try:
+                from .moon_phase import (
+                    get_days_until_full_moon,
+                    get_days_until_sunday,
+                    get_next_sunday_date,
+                    get_next_sunday_formatted
+                )
+                
+                runtime_config['time_filters'] = helper.render(
+                    'time_filters',
+                    days_until_full_moon=get_days_until_full_moon(),
+                    full_moon_enabled=True,
+                    days_until_sunday=get_days_until_sunday(),
+                    sunday_date_iso=get_next_sunday_date(),
+                    sunday_date_formatted=get_next_sunday_formatted(),
+                    sunday_enabled=True
+                )
+            except Exception as e:
+                logger.warning(f"Failed to calculate moon phase/Sunday data: {e}")
+                runtime_config['time_filters'] = {
+                    'full_moon': {'enabled': False},
+                    'sunday': {'enabled': False}
+                }
+            
+            logger.debug("Built runtime config using Jinja2 templates")
+            return runtime_config
+            
+        except Exception as e:
+            logger.warning(f"Jinja2 template rendering failed: {e}, using fallback")
+            return self._build_runtime_config_fallback(primary_config, weather_cache)
+    
+    def _build_runtime_config_fallback(
+        self,
+        primary_config: Dict,
+        weather_cache: Dict = None
+    ) -> Dict:
+        """
+        Build runtime config using traditional dict building (fallback).
+        
+        This is the original implementation, kept as fallback when
+        jsonplate templates are not available or fail.
+        """
+        runtime_config = {
+            'debug': primary_config.get('debug', False),
+            'app': {
+                'environment': primary_config.get('app', {}).get('environment', 'unknown')
+            },
+            'map': primary_config.get('map', {}),
+            'data': {
+                'source': primary_config.get('data', {}).get('source', 'real'),
+                'sources': primary_config.get('data', {}).get('sources', {})
+            }
+        }
+        
+        weather_config = primary_config.get('weather', {})
+        if weather_config.get('enabled', False):
+            weather_data = None
+            if weather_cache and isinstance(weather_cache, dict):
+                for key, entry in weather_cache.items():
+                    if isinstance(entry, dict) and entry.get('data'):
+                        weather_data = entry['data']
+                        break
+            
+            runtime_config['weather'] = {
+                'enabled': True,
+                'display': weather_config.get('display', {}),
+                'data': weather_data
+            }
+        else:
+            runtime_config['weather'] = {'enabled': False}
+        
+        try:
+            from .moon_phase import (
+                get_days_until_full_moon,
+                get_days_until_sunday,
+                get_next_sunday_date,
+                get_next_sunday_formatted
+            )
+            
+            runtime_config['time_filters'] = {
+                'full_moon': {
+                    'days_until': get_days_until_full_moon(),
+                    'enabled': True
+                },
+                'sunday': {
+                    'days_until': get_days_until_sunday(),
+                    'date_iso': get_next_sunday_date(),
+                    'date_formatted': get_next_sunday_formatted(),
+                    'enabled': True
+                }
+            }
+        except Exception as e:
+            logger.warning(f"Failed to calculate moon phase/Sunday data: {e}")
+            runtime_config['time_filters'] = {
+                'full_moon': {'enabled': False},
+                'sunday': {'enabled': False}
+            }
+        
+        return runtime_config
+    
     def calculate_html_size_breakdown(self, html: str) -> Dict:
         """
         Calculate size breakdown of generated HTML.
@@ -1716,67 +1917,10 @@ window.DASHBOARD_ICONS = {json.dumps(DASHBOARD_ICONS_MAP, ensure_ascii=False)};'
         # Build noscript HTML
         noscript_html = self.build_noscript_html(events, app_name)
         
-        # Extract minimal runtime config for frontend (backend config.json is not fetched by frontend)
+        # Build runtime config using Jinja2 templates
+        # This replaces the manual dict building with declarative templates
         primary_config = configs[0] if configs else {}
-        runtime_config = {
-            'debug': primary_config.get('debug', False),
-            'app': {
-                'environment': primary_config.get('app', {}).get('environment', 'unknown')
-            },
-            'map': primary_config.get('map', {}),
-            'data': {
-                'source': primary_config.get('data', {}).get('source', 'real'),
-                'sources': primary_config.get('data', {}).get('sources', {})
-            }
-        }
-        
-        # Add weather to runtime config if enabled (simplified: single location weather embedded in config)
-        weather_config = primary_config.get('weather', {})
-        if weather_config.get('enabled', False):
-            # Extract current weather from weather_cache if available
-            weather_data = None
-            if weather_cache and isinstance(weather_cache, dict):
-                # Get first available weather entry (simplified: single location)
-                for key, entry in weather_cache.items():
-                    if isinstance(entry, dict) and entry.get('data'):
-                        weather_data = entry['data']
-                        break
-            
-            runtime_config['weather'] = {
-                'enabled': True,
-                'display': weather_config.get('display', {}),
-                'data': weather_data  # Current weather data or None
-            }
-        else:
-            runtime_config['weather'] = {'enabled': False}
-        
-        # Add moon phase and Sunday data for time filters
-        try:
-            from .moon_phase import (
-                get_days_until_full_moon,
-                get_days_until_sunday,
-                get_next_sunday_date,
-                get_next_sunday_formatted
-            )
-            
-            runtime_config['time_filters'] = {
-                'full_moon': {
-                    'days_until': get_days_until_full_moon(),
-                    'enabled': True
-                },
-                'sunday': {
-                    'days_until': get_days_until_sunday(),
-                    'date_iso': get_next_sunday_date(),
-                    'date_formatted': get_next_sunday_formatted(),
-                    'enabled': True
-                }
-            }
-        except Exception as e:
-            logger.warning(f"Failed to calculate moon phase/Sunday data: {e}")
-            runtime_config['time_filters'] = {
-                'full_moon': {'enabled': False},
-                'sunday': {'enabled': False}
-            }
+        runtime_config = self.build_runtime_config_with_jinja2(primary_config, weather_cache)
         
         # Calculate debug information
         debug_info = self.calculate_debug_info(primary_config, events)
