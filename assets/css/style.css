@@ -1098,6 +1098,43 @@ strong, b {
         font-size: 0.95rem;
     }
     
+    /* Debug cockpit mobile adjustments */
+    .debug-group {
+        margin-bottom: 0.75rem;
+    }
+    
+    .debug-group-header {
+        padding: 0.5rem 0.6rem;
+        font-size: 0.9em;
+    }
+    
+    .debug-group-content {
+        padding: 0.6rem;
+        font-size: 0.8em;
+    }
+    
+    .debug-info-row {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0.3rem 0;
+        gap: 0.2rem;
+    }
+    
+    .debug-label {
+        min-width: auto;
+        font-size: 0.85em;
+    }
+    
+    .debug-value {
+        text-align: left;
+        font-size: 0.95em;
+    }
+    
+    .debug-commit-msg {
+        max-width: 200px;
+    }
+}
+    
     .dashboard-section p {
         font-size: 0.85rem;
     }
