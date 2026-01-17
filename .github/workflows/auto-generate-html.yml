@@ -1,6 +1,6 @@
-name: Auto-Generate HTML on Merge
+name: Auto-Generate HTML and Deploy
 
-# Automatically regenerate index.html when source files change
+# Automatically regenerate index.html when source files change and deploy to GitHub Pages
 # This ensures the deployed site is always up-to-date with latest changes
 
 on:
@@ -32,6 +32,8 @@ on:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 # Prevent concurrent runs to avoid conflicts
 concurrency:
@@ -42,6 +44,9 @@ jobs:
   generate-html:
     name: Generate HTML Files
     runs-on: ubuntu-latest
+    
+    outputs:
+      changes: ${{ steps.check_changes.outputs.changes }}
     
     steps:
       - name: Checkout repository
@@ -130,3 +135,32 @@ jobs:
           echo "**Debug comments:** ${{ github.event.inputs.force_debug_comments || 'auto (disabled in CI)' }}" >> $GITHUB_STEP_SUMMARY
           echo "**Trigger:** Push to main branch" >> $GITHUB_STEP_SUMMARY
           echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+      
+      - name: Upload Pages artifact
+        if: steps.check_changes.outputs.changes == 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./public
+  
+  deploy:
+    name: Deploy to GitHub Pages
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: generate-html
+    if: needs.generate-html.outputs.changes == 'true'
+    
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+      
+      - name: Deployment summary
+        run: |
+          echo "## 🚀 Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**URL:** ${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Time:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Site automatically deployed after HTML regeneration" >> $GITHUB_STEP_SUMMARY
