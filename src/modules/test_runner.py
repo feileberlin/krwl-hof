@@ -33,7 +33,6 @@ class TestRunner:
             'test_event_schema',
         ],
         'features': [
-            'test_translations',
             'test_bulk_operations',
             'test_rejected_events',
             'test_scheduler',

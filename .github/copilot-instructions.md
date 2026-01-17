@@ -484,6 +484,24 @@ python3 check_kiss.py --verbose
 python3 test_scheduler.py --verbose
 ```
 
+#### **⚠️ CRITICAL: Pre-Existing Test Failures**
+
+**ALWAYS fix pre-existing test failures, even if unrelated to your current changes.**
+
+When you run tests, if you discover any failing tests:
+1. **Investigate the failure** - Understand why the test is failing
+2. **Fix the underlying issue** - Don't skip or ignore the failure
+3. **Verify the fix** - Re-run the test to ensure it passes
+4. **Include in your PR** - Pre-existing fixes are part of maintaining code quality
+
+**Why this matters:**
+- Broken tests accumulate technical debt
+- Future developers lose confidence in the test suite
+- Bugs may be masked by ignored test failures
+- Test-driven development requires a reliable test suite
+
+**Exception:** If a test failure is due to missing infrastructure (external services, API keys, etc.) that you cannot fix, document it clearly in your PR description.
+
 #### Documentation
 ```bash
 # Regenerate README.md (auto-generated)

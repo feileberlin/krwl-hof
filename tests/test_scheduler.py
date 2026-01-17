@@ -8,7 +8,11 @@ import unittest
 import json
 import tempfile
 from pathlib import Path
-from src.modules.scheduler import ScheduleConfig
+
+# Add src to path
+sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
+
+from modules.scheduler import ScheduleConfig
 
 
 class TestSchedulerModule(unittest.TestCase):
