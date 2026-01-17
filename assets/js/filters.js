@@ -14,6 +14,49 @@ class EventFilter {
     constructor(config, storage) {
         this.config = config;
         this.storage = storage;
+        
+        // Define category groups - subcategories roll up to parent categories
+        this.categoryGroups = {
+            'sports': ['american-football', 'soccer', 'basketball', 'tennis', 'running', 'cycling', 'swimming', 'fitness', 'athletics', 'sports', 'sports-field'],
+            'music': ['concert', 'festival', 'live-music', 'opera', 'classical', 'rock', 'jazz', 'music'],
+            'arts': ['theater', 'dance', 'performance', 'exhibition', 'gallery', 'museum', 'arts', 'cultural'],
+            'food': ['restaurant', 'cafe', 'dining', 'culinary', 'food'],
+            'historical-monuments': ['castle', 'monument', 'tower', 'ruins', 'palace'],
+            'shopping': ['shopping', 'market', 'bazaar', 'fair', 'trade-show'],
+            'religious': ['church', 'religious', 'spiritual', 'worship', 'ceremony'],
+            'education': ['library', 'national-archive', 'research', 'academic', 'study'],
+            'nature': ['park', 'nature', 'garden', 'outdoors', 'recreation'],
+            'technology': ['tech', 'innovation', 'startup', 'hackathon', 'coding'],
+            'health': ['health', 'wellness', 'medical', 'therapy', 'healing'],
+            'family': ['family', 'kids', 'children', 'youth', 'playground'],
+            'business': ['business', 'networking', 'conference', 'corporate', 'professional'],
+            'government': ['parliament', 'mayors-office', 'civic', 'government', 'public-office']
+        };
+    }
+    
+    /**
+     * Check if an event's category matches the filter (including grouped categories)
+     * @param {string} eventCategory - The event's category
+     * @param {string} filterCategory - The selected filter category
+     * @returns {boolean} True if event matches filter
+     */
+    categoryMatches(eventCategory, filterCategory) {
+        if (filterCategory === 'all') {
+            return true;
+        }
+        
+        // Direct match
+        if (eventCategory === filterCategory) {
+            return true;
+        }
+        
+        // Check if filterCategory is a group that contains this event's category
+        const subcategories = this.categoryGroups[filterCategory];
+        if (subcategories && subcategories.includes(eventCategory)) {
+            return true;
+        }
+        
+        return false;
     }
     
     /**
@@ -187,8 +230,8 @@ class EventFilter {
                 return false;
             }
             
-            // Filter by category
-            if (category !== 'all' && event.category !== category) {
+            // Filter by category (with group matching)
+            if (!this.categoryMatches(event.category, category)) {
                 return false;
             }
             

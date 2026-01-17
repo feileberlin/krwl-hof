@@ -47,14 +47,36 @@ class FilterDescriptionUI {
     /**
      * Update event count and category display
      * @param {number} count - Number of events
-     * @param {string} category - Selected category
+     * @param {string} category - Selected category (may be group key like "historical-monuments")
      */
     updateEventCount(count, category) {
         const element = document.getElementById('filter-bar-event-count');
         if (!element) return;
         
         const plural = count !== 1 ? 's' : '';
-        const categoryText = category === 'all' ? '' : `${category} `;
+        
+        // Convert category to display text
+        let categoryText = '';
+        if (category !== 'all') {
+            // Check if this is a group key (kebab-case with dash)
+            if (category.includes('-')) {
+                // Convert group key to display label (e.g., "historical-monuments" -> "Historical & Monuments")
+                categoryText = category
+                    .split('-')
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(' ');
+                
+                // Special cases for better display
+                if (category === 'historical-monuments') {
+                    categoryText = 'Historical & Monuments';
+                }
+                
+                categoryText += ' ';
+            } else {
+                // Simple category, just use as is
+                categoryText = `${category} `;
+            }
+        }
         
         element.textContent = `${count} ${categoryText}event${plural}`;
     }

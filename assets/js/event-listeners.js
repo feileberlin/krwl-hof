@@ -175,24 +175,65 @@ class EventListeners {
             );
             const totalCount = Object.values(categoryCounts).reduce((sum, count) => sum + count, 0);
             
-            // Build category list dynamically from actual event categories
+            // Use the same category groups from EventFilter
+            const categoryGroups = this.app.eventFilter.categoryGroups;
+            
+            // Build grouped category counts
+            const groupedCounts = {};
+            const ungroupedCategories = new Set();
+            
+            Object.keys(categoryCounts).forEach((categoryValue) => {
+                let grouped = false;
+                for (const [groupKey, subcategories] of Object.entries(categoryGroups)) {
+                    if (subcategories.includes(categoryValue)) {
+                        groupedCounts[groupKey] = (groupedCounts[groupKey] || 0) + categoryCounts[categoryValue];
+                        grouped = true;
+                        break;
+                    }
+                }
+                if (!grouped && categoryCounts[categoryValue] > 0) {
+                    ungroupedCategories.add(categoryValue);
+                }
+            });
+            
+            // Build category list dynamically
             const categories = [{ label: 'events', value: 'all' }];
             
-            // Add categories that exist in the data with non-zero counts
-            Object.keys(categoryCounts).sort().forEach((categoryValue) => {
-                const count = categoryCounts[categoryValue];
-                if (count > 0) {
+            // Add grouped categories (sorted)
+            Object.keys(groupedCounts).sort().forEach((groupKey) => {
+                if (groupedCounts[groupKey] > 0) {
+                    // Convert group key to display label (e.g., "historical-monuments" -> "Historical & Monuments")
+                    let displayLabel = groupKey
+                        .split('-')
+                        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                        .join(' ');
+                    
+                    // Special case for "Historical Monuments" -> "Historical & Monuments"
+                    if (groupKey === 'historical-monuments') {
+                        displayLabel = 'Historical & Monuments';
+                    }
+                    
                     categories.push({
-                        label: `${categoryValue} events`,
-                        value: categoryValue
+                        label: displayLabel,
+                        value: groupKey,
+                        count: groupedCounts[groupKey]
                     });
                 }
             });
             
+            // Add ungrouped categories (sorted)
+            Array.from(ungroupedCategories).sort().forEach((categoryValue) => {
+                categories.push({
+                    label: `${categoryValue} events`,
+                    value: categoryValue,
+                    count: categoryCounts[categoryValue]
+                });
+            });
+            
             // Map to items with counts at the beginning
             return categories.map((item) => {
-                const count = item.value === 'all' ? totalCount : (categoryCounts[item.value] || 0);
-                // For "all", show "20 events". For others, show "7 sports events"
+                const count = item.value === 'all' ? totalCount : item.count;
+                // For "all", show "20 events". For others, show count + label
                 const displayLabel = item.value === 'all' ? 'events' : item.label;
                 return {
                     ...item,
