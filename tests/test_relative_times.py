@@ -11,9 +11,21 @@ from pathlib import Path
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+def get_demo_events_path():
+    base_path = Path(__file__).parent.parent
+    candidates = [
+        base_path / "data" / "events.demo.json",
+        base_path / "assets" / "json" / "events.demo.json",
+    ]
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+    return candidates[0]
+
+
 def test_demo_events_have_relative_time():
     """Test that generated demo events include relative_time field"""
-    demo_file = Path(__file__).parent.parent / "data" / "events.demo.json"
+    demo_file = get_demo_events_path()
     
     if not demo_file.exists():
         print("❌ events.demo.json not found")
@@ -74,7 +86,7 @@ def test_demo_events_have_relative_time():
 
 def test_relative_time_types():
     """Test that both offset and sunrise_relative types are present"""
-    demo_file = Path(__file__).parent.parent / "data" / "events.demo.json"
+    demo_file = get_demo_events_path()
     
     with open(demo_file, 'r') as f:
         data = json.load(f)
@@ -100,7 +112,7 @@ def test_relative_time_types():
 
 def test_timezone_events():
     """Test that timezone events have correct timezone_offset field"""
-    demo_file = Path(__file__).parent.parent / "data" / "events.demo.json"
+    demo_file = get_demo_events_path()
     
     with open(demo_file, 'r') as f:
         data = json.load(f)

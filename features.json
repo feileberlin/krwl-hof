@@ -186,6 +186,22 @@
       "test_method": "check_code_patterns"
     },
     {
+      "id": "filter-sentence-typing",
+      "name": "Filter Sentence Typing Effects",
+      "description": "Animated filter bar sentence with configurable terminal or typewriter styling, blinking cursor, and typo/backspace typing cadence.",
+      "category": "frontend",
+      "implemented": true,
+      "files": [
+        "assets/js/filter-description-ui.js",
+        "assets/css/filters.css"
+      ],
+      "config_keys": [
+        "filter_sentence.effect",
+        "filter_sentence.typing_speed_ms"
+      ],
+      "test_method": "check_files_exist"
+    },
+    {
       "id": "static-site-generation",
       "name": "Static Site Generation (CDN Inliner)",
       "description": "Generates single-file static HTML with all resources inlined from CDN or local fallback",

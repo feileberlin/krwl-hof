@@ -136,8 +136,6 @@ def test_html_assembly():
     # Load minimal data for testing
     configs = [{'app': {'name': 'Test App'}}]
     events = []
-    content_en = {'noscript': {'warning': 'JS disabled'}}
-    content_de = {'noscript': {'warning': 'JS deaktiviert'}}
     stylesheets = {
         'leaflet_css': '/* Leaflet CSS */',
         'app_css': '/* App CSS */',
@@ -155,8 +153,7 @@ def test_html_assembly():
     # Build HTML
     try:
         html = generator.build_html_from_components(
-            configs, events, content_en, content_de,
-            stylesheets, scripts, marker_icons
+            configs, events, stylesheets, scripts, marker_icons
         )
     except Exception as e:
         print(f"✗ HTML assembly failed: {e}")
@@ -212,8 +209,6 @@ def test_component_based_generation():
     # Test that component-based generation produces valid HTML
     configs = [{'app': {'name': 'Test App'}}]
     events = []
-    content_en = {'noscript': {'warning': 'JS disabled'}}
-    content_de = {'noscript': {'warning': 'JS deaktiviert'}}
     stylesheets = {
         'leaflet_css': '/* Leaflet CSS */',
         'app_css': '/* App CSS */',
@@ -230,8 +225,7 @@ def test_component_based_generation():
     
     # Build with components
     html_component = generator.build_html_from_components(
-        configs, events, content_en, content_de,
-        stylesheets, scripts, marker_icons
+        configs, events, stylesheets, scripts, marker_icons
     )
     
     # Should be valid HTML
@@ -334,8 +328,6 @@ def test_logo_svg_replacement():
     # Load minimal data for testing
     configs = [{'app': {'name': 'Test App'}}]
     events = []
-    content_en = {'noscript': {'warning': 'JS disabled'}}
-    content_de = {'noscript': {'warning': 'JS deaktiviert'}}
     stylesheets = {
         'leaflet_css': '/* Leaflet CSS */',
         'app_css': '/* App CSS */',
@@ -352,8 +344,7 @@ def test_logo_svg_replacement():
     
     # Build HTML
     html = generator.build_html_from_components(
-        configs, events, content_en, content_de,
-        stylesheets, scripts, marker_icons
+        configs, events, stylesheets, scripts, marker_icons
     )
     
     # Verify logo_svg placeholder is NOT present (should be replaced)
@@ -364,14 +355,15 @@ def test_logo_svg_replacement():
     assert '<div class="dashboard-logo"><svg' in html, "Logo SVG missing from dashboard-aside"
     print("✓ Logo SVG found in dashboard-aside component")
     
-    # Verify logo SVG is present in filter-nav component (button with id="filter-bar-logo")
+    # Verify logo icon is present in filter-nav component (button with id="filter-bar-logo")
     assert 'id="filter-bar-logo"' in html, "Filter bar logo button missing"
     
     # Extract the button content to verify SVG is inside
     button_start = html.find('id="filter-bar-logo"')
     button_section = html[button_start:button_start+200]
-    assert '<svg' in button_section, "Logo SVG missing from filter-nav component"
-    print("✓ Logo SVG found in filter-nav component")
+    assert 'data-lucide="megaphone"' in button_section or '<svg' in button_section, \
+        "Logo icon missing from filter-nav component"
+    print("✓ Logo icon found in filter-nav component")
     
     print("✅ Logo SVG replacement validated")
     return True

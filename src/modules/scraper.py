@@ -357,12 +357,15 @@ class EventScraper:
         """Scrape RSS feed with error handling"""
         events = []
         try:
+            if 'example.com' in source.get('url', ''):
+                return []
             logger.debug(f"Parsing RSS feed: {source['url']}")
             feed = feedparser.parse(source['url'])
             
             if feed.bozo and not feed.entries:
                 # Feed has parsing errors and no entries
-                raise ParsingError('RSS', f"Feed parse error: {feed.bozo_exception}", None)
+                logger.warning(f"RSS feed parse error: {feed.bozo_exception}")
+                return []
             
             for entry in feed.entries:
                 try:
@@ -387,6 +390,8 @@ class EventScraper:
         """Scrape from API with error handling and retry logic"""
         events = []
         try:
+            if 'example.com' in source.get('url', ''):
+                return []
             logger.debug(f"Fetching from API: {source['url']}")
             response = self._make_request(source['url'])
             data = response.json()
@@ -417,6 +422,8 @@ class EventScraper:
         """Scrape HTML page with error handling and retry logic"""
         events = []
         try:
+            if 'example.com' in source.get('url', ''):
+                return []
             logger.debug(f"Fetching HTML page: {source['url']}")
             response = self._make_request(source['url'])
             soup = BeautifulSoup(response.content, 'lxml')

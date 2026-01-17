@@ -4,7 +4,7 @@ The `src/modules/` directory is organized into logical categories for better cod
 
 ## Directory Structure
 
-```
+```text
 src/modules/
 ├── core/           # Core event management functionality
 ├── ui/             # User interface modules (TUI)
@@ -13,7 +13,7 @@ src/modules/
 ├── utils/          # Utility and helper functions
 ├── quality/        # Testing and quality assurance
 └── utils.py        # Common utilities (backward compatibility)
-```
+```text
 
 ## Categories
 
@@ -32,7 +32,7 @@ from modules.core.editor import EventEditor
 from modules.core.scraper import EventScraper
 from modules.core.models import validate_event_data
 from modules.core.exceptions import SourceUnavailableError
-```
+```text
 
 ---
 
@@ -48,7 +48,7 @@ Interactive TUI (Text User Interface) components.
 ```python
 from modules.ui.batch_selector import BatchSelector
 from modules.ui.config_editor import ConfigEditor
-```
+```text
 
 **When to use:**
 - Building interactive command-line tools
@@ -275,7 +275,7 @@ from modules.cli.export_tool import ExportTool
 
 Allowed import directions (to avoid circular dependencies):
 
-```
+```text
 quality  →  core, utils, build, ui, cli
 cli      →  core, utils, build, ui
 ui       →  core, utils

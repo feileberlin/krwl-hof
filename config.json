@@ -415,6 +415,14 @@
     "max_distance_km": 5.0,
     "show_until": "next_sunrise"
   },
+  "_comment_filter_sentence_section": "────────────────────────────────────────────────────────────────────────────────",
+  "_comment_filter_sentence_help": "FILTER SENTENCE EFFECT - Typing animation style for the filter bar",
+  "filter_sentence": {
+    "effect": "terminal",
+    "_comment_effect": "Options: 'terminal' or 'typewriter'",
+    "typing_speed_ms": 34,
+    "_comment_speed": "Milliseconds per character for typing animation"
+  },
   "_comment_map_section": "────────────────────────────────────────────────────────────────────────────────",
   "_comment_map_identical": "MAP CONFIGURATION - Same in all environments",
   "map": {

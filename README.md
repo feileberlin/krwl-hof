@@ -56,7 +56,7 @@ python3 src/event_manager.py dependencies fetch
 # Run locally
 cd static
 python3 -m http.server 8000
-```
+```text
 
 Open http://localhost:8000 in your browser
 
@@ -88,7 +88,7 @@ Facebook sources in `config.json` should have `scan_posts: true`:
     "category": "music"
   }
 }
-```
+```text
 
 **Note:** `ocr_enabled` defaults to `true` if not specified, so it's optional. Facebook scraping works without API credentials but may be limited by Facebook's page structure changes.
 
@@ -113,11 +113,11 @@ The primary tool for managing events:
 ```bash
 python3 src/event_manager.py              # Launch interactive TUI
 python3 src/event_manager.py --help       # Show all commands
-```
+```text
 
 #### Full CLI Help
 
-```
+```text
 
 KRWL HOF Community Events Manager
 ==================================
@@ -353,7 +353,7 @@ python3 scripts/check_kiss.py --verbose
 
 ## 📝 Project Structure
 
-```
+```text
 krwl-hof/
 ├── config.json          # Unified configuration (auto-detects environment)
 ├── static/              # Only index.html

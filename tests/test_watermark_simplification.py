@@ -19,8 +19,10 @@ def test_dashboard_implementation():
     
     base_path = Path(__file__).parent.parent
     app_js_path = base_path / 'assets' / 'js' / 'app.js'
+    dashboard_js_path = base_path / 'assets' / 'js' / 'dashboard-ui.js'
+    listeners_js_path = base_path / 'assets' / 'js' / 'event-listeners.js'
     style_css_path = base_path / 'assets' / 'css' / 'style.css'
-    template_path = base_path / 'src' / 'templates' / 'index.html'
+    template_path = base_path / 'assets' / 'html' / 'dashboard-aside.html'
     
     print("=" * 60)
     print("Dashboard Implementation Tests")
@@ -30,6 +32,12 @@ def test_dashboard_implementation():
     # Read files
     with open(app_js_path, 'r') as f:
         app_js = f.read()
+
+    with open(dashboard_js_path, 'r') as f:
+        dashboard_js = f.read()
+
+    with open(listeners_js_path, 'r') as f:
+        listeners_js = f.read()
     
     with open(style_css_path, 'r') as f:
         style_css = f.read()
@@ -42,7 +50,7 @@ def test_dashboard_implementation():
     
     # Test 1: updateDashboard function exists (replaces updateWatermark)
     print("Test 1: updateDashboard() function exists")
-    if 'updateDashboard()' in app_js and 'debug-environment' in app_js:
+    if 'updateDashboard()' in app_js and 'debug-environment' in dashboard_js:
         print("✓ PASS: updateDashboard() function found")
         tests_passed += 1
     else:
@@ -89,7 +97,7 @@ def test_dashboard_implementation():
     
     # Test 5: Logo is clickable
     print("Test 5: Logo has click handler")
-    if 'dashboardLogo.addEventListener' in app_js and 'dashboard-menu' in app_js:
+    if 'dashboardLogo.addEventListener' in listeners_js and 'dashboard-menu' in listeners_js:
         print("✓ PASS: Logo click handler found")
         tests_passed += 1
     else:
@@ -110,8 +118,8 @@ def test_dashboard_implementation():
     
     # Test 7: Keyboard accessibility
     print("Test 7: Keyboard accessibility (ESC, Enter, Space)")
-    has_esc = 'Escape' in app_js and 'dashboard-menu' in app_js
-    has_enter_space = 'Enter' in app_js or 'Space' in app_js
+    has_esc = 'Escape' in listeners_js and 'dashboard-menu' in listeners_js
+    has_enter_space = 'Enter' in listeners_js or 'Space' in listeners_js
     if has_esc and has_enter_space:
         print("✓ PASS: Keyboard accessibility implemented")
         tests_passed += 1
@@ -160,4 +168,3 @@ def test_dashboard_implementation():
 
 if __name__ == '__main__':
     test_dashboard_implementation()
-

@@ -50,42 +50,42 @@ class ValidationTester:
         
         # Valid location
         try:
-            Location(name="Test Location", lat=50.0, lon=11.0)
+            Location(name="Test Location", address="Test Street 1", lat=50.0, lon=11.0)
             self.assert_test(True, "Valid location accepted")
         except Exception as e:
             self.assert_test(False, "Valid location accepted", str(e))
         
         # Invalid latitude (too high)
         try:
-            Location(name="Test", lat=91.0, lon=11.0)
+            Location(name="Test", address="Test Street 1", lat=91.0, lon=11.0)
             self.assert_test(False, "Invalid latitude rejected (>90)")
         except ValidationError:
             self.assert_test(True, "Invalid latitude rejected (>90)")
         
         # Invalid latitude (too low)
         try:
-            Location(name="Test", lat=-91.0, lon=11.0)
+            Location(name="Test", address="Test Street 1", lat=-91.0, lon=11.0)
             self.assert_test(False, "Invalid latitude rejected (<-90)")
         except ValidationError:
             self.assert_test(True, "Invalid latitude rejected (<-90)")
         
         # Invalid longitude (too high)
         try:
-            Location(name="Test", lat=50.0, lon=181.0)
+            Location(name="Test", address="Test Street 1", lat=50.0, lon=181.0)
             self.assert_test(False, "Invalid longitude rejected (>180)")
         except ValidationError:
             self.assert_test(True, "Invalid longitude rejected (>180)")
         
         # Invalid longitude (too low)
         try:
-            Location(name="Test", lat=50.0, lon=-181.0)
+            Location(name="Test", address="Test Street 1", lat=50.0, lon=-181.0)
             self.assert_test(False, "Invalid longitude rejected (<-180)")
         except ValidationError:
             self.assert_test(True, "Invalid longitude rejected (<-180)")
         
         # Empty name
         try:
-            Location(name="", lat=50.0, lon=11.0)
+            Location(name="", address="Test Street 1", lat=50.0, lon=11.0)
             self.assert_test(False, "Empty location name rejected")
         except ValidationError:
             self.assert_test(True, "Empty location name rejected")
@@ -99,8 +99,12 @@ class ValidationTester:
             Event(
                 id="test_1",
                 title="Test Event",
-                location=Location(name="Test Loc", lat=50.0, lon=11.0),
+                teaser="Test teaser line",
+                description="Test description long enough for validation.",
+                location=Location(name="Test Loc", address="Test Street 2", lat=50.0, lon=11.0),
                 start_time="2024-01-15T18:00:00",
+                category="community",
+                source="https://example.com/source",
                 status="pending"
             )
             self.assert_test(True, "Valid event accepted")
@@ -112,8 +116,12 @@ class ValidationTester:
             Event(
                 id="test_2",
                 title="Test Event",
-                location=Location(name="Test Loc", lat=50.0, lon=11.0),
+                teaser="Test teaser line",
+                description="Test description long enough for validation.",
+                location=Location(name="Test Loc", address="Test Street 2", lat=50.0, lon=11.0),
                 start_time="not-a-date",
+                category="community",
+                source="https://example.com/source",
                 status="pending"
             )
             self.assert_test(False, "Invalid datetime rejected")
@@ -125,8 +133,12 @@ class ValidationTester:
             Event(
                 id="test_3",
                 title="Test Event",
-                location=Location(name="Test Loc", lat=50.0, lon=11.0),
+                teaser="Test teaser line",
+                description="Test description long enough for validation.",
+                location=Location(name="Test Loc", address="Test Street 2", lat=50.0, lon=11.0),
                 start_time="2024-01-15T18:00:00",
+                category="community",
+                source="https://example.com/source",
                 status="invalid_status"
             )
             self.assert_test(False, "Invalid status rejected")
@@ -138,9 +150,13 @@ class ValidationTester:
             Event(
                 id="test_4",
                 title="Test Event",
-                location=Location(name="Test Loc", lat=50.0, lon=11.0),
+                teaser="Test teaser line",
+                description="Test description long enough for validation.",
+                location=Location(name="Test Loc", address="Test Street 2", lat=50.0, lon=11.0),
                 start_time="2024-01-15T18:00:00",
                 end_time="2024-01-15T17:00:00",  # Before start time
+                category="community",
+                source="https://example.com/source",
                 status="pending"
             )
             self.assert_test(False, "End time before start time rejected")
@@ -152,8 +168,12 @@ class ValidationTester:
             Event(
                 id="test_5",
                 title="x" * 600,  # Too long
-                location=Location(name="Test Loc", lat=50.0, lon=11.0),
+                teaser="Test teaser line",
+                description="Test description long enough for validation.",
+                location=Location(name="Test Loc", address="Test Street 2", lat=50.0, lon=11.0),
                 start_time="2024-01-15T18:00:00",
+                category="community",
+                source="https://example.com/source",
                 status="pending"
             )
             self.assert_test(False, "Title too long rejected")
@@ -244,10 +264,15 @@ class ValidationTester:
             "title": "Test Event",
             "location": {
                 "name": "Test Location",
+                "address": "Test Street 1",
                 "lat": 50.0,
                 "lon": 11.0
             },
+            "teaser": "Test teaser line",
+            "description": "Test description long enough for validation.",
             "start_time": "2024-01-15T18:00:00",
+            "category": "community",
+            "source": "https://example.com/source",
             "status": "pending"
         }
         
@@ -265,22 +290,34 @@ class ValidationTester:
             {
                 "id": "test_1",
                 "title": "Valid Event 1",
-                "location": {"name": "Loc 1", "lat": 50.0, "lon": 11.0},
+                "teaser": "Test teaser line",
+                "description": "Test description long enough for validation.",
+                "location": {"name": "Loc 1", "address": "Test Street 1", "lat": 50.0, "lon": 11.0},
                 "start_time": "2024-01-15T18:00:00",
+                "category": "community",
+                "source": "https://example.com/source",
                 "status": "pending"
             },
             {
                 "id": "test_2",
                 "title": "Invalid Event",
-                "location": {"name": "Loc 2", "lat": 100.0, "lon": 11.0},  # Invalid lat
+                "teaser": "Test teaser line",
+                "description": "Test description long enough for validation.",
+                "location": {"name": "Loc 2", "address": "Test Street 1", "lat": 100.0, "lon": 11.0},  # Invalid lat
                 "start_time": "2024-01-15T19:00:00",
+                "category": "community",
+                "source": "https://example.com/source",
                 "status": "pending"
             },
             {
                 "id": "test_3",
                 "title": "Valid Event 2",
-                "location": {"name": "Loc 3", "lat": 51.0, "lon": 12.0},
+                "teaser": "Test teaser line",
+                "description": "Test description long enough for validation.",
+                "location": {"name": "Loc 3", "address": "Test Street 1", "lat": 51.0, "lon": 12.0},
                 "start_time": "2024-01-15T20:00:00",
+                "category": "community",
+                "source": "https://example.com/source",
                 "status": "pending"
             }
         ]

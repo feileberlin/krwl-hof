@@ -4,7 +4,7 @@ This directory contains the main application entry point and modules.
 
 ## Structure
 
-```
+```text
 src/
 ├── event_manager.py    # Main CLI/TUI entry point
 ├── modules/            # Reusable Python modules

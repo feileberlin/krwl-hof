@@ -12,9 +12,24 @@
       "start_time": "2026-01-16T04:05:41",
       "end_time": "2026-01-16T06:05:41",
       "url": "https://event.frankenpost.de/detail.php?event_id=3119599",
-      "source": "demo",
+      "source": "manual",
       "status": "published",
       "published_at": "2026-01-16T04:35:41",
+      "scraped_at": "2026-01-16T04:00:00",
+      "category": "arts",
+      "marker_icon": "markers/marker-museum.svg",
+      "marker_size": [
+        32,
+        48
+      ],
+      "marker_anchor": [
+        16,
+        48
+      ],
+      "marker_popup_anchor": [
+        0,
+        -48
+      ],
       "relative_time": {
         "type": "offset",
         "minutes": -30,

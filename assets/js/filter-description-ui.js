@@ -10,6 +10,12 @@
 class FilterDescriptionUI {
     constructor(config) {
         this.config = config;
+        this.filterBar = document.getElementById('event-filter-bar');
+        this.typingMode = this.config?.filter_sentence?.effect || 'terminal';
+        this.typingSpeed = this.config?.filter_sentence?.typing_speed_ms || 34;
+        if (this.filterBar) {
+            this.filterBar.dataset.filterEffect = this.typingMode;
+        }
         
         // Lookup tables for filter descriptions (KISS: replace switch statements)
         this.TIME_DESCRIPTIONS = {
@@ -42,6 +48,30 @@ class FilterDescriptionUI {
         this.updateTimeDescription(filters.timeFilter);
         this.updateDistanceDescription(filters.maxDistance);
         this.updateLocationDescription(filters, userLocation);
+    }
+
+    typeText(element, text) {
+        if (!element) return;
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            element.textContent = text;
+            return;
+        }
+        clearTimeout(element._typingTimer);
+        const typoIndex = text.length > 6 ? 3 : -1;
+        const typoChar = typoIndex > -1 ? (text[typoIndex] === ' ' ? 'x' : 'x') : '';
+        const frames = [];
+        for (let i = 1; i <= text.length; i++) {
+            if (i === typoIndex && typoChar) {
+                frames.push(text.slice(0, i - 1) + typoChar);
+                frames.push(text.slice(0, i - 1));
+            }
+            frames.push(text.slice(0, i));
+        }
+        const step = () => {
+            element.textContent = frames.shift() || text;
+            if (frames.length) element._typingTimer = setTimeout(step, this.typingSpeed);
+        };
+        step();
     }
     
     /**
@@ -78,7 +108,7 @@ class FilterDescriptionUI {
             }
         }
         
-        element.textContent = `${count} ${categoryText}event${plural}`;
+        this.typeText(element, `${count} ${categoryText}event${plural}`);
     }
     
     /**
@@ -95,7 +125,7 @@ class FilterDescriptionUI {
         // Note: Detailed info (dates/times) is shown in dropdown options only
         // See event-listeners.js setupTimeFilter() for dropdown labels
         
-        element.textContent = `${description}`;
+        this.typeText(element, `${description}`);
     }
     
     /**
@@ -108,7 +138,7 @@ class FilterDescriptionUI {
         
         // Use lookup table or fallback to km
         const description = this.DISTANCE_DESCRIPTIONS[distance] || `within ${distance} km`;
-        element.textContent = `${description}`;
+        this.typeText(element, `${description}`);
     }
     
     /**
@@ -121,7 +151,7 @@ class FilterDescriptionUI {
         if (!element) return;
         
         let description = this.getLocationText(filters, userLocation);
-        element.textContent = `${description}`;
+        this.typeText(element, `${description}`);
     }
 
     /**

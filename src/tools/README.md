@@ -64,7 +64,7 @@ python3 src/event_manager.py utils <utility-name>
 ### Design Tools
 These tools manage the visual design system and CSS architecture.
 
-### Demo Tools  
+### Demo Tools
 These tools generate test data and visual documentation.
 
 ### Documentation Tools

@@ -107,6 +107,8 @@ class TestDependencyURLConstruction(unittest.TestCase):
     
     def test_lucide_urls_have_proper_separators(self):
         """Test: Lucide src paths are properly formatted"""
+        if 'lucide' not in DEPENDENCIES:
+            self.skipTest("Lucide is inlined; no CDN dependency defined")
         lucide_config = DEPENDENCIES['lucide']
         base_url = lucide_config['base_url'].format(version=lucide_config['version'])
         

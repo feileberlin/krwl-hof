@@ -285,16 +285,41 @@ def load_config(base_path):
     return config
 
 
+def _resolve_json_path(base_path, filename):
+    """Resolve JSON file path with legacy data/ fallback."""
+    assets_dir = base_path / 'assets' / 'json'
+    data_dir = base_path / 'data'
+    if (assets_dir / filename).exists() or assets_dir.exists():
+        return assets_dir / filename
+    if (data_dir / filename).exists() or data_dir.exists():
+        return data_dir / filename
+    return assets_dir / filename
+
+
+def _load_json_file(path, default):
+    try:
+        with open(path, 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with open(path, 'w') as f:
+            json.dump(default, f, indent=2)
+        return default
+    except json.JSONDecodeError:
+        logger.warning(f"Malformed JSON in {path}, returning default structure")
+        return default
+
+
 def load_events(base_path):
     """Load published events from events.json"""
-    events_path = base_path / 'assets' / 'json' / 'events.json'
-    with open(events_path, 'r') as f:
-        return json.load(f)
+    events_path = _resolve_json_path(base_path, 'events.json')
+    return _load_json_file(events_path, {'events': [], 'last_updated': datetime.now().isoformat()})
 
 
 def save_events(base_path, events_data):
     """Save published events to events.json"""
-    events_path = base_path / 'assets' / 'json' / 'events.json'
+    events_path = _resolve_json_path(base_path, 'events.json')
+    events_path.parent.mkdir(parents=True, exist_ok=True)
     events_data['last_updated'] = datetime.now().isoformat()
     with open(events_path, 'w') as f:
         json.dump(events_data, f, indent=2)
@@ -315,32 +340,21 @@ def update_pending_count_in_events(base_path):
     events_data['pending_count'] = len(pending_data.get('pending_events', []))
     
     # Save back to events.json WITHOUT updating timestamp
-    events_path = base_path / 'assets' / 'json' / 'events.json'
+    events_path = _resolve_json_path(base_path, 'events.json')
+    events_path.parent.mkdir(parents=True, exist_ok=True)
     with open(events_path, 'w') as f:
         json.dump(events_data, f, indent=2)
 
 
 def load_pending_events(base_path):
     """Load pending events from pending_events.json"""
-    pending_path = base_path / 'assets' / 'json' / 'pending_events.json'
-    try:
-        with open(pending_path, 'r') as f:
-            return json.load(f)
-    except FileNotFoundError:
-        # Create empty pending events file if it doesn't exist
-        pending_data = {'pending_events': [], 'last_scraped': None}
-        save_pending_events(base_path, pending_data)
-        return pending_data
-    except json.JSONDecodeError:
-        # Handle malformed JSON by returning empty structure
-        logger.warning(f"Malformed JSON in {pending_path}, returning empty structure")
-        pending_data = {'pending_events': [], 'last_scraped': None}
-        return pending_data
+    pending_path = _resolve_json_path(base_path, 'pending_events.json')
+    return _load_json_file(pending_path, {'pending_events': [], 'last_scraped': None})
 
 
 def save_pending_events(base_path, pending_data):
     """Save pending events to pending_events.json"""
-    pending_path = base_path / 'assets' / 'json' / 'pending_events.json'
+    pending_path = _resolve_json_path(base_path, 'pending_events.json')
     pending_path.parent.mkdir(parents=True, exist_ok=True)
     pending_data['last_scraped'] = datetime.now().isoformat()
     with open(pending_path, 'w') as f:
@@ -349,20 +363,14 @@ def save_pending_events(base_path, pending_data):
 
 def load_rejected_events(base_path):
     """Load rejected events from rejected_events.json"""
-    rejected_path = base_path / 'assets' / 'json' / 'rejected_events.json'
-    try:
-        with open(rejected_path, 'r') as f:
-            return json.load(f)
-    except FileNotFoundError:
-        # Create empty rejected events file if it doesn't exist
-        rejected_data = {'rejected_events': [], 'last_updated': datetime.now().isoformat()}
-        save_rejected_events(base_path, rejected_data)
-        return rejected_data
+    rejected_path = _resolve_json_path(base_path, 'rejected_events.json')
+    return _load_json_file(rejected_path, {'rejected_events': [], 'last_updated': datetime.now().isoformat()})
 
 
 def save_rejected_events(base_path, rejected_data):
     """Save rejected events to rejected_events.json"""
-    rejected_path = base_path / 'assets' / 'json' / 'rejected_events.json'
+    rejected_path = _resolve_json_path(base_path, 'rejected_events.json')
+    rejected_path.parent.mkdir(parents=True, exist_ok=True)
     rejected_data['last_updated'] = datetime.now().isoformat()
     with open(rejected_path, 'w') as f:
         json.dump(rejected_data, f, indent=2)

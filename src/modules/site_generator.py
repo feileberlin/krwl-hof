@@ -1723,6 +1723,7 @@ window.DASHBOARD_ICONS = {json.dumps(DASHBOARD_ICONS_MAP, ensure_ascii=False)};'
             'app': {
                 'environment': primary_config.get('app', {}).get('environment', 'unknown')
             },
+            'filter_sentence': primary_config.get('filter_sentence', {}),
             'map': primary_config.get('map', {}),
             'data': {
                 'source': primary_config.get('data', {}).get('source', 'real'),
@@ -1887,10 +1888,10 @@ window.DEBUG_INFO = {debug_info_json};'''
             html_head.format(
                 app_name=app_name,
                 favicon=favicon,
-                roboto_fonts=stylesheets['roboto_fonts'],
+                roboto_fonts=stylesheets.get('roboto_fonts', ''),
                 design_tokens_css=design_tokens_css,
-                leaflet_css=stylesheets['leaflet_css'],
-                app_css=stylesheets['app_css']
+                leaflet_css=stylesheets.get('leaflet_css', ''),
+                app_css=stylesheets.get('app_css', '')
             ),
             self.html_component_comment('html-head.html', 'end'),
             self.html_component_comment('html-body-open.html', 'start'),
