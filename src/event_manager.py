@@ -75,7 +75,7 @@ class EventManagerTUI:
             "main": "💡 Admin Tip: Use CLI mode for automation (python3 main.py --help) | View docs: option 6",
             "scrape": "💡 Editorial Tip: Configure sources in data/config.json | Scraped events go to pending queue for review",
             "review": "💡 Editorial Tip: (a)pprove publishes to site | (e)dit before approval | (r)eject removes permanently",
-            "published": "💡 Admin Tip: Published events appear on the map | Filtered by geolocation (<5km) & time (till sunrise)",
+            "published": "💡 Admin Tip: Published events appear on the map | Filtered by geolocation (<5km) & time ('til sunrise)",
             "generate": "💡 Admin Tip: Build output → public/ dir | Deploy to GitHub Pages | Include .nojekyll file",
             "settings": "💡 Admin Tip: Load examples for testing | Backups created with .backup extension | Config: data/config.json",
             "docs": "💡 Documentation Tip: Search with keywords | Navigate with n/p/q | Full docs in README.txt"
