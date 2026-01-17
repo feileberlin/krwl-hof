@@ -14,6 +14,49 @@ class EventFilter {
     constructor(config, storage) {
         this.config = config;
         this.storage = storage;
+        
+        // Define category groups - subcategories roll up to parent categories
+        this.categoryGroups = {
+            'sports': ['american-football', 'soccer', 'basketball', 'tennis', 'running', 'cycling', 'swimming', 'fitness', 'athletics', 'sports-field'],
+            'music': ['concert', 'festival', 'live-music', 'opera', 'classical', 'rock', 'jazz'],
+            'arts': ['theater', 'dance', 'performance', 'exhibition', 'gallery', 'museum', 'cultural'],
+            'food': ['restaurant', 'cafe', 'dining', 'culinary'],
+            'historical-monuments': ['castle', 'monument', 'tower', 'ruins', 'palace'],
+            'shopping': ['market', 'bazaar', 'fair', 'trade-show'],
+            'religious': ['church', 'spiritual', 'worship', 'ceremony'],
+            'education': ['library', 'national-archive', 'research', 'academic', 'study'],
+            'nature': ['park', 'garden', 'outdoors', 'recreation'],
+            'technology': ['tech', 'innovation', 'startup', 'hackathon', 'coding'],
+            'health': ['wellness', 'medical', 'therapy', 'healing'],
+            'family': ['kids', 'children', 'youth', 'playground'],
+            'business': ['networking', 'conference', 'corporate', 'professional'],
+            'government': ['parliament', 'mayors-office', 'civic', 'public-office']
+        };
+    }
+    
+    /**
+     * Check if an event's category matches the filter (including grouped categories)
+     * @param {string} eventCategory - The event's category
+     * @param {string} filterCategory - The selected filter category
+     * @returns {boolean} True if event matches filter
+     */
+    categoryMatches(eventCategory, filterCategory) {
+        if (filterCategory === 'all') {
+            return true;
+        }
+        
+        // Direct match
+        if (eventCategory === filterCategory) {
+            return true;
+        }
+        
+        // Check if filterCategory is a group that contains this event's category
+        const subcategories = this.categoryGroups[filterCategory];
+        if (subcategories && subcategories.includes(eventCategory)) {
+            return true;
+        }
+        
+        return false;
     }
     
     /**
@@ -51,7 +94,7 @@ class EventFilter {
                 return this.getNextSundayPrimetime();
                 
             case 'full-moon':
-                return this.getNextFullMoonMorning();
+                return this.getNextFullMoon();
                 
             case '6h':
                 return new Date(now.getTime() + 6 * 60 * 60 * 1000);
@@ -123,13 +166,10 @@ class EventFilter {
     }
     
     /**
-     * Get morning after next full moon following next Sunday
-     * @returns {Date} 6am on day after next full moon
+     * Get next full moon (not tied to Sunday)
+     * @returns {Date} Next full moon
      */
-    getNextFullMoonMorning() {
-        const nextSunday = new Date(this.getNextSundayPrimetime().getTime());
-        nextSunday.setHours(0, 0, 0, 0);
-        
+    getNextFullMoon() {
         // Known full moon: January 6, 2000, 18:14 UTC
         const knownFullMoon = new Date(Date.UTC(2000, 0, 6, 18, 14, 0));
         
@@ -141,10 +181,10 @@ class EventFilter {
         const timeSinceKnownFullMoon = now.getTime() - knownFullMoon.getTime();
         const cyclesSinceKnown = Math.floor(timeSinceKnownFullMoon / lunarCycle);
         
-        // Find first full moon after next Sunday
+        // Find next full moon after now
         let fullMoon = new Date(knownFullMoon.getTime() + cyclesSinceKnown * lunarCycle);
         
-        while (fullMoon <= nextSunday) {
+        while (fullMoon <= now) {
             fullMoon = new Date(fullMoon.getTime() + lunarCycle);
         }
         
@@ -190,8 +230,8 @@ class EventFilter {
                 return false;
             }
             
-            // Filter by category
-            if (category !== 'all' && event.category !== category) {
+            // Filter by category (with group matching)
+            if (!this.categoryMatches(event.category, category)) {
                 return false;
             }
             

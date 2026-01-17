@@ -47,16 +47,38 @@ class FilterDescriptionUI {
     /**
      * Update event count and category display
      * @param {number} count - Number of events
-     * @param {string} category - Selected category
+     * @param {string} category - Selected category (may be group key like "historical-monuments")
      */
     updateEventCount(count, category) {
         const element = document.getElementById('filter-bar-event-count');
         if (!element) return;
         
         const plural = count !== 1 ? 's' : '';
-        const categoryText = category === 'all' ? '' : `${category} `;
         
-        element.textContent = `[${count} ${categoryText}event${plural}]`;
+        // Convert category to display text
+        let categoryText = '';
+        if (category !== 'all') {
+            // Check if this is a group key (kebab-case with dash)
+            if (category.includes('-')) {
+                // Convert group key to display label (e.g., "historical-monuments" -> "Historical & Monuments")
+                categoryText = category
+                    .split('-')
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(' ');
+                
+                // Special cases for better display
+                if (category === 'historical-monuments') {
+                    categoryText = 'Historical & Monuments';
+                }
+                
+                categoryText += ' ';
+            } else {
+                // Simple category, just use as is
+                categoryText = `${category} `;
+            }
+        }
+        
+        element.textContent = `${count} ${categoryText}event${plural}`;
     }
     
     /**
@@ -73,7 +95,7 @@ class FilterDescriptionUI {
         // Note: Detailed info (dates/times) is shown in dropdown options only
         // See event-listeners.js setupTimeFilter() for dropdown labels
         
-        element.textContent = `[${description}]`;
+        element.textContent = `${description}`;
     }
     
     /**
@@ -86,7 +108,7 @@ class FilterDescriptionUI {
         
         // Use lookup table or fallback to km
         const description = this.DISTANCE_DESCRIPTIONS[distance] || `within ${distance} km`;
-        element.textContent = `[${description}]`;
+        element.textContent = `${description}`;
     }
     
     /**
@@ -99,7 +121,7 @@ class FilterDescriptionUI {
         if (!element) return;
         
         let description = this.getLocationText(filters, userLocation);
-        element.textContent = `[${description}]`;
+        element.textContent = `${description}`;
     }
 
     /**

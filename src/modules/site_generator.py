@@ -508,23 +508,39 @@ class SiteGenerator:
         else:
             return f'<!-- COMPONENT: assets/html/{component_name} -->'
     
-    def load_all_events(self) -> List[Dict]:
-        """Load all event data (real + demo) from data directory"""
+    def load_all_events(self, config: Dict = None) -> List[Dict]:
+        """
+        Load event data from data directory based on config.data.source setting.
+        
+        Args:
+            config: Configuration dict with data.source setting ('real', 'demo', or 'both')
+        
+        Returns:
+            List of events based on data.source setting
+        """
         events = []
         data_path = self.base_path / 'assets' / 'json'
         
-        # Real events
-        events_file = data_path / 'events.json'
-        if events_file.exists():
-            with open(events_file, 'r') as f:
-                events.extend(json.load(f).get('events', []))
+        # Determine which events to load based on config
+        data_source = 'both'  # default
+        if config and 'data' in config and 'source' in config['data']:
+            data_source = config['data']['source']
         
-        # Demo events (always include - config determines if they're shown)
-        demo_file = data_path / 'events.demo.json'
-        if demo_file.exists():
-            with open(demo_file, 'r') as f:
-                events.extend(json.load(f).get('events', []))
+        # Real events (load if source is 'real' or 'both')
+        if data_source in ['real', 'both']:
+            events_file = data_path / 'events.json'
+            if events_file.exists():
+                with open(events_file, 'r') as f:
+                    events.extend(json.load(f).get('events', []))
         
+        # Demo events (load ONLY if source is 'demo' or 'both')
+        if data_source in ['demo', 'both']:
+            demo_file = data_path / 'events.demo.json'
+            if demo_file.exists():
+                with open(demo_file, 'r') as f:
+                    events.extend(json.load(f).get('events', []))
+        
+        logger.debug(f"Loaded {len(events)} events (data.source={data_source})")
         return events
     
     def load_all_configs(self) -> List[Dict]:
@@ -1771,6 +1787,7 @@ window.DASHBOARD_ICONS = {json.dumps(DASHBOARD_ICONS_MAP, ensure_ascii=False)};'
         
         # Build embedded data strings with individual wrapping
         app_config_json = json.dumps(runtime_config, ensure_ascii=False, indent=2 if self.enable_debug_comments else None)
+        app_config_size_kb = len(app_config_json.encode('utf-8')) / 1024
         events_json = json.dumps(events, ensure_ascii=False, indent=2 if self.enable_debug_comments else None)
         marker_icons_json = json.dumps(marker_icons, ensure_ascii=False, indent=2 if self.enable_debug_comments else None)
         dashboard_icons_json = json.dumps(DASHBOARD_ICONS_MAP, ensure_ascii=False, indent=2 if self.enable_debug_comments else None)
@@ -1802,19 +1819,19 @@ window.DASHBOARD_ICONS = {json.dumps(DASHBOARD_ICONS_MAP, ensure_ascii=False)};'
             embedded_data = f'''// Data embedded by backend (site_generator.py) - frontend does NOT fetch files
 // config.json is backend-only, frontend uses this minimal runtime config
 
-{app_config_wrapped}
+/* APP_CONFIG: {app_config_size_kb:.2f} KB */
 window.APP_CONFIG = {app_config_json};
 
-{events_wrapped}
+/* EVENTS: {len(events)} published events */
 window.__INLINE_EVENTS_DATA__ = {{ "events": {events_json} }};
 
-{marker_icons_wrapped}
+/* MARKER_ICONS: {len(marker_icons)} map markers */
 window.MARKER_ICONS = {marker_icons_json};
 
-{dashboard_icons_wrapped}
+/* DASHBOARD_ICONS: {len(DASHBOARD_ICONS_MAP)} UI icons */
 window.DASHBOARD_ICONS = {dashboard_icons_json};
 
-{debug_info_wrapped}
+/* DEBUG_INFO */
 window.DEBUG_INFO = {debug_info_json};'''
         else:
             # No debug comments - compact format
@@ -1949,6 +1966,7 @@ window.DEBUG_INFO = {debug_info_json};'''
         
         print("\nLoading configurations...")
         configs = self.load_all_configs()
+        primary_config = configs[0] if configs else {}
         
         print("Loading stylesheets...")
         stylesheets = self.load_stylesheet_resources()
@@ -1957,7 +1975,7 @@ window.DEBUG_INFO = {debug_info_json};'''
         scripts = self.load_script_resources()
         
         print("Loading content data...")
-        events = self.load_all_events()
+        events = self.load_all_events(primary_config)
         
         print("Loading weather cache...")
         weather_cache = self.load_weather_cache()
@@ -2101,11 +2119,15 @@ window.DEBUG_INFO = {debug_info_json};'''
             print("   Run: python3 src/main.py generate")
             return False
         
-        print("\nReading existing HTML...")
+        print("\nLoading configuration...")
+        configs = self.load_all_configs()
+        primary_config = configs[0] if configs else {}
+        
+        print("Reading existing HTML...")
         html = self.read_text_file(html_file)
         
         print("Loading current events...")
-        events = self.load_all_events()
+        events = self.load_all_events(primary_config)
         
         print("Updating events data...")
         start, end = self.find_events_data_position(html)
