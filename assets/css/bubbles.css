@@ -19,20 +19,20 @@
     stroke-width: 2;
     stroke-linecap: round;
     opacity: 0.85;
-    filter: drop-shadow(0 0 4px rgba(214, 137, 184, 0.6)); /* Matches --color-primary glow */
+    filter: drop-shadow(0 0 4px var(--color-primary-alpha-60));
 }
 
 .speech-bubble {
     position: absolute;
-    background: rgba(13, 17, 23, 0.95);
+    background: var(--color-bg-primary-alpha-95);
     backdrop-filter: blur(10px);
     border: 2px solid var(--color-primary);
     border-radius: 12px;
     padding: 12px;
     width: 220px;
     z-index: 1000;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5),
-                0 0 15px rgba(214, 137, 184, 0.4);
+    box-shadow: 0 4px 20px var(--color-black-alpha-50),
+                0 0 15px var(--color-primary-alpha-40);
     cursor: grab;
     transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), 
                 box-shadow 0.3s ease, 
@@ -52,8 +52,8 @@
 /* Bookmarked bubble - different border color */
 .speech-bubble.bubble-is-bookmarked {
     border-color: var(--color-bookmark); /* Light/bright red border for bookmarked bubbles */
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5),
-                0 0 15px rgba(255, 179, 179, 0.4); /* Match border color in shadow */
+    box-shadow: 0 4px 20px var(--color-black-alpha-50),
+                0 0 15px var(--color-bookmark-alpha-40);
 }
 
 /* Change all text colors inside bookmarked bubble to match border */
@@ -79,14 +79,14 @@
 
 /* Bookmarked bubble hover state */
 .speech-bubble.bubble-is-bookmarked:hover {
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6),
-                0 0 20px rgba(255, 179, 179, 0.6); /* Match border color in shadow */
+    box-shadow: 0 6px 24px var(--color-black-alpha-60),
+                0 0 20px var(--color-bookmark-alpha-60);
 }
 
 /* Bookmarked bubble dragging state */
 .speech-bubble.bubble-is-bookmarked.dragging {
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7),
-                0 0 30px rgba(255, 179, 179, 0.8); /* Match border color in shadow */
+    box-shadow: 0 8px 32px var(--color-black-alpha-70),
+                0 0 30px var(--color-bookmark-alpha-80);
 }
 
 /* Dragging state - overrides hover and animation */
@@ -94,8 +94,8 @@
     cursor: grabbing;
     z-index: 1100;
     transform: scale(1.08);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7),
-                0 0 30px rgba(214, 137, 184, 0.8);
+    box-shadow: 0 8px 32px var(--color-black-alpha-70),
+                0 0 30px var(--color-primary-alpha-80);
     transition: transform 0.1s ease, box-shadow 0.1s ease;
     animation: none; /* Cancel appear animation during drag */
 }
@@ -126,8 +126,8 @@
 /* Natural hover with slight rotation */
 .speech-bubble:hover {
     transform: scale(1.05) rotate(0.5deg);
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6),
-                0 0 20px rgba(214, 137, 184, 0.6);
+    box-shadow: 0 6px 24px var(--color-black-alpha-60),
+                0 0 20px var(--color-primary-alpha-60);
     filter: brightness(1.1);
 }
 
@@ -302,7 +302,7 @@
     border-radius: 12px;
     border: 2px solid var(--color-bg-primary);
     z-index: 10;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 2px 8px var(--color-black-alpha-30);
     line-height: 1.2;
     white-space: nowrap;
 }
@@ -313,14 +313,14 @@
     bottom: 80px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(214, 137, 184, 0.95);
+    background: var(--color-primary-alpha-95);
     color: white;
     padding: 12px 24px;
     border-radius: 8px;
     font-size: 0.9rem;
     font-weight: 500;
     z-index: 2500;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 12px var(--color-black-alpha-30);
     animation: slideUpFadeIn 0.3s ease;
 }
 

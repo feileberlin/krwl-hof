@@ -7,7 +7,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
+    background: var(--color-black-alpha-80);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -37,7 +37,7 @@
     overflow-y: auto;
     position: relative;
     border: 2px solid var(--color-border-primary);
-    box-shadow: 0 0 20px rgba(214, 137, 184, 0.3);
+    box-shadow: 0 0 20px var(--color-primary-alpha-30);
     opacity: 0;
     transform: scale(0.95);
     transition: opacity 0.3s ease-in, transform 0.3s ease-in;
@@ -64,7 +64,7 @@
 .dashboard-logo svg {
     width: 32px;
     height: 32px;
-    filter: drop-shadow(0 0 8px rgba(214, 137, 184, 0.6));
+    filter: drop-shadow(0 0 8px var(--color-primary-alpha-60));
 }
 
 #close-dashboard {
@@ -90,14 +90,14 @@
 .dashboard-content h2 {
     margin-bottom: 1rem;
     color: var(--color-primary);
-    text-shadow: 0 0 10px rgba(214, 137, 184, 0.3);
+    text-shadow: 0 0 10px var(--color-primary-alpha-30);
     font-size: 1.5rem;
 }
 
 .dashboard-section {
     margin-bottom: 1rem;
     padding-bottom: 1rem;
-    border-bottom: 1px solid rgba(214, 137, 184, 0.2);
+    border-bottom: 1px solid var(--color-primary-alpha-20);
 }
 
 .dashboard-section:last-child {
@@ -142,7 +142,7 @@
 
 .dashboard-links a:hover {
     color: var(--color-primary-hover);
-    text-shadow: 0 0 10px rgba(214, 137, 184, 0.5);
+    text-shadow: 0 0 10px var(--color-primary-alpha-50);
     transform: translateX(3px);
 }
 
