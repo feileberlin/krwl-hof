@@ -33,8 +33,16 @@
         "scraping.sources"
       ],
       "dependencies": {
-        "python": ["Pillow>=10.0.0", "pytesseract>=0.3.10", "exifread>=3.0.0"],
-        "system": ["tesseract-ocr", "tesseract-ocr-deu", "tesseract-ocr-eng"]
+        "python": [
+          "Pillow>=10.0.0",
+          "pytesseract>=0.3.10",
+          "exifread>=3.0.0"
+        ],
+        "system": [
+          "tesseract-ocr",
+          "tesseract-ocr-deu",
+          "tesseract-ocr-eng"
+        ]
       },
       "test_method": "run_custom_test",
       "test_file": "tests/test_ocr_availability.py",
@@ -1231,6 +1239,24 @@
       ],
       "test_method": "check_code_patterns",
       "test_instructions": "1. Run AI extraction tests: python3 tests/test_ai_event_extraction.py\n2. Optional: run smart scraper tests: python3 tests/test_smart_scraper.py\n3. With Ollama running, scrape a Facebook source and confirm AI-enriched fields populate"
+    },
+    {
+      "id": "location-resolver",
+      "name": "Location Resolution",
+      "description": "Resolves generic location names (e.g., \"Hof\", \"Frankenpost\") to specific venue names by scraping event detail pages",
+      "category": "backend",
+      "implemented": true,
+      "files": [
+        "src/modules/location_resolver.py"
+      ],
+      "config_keys": [],
+      "test_method": "check_files_exist",
+      "cli_commands": [
+        "resolve-locations",
+        "resolve-locations --dry-run",
+        "resolve-locations EVENT_ID"
+      ],
+      "test_instructions": "1. Run: python3 src/event_manager.py resolve-locations --dry-run\n2. Check output for resolution summary\n3. Verify pending events with generic locations are identified"
     }
   ]
 }
