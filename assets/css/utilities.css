@@ -1,0 +1,19 @@
+/* Utilities: Helper classes */
+
+
+#custom-location-inputs.hidden {
+    display: none;
+}
+
+#event-list.hidden {
+    display: none;
+}
+
+#event-detail.hidden {
+    display: none;
+}
+
+.bookmark-feedback.fade-out {
+    animation: fadeOut 0.3s ease;
+ opacity: 0;
+}
