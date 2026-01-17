@@ -578,7 +578,7 @@ strong, b {
     width: 24px;
     height: 24px;
     flex-shrink: 0;
-    color: #D689B8; /* Barbie Pink - 4.2:1 contrast on #161b22, suitable for large icons */
+    color: var(--color-ecobarbie-light-tone); /* Barbie Pink - 4.2:1 contrast on #161b22, suitable for large icons */
 }
 
 /* Fill notification icon with solid color instead of stroke/outline */
@@ -641,7 +641,7 @@ strong, b {
     height: 20px;
     margin-right: 0.5rem;
     vertical-align: middle;
-    color: #FFB3DF; /* Barbie medium tint - visible on dark background */
+    color: var(--color-ecobarbie-medium-tint); /* Barbie medium tint - visible on dark background */
 }
 
 /* Fill icons with solid color instead of stroke/outline */
@@ -658,7 +658,7 @@ strong, b {
 
 /* Hover effect for section icons */
 .dashboard-section h3:hover .dashboard-section-icon {
-    color: #BF5087; /* Light shade - muted pink hover */
+    color: var(--color-ecobarbie-light-shade); /* Light shade - muted pink hover */
     transition: color 0.2s ease;
 }
 
@@ -795,11 +795,11 @@ strong, b {
 
 /* Environment and debug mode state classes */
 .env-dev {
-    color: #FFB3DF;
+    color: var(--color-ecobarbie-medium-tint);
 }
 
 .env-production {
-    color: #D689B8; /* EcoBarbie Light Tone - no green in EcoBarbie design */
+    color: var(--color-ecobarbie-light-tone); /* EcoBarbie Light Tone - no green in EcoBarbie design */
 }
 
 .env-ci {
@@ -807,7 +807,7 @@ strong, b {
 }
 
 .debug-enabled {
-    color: #FFB3DF;
+    color: var(--color-ecobarbie-medium-tint);
 }
 
 .debug-disabled {
@@ -815,7 +815,7 @@ strong, b {
 }
 
 .cache-enabled {
-    color: #D689B8; /* Light tone - ecological Barbie instead of green */
+    color: var(--color-ecobarbie-light-tone); /* Light tone - ecological Barbie instead of green */
 }
 
 .cache-disabled {
@@ -827,7 +827,7 @@ strong, b {
 /* Debug Groups - Consistent container styling */
 .debug-group {
     background: rgba(13, 17, 23, 0.6);
-    border: 1px solid rgba(138, 74, 112, 0.3);
+    border: 1px solid color-mix(in srgb, var(--color-ecobarbie-dark-tone) 30%, transparent);
     border-radius: 6px;
     margin-bottom: 1rem;
     overflow: hidden;
@@ -837,19 +837,19 @@ strong, b {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    background: rgba(138, 74, 112, 0.15);
+    background: color-mix(in srgb, var(--color-ecobarbie-dark-tone) 15%, transparent);
     padding: 0.6rem 0.75rem;
-    border-bottom: 1px solid rgba(138, 74, 112, 0.3);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-ecobarbie-dark-tone) 30%, transparent);
 }
 
 .debug-group-header i {
     width: 1rem;
     height: 1rem;
-    color: #BF5087;
+    color: var(--color-ecobarbie-light-shade);
 }
 
 .debug-group-header strong {
-    color: #BF5087;
+    color: var(--color-ecobarbie-light-shade);
     font-size: 0.85em;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -878,7 +878,7 @@ strong, b {
     justify-content: space-between;
     align-items: baseline;
     padding: 0.4rem 0;
-    border-bottom: 1px solid rgba(138, 74, 112, 0.1);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-ecobarbie-dark-tone) 10%, transparent);
     gap: 1rem;
 }
 
@@ -887,7 +887,7 @@ strong, b {
 }
 
 .debug-label {
-    color: #B05F8E;
+    color: var(--color-ecobarbie-medium-tone);
     font-size: 0.9em;
     text-transform: uppercase;
     letter-spacing: 0.03em;
@@ -896,7 +896,7 @@ strong, b {
 }
 
 .debug-value {
-    color: #D689B8;
+    color: var(--color-ecobarbie-light-tone);
     text-align: right;
     word-break: break-word;
     flex-grow: 1;
@@ -910,7 +910,7 @@ strong, b {
 }
 
 .debug-value.highlight {
-    color: #FFB3DF;
+    color: var(--color-ecobarbie-medium-tint);
     font-weight: 700;
 }
 
@@ -936,32 +936,32 @@ strong, b {
 }
 
 .debug-env-badge.env-dev {
-    background: rgba(214, 137, 184, 0.15);
-    border-color: #D689B8;
-    color: #D689B8;
+    background: color-mix(in srgb, var(--color-ecobarbie-light-tone) 15%, transparent);
+    border-color: var(--color-ecobarbie-light-tone);
+    color: var(--color-ecobarbie-light-tone);
 }
 
 .debug-env-badge.env-production {
-    background: rgba(214, 137, 184, 0.15);
-    border-color: #D689B8;
-    color: #D689B8;
+    background: color-mix(in srgb, var(--color-ecobarbie-light-tone) 15%, transparent);
+    border-color: var(--color-ecobarbie-light-tone);
+    color: var(--color-ecobarbie-light-tone);
 }
 
 .debug-env-badge.env-ci {
-    background: rgba(214, 137, 184, 0.15);
-    border-color: #D689B8;
-    color: #D689B8;
+    background: color-mix(in srgb, var(--color-ecobarbie-light-tone) 15%, transparent);
+    border-color: var(--color-ecobarbie-light-tone);
+    color: var(--color-ecobarbie-light-tone);
 }
 
 /* Details/Summary for Size Breakdown */
 .debug-details {
     margin-top: 0.75rem;
-    border-top: 1px solid rgba(138, 74, 112, 0.2);
+    border-top: 1px solid color-mix(in srgb, var(--color-ecobarbie-dark-tone) 20%, transparent);
     padding-top: 0.75rem;
 }
 
 .debug-details-summary {
-    color: #B05F8E;
+    color: var(--color-ecobarbie-medium-tone);
     font-size: 0.85em;
     text-transform: uppercase;
     letter-spacing: 0.03em;
@@ -989,7 +989,7 @@ strong, b {
 }
 
 .debug-details-summary:hover {
-    color: #BF5087;
+    color: var(--color-ecobarbie-light-shade);
 }
 
 .debug-details-content {
@@ -1006,8 +1006,8 @@ strong, b {
 
 .debug-size-list li {
     padding: 0.3rem 0;
-    color: #D689B8;
-    border-bottom: 1px solid rgba(138, 74, 112, 0.1);
+    color: var(--color-ecobarbie-light-tone);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-ecobarbie-dark-tone) 10%, transparent);
 }
 
 .debug-size-list li:last-child {
@@ -1058,7 +1058,7 @@ strong, b {
     padding: 0.1rem 0.3rem;
     border-radius: 3px;
     font-size: 0.9em;
-    color: #FFB3DF;
+    color: var(--color-ecobarbie-medium-tint);
 }
 
 .debug-warning-link {
@@ -1111,14 +1111,14 @@ strong, b {
 /* Legacy class support - deprecate eventually */
 
 .debug-size-list li {
-    color: #D689B8; /* Light tone - natural */
+    color: var(--color-ecobarbie-light-tone); /* Light tone - natural */
     white-space: nowrap;
 }
 
 .debug-size-list li::before {
     content: '▸';
     margin-right: 0.25rem;
-    color: #B05F8E; /* Medium tone - muted */
+    color: var(--color-ecobarbie-medium-tone); /* Medium tone - muted */
 }
 
 /* Duplicate event warnings */
@@ -1130,7 +1130,7 @@ strong, b {
 }
 
 .duplicate-ok {
-    color: #D689B8;
+    color: var(--color-ecobarbie-light-tone);
 }
 
 /* Legacy styles - remove duplicates */
@@ -1147,7 +1147,7 @@ strong, b {
 }
 
 #debug-caching.cache-enabled {
-    color: #D689B8;
+    color: var(--color-ecobarbie-light-tone);
     font-weight: 700;
 }
 
@@ -1177,7 +1177,7 @@ strong, b {
     padding: 1.5rem;
     max-width: 400px;
     width: 100%;
-    box-shadow: 0 0 20px rgba(214, 137, 184, 0.3);
+    box-shadow: 0 0 20px color-mix(in srgb, var(--color-ecobarbie-light-tone) 30%, transparent);
 }
 
 .custom-location-content h3 {
@@ -1226,7 +1226,7 @@ strong, b {
 .custom-location-field input:focus {
     outline: none;
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 2px rgba(214, 137, 184, 0.2);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-ecobarbie-light-tone) 20%, transparent);
 }
 
 .custom-location-buttons {
@@ -1262,7 +1262,7 @@ strong, b {
 }
 
 .btn-secondary:hover {
-    background: rgba(214, 137, 184, 0.1);
+    background: color-mix(in srgb, var(--color-ecobarbie-light-tone) 10%, transparent);
     border-color: var(--color-primary);
     color: var(--color-text-primary);
 }
