@@ -542,7 +542,7 @@ def archive_old_events(base_path):
     
     # Save archived events if there are any
     if archived_events:
-        archive_path = base_path / 'target' / 'archived_events.json'
+        archive_path = base_path / 'public' / 'archived_events.json'
         try:
             with open(archive_path, 'r') as f:
                 archive_data = json.load(f)
@@ -717,7 +717,7 @@ def update_events_in_html(base_path):
         events = events_data.get('events', [])
         
         # Read index.html
-        index_path = base_path / 'target' / 'index.html'
+        index_path = base_path / 'public' / 'index.html'
         if not index_path.exists():
             logger.error(f"Index file does not exist: {index_path}")
             return False
