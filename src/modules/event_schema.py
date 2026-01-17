@@ -356,6 +356,10 @@ class EventSchema:
         - Adding missing fields with defaults
         - Inferring category from title/description
         - Normalizing date formats
+        - Generating teaser from description
+        - Fixing location structure
+        - Fixing source URL
+        - Padding short descriptions
         
         Args:
             event: Event in old format
@@ -364,6 +368,83 @@ class EventSchema:
             Event in new schema format
         """
         migrated = event.copy()
+        
+        # Fix short descriptions (must be at least 20 characters)
+        if 'description' in migrated:
+            description = migrated['description']
+            if len(description) < 20:
+                # Pad with title or date info
+                title = migrated.get('title', '')
+                start_time = migrated.get('start_time', '')
+                
+                # Try to make a better description
+                if start_time:
+                    try:
+                        # Parse date for better formatting
+                        dt = datetime.fromisoformat(start_time.replace('Z', '+00:00'))
+                        date_str = dt.strftime('%d.%m.%Y %H:%M')
+                        migrated['description'] = f"{title} am {date_str}"
+                    except:
+                        migrated['description'] = f"{title} - {description}"
+                else:
+                    migrated['description'] = f"{title} - {description}"
+        
+        # Add teaser if missing (generate from description or title)
+        if 'teaser' not in migrated or not migrated['teaser']:
+            description = migrated.get('description', '')
+            title = migrated.get('title', '')
+            
+            # Generate teaser from description (first 200 chars) or title
+            if description and len(description) >= 20:
+                # Use first sentence or first 200 chars of description
+                teaser = description[:200].strip()
+                # Try to cut at sentence boundary
+                if '.' in teaser:
+                    teaser = teaser[:teaser.rindex('.')+1]
+                elif len(teaser) == 200:
+                    teaser += '...'
+            else:
+                # Fall back to title as teaser
+                teaser = title[:200]
+            
+            # Ensure teaser meets minimum length (10 chars)
+            if len(teaser) < 10:
+                teaser = f"{title} - Event"
+            
+            migrated['teaser'] = teaser
+        
+        # Fix location structure
+        if 'location' in migrated and isinstance(migrated['location'], dict):
+            location = migrated['location']
+            
+            # Add address field if missing
+            if 'address' not in location or not location['address']:
+                # If location name contains address info, split it
+                name = location.get('name', '')
+                if ',' in name:
+                    # Extract address from name (e.g., "Venue, Street 123, City")
+                    parts = [p.strip() for p in name.split(',')]
+                    if len(parts) > 1:
+                        location['name'] = parts[0]  # First part is venue name
+                        location['address'] = ', '.join(parts[1:])  # Rest is address
+                    else:
+                        # No clear address, mark as hidden
+                        location['address_hidden'] = True
+                else:
+                    # No address info available, mark as hidden
+                    location['address_hidden'] = True
+        
+        # Fix source field (must be URL, not just source name)
+        if 'source' in migrated:
+            source = migrated['source']
+            # If source is not a URL, try to use the URL field
+            if not (source.startswith('http://') or source.startswith('https://') or source.startswith('www.')):
+                # Use 'url' field as source if available
+                if 'url' in migrated and migrated['url']:
+                    migrated['source'] = migrated['url']
+                else:
+                    # Generate a placeholder URL
+                    migrated['source'] = f"https://example.com/event/{migrated.get('id', 'unknown')}"
         
         # Add category if missing (default)
         if 'category' not in migrated:
