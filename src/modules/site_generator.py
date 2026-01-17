@@ -596,24 +596,39 @@ class SiteGenerator:
         )
         
         # Load modular app CSS with debug comments (Leaflet CSS stays separate)
-        # CSS files reorganized to max 50 selectors each for KISS compliance
+        # CSS files organized by semantic function for KISS compliance (≤50 selectors each)
         app_css_modules = [
-            ('assets/css/base.css', 'Base styles'),
-            ('assets/css/map.css', 'Map styles'),
+            # Core & Layout
+            ('assets/css/core.css', 'Core styles (viewport, typography)'),
+            ('assets/css/layout.css', 'App structure and positioning'),
+            
+            # Map & Leaflet
+            ('assets/css/map.css', 'Map styles and fallback'),
             ('assets/css/leaflet-custom.css', 'Leaflet custom overrides'),
-            ('assets/css/filters-1.css', 'Filter bar styles (part 1)'),
-            ('assets/css/filters-2.css', 'Filter bar styles (part 2)'),
-            ('assets/css/dashboard-1.css', 'Dashboard styles (part 1)'),
-            ('assets/css/dashboard-2.css', 'Dashboard styles (part 2)'),
-            ('assets/css/debug-1.css', 'Debug cockpit (part 1)'),
-            ('assets/css/debug-2.css', 'Debug cockpit (part 2)'),
-            ('assets/css/scrollbar.css', 'Scrollbar styles'),
-            ('assets/css/bubbles.css', 'Speech bubble styles'),
+            
+            # Filters
+            ('assets/css/filters-bar.css', 'Filter bar'),
+            ('assets/css/filters-components.css', 'Filter dropdowns and chips'),
+            ('assets/css/filters-misc.css', 'Filter miscellaneous'),
+            
+            # Dashboard
+            ('assets/css/dashboard-menu.css', 'Dashboard menu'),
+            ('assets/css/dashboard-content.css', 'Dashboard content sections'),
+            ('assets/css/dashboard-misc.css', 'Dashboard miscellaneous'),
+            
+            # Components
+            ('assets/css/bubbles.css', 'Speech bubbles'),
             ('assets/css/locations.css', 'Location management'),
             ('assets/css/notifications.css', 'Notifications and alerts'),
-            ('assets/css/noscript.css', 'Noscript fallback styles'),
-            ('assets/css/utilities-1.css', 'Utility classes (part 1)'),
-            ('assets/css/utilities-2.css', 'Utility classes (part 2)')
+            ('assets/css/noscript.css', 'Noscript fallback'),
+            ('assets/css/controls.css', 'UI controls (sliders, inputs)'),
+            ('assets/css/scrollbar.css', 'Custom scrollbars'),
+            
+            # Debug & Utilities
+            ('assets/css/debug.css', 'Debug cockpit'),
+            ('assets/css/utilities-env.css', 'Environment utilities'),
+            ('assets/css/utilities-events.css', 'Event utilities'),
+            ('assets/css/utilities-misc.css', 'Miscellaneous utilities')
         ]
         module_css_parts = []
         for module_path, description in app_css_modules:
