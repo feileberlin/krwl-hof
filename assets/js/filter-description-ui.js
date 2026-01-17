@@ -56,7 +56,7 @@ class FilterDescriptionUI {
         const plural = count !== 1 ? 's' : '';
         const categoryText = category === 'all' ? '' : `${category} `;
         
-        element.textContent = `[${count} ${categoryText}event${plural}]`;
+        element.textContent = `${count} ${categoryText}event${plural}`;
     }
     
     /**
@@ -73,7 +73,7 @@ class FilterDescriptionUI {
         // Note: Detailed info (dates/times) is shown in dropdown options only
         // See event-listeners.js setupTimeFilter() for dropdown labels
         
-        element.textContent = `[${description}]`;
+        element.textContent = `${description}`;
     }
     
     /**
@@ -86,7 +86,7 @@ class FilterDescriptionUI {
         
         // Use lookup table or fallback to km
         const description = this.DISTANCE_DESCRIPTIONS[distance] || `within ${distance} km`;
-        element.textContent = `[${description}]`;
+        element.textContent = `${description}`;
     }
     
     /**
@@ -99,7 +99,7 @@ class FilterDescriptionUI {
         if (!element) return;
         
         let description = this.getLocationText(filters, userLocation);
-        element.textContent = `[${description}]`;
+        element.textContent = `${description}`;
     }
 
     /**

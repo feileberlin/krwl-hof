@@ -7,6 +7,9 @@
  */
 
 class CustomDropdown {
+    // Static registry to track all dropdown instances
+    static instances = [];
+    
     constructor(triggerEl, items, currentValue, onSelect) {
         this.triggerEl = triggerEl;
         this.itemsProvider = typeof items === 'function' ? items : null;
@@ -17,6 +20,9 @@ class CustomDropdown {
         this.dropdownEl = null;
         this.isOpen = false;
         
+        // Register this instance
+        CustomDropdown.instances.push(this);
+        
         this.setupTrigger();
     }
     
@@ -26,16 +32,20 @@ class CustomDropdown {
             if (this.isOpen) {
                 this.close();
             } else {
-                this.closeAllDropdowns();
+                // Close all other dropdowns (one-click switch)
+                CustomDropdown.closeAll();
                 this.open();
             }
         });
     }
     
-    closeAllDropdowns() {
-        // Close any existing dropdowns
-        document.querySelectorAll('.filter-bar-dropdown').forEach(d => d.remove());
-        document.querySelectorAll('.filter-bar-item').forEach(el => el.classList.remove('editing'));
+    static closeAll() {
+        // Close all dropdown instances properly
+        CustomDropdown.instances.forEach(instance => {
+            if (instance.isOpen) {
+                instance.close();
+            }
+        });
     }
     
     open() {
