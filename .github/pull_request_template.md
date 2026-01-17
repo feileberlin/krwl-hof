@@ -43,7 +43,7 @@
 - [ ] Ran relevant tests: `python3 tests/test_*.py --verbose`
 - [ ] Verified KISS compliance: `python3 src/modules/kiss_checker.py` (if applicable)
 - [ ] Ran feature verification: `python3 src/modules/feature_verifier.py --verbose`
-- [ ] If frontend changes: Ran `python3 src/event_manager.py build production`
+- [ ] If frontend changes: Ran `python3 src/event_manager.py generate`
 - [ ] Tested manually (TUI, generated HTML, etc.)
 - [ ] Updated documentation if needed
 

@@ -29,7 +29,7 @@ python3 src/event_manager.py --help
 
 # Run specific command
 python3 src/event_manager.py scrape
-python3 src/event_manager.py build production
+python3 src/event_manager.py generate
 ```
 
 ## Subdirectories
