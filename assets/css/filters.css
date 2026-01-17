@@ -66,6 +66,8 @@
 @media (prefers-reduced-motion: reduce) {
     #event-filter-bar[data-filter-effect]::after {
         animation: none;
+        content: '';
+        margin-left: 0;
     }
 }
 

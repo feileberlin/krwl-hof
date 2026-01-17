@@ -1750,6 +1750,22 @@ window.DASHBOARD_ICONS = {json.dumps(DASHBOARD_ICONS_MAP, ensure_ascii=False)};'
             }
         else:
             runtime_config['weather'] = {'enabled': False}
+
+        required_styles = ['leaflet_css', 'app_css']
+        for key in required_styles:
+            if key not in stylesheets or not stylesheets.get(key):
+                logger.warning(f"Missing stylesheet content for '{key}' during HTML build")
+
+        required_scripts = ['leaflet_js', 'app_js']
+        for key in required_scripts:
+            if key not in scripts or not scripts.get(key):
+                logger.warning(f"Missing script content for '{key}' during HTML build")
+
+        leaflet_css = stylesheets.get('leaflet_css', '')
+        app_css = stylesheets.get('app_css', '')
+        roboto_fonts = stylesheets.get('roboto_fonts', '')
+        leaflet_js = scripts.get('leaflet_js', '// Leaflet JS missing')
+        app_js = scripts.get('app_js', '// App JS missing')
         
         # Add moon phase and Sunday data for time filters
         try:
@@ -1888,10 +1904,10 @@ window.DEBUG_INFO = {debug_info_json};'''
             html_head.format(
                 app_name=app_name,
                 favicon=favicon,
-                roboto_fonts=stylesheets.get('roboto_fonts', ''),
+                roboto_fonts=roboto_fonts,
                 design_tokens_css=design_tokens_css,
-                leaflet_css=stylesheets.get('leaflet_css', ''),
-                app_css=stylesheets.get('app_css', '')
+                leaflet_css=leaflet_css,
+                app_css=app_css
             ),
             self.html_component_comment('html-head.html', 'end'),
             self.html_component_comment('html-body-open.html', 'start'),
@@ -1927,9 +1943,9 @@ window.DEBUG_INFO = {debug_info_json};'''
                 embedded_data=embedded_data,
                 config_loader=config_loader,
                 fetch_interceptor=fetch_interceptor,
-                leaflet_js=scripts['leaflet_js'],
+                leaflet_js=leaflet_js,
                 lucide_js=scripts.get('lucide_js', '// Lucide not available'),
-                app_js=scripts['app_js']
+                app_js=app_js
             ),
             self.html_component_comment('html-body-close.html', 'end')
         ]

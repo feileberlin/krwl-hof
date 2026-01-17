@@ -57,8 +57,10 @@ class FilterDescriptionUI {
             return;
         }
         clearTimeout(element._typingTimer);
-        const typoIndex = text.length > 6 ? 3 : -1;
-        const typoChar = typoIndex > -1 ? (text[typoIndex] === ' ' ? 'x' : 'x') : '';
+        const minTypoLength = 6;
+        const defaultTypoIndex = 3;
+        const typoIndex = text.length > minTypoLength ? Math.min(defaultTypoIndex, text.length - 1) : -1;
+        const typoChar = typoIndex > -1 ? 'x' : '';
         const frames = [];
         for (let i = 1; i <= text.length; i++) {
             if (i === typoIndex && typoChar) {
@@ -68,6 +70,10 @@ class FilterDescriptionUI {
             frames.push(text.slice(0, i));
         }
         const step = () => {
+            if (!element.isConnected) {
+                clearTimeout(element._typingTimer);
+                return;
+            }
             element.textContent = frames.shift() || text;
             if (frames.length) element._typingTimer = setTimeout(step, this.typingSpeed);
         };

@@ -44,6 +44,7 @@ class TestRunner:
             'test_dev_environment',
             'test_linter',
             'test_validation',
+            'test_filter_sentence_effect',
             'test_dependency_resilience',
             'test_dependency_url_construction',
             'test_leaflet_compatibility',

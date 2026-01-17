@@ -172,6 +172,23 @@ def validate_config(config: dict) -> None:
                     f'scraping.sources[{idx}].type',
                     f"Source type must be one of {allowed_types}, got: {source['type']}"
                 )
+
+    # Validate filter sentence typing configuration
+    filter_sentence = config.get('filter_sentence')
+    if filter_sentence:
+        effect = filter_sentence.get('effect')
+        if effect and effect not in ('terminal', 'typewriter'):
+            raise ConfigurationError(
+                'filter_sentence.effect',
+                "Effect must be 'terminal' or 'typewriter'"
+            )
+        typing_speed = filter_sentence.get('typing_speed_ms')
+        if typing_speed is not None:
+            if not isinstance(typing_speed, int) or typing_speed <= 0:
+                raise ConfigurationError(
+                    'filter_sentence.typing_speed_ms',
+                    "Typing speed must be a positive integer (ms)"
+                )
     
     logger.debug("Configuration validation passed")
 
@@ -286,14 +303,22 @@ def load_config(base_path):
 
 
 def _resolve_json_path(base_path, filename):
-    """Resolve JSON file path with legacy data/ fallback."""
+    """
+    Resolve JSON file path with legacy data/ fallback.
+    
+    Prefer the location where the specific file already exists.
+    If the file does not exist in either location, default to the
+    new assets/json directory as the creation target.
+    """
     assets_dir = base_path / 'assets' / 'json'
     data_dir = base_path / 'data'
-    if (assets_dir / filename).exists() or assets_dir.exists():
-        return assets_dir / filename
-    if (data_dir / filename).exists() or data_dir.exists():
-        return data_dir / filename
-    return assets_dir / filename
+    assets_path = assets_dir / filename
+    data_path = data_dir / filename
+    if assets_path.exists():
+        return assets_path
+    if data_path.exists():
+        return data_path
+    return assets_path
 
 
 def _load_json_file(path, default):

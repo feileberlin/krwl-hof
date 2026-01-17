@@ -358,6 +358,7 @@ class EventScraper:
         events = []
         try:
             if 'example.com' in source.get('url', ''):
+                logger.info("Skipping RSS source with example.com placeholder URL: %s", source.get('url', ''))
                 return []
             logger.debug(f"Parsing RSS feed: {source['url']}")
             feed = feedparser.parse(source['url'])
@@ -391,6 +392,7 @@ class EventScraper:
         events = []
         try:
             if 'example.com' in source.get('url', ''):
+                logger.info("Skipping API source with example.com placeholder URL: %s", source.get('url', ''))
                 return []
             logger.debug(f"Fetching from API: {source['url']}")
             response = self._make_request(source['url'])
@@ -423,6 +425,7 @@ class EventScraper:
         events = []
         try:
             if 'example.com' in source.get('url', ''):
+                logger.info("Skipping HTML source with example.com placeholder URL: %s", source.get('url', ''))
                 return []
             logger.debug(f"Fetching HTML page: {source['url']}")
             response = self._make_request(source['url'])
