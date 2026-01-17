@@ -286,6 +286,9 @@ COMMANDS:
     archive-monthly --dry-run Preview archiving without making changes
     archive-info              Show archiving configuration and existing archives
     archive                   Archive past events to archived_events.json (legacy)
+    resolve-locations         Resolve generic location names to specific venues
+    resolve-locations --dry-run Preview location resolution without making changes
+    resolve-locations EVENT_ID Resolve location for a single event by ID
     load-examples             Load example data for development
     clear-data                Clear all event data
     scraper-info              Show scraper capabilities (JSON output for workflows)
@@ -1398,6 +1401,62 @@ def cli_archive_info(base_path, config):
         return 1
 
 
+def cli_resolve_locations(base_path, config, dry_run=False, event_id=None):
+    """
+    Resolve generic location names to specific venues.
+    
+    Scans pending events for generic location names ("Hof", "Frankenpost")
+    and attempts to fetch the actual venue from the event detail page.
+    
+    Usage:
+        python3 src/event_manager.py resolve-locations              # Resolve all
+        python3 src/event_manager.py resolve-locations --dry-run    # Preview
+        python3 src/event_manager.py resolve-locations EVENT_ID     # Resolve one
+    
+    Args:
+        base_path: Repository root path
+        config: Application configuration
+        dry_run: If True, show what would be changed without making changes
+        event_id: Optional event ID to resolve single event
+    """
+    from modules.location_resolver import LocationResolver
+    
+    print("=" * 70)
+    print("Location Resolution Tool")
+    print("=" * 70)
+    print()
+    
+    if dry_run:
+        print("🔍 DRY RUN MODE - No changes will be made")
+        print()
+    
+    resolver = LocationResolver(base_path, config)
+    
+    if event_id:
+        # Resolve single event
+        print(f"Resolving location for event: {event_id}")
+        result = resolver.resolve_single_event(event_id, dry_run=dry_run)
+        
+        if result.get('success'):
+            print(f"\n✓ Success!")
+            print(f"  Title: {result['title']}")
+            print(f"  {result['old_location']} → {result['new_location']}")
+            print(f"  URL: {result['url']}")
+            return 0
+        else:
+            print(f"\n✗ Failed: {result.get('error', 'Unknown error')}")
+            return 1
+    else:
+        # Resolve all pending events
+        result = resolver.resolve_pending_events(dry_run=dry_run)
+        
+        if result.get('error'):
+            print(f"\n✗ Error: {result['error']}")
+            return 1
+        
+        return 0
+
+
 def cli_test(base_path, test_name=None, verbose=False, list_tests=False):
     """CLI: Run tests
     
@@ -1699,6 +1758,16 @@ def _execute_command(args, base_path, config):
     
     if command == 'archive':
         return cli_archive_old_events(base_path)
+    
+    if command == 'resolve-locations':
+        # Parse location resolver arguments
+        dry_run = '--dry-run' in args.args if args.args else False
+        
+        # Filter out flags to get the event ID
+        event_args = [arg for arg in (args.args or []) if not arg.startswith('--')]
+        event_id = event_args[0] if event_args else None
+        
+        return cli_resolve_locations(base_path, config, dry_run=dry_run, event_id=event_id)
     
     if command == 'load-examples':
         return cli_load_examples(base_path)
