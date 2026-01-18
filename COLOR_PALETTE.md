@@ -32,8 +32,8 @@ A **monochromatic color scheme** uses variations of a single hue by adjusting:
 
 | Name | Hex | RGB | CSS Variable | Usage |
 |------|-----|-----|--------------|-------|
-| **█ ecoBarbie Base** | `#D689B8` | 214, 137, 184 | `--color-primary` | Primary brand color, accents, highlights |
-| **█ ecoBarbie Hover** | `#E8A5C8` | 232, 165, 200 | `--color-primary-hover` | Hover states for primary |
+| **█ Primary** | `#D689B8` | 214, 137, 184 | `--color-primary` | Primary brand color, accents, highlights |
+| **█ Primary Hover** | `#E8A5C8` | 232, 165, 200 | `--color-primary-hover` | Hover states for primary |
 | **█ Success** | `#D689B8` | 214, 137, 184 | `--color-success` | Success state (uses primary) |
 
 ### ecoBarbie Tints (+ White) - Scientifically Generated
@@ -42,10 +42,10 @@ A **monochromatic color scheme** uses variations of a single hue by adjusting:
 
 | Name | Hex | RGB | CSS Variable | Lightness |
 |------|-----|-----|--------------|-----------|
-| **█ Tint 20%** | `#de96c2` | 222, 150, 194 | `--color-ecobarbie-tint-20` | Subtle tint |
-| **█ Tint 40%** | `#e6a4cc` | 230, 164, 204 | `--color-ecobarbie-tint-40` | Light backgrounds |
-| **█ Tint 60%** | `#eeb2d7` | 238, 178, 215 | `--color-ecobarbie-tint-60` | Very light backgrounds |
-| **█ Tint 80%** | `#f6c1e2` | 246, 193, 226 | `--color-ecobarbie-tint-80` | Ultra-light highlights |
+| **█ Tint 20%** | `#de96c2` | 222, 150, 194 | `--color-tint-20` | Subtle tint |
+| **█ Tint 40%** | `#e6a4cc` | 230, 164, 204 | `--color-tint-40` | Light backgrounds |
+| **█ Tint 60%** | `#eeb2d7` | 238, 178, 215 | `--color-tint-60` | Very light backgrounds |
+| **█ Tint 80%** | `#f6c1e2` | 246, 193, 226 | `--color-tint-80` | Ultra-light highlights |
 
 ### ecoBarbie Shades (+ Black) - Scientifically Generated
 
@@ -53,10 +53,10 @@ A **monochromatic color scheme** uses variations of a single hue by adjusting:
 
 | Name | Hex | RGB | CSS Variable | Darkness |
 |------|-----|-----|--------------|----------|
-| **█ Shade 20%** | `#ab6d93` | 171, 109, 147 | `--color-ecobarbie-shade-20` | Medium dark |
-| **█ Shade 40%** | `#80526e` | 128, 82, 110 | `--color-ecobarbie-shade-40` | Dark accents |
-| **█ Shade 60%** | `#553649` | 85, 54, 73 | `--color-ecobarbie-shade-60` | Very dark backgrounds |
-| **█ Shade 80%** | `#2a1b24` | 42, 27, 36 | `--color-ecobarbie-shade-80` | Near-black backgrounds |
+| **█ Shade 20%** | `#ab6d93` | 171, 109, 147 | `--color-shade-20` | Medium dark |
+| **█ Shade 40%** | `#80526e` | 128, 82, 110 | `--color-shade-40` | Dark accents |
+| **█ Shade 60%** | `#553649` | 85, 54, 73 | `--color-shade-60` | Very dark backgrounds |
+| **█ Shade 80%** | `#2a1b24` | 42, 27, 36 | `--color-shade-80` | Near-black backgrounds |
 
 ### ecoBarbie Tones (+ Grey) - Scientifically Generated
 
@@ -64,20 +64,20 @@ A **monochromatic color scheme** uses variations of a single hue by adjusting:
 
 | Name | Hex | RGB | CSS Variable | Saturation |
 |------|-----|-----|--------------|------------|
-| **█ Tone 20%** | `#d698be` | 214, 152, 190 | `--color-ecobarbie-tone-20` | Slightly desaturated |
-| **█ Tone 40%** | `#d6a7c4` | 214, 167, 196 | `--color-ecobarbie-tone-40` | Moderate desaturation |
-| **█ Tone 60%** | `#d6b7ca` | 214, 183, 202 | `--color-ecobarbie-tone-60` | Soft neutral |
-| **█ Tone 80%** | `#d6c6d0` | 214, 198, 208 | `--color-ecobarbie-tone-80` | Very soft neutral |
+| **█ Tone 20%** | `#d698be` | 214, 152, 190 | `--color-tone-20` | Slightly desaturated |
+| **█ Tone 40%** | `#d6a7c4` | 214, 167, 196 | `--color-tone-40` | Moderate desaturation |
+| **█ Tone 60%** | `#d6b7ca` | 214, 183, 202 | `--color-tone-60` | Soft neutral |
+| **█ Tone 80%** | `#d6c6d0` | 214, 198, 208 | `--color-tone-80` | Very soft neutral |
 
 ### Legacy Colors (Backward Compatibility)
 
 | Name | Hex | RGB | CSS Variable | Notes |
 |------|-----|-----|--------------|-------|
-| **█ Medium Tint** | `#FFB3DF` | 255, 179, 223 | `--color-ecobarbie-medium-tint` | Legacy bright tint |
-| **█ Light Tone** | `#D689B8` | 214, 137, 184 | `--color-ecobarbie-light-tone` | Duplicate of primary |
-| **█ Medium Tone** | `#B05F8E` | 176, 95, 142 | `--color-ecobarbie-medium-tone` | Similar to shade_20 |
-| **█ Dark Tone** | `#8A4A70` | 138, 74, 112 | `--color-ecobarbie-dark-tone` | Similar to shade_40 |
-| **█ Light Shade** | `#BF5087` | 191, 80, 135 | `--color-ecobarbie-light-shade` | Consider removing |
+| **█ Medium Tint** | `#FFB3DF` | 255, 179, 223 | `--color-medium-tint` | Legacy bright tint |
+| **█ Light Tone** | `#D689B8` | 214, 137, 184 | `--color-light-tone` | Duplicate of primary |
+| **█ Medium Tone** | `#B05F8E` | 176, 95, 142 | `--color-medium-tone` | Similar to shade_20 |
+| **█ Dark Tone** | `#8A4A70` | 138, 74, 112 | `--color-dark-tone` | Similar to shade_40 |
+| **█ Light Shade** | `#BF5087` | 191, 80, 135 | `--color-light-shade` | Consider removing |
 
 ### Neutral Greys & Blacks
 
@@ -312,6 +312,19 @@ All colors are defined in **sRGB** color space for maximum web compatibility.
 
 ## Version History
 
+- **v2.2** (2026-01-18): Simplified naming - removed "ecobarbie" prefix
+  - Renamed: `ecobarbie_tint_*` → `tint_*` (shorter, cleaner names)
+  - Renamed: `ecobarbie_shade_*` → `shade_*`
+  - Renamed: `ecobarbie_tone_*` → `tone_*`
+  - Renamed: `ecobarbie_*` legacy colors → simplified names
+  - All colors still derive from ecoBarbie (#D689B8) but with concise naming
+  - CSS variables now use shorter names: `--color-tint-20` instead of `--color-ecobarbie-tint-20`
+- **v2.1** (2026-01-18): Consistent ecoBarbie naming for all pink colors
+  - Renamed: `primary` → `ecobarbie_primary` (with alias for compatibility)
+  - Renamed: `primary_hover` → `ecobarbie_primary_hover` (with alias)
+  - Renamed: `success` → `ecobarbie_success` (with alias)
+  - All ecoBarbie-derived colors now follow `ecobarbie_*` naming scheme
+  - Backward-compatible aliases maintained for existing code
 - **v2.0** (2026-01-18): Scientifically-generated monochromatic palette
   - Added 12 new scientifically-calculated colors (4 tints, 4 shades, 4 tones)
   - Implemented inline color preview system with █ blocks
