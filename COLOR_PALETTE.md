@@ -2,17 +2,18 @@
 
 **Status:** Read-Only Reference Document  
 **Purpose:** Professional color palette documentation  
-**Last Updated:** 2026-01-17
+**Last Updated:** 2026-01-18
 
 ---
 
 ## Overview
 
-This document serves as a **permanent reference** for the KRWL HOF monochromatic color palette based on the **ecoBarbie** theme. All colors are derived from a single base color and its variations through tints, shades, and tones.
+This document serves as a **permanent reference** for the KRWL HOF monochromatic color palette based on the **ecoBarbie** theme. All colors are derived from a single base color and its variations through scientifically-calculated tints, shades, and tones.
 
-**Base Color:** ecoBarbie `#D689B8` (RGB: 214, 137, 184)
+**Base Color:** ecoBarbie `#D689B8` (RGB: 214, 137, 184)  
+**Color Theory:** HSV: 323.4° hue, 36.0% saturation, 83.9% value
 
-> **Note:** This is a reference document only. The actual colors used in the application are defined in `config.json` under the `design.colors` section. To modify colors, edit `config.json` and regenerate design tokens using `python3 src/tools/generate_design_tokens.py`.
+> **Note:** This is a reference document only. The actual colors used in the application are defined in `config.json` under the `design.colors` section with inline color preview comments (█ blocks). To modify colors, edit `config.json` and regenerate design tokens using `python3 src/tools/generate_design_tokens.py`.
 
 ---
 
@@ -29,28 +30,54 @@ A **monochromatic color scheme** uses variations of a single hue by adjusting:
 
 ### Primary ecoBarbie Colors
 
-| Name | Hex | RGB | Usage | Contrast |
-|------|-----|-----|-------|----------|
-| **ecoBarbie Base** | `#D689B8` | 214, 137, 184 | Primary brand color, accents, highlights | 4.2:1 on dark bg |
-| **ecoBarbie Light** | `#E8A5C8` | 232, 165, 200 | Hover states, lighter accents | 5.5:1 on dark bg |
-| **ecoBarbie Medium Tint** | `#FFB3DF` | 255, 179, 223 | Bright highlights, badges | 7.0:1 on dark bg |
+| Name | Hex | RGB | CSS Variable | Usage |
+|------|-----|-----|--------------|-------|
+| **█ ecoBarbie Base** | `#D689B8` | 214, 137, 184 | `--color-primary` | Primary brand color, accents, highlights |
+| **█ ecoBarbie Hover** | `#E8A5C8` | 232, 165, 200 | `--color-primary-hover` | Hover states for primary |
+| **█ Success** | `#D689B8` | 214, 137, 184 | `--color-success` | Success state (uses primary) |
 
-### ecoBarbie Tones (+ Grey)
+### ecoBarbie Tints (+ White) - Scientifically Generated
 
-| Name | Hex | RGB | Usage |
-|------|-----|-----|-------|
-| **Light Tone** | `#D689B8` | 214, 137, 184 | Same as base |
-| **Medium Tone** | `#B05F8E` | 176, 95, 142 | Subtle accents, borders |
-| **Dark Tone** | `#8A4A70` | 138, 74, 112 | Deep accents |
+**Usage:** Light backgrounds, hover states, subtle highlights, soft UI elements
 
-### ecoBarbie Shades (+ Black)
+| Name | Hex | RGB | CSS Variable | Lightness |
+|------|-----|-----|--------------|-----------|
+| **█ Tint 20%** | `#de96c2` | 222, 150, 194 | `--color-ecobarbie-tint-20` | Subtle tint |
+| **█ Tint 40%** | `#e6a4cc` | 230, 164, 204 | `--color-ecobarbie-tint-40` | Light backgrounds |
+| **█ Tint 60%** | `#eeb2d7` | 238, 178, 215 | `--color-ecobarbie-tint-60` | Very light backgrounds |
+| **█ Tint 80%** | `#f6c1e2` | 246, 193, 226 | `--color-ecobarbie-tint-80` | Ultra-light highlights |
 
-| Name | Hex | RGB | Usage |
-|------|-----|-----|-------|
-| **Light Shade** | `#BF5087` | 191, 80, 135 | Vibrant accents |
-| **Medium Shade** | `#80355A` | 128, 53, 90 | Dark UI elements |
-| **Dark Shade** | `#401B2D` | 64, 27, 45 | Very dark backgrounds |
-| **Darkest Shade** | `#200D16` | 32, 13, 22 | Almost black backgrounds |
+### ecoBarbie Shades (+ Black) - Scientifically Generated
+
+**Usage:** Text on light backgrounds, borders, dark accents, depth, shadows
+
+| Name | Hex | RGB | CSS Variable | Darkness |
+|------|-----|-----|--------------|----------|
+| **█ Shade 20%** | `#ab6d93` | 171, 109, 147 | `--color-ecobarbie-shade-20` | Medium dark |
+| **█ Shade 40%** | `#80526e` | 128, 82, 110 | `--color-ecobarbie-shade-40` | Dark accents |
+| **█ Shade 60%** | `#553649` | 85, 54, 73 | `--color-ecobarbie-shade-60` | Very dark backgrounds |
+| **█ Shade 80%** | `#2a1b24` | 42, 27, 36 | `--color-ecobarbie-shade-80` | Near-black backgrounds |
+
+### ecoBarbie Tones (+ Grey) - Scientifically Generated
+
+**Usage:** Subtle accents, disabled states, secondary elements, soft UI, muted effects
+
+| Name | Hex | RGB | CSS Variable | Saturation |
+|------|-----|-----|--------------|------------|
+| **█ Tone 20%** | `#d698be` | 214, 152, 190 | `--color-ecobarbie-tone-20` | Slightly desaturated |
+| **█ Tone 40%** | `#d6a7c4` | 214, 167, 196 | `--color-ecobarbie-tone-40` | Moderate desaturation |
+| **█ Tone 60%** | `#d6b7ca` | 214, 183, 202 | `--color-ecobarbie-tone-60` | Soft neutral |
+| **█ Tone 80%** | `#d6c6d0` | 214, 198, 208 | `--color-ecobarbie-tone-80` | Very soft neutral |
+
+### Legacy Colors (Backward Compatibility)
+
+| Name | Hex | RGB | CSS Variable | Notes |
+|------|-----|-----|--------------|-------|
+| **█ Medium Tint** | `#FFB3DF` | 255, 179, 223 | `--color-ecobarbie-medium-tint` | Legacy bright tint |
+| **█ Light Tone** | `#D689B8` | 214, 137, 184 | `--color-ecobarbie-light-tone` | Duplicate of primary |
+| **█ Medium Tone** | `#B05F8E` | 176, 95, 142 | `--color-ecobarbie-medium-tone` | Similar to shade_20 |
+| **█ Dark Tone** | `#8A4A70` | 138, 74, 112 | `--color-ecobarbie-dark-tone` | Similar to shade_40 |
+| **█ Light Shade** | `#BF5087` | 191, 80, 135 | `--color-ecobarbie-light-shade` | Consider removing |
 
 ### Neutral Greys & Blacks
 
@@ -226,6 +253,44 @@ To add a new color to the palette:
 
 ---
 
+## Color Preview System in config.json
+
+### How It Works
+
+The project uses a clever system for providing **inline color previews** directly in `config.json`:
+
+1. **Color blocks (█)** - Unicode block character provides visual color reference
+2. **_preview_* keys** - Special comment keys that show hex codes with descriptions
+3. **Auto-generation** - Design token generator converts these to CSS variables
+
+### Example from config.json
+
+```json
+{
+  "design": {
+    "colors": {
+      "ecobarbie_tint_40": "#e6a4cc",
+      "_preview_tint_40": "█ #e6a4cc - 40% lighter (light backgrounds)"
+    }
+  }
+}
+```
+
+### Benefits
+
+- ✅ **Quick identification** - See color at a glance in text editor
+- ✅ **Documentation** - Color purpose embedded right next to definition
+- ✅ **No duplication** - Single source of truth for colors
+- ✅ **Valid JSON** - _preview_* keys are ignored by parsers but visible to humans
+- ✅ **IDE support** - Most editors show Unicode blocks in actual colors
+
+### Best Practices
+
+1. **Always add _preview** - For every color, add a `_preview_*` comment key
+2. **Use █ symbol** - Standard Unicode block character (U+2588)
+3. **Format:** `█ #hexcode - descriptive text`
+4. **Keep organized** - Group related colors with `_comment_*_section` headers
+
 ## Technical Notes
 
 ### Color Space
@@ -247,6 +312,12 @@ All colors are defined in **sRGB** color space for maximum web compatibility.
 
 ## Version History
 
+- **v2.0** (2026-01-18): Scientifically-generated monochromatic palette
+  - Added 12 new scientifically-calculated colors (4 tints, 4 shades, 4 tones)
+  - Implemented inline color preview system with █ blocks
+  - Organized colors into logical sections with clear usage guidelines
+  - Kept legacy colors for backward compatibility
+  - Updated documentation with CSS variable references
 - **v1.0** (2026-01-17): Initial comprehensive palette documentation
   - Documented all 60+ color variations
   - Added RGBA alpha channel reference
