@@ -827,6 +827,185 @@ strong, b {
     font-size: 0.9rem;
 }
 
+/* Custom Location Edit Mode Styles */
+
+/* Edit state container */
+.custom-location-edit {
+    animation: fadeIn 0.2s ease-in;
+}
+
+.custom-location-view {
+    animation: fadeIn 0.2s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Edit header */
+.custom-location-edit-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-primary);
+    font-weight: 500;
+    font-size: 0.9rem;
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-secondary);
+}
+
+/* Form layout */
+.custom-location-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+}
+
+.form-group label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* Input styling with EcoBarbie theme */
+.custom-location-input {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-secondary);
+    color: var(--text-primary);
+    padding: 0.5rem 0.7rem;
+    border-radius: var(--radius-small);
+    font-size: 0.85rem;
+    font-family: inherit;
+    transition: all 0.2s;
+}
+
+.custom-location-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    background: var(--bg-secondary);
+    box-shadow: 0 0 0 2px rgba(214, 137, 184, 0.15);
+}
+
+.custom-location-input:hover:not(:focus) {
+    border-color: var(--border-primary);
+}
+
+/* Input error state */
+.custom-location-input.input-error {
+    border-color: var(--color-error);
+    animation: shake 0.3s;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.error-message {
+    color: var(--color-error);
+    font-size: 0.75rem;
+    margin-top: 0.2rem;
+    animation: fadeIn 0.2s;
+}
+
+/* Edit action buttons */
+.custom-location-edit-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.3rem;
+}
+
+/* Save button - primary action with EcoBarbie accent */
+.custom-location-btn--save {
+    background: var(--color-primary);
+    color: var(--bg-primary);
+    border-color: var(--color-primary);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+}
+
+.custom-location-btn--save:hover {
+    background: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
+    color: var(--bg-primary);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(214, 137, 184, 0.3);
+}
+
+/* Cancel button - secondary action */
+.custom-location-btn--cancel {
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    border-color: var(--border-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+}
+
+.custom-location-btn--cancel:hover {
+    background: var(--bg-primary);
+    border-color: var(--border-primary);
+    color: var(--text-primary);
+}
+
+/* Updated button styles to support icons */
+.custom-location-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    white-space: nowrap;
+}
+
+.custom-location-btn i {
+    flex-shrink: 0;
+}
+
+/* Save success animation */
+.custom-location-item.save-success {
+    animation: successPulse 0.5s ease-out;
+}
+
+@keyframes successPulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(214, 137, 184, 0.4);
+    }
+    50% {
+        transform: scale(1.02);
+        box-shadow: 0 0 0 8px rgba(214, 137, 184, 0);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(214, 137, 184, 0);
+    }
+}
+
 /* Environment and debug mode state classes */
 .env-dev {
     color: var(--color-ecobarbie-medium-tint);
