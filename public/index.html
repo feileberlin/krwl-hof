@@ -254,6 +254,22 @@ noscript {
     font-weight: bold;
 }
 
+/* Progressive Enhancement: Hide JS-dependent content when JavaScript is disabled */
+/* The .requires-js class is added to the #app wrapper */
+.requires-js {
+    display: none;
+}
+
+/* When JavaScript loads, it adds .js-enabled to <html> and shows the app */
+html.js-enabled .requires-js {
+    display: block;
+}
+
+/* Hide noscript content when JavaScript is enabled */
+html.js-enabled noscript {
+    display: none !important;
+}
+
 
 /* Map */
 
@@ -1265,9 +1281,21 @@ noscript {
 }
 
 
-/* Mobile */
+/* Mobile-First Responsive Styles */
+/* 
+ * MOBILE-FIRST APPROACH:
+ * - Baseline styles are for mobile (320px - 767px)
+ * - Media queries use min-width to ENHANCE for larger screens
+ * - Touch targets are at least 44x44px (iOS Human Interface Guidelines)
+ * - Font size is 16px minimum to prevent iOS zoom on focus
+ * 
+ * BREAKPOINTS:
+ * - Mobile: 320px - 767px (baseline, no media query)
+ * - Tablet: 768px - 1023px (@media min-width: 768px)
+ * - Desktop: 1024px+ (@media min-width: 1024px)
+ */
 
-/* Mobile optimizations */
+/* Mobile optimizations (baseline - applies to all screens) */
 @media (max-width: 768px) {
     #dashboard-menu {
         padding: 0.5rem;
@@ -2218,7 +2246,6 @@ strong, b {
 
 .custom-location-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
     margin-bottom: 0.3rem;
     gap: 0.5rem;
@@ -2242,6 +2269,7 @@ strong, b {
     display: flex;
     gap: 0.4rem;
     flex-shrink: 0; /* Prevent buttons from shrinking */
+    margin-right: 0.5rem; /* Add spacing after buttons */
 }
 
 .custom-location-btn {
@@ -3382,6 +3410,9 @@ strong, b {
 <div style="max-width:1200px;margin:0 auto;padding:2rem;background:#1a1a1a;color:#fff;font-family:sans-serif"><h1 style="color:#D689B8;margin-bottom:1rem">KRWL HOF Community Events</h1><div style="background:#401B2D;padding:1rem;border-radius:8px;margin-bottom:1.5rem;border-left:4px solid #D689B8"><p style="margin:0;color:#E8A5C8"><strong>⚠️ JavaScript is disabled.</strong></p><p style="margin:0.5rem 0 0 0;color:#ccc;font-size:0.9rem">Enable JavaScript for interactive map.</p></div><p style="color:#888;text-align:center;padding:2rem">No upcoming events.</p><footer style="margin-top:2rem;padding-top:2rem;border-top:1px solid #3a3a3a;color:#888;text-align:center"><p style="margin:0">Enable JavaScript for best experience.</p></footer></div>
 </noscript>
 
+<!-- App container - requires JavaScript to function -->
+<div id="app" class="requires-js" style="display: none;">
+
 
 
 <!-- Layer 1: Fullscreen map -->
@@ -3617,6 +3648,8 @@ multiple sources.</p>
 <!-- Layer 4: Modals (reserved for future use) -->
 
 
+</div><!-- End #app -->
+
 <script>
 // Data embedded by backend (site_generator.py) - frontend does NOT fetch files
 // config.json is backend-only, frontend uses this minimal runtime config
@@ -3825,6 +3858,7 @@ class EventStorage {
                 locationType: filters.locationType,
                 selectedPredefinedLocation: filters.selectedPredefinedLocation,
                 selectedCustomLocation: filters.selectedCustomLocation,
+                selectedCustomLocationName: filters.selectedCustomLocationName, // Save display name
                 useCustomLocation: filters.useCustomLocation,
                 customLat: filters.customLat,
                 customLon: filters.customLon
@@ -3853,6 +3887,16 @@ class EventStorage {
                     category: 'all',
                     timeFilter: 'sunrise'
                 };
+                
+                // Restore custom location name if missing (for backward compatibility)
+                if (filters.locationType === 'custom' && filters.selectedCustomLocation && !filters.selectedCustomLocationName) {
+                    const customLoc = this.getCustomLocationById(filters.selectedCustomLocation);
+                    if (customLoc) {
+                        filters.selectedCustomLocationName = customLoc.name;
+                        this.log('Restored missing custom location name:', customLoc.name);
+                    }
+                }
+                
                 this.log('Filters loaded from localStorage (category and timeFilter reset to defaults)', filters);
                 return filters;
             }
@@ -6313,12 +6357,12 @@ class DashboardUI {
                     <!-- View State -->
                     <div class="custom-location-view">
                         <div class="custom-location-header">
+                            <div class="custom-location-actions">
+                                ${actionButtons}
+                            </div>
                             <div class="custom-location-name">
                                 <i data-lucide="${iconType}" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle;"></i>
                                 <span class="location-name-text">${loc.name}</span>
-                            </div>
-                            <div class="custom-location-actions">
-                                ${actionButtons}
                             </div>
                         </div>
                         <div class="custom-location-coords">${loc.lat.toFixed(4)}°, ${loc.lon.toFixed(4)}°</div>
@@ -7617,7 +7661,20 @@ class EventListeners {
 // MODULE: app.js
 // SOURCE: assets/js/app.js
 // ============================================================================
+// ============================================================================
+// PROGRESSIVE ENHANCEMENT: Enable JavaScript-dependent content
+// ============================================================================
+// This runs immediately (before DOMContentLoaded) to show the app container
+// and hide the noscript fallback. Without JavaScript, users see event listings.
+(function enableJavaScriptContent() {
+    document.documentElement.classList.add('js-enabled');
+    var appEl = document.getElementById('app');
+    if (appEl) appEl.style.display = 'block';
+})();
+
+// ============================================================================
 // KRWL HOF Community Events App - KISS Refactored
+// ============================================================================
 // 
 // This file coordinates modules and handles UI interactions.
 // Core logic delegated to focused modules (each < 500 lines):
