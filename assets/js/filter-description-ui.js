@@ -8,9 +8,8 @@
  */
 
 class FilterDescriptionUI {
-    constructor(config, storage = null) {
+    constructor(config) {
         this.config = config;
-        this.storage = storage;
         
         // Lookup tables for filter descriptions (KISS: replace switch statements)
         this.TIME_DESCRIPTIONS = {
@@ -137,9 +136,9 @@ class FilterDescriptionUI {
             return this.getPredefinedLocationText(filters.selectedPredefinedLocation);
         }
         
-        // Custom location
-        if (filters.locationType === 'custom' && filters.selectedCustomLocation) {
-            return this.getCustomLocationText(filters.selectedCustomLocation);
+        // Custom location - use stored name (KISS: no lookup needed)
+        if (filters.locationType === 'custom' && filters.selectedCustomLocationName) {
+            return `from ${filters.selectedCustomLocationName}`;
         }
         
         // Geolocation - always show "from here" when geolocation is active
@@ -162,23 +161,6 @@ class FilterDescriptionUI {
         if (!selectedLoc) return 'from here';
         
         return `from ${selectedLoc.display_name}`;
-    }
-    
-    /**
-     * Get custom location text
-     * @param {string} locationId - ID of custom location
-     * @returns {string} Location text
-     */
-    getCustomLocationText(locationId) {
-        if (!this.storage) {
-            return 'from custom location';
-        }
-        
-        const customLoc = this.storage.getCustomLocationById(locationId);
-        
-        if (!customLoc) return 'from custom location';
-        
-        return `from ${customLoc.name}`;
     }
     
     /**
