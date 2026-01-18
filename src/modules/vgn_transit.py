@@ -58,6 +58,21 @@ class RegionalSource:
     travel_time_minutes: int
 
 
+@dataclass
+class CulturalVenue:
+    """Represents a cultural venue discovered near transit stations"""
+    name: str
+    venue_type: str  # 'museum', 'theatre', 'gallery', 'cinema', 'community_centre'
+    latitude: float
+    longitude: float
+    address: Optional[str] = None
+    website: Optional[str] = None
+    nearest_station: Optional[str] = None
+    distance_to_station_km: Optional[float] = None
+    travel_time_minutes: Optional[int] = None
+    osm_id: Optional[str] = None
+
+
 class VGNTransit:
     """
     VGN Transit Integration for Reachability Analysis
@@ -462,3 +477,263 @@ class VGNTransit:
                 logger.error(f"Error saving analysis report: {e}")
         
         return report
+    
+    def discover_cultural_venues(
+        self,
+        radius_km: float = 5.0,
+        max_travel_time_minutes: int = 30,
+        use_cache: bool = True
+    ) -> List[CulturalVenue]:
+        """
+        Discover cultural venues near reachable VGN stations (hybrid approach)
+        
+        Uses OpenStreetMap Overpass API to auto-discover venues, then caches
+        results in a local database for manual review and enrichment.
+        
+        Args:
+            radius_km: Search radius around each station in kilometers
+            max_travel_time_minutes: Maximum travel time to stations
+            use_cache: Use cached venues database if available
+            
+        Returns:
+            List of cultural venues with deduplication
+        """
+        venues = []
+        venues_cache_path = self.base_path / 'assets' / 'json' / 'cultural_venues.json'
+        
+        # Try to load cached venues first
+        if use_cache and venues_cache_path.exists():
+            try:
+                venues = self._load_cached_venues(venues_cache_path)
+                logger.info(f"Loaded {len(venues)} venues from cache")
+                return venues
+            except Exception as e:
+                logger.warning(f"Error loading cached venues: {e}, will discover fresh")
+        
+        # Get reachable stations
+        stations = self.get_reachable_stations(max_travel_time_minutes)
+        
+        if not stations:
+            logger.warning("No reachable stations found")
+            return []
+        
+        # Query OpenStreetMap for cultural venues near each station
+        discovered_venues = []
+        seen_venues = set()  # For deduplication
+        
+        for station in stations:
+            try:
+                station_venues = self._query_osm_venues(
+                    station.latitude,
+                    station.longitude,
+                    radius_km
+                )
+                
+                for venue_data in station_venues:
+                    # Create unique key for deduplication
+                    venue_key = (venue_data.get('name', ''), 
+                                venue_data.get('lat'), 
+                                venue_data.get('lon'))
+                    
+                    if venue_key not in seen_venues:
+                        seen_venues.add(venue_key)
+                        
+                        # Calculate distance to station
+                        distance_km = self._calculate_distance(
+                            station.latitude, station.longitude,
+                            venue_data.get('lat'), venue_data.get('lon')
+                        )
+                        
+                        venue = CulturalVenue(
+                            name=venue_data.get('name', 'Unknown'),
+                            venue_type=venue_data.get('type', 'unknown'),
+                            latitude=venue_data.get('lat'),
+                            longitude=venue_data.get('lon'),
+                            address=venue_data.get('address'),
+                            website=venue_data.get('website'),
+                            nearest_station=station.name,
+                            distance_to_station_km=round(distance_km, 2),
+                            travel_time_minutes=station.travel_time_minutes,
+                            osm_id=venue_data.get('osm_id')
+                        )
+                        discovered_venues.append(venue)
+                
+                logger.info(f"Found {len(station_venues)} venues near {station.name}")
+                
+            except Exception as e:
+                logger.error(f"Error querying venues near {station.name}: {e}")
+                continue
+        
+        # Save discovered venues to cache for manual review
+        if discovered_venues:
+            self._save_venues_to_cache(discovered_venues, venues_cache_path)
+            logger.info(f"Saved {len(discovered_venues)} venues to cache")
+        
+        return discovered_venues
+    
+    def _query_osm_venues(
+        self,
+        lat: float,
+        lon: float,
+        radius_km: float
+    ) -> List[Dict]:
+        """
+        Query OpenStreetMap Overpass API for cultural venues
+        
+        Args:
+            lat: Latitude of search center
+            lon: Longitude of search center
+            radius_km: Search radius in kilometers
+            
+        Returns:
+            List of venue dictionaries
+        """
+        # Convert km to meters for Overpass API
+        radius_m = int(radius_km * 1000)
+        
+        # Overpass API query for cultural venues
+        overpass_query = f"""
+        [out:json][timeout:25];
+        (
+          node["tourism"="museum"](around:{radius_m},{lat},{lon});
+          node["tourism"="gallery"](around:{radius_m},{lat},{lon});
+          node["tourism"="attraction"](around:{radius_m},{lat},{lon});
+          node["amenity"="theatre"](around:{radius_m},{lat},{lon});
+          node["amenity"="cinema"](around:{radius_m},{lat},{lon});
+          node["amenity"="arts_centre"](around:{radius_m},{lat},{lon});
+          node["amenity"="community_centre"](around:{radius_m},{lat},{lon});
+          way["tourism"="museum"](around:{radius_m},{lat},{lon});
+          way["tourism"="gallery"](around:{radius_m},{lat},{lon});
+          way["amenity"="theatre"](around:{radius_m},{lat},{lon});
+          way["amenity"="cinema"](around:{radius_m},{lat},{lon});
+          way["amenity"="arts_centre"](around:{radius_m},{lat},{lon});
+        );
+        out center;
+        """
+        
+        try:
+            import requests
+            overpass_url = "https://overpass-api.de/api/interpreter"
+            response = requests.post(
+                overpass_url,
+                data={'data': overpass_query},
+                timeout=30
+            )
+            response.raise_for_status()
+            
+            data = response.json()
+            venues = []
+            
+            for element in data.get('elements', []):
+                # Get coordinates (center for ways, direct for nodes)
+                if element['type'] == 'way' and 'center' in element:
+                    venue_lat = element['center']['lat']
+                    venue_lon = element['center']['lon']
+                elif element['type'] == 'node':
+                    venue_lat = element.get('lat')
+                    venue_lon = element.get('lon')
+                else:
+                    continue
+                
+                tags = element.get('tags', {})
+                
+                # Determine venue type
+                venue_type = (
+                    tags.get('tourism') or
+                    tags.get('amenity') or
+                    'unknown'
+                )
+                
+                venues.append({
+                    'name': tags.get('name', f'Unnamed {venue_type}'),
+                    'type': venue_type,
+                    'lat': venue_lat,
+                    'lon': venue_lon,
+                    'address': tags.get('addr:street', ''),
+                    'website': tags.get('website', ''),
+                    'osm_id': f"{element['type']}/{element['id']}"
+                })
+            
+            return venues
+            
+        except Exception as e:
+            logger.error(f"Error querying OpenStreetMap: {e}")
+            return []
+    
+    def _calculate_distance(
+        self,
+        lat1: float,
+        lon1: float,
+        lat2: float,
+        lon2: float
+    ) -> float:
+        """
+        Calculate distance between two coordinates using Haversine formula
+        
+        Returns:
+            Distance in kilometers
+        """
+        from math import radians, sin, cos, sqrt, atan2
+        
+        R = 6371  # Earth radius in kilometers
+        
+        lat1_rad = radians(lat1)
+        lat2_rad = radians(lat2)
+        delta_lat = radians(lat2 - lat1)
+        delta_lon = radians(lon2 - lon1)
+        
+        a = sin(delta_lat/2)**2 + cos(lat1_rad) * cos(lat2_rad) * sin(delta_lon/2)**2
+        c = 2 * atan2(sqrt(a), sqrt(1-a))
+        
+        return R * c
+    
+    def _load_cached_venues(self, cache_path: Path) -> List[CulturalVenue]:
+        """Load cultural venues from cache file"""
+        with open(cache_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        
+        venues = []
+        for item in data.get('venues', []):
+            venues.append(CulturalVenue(
+                name=item['name'],
+                venue_type=item['venue_type'],
+                latitude=item['latitude'],
+                longitude=item['longitude'],
+                address=item.get('address'),
+                website=item.get('website'),
+                nearest_station=item.get('nearest_station'),
+                distance_to_station_km=item.get('distance_to_station_km'),
+                travel_time_minutes=item.get('travel_time_minutes'),
+                osm_id=item.get('osm_id')
+            ))
+        
+        return venues
+    
+    def _save_venues_to_cache(self, venues: List[CulturalVenue], cache_path: Path):
+        """Save discovered venues to cache file for manual review"""
+        cache_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        data = {
+            '_comment': 'Auto-discovered cultural venues - Review and enrich manually',
+            '_generated_at': datetime.now().isoformat(),
+            'venues': [
+                {
+                    'name': v.name,
+                    'venue_type': v.venue_type,
+                    'latitude': v.latitude,
+                    'longitude': v.longitude,
+                    'address': v.address,
+                    'website': v.website,
+                    'nearest_station': v.nearest_station,
+                    'distance_to_station_km': v.distance_to_station_km,
+                    'travel_time_minutes': v.travel_time_minutes,
+                    'osm_id': v.osm_id,
+                    'verified': False,
+                    'notes': ''
+                }
+                for v in venues
+            ]
+        }
+        
+        with open(cache_path, 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)

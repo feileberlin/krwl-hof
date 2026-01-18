@@ -204,6 +204,54 @@ class TestVGNTransit(unittest.TestCase):
         self.assertEqual(source.type, "html")
         self.assertEqual(source.travel_time_minutes, 20)
     
+    def test_cultural_venue_dataclass(self):
+        """Test CulturalVenue dataclass"""
+        from modules.vgn_transit import CulturalVenue
+        
+        venue = CulturalVenue(
+            name="Test Museum",
+            venue_type="museum",
+            latitude=50.3,
+            longitude=11.9,
+            address="Test Street 1",
+            website="https://test-museum.de",
+            nearest_station="Hof Hbf",
+            distance_to_station_km=0.5,
+            travel_time_minutes=0,
+            osm_id="node/12345"
+        )
+        
+        self.assertEqual(venue.name, "Test Museum")
+        self.assertEqual(venue.venue_type, "museum")
+        self.assertEqual(venue.nearest_station, "Hof Hbf")
+    
+    def test_calculate_distance(self):
+        """Test distance calculation (Haversine formula)"""
+        # Distance between Hof and Rehau (approx 10.4 km)
+        distance = self.vgn._calculate_distance(
+            50.308053, 11.9233,  # Hof
+            50.2489, 12.0364     # Rehau
+        )
+        
+        # Check distance is reasonable (between 10 and 11 km)
+        self.assertGreater(distance, 10.0)
+        self.assertLess(distance, 11.0)
+    
+    def test_discover_venues_disabled(self):
+        """Test venue discovery when VGN is disabled"""
+        disabled_config = self.test_config.copy()
+        disabled_config['vgn']['enabled'] = False
+        
+        vgn_disabled = VGNTransit(disabled_config, self.base_path)
+        
+        # Should return empty list gracefully
+        venues = vgn_disabled.discover_cultural_venues(
+            radius_km=5.0,
+            max_travel_time_minutes=30
+        )
+        
+        self.assertEqual(venues, [])
+    
     def test_config_disabled_vgn(self):
         """Test behavior when VGN is disabled in config"""
         disabled_config = self.test_config.copy()

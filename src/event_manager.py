@@ -264,6 +264,7 @@ COMMANDS:
     vgn analyze [TIME]        Analyze public transport reachability (default: 30 min)
     vgn suggest-sources [TIME] Suggest event sources in reachable areas
     vgn export-report [TIME] [FILE] Export comprehensive transit analysis report
+    vgn discover-venues [RADIUS] [TIME] Discover cultural venues near stations (hybrid)
     
     test                      Run all tests
     test --list               List available test categories and tests
@@ -1862,6 +1863,97 @@ def cli_vgn_export_report(base_path, config, max_time=30, output_file=None):
     return 0
 
 
+def cli_vgn_discover_venues(base_path, config, radius_km=5.0, max_time=30):
+    """
+    Discover cultural venues near VGN stations (hybrid approach)
+    
+    Auto-discovers venues via OpenStreetMap, caches results for manual review,
+    and removes duplicates found near multiple stations.
+    
+    Args:
+        base_path: Project root path
+        config: Configuration dictionary
+        radius_km: Search radius around stations in kilometers (default: 5.0)
+        max_time: Maximum travel time in minutes (default: 30)
+    """
+    print("\n🎭 VGN Cultural Venue Discovery")
+    print("=" * 60)
+    
+    vgn = VGNTransit(config, base_path)
+    
+    if not vgn.is_available():
+        print("\n❌ VGN integration not available")
+        print("\nTo enable VGN integration:")
+        print("1. Install VGN library: pip install vgn")
+        print("2. Enable in config.json: vgn.enabled = true")
+        return 1
+    
+    print(f"\n📍 Reference Location:")
+    print(f"   {vgn.vgn_config.get('reference_location', {}).get('name', 'Hof')}")
+    print(f"   ({vgn.reference_lat}, {vgn.reference_lon})")
+    print(f"\n⏱️  Maximum Travel Time: {max_time} minutes")
+    print(f"📏 Search Radius: {radius_km} km around each station")
+    print("\n" + "─" * 60)
+    
+    print("\n🔍 Discovering cultural venues...")
+    print("   (Querying OpenStreetMap API - this may take a moment)")
+    
+    try:
+        venues = vgn.discover_cultural_venues(
+            radius_km=radius_km,
+            max_travel_time_minutes=max_time,
+            use_cache=False  # Always discover fresh for CLI
+        )
+        
+        if not venues:
+            print("\n⚠️  No cultural venues found")
+            print("\nTry:")
+            print("  • Increasing search radius (current: {radius_km} km)")
+            print("  • Increasing travel time (current: {max_time} min)")
+            return 1
+        
+        print(f"\n✅ Discovered {len(venues)} cultural venues (duplicates removed)")
+        print("\n" + "─" * 60)
+        
+        # Group by venue type
+        by_type = {}
+        for venue in venues:
+            if venue.venue_type not in by_type:
+                by_type[venue.venue_type] = []
+            by_type[venue.venue_type].append(venue)
+        
+        # Display venues grouped by type
+        for venue_type, type_venues in sorted(by_type.items()):
+            print(f"\n📍 {venue_type.upper()} ({len(type_venues)} venues):")
+            
+            for venue in sorted(type_venues, key=lambda v: v.travel_time_minutes):
+                print(f"\n   • {venue.name}")
+                if venue.address:
+                    print(f"     Address: {venue.address}")
+                if venue.website:
+                    print(f"     Website: {venue.website}")
+                print(f"     Nearest Station: {venue.nearest_station} ({venue.distance_to_station_km} km away)")
+                print(f"     Travel Time: {venue.travel_time_minutes} min from Hof")
+        
+        # Show cache location
+        cache_path = base_path / 'assets' / 'json' / 'cultural_venues.json'
+        print("\n" + "=" * 60)
+        print(f"\n💾 Results cached to: {cache_path}")
+        print("\n💡 Next steps:")
+        print("   1. Review cached venues in cultural_venues.json")
+        print("   2. Mark verified venues (set 'verified': true)")
+        print("   3. Add notes for enrichment")
+        print("   4. Add verified venues to regional_sources.json")
+        
+        return 0
+        
+    except Exception as e:
+        print(f"\n❌ Error discovering venues: {e}")
+        import traceback
+        traceback.print_exc()
+        return 1
+
+
 def _execute_command(args, base_path, config):
     """Execute the specified CLI command.
     
@@ -2106,12 +2198,14 @@ def _execute_command(args, base_path, config):
         # VGN transit integration subcommands
         if not args.args:
             print("Error: Missing vgn subcommand")
-            print("Usage: python3 event_manager.py vgn [analyze|suggest-sources|export-report]")
+            print("Usage: python3 event_manager.py vgn [analyze|suggest-sources|export-report|discover-venues]")
             print("Examples:")
             print("  python3 event_manager.py vgn analyze")
             print("  python3 event_manager.py vgn analyze 45  # 45 minutes travel time")
             print("  python3 event_manager.py vgn suggest-sources")
             print("  python3 event_manager.py vgn export-report")
+            print("  python3 event_manager.py vgn discover-venues")
+            print("  python3 event_manager.py vgn discover-venues 5 45  # 5km radius, 45min travel time")
             return 1
         
         subcommand = args.args[0]
@@ -2128,9 +2222,19 @@ def _execute_command(args, base_path, config):
         elif subcommand == 'export-report':
             output_file = args.args[2] if len(args.args) > 2 else None
             return cli_vgn_export_report(base_path, config, max_time, output_file)
+        elif subcommand == 'discover-venues':
+            radius_km = 5.0  # default
+            if len(args.args) > 1:
+                try:
+                    radius_km = float(args.args[1])
+                except ValueError:
+                    pass
+            if len(args.args) > 2 and args.args[2].isdigit():
+                max_time = int(args.args[2])
+            return cli_vgn_discover_venues(base_path, config, radius_km, max_time)
         else:
             print(f"Error: Unknown vgn subcommand '{subcommand}'")
-            print("Available subcommands: analyze, suggest-sources, export-report")
+            print("Available subcommands: analyze, suggest-sources, export-report, discover-venues")
             return 1
     
     if command is None:
