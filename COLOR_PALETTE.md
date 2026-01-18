@@ -239,24 +239,91 @@ All color combinations meet **WCAG 2.1 Level AA** standards:
 
 ### Monochromatic vs Near-Monochromatic
 
-**Current Implementation: Pure Monochromatic**
+#### Current Implementation: Pure Monochromatic
+
 - ✅ 100% of colors derive from ecoBarbie #D689B8
 - ✅ Creates maximum visual harmony and brand consistency
 - ✅ Distinctive, memorable, sophisticated appearance
-- ⚠️ May need high contrast ratios for accessibility
+- ✅ Professional, cohesive user experience
+- ⚠️ Requires careful value management for accessibility
 
-**Alternative: Near-Monochromatic** (not implemented)
-- Could add 1-2 complementary accent colors for:
-  - Error messages requiring extra attention
-  - Call-to-action buttons needing maximum visibility
-  - Notifications or alerts that must stand out
-- Trade-off: Less harmonious, but potentially better affordance
+#### Strategic Use of "Near"-Monochrome (Optional Enhancement)
 
-**Decision**: We chose **pure monochromatic** because:
-1. High contrast is achievable through value differences (light/dark)
-2. Saturation adjustments provide sufficient visual distinction
-3. Maximum brand identity impact
-4. Professional, sophisticated aesthetic
+**What is Near-Monochromatic?**
+
+Near-monochromatic design maintains a dominant single-hue palette while introducing **1-2 complementary accent colors** sparingly for specific functional purposes. This approach balances visual harmony with enhanced usability.
+
+**When to Consider Complementary Accents:**
+
+1. **Accessibility Enhancement**
+   - Critical error states requiring immediate attention
+   - Mandatory form field validation messages
+   - Emergency alerts or system warnings
+   - Users with color blindness may benefit from additional hue distinction
+
+2. **Visual Punch & Affordance**
+   - Primary call-to-action (CTA) buttons needing maximum visibility
+   - Important notifications that must stand out from content
+   - Secondary CTAs that need clear differentiation from primary actions
+   - Success confirmations that benefit from traditional color associations (e.g., green)
+
+3. **User Expectations**
+   - Error messages traditionally use red (complementary to pink)
+   - Success states traditionally use green (complementary to pink)
+   - Warning states traditionally use yellow/orange
+
+**Complementary Colors for ecoBarbie Pink (#D689B8, 323.4° hue):**
+
+| Complement Type | Hue | Example Color | Use Case |
+|----------------|-----|---------------|----------|
+| **Direct Complement** | 143.4° (opposite) | `#89D6AE` (mint green) | Success states, confirmation |
+| **Split Complement 1** | 113.4° | `#A5D689` (lime green) | Positive feedback |
+| **Split Complement 2** | 173.4° | `#89D6CE` (turquoise) | Info messages |
+| **Triadic 1** | 83.4° | `#D6D689` (yellow-green) | Warnings, caution |
+| **Triadic 2** | 203.4° | `#89AED6` (sky blue) | Informational accents |
+
+**Implementation Example (Not Active):**
+
+```json
+{
+  "colors": {
+    "success_complement": "#89D6AE",  // Mint green for success
+    "info_complement": "#89AED6",     // Sky blue for info
+    "warning_complement": "#D6D689"   // Yellow-green for warnings
+  }
+}
+```
+
+**Best Practices for Near-Monochromatic:**
+
+- **Sparingly:** Use complementary colors for <5% of interface elements
+- **Purposefully:** Only for critical functional distinctions (errors, CTAs, alerts)
+- **Consistently:** Apply complementary accents with clear patterns
+- **Test:** Verify complementary colors maintain WCAG contrast requirements
+- **Document:** Clearly specify which elements use complementary colors and why
+
+**Trade-offs:**
+
+| Pure Monochromatic | Near-Monochromatic |
+|-------------------|-------------------|
+| ✅ Maximum harmony | ⚠️ Slightly less harmonious |
+| ✅ Strongest brand identity | ✅ Strong brand identity |
+| ✅ Most distinctive | ✅ Still distinctive |
+| ⚠️ Relies on value/saturation alone | ✅ Hue provides additional distinction |
+| ⚠️ May challenge user expectations | ✅ Meets traditional color expectations |
+
+#### Our Decision: Pure Monochromatic
+
+We chose **pure monochromatic** for this project because:
+
+1. **Sufficient Distinction:** High contrast achievable through value differences (7-98% range)
+2. **Saturation Variance:** 2-54% saturation range provides visual distinction for different states
+3. **Brand Impact:** Maximum brand identity and memorability
+4. **Sophistication:** Professional, cohesive aesthetic that stands out
+5. **Technical Excellence:** Demonstrates mastery of monochromatic design principles
+6. **User Testing:** If accessibility concerns arise in testing, complementary accents can be added strategically
+
+**Future Consideration:** If user testing reveals accessibility challenges with critical error states or CTAs, we can introduce a mint green complement (#89D6AE) for success confirmations and warnings while maintaining 95%+ monochromatic purity.
 
 ### Color Relationships
 
