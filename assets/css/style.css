@@ -561,8 +561,9 @@ strong, b {
 }
 
 /* Pending Events Notification */
+/* Uses --color-warning (#eb7dc0 = RGB(235, 125, 192)) with various opacity levels */
 .pending-notification {
-    background: linear-gradient(135deg, rgba(235, 125, 192, 0.15), rgba(235, 125, 192, 0.05));
+    background: linear-gradient(135deg, rgba(235, 125, 192, 0.15), rgba(235, 125, 192, 0.05)); /* --color-warning with opacity */
     border: 2px solid var(--color-warning);
     border-radius: 8px;
     padding: 1rem;
@@ -860,8 +861,8 @@ strong, b {
 }
 
 .debug-group-header.warning {
-    background: rgba(235, 125, 192, 0.1);
-    border-bottom-color: rgba(235, 125, 192, 0.3);
+    background: rgba(235, 125, 192, 0.1); /* --color-warning with 10% opacity */
+    border-bottom-color: rgba(235, 125, 192, 0.3); /* --color-warning with 30% opacity */
 }
 
 .debug-group-header.warning i,
@@ -1013,9 +1014,10 @@ strong, b {
 }
 
 /* Warnings Container */
+/* Uses --color-warning (#eb7dc0 = RGB(235, 125, 192)) with opacity for backgrounds/borders */
 .debug-warnings {
-    border-color: rgba(235, 125, 192, 0.3);
-    background: rgba(235, 125, 192, 0.05);
+    border-color: rgba(235, 125, 192, 0.3); /* --color-warning with 30% opacity */
+    background: rgba(235, 125, 192, 0.05); /* --color-warning with 5% opacity */
 }
 
 .debug-warning-item {
@@ -1024,7 +1026,7 @@ strong, b {
 }
 
 .debug-warning-item + .debug-warning-item {
-    border-top: 1px solid rgba(235, 125, 192, 0.2);
+    border-top: 1px solid rgba(235, 125, 192, 0.2); /* --color-warning with 20% opacity */
 }
 
 /* Warning Message Styles */
@@ -1037,7 +1039,7 @@ strong, b {
 .debug-warning-message.with-spacing {
     margin-top: 1rem;
     padding-top: 0.75rem;
-    border-top: 1px solid rgba(235, 125, 192, 0.2);
+    border-top: 1px solid rgba(235, 125, 192, 0.2); /* --color-warning with 20% opacity */
 }
 
 .debug-warning-message strong {
@@ -1052,16 +1054,17 @@ strong, b {
 }
 
 /* Lint Warnings Section */
+/* Uses --color-warning (#eb7dc0 = RGB(235, 125, 192)) with opacity for backgrounds/borders */
 .debug-lint-warnings {
-    border-color: rgba(235, 125, 192, 0.3);
-    background: rgba(235, 125, 192, 0.05);
+    border-color: rgba(235, 125, 192, 0.3); /* --color-warning with 30% opacity */
+    background: rgba(235, 125, 192, 0.05); /* --color-warning with 5% opacity */
 }
 
 .debug-lint-summary {
     padding: 0.5rem 0;
     color: var(--color-text-secondary);
     font-size: 0.9em;
-    border-bottom: 1px solid rgba(235, 125, 192, 0.2);
+    border-bottom: 1px solid rgba(235, 125, 192, 0.2); /* --color-warning with 20% opacity */
     margin-bottom: 0.75rem;
 }
 
@@ -1085,7 +1088,7 @@ strong, b {
 
 .lint-warning-item {
     background: rgba(13, 17, 23, 0.4);
-    border: 1px solid rgba(235, 125, 192, 0.2);
+    border: 1px solid rgba(235, 125, 192, 0.2); /* --color-warning with 20% opacity */
     border-radius: 4px;
     padding: 0.75rem;
     cursor: pointer;
@@ -1094,7 +1097,7 @@ strong, b {
 
 .lint-warning-item:hover {
     background: rgba(13, 17, 23, 0.6);
-    border-color: rgba(235, 125, 192, 0.4);
+    border-color: rgba(235, 125, 192, 0.4); /* --color-warning with 40% opacity */
     transform: translateX(2px);
 }
 
@@ -1157,7 +1160,7 @@ strong, b {
     max-height: 300px;
     padding-top: 0.75rem;
     margin-top: 0.75rem;
-    border-top: 1px solid rgba(235, 125, 192, 0.2);
+    border-top: 1px solid rgba(235, 125, 192, 0.2); /* --color-warning with 20% opacity */
 }
 
 .lint-warning-protocol-content {
