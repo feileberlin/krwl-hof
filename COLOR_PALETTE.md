@@ -458,7 +458,7 @@ All colors are defined in **sRGB** color space for maximum web compatibility.
   - Renamed: `ecobarbie_tone_*` → `tone_*`
   - Renamed: `ecobarbie_*` legacy colors → simplified names
   - All colors still derive from ecoBarbie (#D689B8) but with concise naming
-  - CSS variables now use shorter names: `--color-tint-20` instead of `--color-ecobarbie-tint-20`
+  - CSS variables now use shorter names: `--color-tint-50` instead of `--color-ecobarbie-tint-50`
 - **v2.1** (2026-01-18): Consistent ecoBarbie naming for all pink colors
   - Renamed: `primary` → `ecobarbie_primary` (with alias for compatibility)
   - Renamed: `primary_hover` → `ecobarbie_primary_hover` (with alias)
