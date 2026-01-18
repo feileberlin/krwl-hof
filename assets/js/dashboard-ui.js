@@ -36,6 +36,10 @@ class DashboardUI {
         this.updateCacheStatistics();
         this.updateDuplicateWarnings(duplicateStats);
         this.updateCustomLocations();
+        
+        // Lint Warnings section (WCAG AA compliance)
+        this.updateLintWarnings(debugInfo);
+        
         this.showDebugSection();
     }
     
@@ -347,6 +351,124 @@ class DashboardUI {
         if (debugSection && debugSection.style.display === 'none') {
             debugSection.style.display = 'block';
         }
+    }
+    
+    /**
+     * Update lint warnings section with WCAG AA compliance results
+     * @param {Object} debugInfo - Debug info object containing lint_results
+     */
+    updateLintWarnings(debugInfo) {
+        if (!debugInfo || !debugInfo.lint_results) return;
+        
+        const container = document.getElementById('debug-lint-warnings-container');
+        const summary = document.getElementById('debug-lint-summary');
+        const warningsList = document.getElementById('debug-lint-warnings-list');
+        
+        if (!container || !summary || !warningsList) return;
+        
+        const lintResults = debugInfo.lint_results;
+        const warnings = lintResults.structured_warnings || [];
+        
+        // Show container if there are warnings
+        if (warnings.length === 0) {
+            container.style.display = 'none';
+            return;
+        }
+        
+        container.style.display = 'block';
+        
+        // Update summary
+        const errorCount = lintResults.error_count || 0;
+        const warningCount = lintResults.warning_count || 0;
+        summary.innerHTML = `
+            <strong>${warningCount} accessibility ${warningCount === 1 ? 'warning' : 'warnings'}</strong>
+            ${errorCount > 0 ? ` · ${errorCount} ${errorCount === 1 ? 'error' : 'errors'}` : ''}
+            <br>
+            <span style="font-size: 0.85em; color: var(--color-text-tertiary);">
+                Click on warnings below to view full details
+            </span>
+        `;
+        
+        // Populate warnings list
+        let html = '';
+        warnings.forEach((warning, index) => {
+            const categoryBadge = warning.category ? 
+                `<span class="lint-warning-badge">${warning.category}</span>` : '';
+            const ruleBadge = warning.rule ? 
+                `<span class="lint-warning-badge">${warning.rule}</span>` : '';
+            
+            html += `
+                <div class="lint-warning-item" 
+                     data-warning-index="${index}"
+                     role="button"
+                     tabindex="0"
+                     aria-expanded="false"
+                     aria-label="Lint warning: ${warning.message}">
+                    <div class="lint-warning-header">
+                        <i class="lint-warning-icon" data-lucide="alert-circle" aria-hidden="true"></i>
+                        <div class="lint-warning-content">
+                            <div class="lint-warning-message">${this.escapeHtml(warning.message)}</div>
+                            <div class="lint-warning-meta">
+                                ${categoryBadge}
+                                ${ruleBadge}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="lint-warning-protocol">
+                        <div class="lint-warning-protocol-content">
+                            <strong>Full Protocol:</strong>
+                            ${warning.context ? this.escapeHtml(warning.context) : 'No additional context available'}
+                        </div>
+                    </div>
+                    <div class="lint-warning-expand-hint">Click to ${index === 0 ? 'expand' : 'toggle'} details</div>
+                </div>
+            `;
+        });
+        
+        warningsList.innerHTML = html;
+        
+        // Re-initialize Lucide icons for newly added elements
+        if (typeof lucide !== 'undefined' && lucide.createIcons) {
+            lucide.createIcons();
+        }
+        
+        // Add click handlers for toggling warnings
+        warningsList.querySelectorAll('.lint-warning-item').forEach(item => {
+            const toggleWarning = () => {
+                const isExpanded = item.classList.contains('expanded');
+                item.classList.toggle('expanded');
+                item.setAttribute('aria-expanded', !isExpanded);
+                
+                // Update hint text
+                const hint = item.querySelector('.lint-warning-expand-hint');
+                if (hint) {
+                    hint.textContent = isExpanded ? 'Click to expand details' : 'Click to collapse details';
+                }
+            };
+            
+            item.addEventListener('click', toggleWarning);
+            item.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleWarning();
+                }
+            });
+        });
+    }
+    
+    /**
+     * Escape HTML to prevent XSS
+     * @param {string} unsafe - Unsafe string
+     * @returns {string} - Escaped string
+     */
+    escapeHtml(unsafe) {
+        if (typeof unsafe !== 'string') return '';
+        return unsafe
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
     }
     
     /**

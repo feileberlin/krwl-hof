@@ -2010,30 +2010,8 @@ window.DEBUG_INFO = {debug_info_json};'''
         )
         print("✅ Site generated using components")
         
-        # Calculate HTML size breakdown
-        html_sizes = self.calculate_html_size_breakdown(html_de)
-        
-        # Find and update DEBUG_INFO with size information
-        debug_info_marker = 'window.DEBUG_INFO = '
-        debug_info_start = html_de.find(debug_info_marker)
-        if debug_info_start != -1:
-            debug_info_end = html_de.find('};', debug_info_start)
-            if debug_info_end != -1:
-                # Extract current DEBUG_INFO
-                current_debug_json = html_de[debug_info_start + len(debug_info_marker):debug_info_end + 1]
-                try:
-                    debug_data = json.loads(current_debug_json)
-                    debug_data['html_sizes'] = html_sizes
-                    debug_data['language'] = 'de'
-                    # Replace with updated DEBUG_INFO
-                    updated_debug_json = json.dumps(debug_data, ensure_ascii=False)
-                    html_de = html_de[:debug_info_start + len(debug_info_marker)] + updated_debug_json + html_de[debug_info_end + 1:]
-                except Exception as e:
-                    logger.warning(f"Could not update DEBUG_INFO: {e}")
-        
-        print(f"✅ Injected HTML size breakdown into DEBUG_INFO")
-        
-        # Lint the generated content (only German version to avoid duplicate linting)
+        # Lint the generated content first (before updating DEBUG_INFO)
+        lint_data = None  # Initialize lint data for DEBUG_INFO
         if not skip_lint:
             print("\n🔍 Linting generated content...")
             linter = Linter(verbose=False)
@@ -2053,6 +2031,9 @@ window.DEBUG_INFO = {debug_info_json};'''
                 svg_files=svg_files
             )
             
+            # Export lint results to JSON for embedding
+            lint_data = lint_result.to_json()
+            
             # Show detailed errors and warnings
             if not lint_result.passed:
                 print("\n❌ Linting failed with errors:")
@@ -2070,6 +2051,33 @@ window.DEBUG_INFO = {debug_info_json};'''
             if not lint_result.passed:
                 print("\n⚠️  Build completed with lint errors (warnings only, not blocking)")
                 # Don't block build, just warn
+        
+        # Calculate HTML size breakdown
+        html_sizes = self.calculate_html_size_breakdown(html_de)
+        
+        # Find and update DEBUG_INFO with size information and lint results
+        debug_info_marker = 'window.DEBUG_INFO = '
+        debug_info_start = html_de.find(debug_info_marker)
+        if debug_info_start != -1:
+            debug_info_end = html_de.find('};', debug_info_start)
+            if debug_info_end != -1:
+                # Extract current DEBUG_INFO
+                current_debug_json = html_de[debug_info_start + len(debug_info_marker):debug_info_end + 1]
+                try:
+                    debug_data = json.loads(current_debug_json)
+                    debug_data['html_sizes'] = html_sizes
+                    debug_data['language'] = 'de'
+                    # Add lint results if available
+                    if lint_data:
+                        debug_data['lint_results'] = lint_data
+                        print(f"✅ Embedded {len(lint_data.get('structured_warnings', []))} lint warnings in DEBUG_INFO")
+                    # Replace with updated DEBUG_INFO
+                    updated_debug_json = json.dumps(debug_data, ensure_ascii=False)
+                    html_de = html_de[:debug_info_start + len(debug_info_marker)] + updated_debug_json + html_de[debug_info_end + 1:]
+                except Exception as e:
+                    logger.warning(f"Could not update DEBUG_INFO: {e}")
+        
+        print(f"✅ Injected HTML size breakdown into DEBUG_INFO")
         
         # Write German version to root (primary/only deployment)
         output_file = self.static_path / 'index.html'
