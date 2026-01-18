@@ -480,7 +480,7 @@
       "implemented": true,
       "files": [
         "assets/js/app.js",
-        "assets/css/style.css",
+        "assets/css/components.css",
         "public/index.html"
       ],
       "code_patterns": [
@@ -541,12 +541,13 @@
       "category": "frontend",
       "implemented": true,
       "files": [
-        "assets/css/style.css",
+        "assets/css/layout.css",
+        "assets/css/foundation.css",
         "public/index.html"
       ],
       "code_patterns": [
         {
-          "file": "assets/css/style.css",
+          "file": "assets/css/layout.css",
           "pattern": "@media.*max-width|viewport",
           "description": "Responsive CSS media queries"
         },
@@ -651,7 +652,8 @@
       "implemented": true,
       "files": [
         "assets/html/dashboard-aside.html",
-        "assets/css/style.css",
+        "assets/css/dashboard.css",
+        "assets/css/interactions.css",
         "assets/js/app.js",
         "config.json",
         "src/modules/utils.py"
@@ -666,7 +668,7 @@
           "description": "Dashboard update function and menu toggle logic"
         },
         {
-          "file": "assets/css/style.css",
+          "file": "assets/css/dashboard.css",
           "pattern": "#dashboard-menu|.dashboard-content",
           "description": "Dashboard CSS styles"
         },
@@ -1053,12 +1055,10 @@
       "category": "frontend",
       "implemented": true,
       "files": [
-        "assets/css/base.css",
+        "assets/css/foundation.css",
         "assets/css/map.css",
         "assets/css/filters.css",
-        "assets/css/style.css",
-        "assets/css/scrollbar.css",
-        "assets/css/time-drawer.css",
+        "assets/css/layout.css",
         "assets/js/app.js",
         "docs/LAYER_ARCHITECTURE_ANALYSIS.md"
       ],
@@ -1100,7 +1100,8 @@
         "assets/json/weather_dresscodes.json",
         "assets/html/filter-nav.html",
         "assets/js/app.js",
-        "assets/css/style.css",
+        "assets/css/filters.css",
+        "assets/css/components.css",
         ".github/workflows/website-maintenance.yml"
       ],
       "config_keys": [
@@ -1147,7 +1148,8 @@
       "implemented": true,
       "files": [
         "assets/js/speech-bubbles.js",
-        "assets/css/style.css"
+        "assets/css/components.css",
+        "assets/css/interactions.css"
       ],
       "code_patterns": [
         {
@@ -1156,7 +1158,7 @@
           "description": "Drag event handlers and user offset tracking"
         },
         {
-          "file": "assets/css/style.css",
+          "file": "assets/css/components.css",
           "pattern": "\\.speech-bubble\\.dragging|cursor: grab",
           "description": "Drag cursor and dragging state styles"
         }
