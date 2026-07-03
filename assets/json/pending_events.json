@@ -14101,7 +14101,29 @@
       "source": "https://www.vhshoferland.de/p/last-minute-kurse/umami-explosion-die-fuenfte-dimension-des-geschmacks-646-C-31AH507110",
       "url": "https://www.vhshoferland.de/p/last-minute-kurse/umami-explosion-die-fuenfte-dimension-des-geschmacks-646-C-31AH507110",
       "tags": []
+    },
+    {
+      "id": "vhs_33a1e675f80e",
+      "title": "Energy DanceKurs 2",
+      "teaser": "Hast Du Lust auf Rhythmus, Bewegung und Musik? M\u00f6chten Du im Kopf abschalten und energievoll deinen K\u00f6rper erleben? Energy Dance f\u00fchrt Dich in vielf\u00e4ltige Bewegungsabl\u00e4ufe, denen man leicht und m\u00fchelo...",
+      "description": "Hast Du Lust auf Rhythmus, Bewegung und Musik? M\u00f6chten Du im Kopf abschalten und energievoll deinen K\u00f6rper erleben? Energy Dance f\u00fchrt Dich in vielf\u00e4ltige Bewegungsabl\u00e4ufe, denen man leicht und m\u00fchelos folgen kann, ohne Schrittfolgen zu lernen oder Takte zu z\u00e4hlen. Ein rhythmisch-dynamischer Fitness- und Gesundheitssport mit abwechslungsreicher, motivierender Musik. Dabei kann jeder selbst die Intensit\u00e4t der Bewegung bestimmen und jeder kann mitmachen.",
+      "location": {
+        "name": "Forum Naila",
+        "address": "Bachstra\u00dfe 1, 95119 Naila",
+        "lat": 50.3167,
+        "lon": 11.9167,
+        "address_hidden": false,
+        "needs_review": false,
+        "resolution_method": null
+      },
+      "start_time": "2026-11-10T10:00:00",
+      "end_time": null,
+      "category": "education",
+      "status": "pending",
+      "source": "https://www.vhshoferland.de/p/last-minute-kurse/energy-dance/kurs-2-646-C-31NA502302",
+      "url": "https://www.vhshoferland.de/p/last-minute-kurse/energy-dance/kurs-2-646-C-31NA502302",
+      "tags": []
     }
   ],
-  "last_scraped": "2026-07-03T04:17:00.965357"
+  "last_scraped": "2026-07-03T15:37:41.441305"
 }
