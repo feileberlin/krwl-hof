@@ -14123,7 +14123,51 @@
       "source": "https://www.vhshoferland.de/p/last-minute-kurse/energy-dance/kurs-2-646-C-31NA502302",
       "url": "https://www.vhshoferland.de/p/last-minute-kurse/energy-dance/kurs-2-646-C-31NA502302",
       "tags": []
+    },
+    {
+      "id": "vhs_01518b0f6de1",
+      "title": "\"Innere Antreiber\"After Work-Psychologie Teil 2",
+      "teaser": "Es sind nicht nur \u00e4u\u00dfere Einfl\u00fcsse, die uns \"stressen\". Einen gro\u00dfen Anteil daran haben auch die sogenannten \"Inneren Antreiber\".",
+      "description": "Es sind nicht nur \u00e4u\u00dfere Einfl\u00fcsse, die uns \"stressen\". Einen gro\u00dfen Anteil daran haben auch die sogenannten \"Inneren Antreiber\".\u00a0Diese sind\u00a0eine Art inneres Betriebs-System, auf dem\u00a0wir - ganz individuell - laufen.\nDie h\u00e4ufigsten davon sehen wir uns in diesem Seminar an. Woher kommen sie, haben sie uns bisher geholfen oder belasten sie jetzt eher und haben sie auch einen \"positiven Kern\"? Wie kommt man zu einem ausbalancierten Umgang?",
+      "location": {
+        "name": "VHS",
+        "address": "Ludwigstra\u00dfe 7, 95028 Hof",
+        "lat": 50.3167,
+        "lon": 11.9167,
+        "address_hidden": false,
+        "needs_review": false,
+        "resolution_method": null
+      },
+      "start_time": "2026-11-11T18:30:00",
+      "end_time": null,
+      "category": "education",
+      "status": "pending",
+      "source": "https://www.vhshoferland.de/p/last-minute-kurse/innere-antreiber/after-work-psychologie-teil-2-646-C-31AH508111",
+      "url": "https://www.vhshoferland.de/p/last-minute-kurse/innere-antreiber/after-work-psychologie-teil-2-646-C-31AH508111",
+      "tags": []
+    },
+    {
+      "id": "vhs_83c1ace07b6a",
+      "title": "Bal Folk - Offener TanztreffWorkshop 3",
+      "teaser": "Schwerpunkt fr\u00e4nkisch/schottisch",
+      "description": "Schwerpunkt fr\u00e4nkisch/schottisch",
+      "location": {
+        "name": "VHS",
+        "address": "Ludwigstra\u00dfe 7, 95028 Hof",
+        "lat": 50.3167,
+        "lon": 11.9167,
+        "address_hidden": false,
+        "needs_review": false,
+        "resolution_method": null
+      },
+      "start_time": "2026-11-12T19:00:00",
+      "end_time": null,
+      "category": "education",
+      "status": "pending",
+      "source": "https://www.vhshoferland.de/p/last-minute-kurse/bal-folk-offener-tanztreff/workshop-3-646-C-31AH503154",
+      "url": "https://www.vhshoferland.de/p/last-minute-kurse/bal-folk-offener-tanztreff/workshop-3-646-C-31AH503154",
+      "tags": []
     }
   ],
-  "last_scraped": "2026-07-03T15:37:41.441305"
+  "last_scraped": "2026-07-04T04:14:25.390408"
 }
