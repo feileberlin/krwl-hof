@@ -14233,7 +14233,29 @@
       "source": "https://www.vhshoferland.de/p/last-minute-kurse/die-arabischen-emirate-zwischen-gigantomanie-und-tradition/multimediavortrag-646-C-31BS103103",
       "url": "https://www.vhshoferland.de/p/last-minute-kurse/die-arabischen-emirate-zwischen-gigantomanie-und-tradition/multimediavortrag-646-C-31BS103103",
       "tags": []
+    },
+    {
+      "id": "vhs_fc0c5d671072",
+      "title": "Energy Dance \"Raus aus dem Kopf - rein in den K\u00f6rper\"Workshop 2",
+      "teaser": "Energy Dance ist eine wunderbare M\u00f6glichkeit, sich vom Alltagsstress zu l\u00f6sen und sich k\u00f6rperlich und geistig zu regenerieren.",
+      "description": "Energy Dance ist eine wunderbare M\u00f6glichkeit, sich vom Alltagsstress zu l\u00f6sen und sich k\u00f6rperlich und geistig zu regenerieren. Darum hei\u00dft das Motto: \u201eRaus aus dem Kopf \u2013 rein in den K\u00f6rper!\u201c Du tauchst dabei in ein ganzheitliches Erlebnis ein, welches Rhythmus, Bewegung und Gef\u00fchl verbindet und bei dem der Spa\u00df im Vordergrund steht. Die rhythmischen Bewegungsabfolgen werden allm\u00e4hlich und fortlaufend flie\u00dfend aufgebaut. Feste Choreografien gibt es nicht, daf\u00fcr umso mehr abwechslungsreiche Musik",
+      "location": {
+        "name": "Grundschule Helmbrechts (Aula / Zi.-Nr. 305)",
+        "address": "Eingang \u00fcber Ottengr\u00fcner Stra\u00dfe (bitte klingeln)",
+        "lat": 50.3167,
+        "lon": 11.9167,
+        "address_hidden": false,
+        "needs_review": false,
+        "resolution_method": null
+      },
+      "start_time": "2026-11-25T20:00:00",
+      "end_time": null,
+      "category": "education",
+      "status": "pending",
+      "source": "https://www.vhshoferland.de/p/last-minute-kurse/energy-dance-raus-aus-dem-kopf-rein-in-den-koerper/workshop-2-646-C-31HE502302",
+      "url": "https://www.vhshoferland.de/p/last-minute-kurse/energy-dance-raus-aus-dem-kopf-rein-in-den-koerper/workshop-2-646-C-31HE502302",
+      "tags": []
     }
   ],
-  "last_scraped": "2026-07-05T04:22:30.425863"
+  "last_scraped": "2026-07-06T04:26:33.829459"
 }
