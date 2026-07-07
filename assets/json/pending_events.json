@@ -14497,7 +14497,161 @@
       "source": "https://www.vhshoferland.de/p/last-minute-kurse/zusammen-digital-beratungstheke-646-C-30AA904240",
       "url": "https://www.vhshoferland.de/p/last-minute-kurse/zusammen-digital-beratungstheke-646-C-30AA904240",
       "tags": []
+    },
+    {
+      "id": "vhs_e0c423210da0",
+      "title": "KI - K\u00fcnstliche Intelligenz",
+      "teaser": "Wollten Sie schon immer wissen, was hinter diesem K\u00fcrzel \u201eKI\u201c steckt?\nErfahren Sie, wie k\u00fcnstliche Intelligenz unseren Alltag bereits jetzt unterst\u00fctzt.",
+      "description": "Wollten Sie schon immer wissen, was hinter diesem K\u00fcrzel \u201eKI\u201c steckt?\nErfahren Sie, wie k\u00fcnstliche Intelligenz unseren Alltag bereits jetzt unterst\u00fctzt.",
+      "location": {
+        "name": "Seniorentreff der Hospitalstiftung",
+        "address": "Gabelsbergerstr. 81 a, 95028 Hof",
+        "lat": 50.3167,
+        "lon": 11.9167,
+        "address_hidden": false,
+        "needs_review": false,
+        "resolution_method": null
+      },
+      "start_time": "2026-07-15T15:00:00",
+      "end_time": null,
+      "category": "education",
+      "status": "pending",
+      "source": "https://www.vhshoferland.de/p/last-minute-kurse/ki-kuenstliche-intelligenz-646-C-30AA904247",
+      "url": "https://www.vhshoferland.de/p/last-minute-kurse/ki-kuenstliche-intelligenz-646-C-30AA904247",
+      "tags": []
+    },
+    {
+      "id": "vhs_8d6c84e473eb",
+      "title": "Online-Seminar: SchlagfertigkeitVon der Kunst, jederzeit die richtigen Worte zu finden.",
+      "teaser": "Fallen Ihnen die passenden Worte zu sp\u00e4t ein? Haben Sie sp\u00e4ter die besten Ideen? Dann ist dieses Online-Seminar f\u00fcr Sie gemacht.",
+      "description": "Fallen Ihnen die passenden Worte zu sp\u00e4t ein? Haben Sie sp\u00e4ter die besten Ideen? Dann ist dieses Online-Seminar f\u00fcr Sie gemacht. Schlagfertigkeit ist die Kunst, jederzeit die richtigen Worte zu finden. Sie lernen, spontaner mit Ihrer Sprache umzugehen. Sie werden den aktiven Wortschatz sp\u00fcrbar erweitern, damit Sie auch in Belastungssituationen fl\u00fcssig und treffend formulieren. Dadurch werden Sie mutiger, die passenden Worte zu sagen. Sie trainieren spontane, humorvolle und spritzige Antworten, d",
+      "location": {
+        "name": "Online",
+        "address": null,
+        "lat": 50.3167,
+        "lon": 11.9167,
+        "address_hidden": true,
+        "needs_review": false,
+        "resolution_method": null
+      },
+      "start_time": "2026-07-15T18:30:00",
+      "end_time": null,
+      "category": "education",
+      "status": "pending",
+      "source": "https://www.vhshoferland.de/p/last-minute-kurse/online-seminar-schlagfertigkeit/von-der-kunst-jederzeit-die-richtigen-worte-zu-finden-646-C-30AH270277",
+      "url": "https://www.vhshoferland.de/p/last-minute-kurse/online-seminar-schlagfertigkeit/von-der-kunst-jederzeit-die-richtigen-worte-zu-finden-646-C-30AH270277",
+      "tags": []
+    },
+    {
+      "id": "vhs_506fb05bb882",
+      "title": "KI Grundkurs: K\u00fcnstliche Intelligenz f\u00fcr Anf\u00e4nger",
+      "teaser": "K\u00fcnstliche Intelligenz (KI) ver\u00e4ndert die Art, wie wir arbeiten und kommunizieren.",
+      "description": "K\u00fcnstliche Intelligenz (KI) ver\u00e4ndert die Art, wie wir arbeiten und kommunizieren. Doch was steckt eigentlich dahinter? In diesem praxisnahen Grundkurs werden die Grundlagen der KI verst\u00e4ndlich erkl\u00e4rt. Es wird gezeigt, wo und wie KI eingesetzt werden kann. Ein besonderer Schwerpunkt liegt auf ChatGPT: Von der Einrichtung eines Accounts \u00fcber wichtige Aspekte zu Urheberrecht und Datenschutz bis hin zu effektiven Prompting-Techniken.",
+      "location": {
+        "name": "Online",
+        "address": null,
+        "lat": 50.3167,
+        "lon": 11.9167,
+        "address_hidden": true,
+        "needs_review": false,
+        "resolution_method": null
+      },
+      "start_time": "2026-07-15T18:30:00",
+      "end_time": null,
+      "category": "education",
+      "status": "pending",
+      "source": "https://www.vhshoferland.de/p/last-minute-kurse/ki-grundkurs-kuenstliche-intelligenz-fuer-anfaenger-646-C-30AH311023",
+      "url": "https://www.vhshoferland.de/p/last-minute-kurse/ki-grundkurs-kuenstliche-intelligenz-fuer-anfaenger-646-C-30AH311023",
+      "tags": []
+    },
+    {
+      "id": "vhs_46aa09d05655",
+      "title": "Fit f\u00fcrs Vorstellungsgespr\u00e4ch - Sicher auftreten, gut ankommenWorkshop",
+      "teaser": "Wie l\u00e4uft das Vorstellungsgespr\u00e4ch in Deutschland ab? Worauf achten Arbeitgeber besonders? Welche Fragen werden h\u00e4ufig gestellt? Typische Gespr\u00e4chssituationen werden ge\u00fcbt.",
+      "description": "Wie l\u00e4uft das Vorstellungsgespr\u00e4ch in Deutschland ab? Worauf achten Arbeitgeber besonders? Welche Fragen werden h\u00e4ufig gestellt? Typische Gespr\u00e4chssituationen werden ge\u00fcbt. Es gibt Tipps zu K\u00f6rpersprache und Auftreten.\nNach unserem Workshop gehen Sie sicherer und selbstbewusster ins Vorstellungsgespr\u00e4ch.",
+      "location": {
+        "name": "VHS",
+        "address": "Ludwigstra\u00dfe 7, 95028 Hof",
+        "lat": 50.3167,
+        "lon": 11.9167,
+        "address_hidden": false,
+        "needs_review": false,
+        "resolution_method": null
+      },
+      "start_time": "2026-07-16T09:30:00",
+      "end_time": null,
+      "category": "education",
+      "status": "pending",
+      "source": "https://www.vhshoferland.de/p/last-minute-kurse/fit-fuers-vorstellungsgespraech-sicher-auftreten-gut-ankommen/workshop-646-C-30AA906254",
+      "url": "https://www.vhshoferland.de/p/last-minute-kurse/fit-fuers-vorstellungsgespraech-sicher-auftreten-gut-ankommen/workshop-646-C-30AA906254",
+      "tags": []
+    },
+    {
+      "id": "vhs_ada4ccc001f6",
+      "title": "Vorbereitungskurs: Zertifikat Deutsch/Telc Deutsch B1",
+      "teaser": "F\u00fcr Teilnehmende mit Sprachkenntnissen auf Niveau B1, zur Vorbereitung auf die telc Pr\u00fcfung Deutsch B1:\nUmfassendes Training aller Pr\u00fcfungsteile: Lesen, H\u00f6ren, Schreiben und Sprechen (Modelltests)\nPr\u00fc...",
+      "description": "F\u00fcr Teilnehmende mit Sprachkenntnissen auf Niveau B1, zur Vorbereitung auf die telc Pr\u00fcfung Deutsch B1:\nUmfassendes Training aller Pr\u00fcfungsteile: Lesen, H\u00f6ren, Schreiben und Sprechen (Modelltests)\nPr\u00fcfungsformat kennenlernen:  Ablauf und Pr\u00fcfungsstruktur\nPr\u00fcfungssimulationen: praxisnahes Training \nWichtige Informationen: organisatorische Abl\u00e4ufe und Pr\u00fcfungsbestimmungen\nTipps und Strategien:  Lerntipps f\u00fcr gezielte und effektive Vorbereitung.",
+      "location": {
+        "name": "VHS",
+        "address": "Ludwigstra\u00dfe 7, 95028 Hof",
+        "lat": 50.3167,
+        "lon": 11.9167,
+        "address_hidden": false,
+        "needs_review": false,
+        "resolution_method": null
+      },
+      "start_time": "2026-07-16T17:30:00",
+      "end_time": null,
+      "category": "education",
+      "status": "pending",
+      "source": "https://www.vhshoferland.de/p/last-minute-kurse/vorbereitungskurs-zertifikat-deutsch-telc-deutsch-b1-646-C-30AH402722",
+      "url": "https://www.vhshoferland.de/p/last-minute-kurse/vorbereitungskurs-zertifikat-deutsch-telc-deutsch-b1-646-C-30AH402722",
+      "tags": []
+    },
+    {
+      "id": "vhs_239ef5ed89bd",
+      "title": "Tipps zum Hitzeschutz: K\u00fchle Wohnr\u00e4ume auch an hei\u00dfen TagenOnline-Vortrag der Verbraucherzentrale Bayern",
+      "teaser": "K\u00fchler wohnen - aber wie? Au\u00dfenrollo? Nachtl\u00fcftung? Ventilator oder Klimaanlage? Welche Ma\u00dfnahmen sind am effizientesten, um an hei\u00dfen Tagen die Wohnung k\u00fchlen zu k\u00f6nnen? Und was ben\u00f6tigt wie viel Str...",
+      "description": "K\u00fchler wohnen - aber wie? Au\u00dfenrollo? Nachtl\u00fcftung? Ventilator oder Klimaanlage? Welche Ma\u00dfnahmen sind am effizientesten, um an hei\u00dfen Tagen die Wohnung k\u00fchlen zu k\u00f6nnen? Und was ben\u00f6tigt wie viel Strom? Der Vortrag findet in Kooperation mit der Energieberatung der Verbraucherzentrale Bayern statt. \nZielgruppe: Alle interessierten Verbraucher Eigent\u00fcmer:innen und interessierte Mieter:innen. Vorkenntnisse sind nicht n\u00f6tig.",
+      "location": {
+        "name": "Online",
+        "address": null,
+        "lat": 50.3167,
+        "lon": 11.9167,
+        "address_hidden": true,
+        "needs_review": false,
+        "resolution_method": null
+      },
+      "start_time": "2026-07-16T19:00:00",
+      "end_time": null,
+      "category": "education",
+      "status": "pending",
+      "source": "https://www.vhshoferland.de/p/last-minute-kurse/tipps-zum-hitzeschutz-kuehle-wohnraeume-auch-an-heissen-tagen/online-vortrag-der-verbraucherzentrale-bayern-646-C-30AH107160",
+      "url": "https://www.vhshoferland.de/p/last-minute-kurse/tipps-zum-hitzeschutz-kuehle-wohnraeume-auch-an-heissen-tagen/online-vortrag-der-verbraucherzentrale-bayern-646-C-30AH107160",
+      "tags": []
+    },
+    {
+      "id": "vhs_68875166d091",
+      "title": "Online-Seminar: Smalltalk online trainieren:Kontakte sicher und souver\u00e4n aufbauen",
+      "teaser": "Freundlich und offen auf Menschen zugehen: Viele Menschen w\u00fcnschen sich diese F\u00e4higkeit. So wird aus einem viel versprechenden Beginn vielleicht viel mehr.",
+      "description": "Freundlich und offen auf Menschen zugehen: Viele Menschen w\u00fcnschen sich diese F\u00e4higkeit. So wird aus einem viel versprechenden Beginn vielleicht viel mehr. \nM\u00f6chten Sie gesch\u00e4ftlich oder privat mit Fremden leichter und charmant ins Gespr\u00e4ch kommen? Sie wollen sich vielleicht gegenseitig n\u00e4her kennen lernen, eine sympathische Gespr\u00e4chsatmosph\u00e4re aufbauen, Verbindungen kn\u00fcpfen und Gesch\u00e4fte anbahnen. \nWir werden in diesem Online-Seminar Strategien aufzeigen, mit denen Sie aus einem allgemeinen The",
+      "location": {
+        "name": "Online",
+        "address": null,
+        "lat": 50.3167,
+        "lon": 11.9167,
+        "address_hidden": true,
+        "needs_review": false,
+        "resolution_method": null
+      },
+      "start_time": "2026-07-17T18:30:00",
+      "end_time": null,
+      "category": "education",
+      "status": "pending",
+      "source": "https://www.vhshoferland.de/p/last-minute-kurse/online-seminar-smalltalk-online-trainieren/kontakte-sicher-und-souveraen-aufbauen-646-C-30AH270243",
+      "url": "https://www.vhshoferland.de/p/last-minute-kurse/online-seminar-smalltalk-online-trainieren/kontakte-sicher-und-souveraen-aufbauen-646-C-30AH270243",
+      "tags": []
     }
   ],
-  "last_scraped": "2026-07-06T16:07:06.804971"
+  "last_scraped": "2026-07-07T04:20:24.934135"
 }
