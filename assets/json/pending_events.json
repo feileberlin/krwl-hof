@@ -15135,7 +15135,29 @@
       "source": "https://www.vhshoferland.de/p/last-minute-kurse/zusammen-digital-beratungstheke-646-C-30AA904242",
       "url": "https://www.vhshoferland.de/p/last-minute-kurse/zusammen-digital-beratungstheke-646-C-30AA904242",
       "tags": []
+    },
+    {
+      "id": "vhs_6c8530e5597b",
+      "title": "\"K\u00fcnstler*innen aus Hochfranken stellen sich vor\u201cDie Sprache der Gitarre: Klangreise mit der Familie Basarab",
+      "teaser": "Der aus der Ukraine stammende Gitarrist Dmytro Basarab pr\u00e4sentiert gemeinsam mit seinen S\u00f6hnen Nazarii und Yaroslav ihre musikalische Leidenschaft, ihr Talent und ihr K\u00f6nnen an der Gitarre.",
+      "description": "Der aus der Ukraine stammende Gitarrist Dmytro Basarab pr\u00e4sentiert gemeinsam mit seinen S\u00f6hnen Nazarii und Yaroslav ihre musikalische Leidenschaft, ihr Talent und ihr K\u00f6nnen an der Gitarre.\nDmytro Basarab besch\u00e4ftigt sich seit seiner fr\u00fchen Kindheit mit Musik. Er spielt in den Stilrichtungen Jazz Manouche, Folk und Fusion Gitarre, komponiert eigene Werke und interpretiert Musik verschiedener Weltmusikrichtungen. Seit 2023 arbeitet er als Gitarrenlehrer bei der VHS Hofer Land.\n\nSein Sohn Nazarii ",
+      "location": {
+        "name": "VHS",
+        "address": "Ludwigstra\u00dfe 7, 95028 Hof",
+        "lat": 50.3167,
+        "lon": 11.9167,
+        "address_hidden": false,
+        "needs_review": false,
+        "resolution_method": null
+      },
+      "start_time": "2026-07-18T18:00:00",
+      "end_time": null,
+      "category": "education",
+      "status": "pending",
+      "source": "https://www.vhshoferland.de/p/last-minute-kurse/kuenstler-innen-aus-hochfranken-stellen-sich-vor/die-sprache-der-gitarre-klangreise-mit-der-familie-basarab-646-C-30AA929118",
+      "url": "https://www.vhshoferland.de/p/last-minute-kurse/kuenstler-innen-aus-hochfranken-stellen-sich-vor/die-sprache-der-gitarre-klangreise-mit-der-familie-basarab-646-C-30AA929118",
+      "tags": []
     }
   ],
-  "last_scraped": "2026-07-16T04:00:32.981053"
+  "last_scraped": "2026-07-16T15:30:57.910278"
 }
