@@ -1,11 +1,11 @@
 {
   "location_South Pole": {
-    "timestamp": "2026-07-18T03:59:31.923913",
+    "timestamp": "2026-07-19T04:08:21.697157",
     "data": {
-      "dresscode": "sweater or cardigan",
-      "temperature": "16°C",
+      "dresscode": "light jacket recommended",
+      "temperature": "14°C",
       "location": "South Pole",
-      "timestamp": "2026-07-18T03:59:31.923667"
+      "timestamp": "2026-07-19T04:08:21.696896"
     }
   }
 }
