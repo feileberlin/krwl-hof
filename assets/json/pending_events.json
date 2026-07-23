@@ -15619,7 +15619,29 @@
       "source": "https://www.vhshoferland.de/p/last-minute-kurse/ki-bilder-kreativ-mit-kuenstlicher-intelligenz-646-C-30AH311068",
       "url": "https://www.vhshoferland.de/p/last-minute-kurse/ki-bilder-kreativ-mit-kuenstlicher-intelligenz-646-C-30AH311068",
       "tags": []
+    },
+    {
+      "id": "vhs_d39dc85d4e0c",
+      "title": "VHS Stammtisch KI - \"Woher wei\u00df der Chatbot, was er antworten soll? - Wir sezieren den Zauberlehrling\"Austausch, Verstehen, L\u00f6sungen",
+      "teaser": "VHS Stammtisch KI - \"Woher wei\u00df der Chatbot, was er antworten soll? - Wir sezieren den Zauberlehrling\"Austausch, Verstehen, L\u00f6sungen am 29.07.",
+      "description": "VHS Stammtisch KI - \"Woher wei\u00df der Chatbot, was er antworten soll? - Wir sezieren den Zauberlehrling\"Austausch, Verstehen, L\u00f6sungen am 29.07.2026 15:45",
+      "location": {
+        "name": "VHS",
+        "address": "Ludwigstra\u00dfe 7, 95028 Hof",
+        "lat": 50.3167,
+        "lon": 11.9167,
+        "address_hidden": false,
+        "needs_review": false,
+        "resolution_method": null
+      },
+      "start_time": "2026-07-29T15:45:00",
+      "end_time": null,
+      "category": "education",
+      "status": "pending",
+      "source": "https://www.vhshoferland.de/p/last-minute-kurse/vhs-stammtisch-ki-woher-weiss-der-chatbot-was-er-antworten-soll-wir-sezieren-den-zauberlehrling/austausch-verstehen-loesungen-646-C-30AA904204",
+      "url": "https://www.vhshoferland.de/p/last-minute-kurse/vhs-stammtisch-ki-woher-weiss-der-chatbot-was-er-antworten-soll-wir-sezieren-den-zauberlehrling/austausch-verstehen-loesungen-646-C-30AA904204",
+      "tags": []
     }
   ],
-  "last_scraped": "2026-07-23T04:02:34.467518"
+  "last_scraped": "2026-07-23T15:37:16.252780"
 }
