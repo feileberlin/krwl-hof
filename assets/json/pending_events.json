@@ -15663,7 +15663,29 @@
       "source": "https://www.vhshoferland.de/p/last-minute-kurse/canva-workshop-visuell-starke-praesentationen-erstellen-646-C-30AH316131",
       "url": "https://www.vhshoferland.de/p/last-minute-kurse/canva-workshop-visuell-starke-praesentationen-erstellen-646-C-30AH316131",
       "tags": []
+    },
+    {
+      "id": "vhs_e3818154d9c6",
+      "title": "KlangabendEntspannung im Zeichen der Minze",
+      "teaser": "Lass den Alltag los und tauche ein in einen Abend voller Ruhe, Achtsamkeit und harmonischer Kl\u00e4nge.",
+      "description": "Lass den Alltag los und tauche ein in einen Abend voller Ruhe, Achtsamkeit und harmonischer Kl\u00e4nge. Dich erwartet eine sanfte Meditation mit Klangschalen und anderen Klanginstrumenten \u2013 begleitet vom erfrischenden Duft der Kamille. Im Anschluss genie\u00dft du eine wohltuende Klangschalen-Auflage zur Tiefenentspannung. Den Abend lassen wir gemeinsam bei einem warmen Kr\u00e4utertee und offenem Austausch ausklingen.\nEin Abend zum Durchatmen, Loslassen und Auftanken \u2013 f\u00fcr K\u00f6rper, Geist und Seele.",
+      "location": {
+        "name": "Mehrzweckgeb\u00e4ude Berg",
+        "address": "Schlegelweg 3, 95180 Berg",
+        "lat": 50.3167,
+        "lon": 11.9167,
+        "address_hidden": false,
+        "needs_review": false,
+        "resolution_method": null
+      },
+      "start_time": "2026-08-06T18:30:00",
+      "end_time": null,
+      "category": "education",
+      "status": "pending",
+      "source": "https://www.vhshoferland.de/p/last-minute-kurse/klangabend/entspannung-im-zeichen-der-minze-646-C-30BE501624",
+      "url": "https://www.vhshoferland.de/p/last-minute-kurse/klangabend/entspannung-im-zeichen-der-minze-646-C-30BE501624",
+      "tags": []
     }
   ],
-  "last_scraped": "2026-07-24T04:02:19.551721"
+  "last_scraped": "2026-07-24T15:29:09.075667"
 }
