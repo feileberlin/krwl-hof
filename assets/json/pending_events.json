@@ -15707,7 +15707,29 @@
       "source": "https://www.vhshoferland.de/p/last-minute-kurse/online-seminar-vom-mitarbeiter-kollegen-zur-fuehrungskraft-646-C-30AH270265",
       "url": "https://www.vhshoferland.de/p/last-minute-kurse/online-seminar-vom-mitarbeiter-kollegen-zur-fuehrungskraft-646-C-30AH270265",
       "tags": []
+    },
+    {
+      "id": "vhs_973d6e0f52c0",
+      "title": "Praktische Astronomie: Sonnenfinsternis + Perseidenbeobachtung",
+      "teaser": "Am sp\u00e4ten Abend kurz vor Sonnenuntergang kann man von Deutschland aus die beginnende partielle Sonnenfinsternis mit einem hohen Bedeckungsgrad beobachten.",
+      "description": "Am sp\u00e4ten Abend kurz vor Sonnenuntergang kann man von Deutschland aus die beginnende partielle Sonnenfinsternis mit einem hohen Bedeckungsgrad beobachten. Wir begeben uns an einen Ort mit freiem Blick nach Westen und betrachten den Verlauf der Sonnenfinsternis bis zum Sonnenuntergang.\nNach dem Sonnenuntergang und damit dem Ende der Sonnenfinsternis bei uns wenden wir unseren Blick in den Nachthimmel und bereiten uns darauf vor, das Maximum der Perseiden zu betrachten. Der j\u00e4hrlich wiederkehrende",
+      "location": {
+        "name": "Langesb\u00fchlweg 197",
+        "address": "95179 Geroldsgr\u00fcn-Steinbach",
+        "lat": 50.3167,
+        "lon": 11.9167,
+        "address_hidden": false,
+        "needs_review": false,
+        "resolution_method": null
+      },
+      "start_time": "2026-08-12T18:30:00",
+      "end_time": null,
+      "category": "education",
+      "status": "pending",
+      "source": "https://www.vhshoferland.de/p/last-minute-kurse/praktische-astronomie-sonnenfinsternis-perseidenbeobachtung-646-C-30AH108125",
+      "url": "https://www.vhshoferland.de/p/last-minute-kurse/praktische-astronomie-sonnenfinsternis-perseidenbeobachtung-646-C-30AH108125",
+      "tags": []
     }
   ],
-  "last_scraped": "2026-07-27T04:14:49.724207"
+  "last_scraped": "2026-07-28T04:00:34.965529"
 }
