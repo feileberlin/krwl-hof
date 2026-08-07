@@ -15817,7 +15817,29 @@
       "source": "https://www.vhshoferland.de/p/last-minute-kurse/praktische-astronomie-sternwarte-unterwegs-646-C-30AH108126",
       "url": "https://www.vhshoferland.de/p/last-minute-kurse/praktische-astronomie-sternwarte-unterwegs-646-C-30AH108126",
       "tags": []
+    },
+    {
+      "id": "vhs_10390fcc8ed3",
+      "title": "Praktische Astronomie: Sternwarte unterwegs",
+      "teaser": "Auch dieses Jahr ist die Sternwarte Hof im Hofer Umland unterwegs und stellt interessierten Besuchern in einer dunkleren Umgebung den Sternhimmel vor. \nDie \u00d6rtlichkeit wird noch bekannt gegeben.",
+      "description": "Auch dieses Jahr ist die Sternwarte Hof im Hofer Umland unterwegs und stellt interessierten Besuchern in einer dunkleren Umgebung den Sternhimmel vor. \nDie \u00d6rtlichkeit wird noch bekannt gegeben.\nBitte informieren Sie sich bei den Au\u00dfenterminen kurz vorab \u00fcber m\u00f6gliche Orts\u00e4nderungen auf unserer Website https://www.sternwarte-hof.de/de/veranstaltungen.",
+      "location": {
+        "name": "Schwarzenbach am Wald",
+        "address": "Sch\u00fctzenstra\u00dfe 30, Sportplatz",
+        "lat": 50.3167,
+        "lon": 11.9167,
+        "address_hidden": false,
+        "needs_review": false,
+        "resolution_method": null
+      },
+      "start_time": "2026-08-15T21:30:00",
+      "end_time": null,
+      "category": "education",
+      "status": "pending",
+      "source": "https://www.vhshoferland.de/p/last-minute-kurse/praktische-astronomie-sternwarte-unterwegs-646-C-30AH108126",
+      "url": "https://www.vhshoferland.de/p/last-minute-kurse/praktische-astronomie-sternwarte-unterwegs-646-C-30AH108126",
+      "tags": []
     }
   ],
-  "last_scraped": "2026-07-30T03:59:43.138918"
+  "last_scraped": "2026-08-07T03:57:16.073483"
 }
