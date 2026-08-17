@@ -16015,7 +16015,205 @@
       "source": "https://www.vhshoferland.de/p/last-minute-kurse/malen-wie-bob-ross-/spektakulaerer-wasserfall-646-C-30OB604103",
       "url": "https://www.vhshoferland.de/p/last-minute-kurse/malen-wie-bob-ross-/spektakulaerer-wasserfall-646-C-30OB604103",
       "tags": []
+    },
+    {
+      "id": "vhs_82fe1382e4c7",
+      "title": "Malen wie Bob Ross\u00ae -Ebony Sea",
+      "teaser": "Sie wollten schon immer gern malen, glaubten aber, Ihnen fehlt das Talent? Dann sind Sie hier genau richtig, denn es sind keine Vorkenntnisse erforderlich.",
+      "description": "Sie wollten schon immer gern malen, glaubten aber, Ihnen fehlt das Talent? Dann sind Sie hier genau richtig, denn es sind keine Vorkenntnisse erforderlich. Sie erlernen Schritt f\u00fcr Schritt den Umgang mit Materialien sowie Grundlagen der Nass-in-Nass-Technik.",
+      "location": {
+        "name": "B\u00fcrgerhaus",
+        "address": "Bahnhofstra\u00dfe 2, 95145 Oberkotzau",
+        "lat": 50.3167,
+        "lon": 11.9167,
+        "address_hidden": false,
+        "needs_review": false,
+        "resolution_method": null
+      },
+      "start_time": "2026-08-29T10:00:00",
+      "end_time": null,
+      "category": "education",
+      "status": "pending",
+      "source": "https://www.vhshoferland.de/p/last-minute-kurse/malen-wie-bob-ross-/ebony-sea-646-C-30OB604105",
+      "url": "https://www.vhshoferland.de/p/last-minute-kurse/malen-wie-bob-ross-/ebony-sea-646-C-30OB604105",
+      "tags": []
+    },
+    {
+      "id": "vhs_f6f11ddbac25",
+      "title": "Emobilit\u00e4t - Elektrisiert in die Zukunft!Online-Vortrag der Verbraucherzentrale Bayern",
+      "teaser": "\"Mein n\u00e4chstes Auto wird ein E-Auto.\" Diesen Satz h\u00f6rt man mittlerweile h\u00e4ufig. Vor der Anschaffung stellen sich aber noch einige Fragen.",
+      "description": "\"Mein n\u00e4chstes Auto wird ein E-Auto.\" Diesen Satz h\u00f6rt man mittlerweile h\u00e4ufig. Vor der Anschaffung stellen sich aber noch einige Fragen. Worauf sollte man achten? Wo kann ich laden? Welche F\u00f6rderungen gibt es? Und ist das E-Auto wirklich eine umweltfreundlichere Alternative? Der Vortrag kl\u00e4rt viele offene Fragen und gibt eine Einf\u00fchrung in die elektromobile Zukunft. \nDer Vortrag findet in Kooperation mit der Energieberatung der Verbraucherzentrale Bayern statt. \nZielgruppe: Alle Interessierten ",
+      "location": {
+        "name": "Online",
+        "address": null,
+        "lat": 50.3167,
+        "lon": 11.9167,
+        "address_hidden": true,
+        "needs_review": false,
+        "resolution_method": null
+      },
+      "start_time": "2026-09-01T19:00:00",
+      "end_time": null,
+      "category": "education",
+      "status": "pending",
+      "source": "https://www.vhshoferland.de/p/last-minute-kurse/emobilitaet-elektrisiert-in-die-zukunft/online-vortrag-der-verbraucherzentrale-bayern-646-C-31AH107161",
+      "url": "https://www.vhshoferland.de/p/last-minute-kurse/emobilitaet-elektrisiert-in-die-zukunft/online-vortrag-der-verbraucherzentrale-bayern-646-C-31AH107161",
+      "tags": []
+    },
+    {
+      "id": "vhs_f183cf42ecf2",
+      "title": "VHS Lese-Stammtisch",
+      "teaser": "B\u00fccher und Autor*innen \u2013 lassen Sie uns dar\u00fcber sprechen. Bringen Sie Ihr Lieblingsbuch mit oder h\u00f6ren Sie zu, wenn andere \u00fcber ihres berichten.",
+      "description": "B\u00fccher und Autor*innen \u2013 lassen Sie uns dar\u00fcber sprechen. Bringen Sie Ihr Lieblingsbuch mit oder h\u00f6ren Sie zu, wenn andere \u00fcber ihres berichten. Lassen Sie uns regelm\u00e4\u00dfig treffen und im Sinne des \u201eStammtisch-Gedanken\u201c Erfahrungen und Empfehlungen austauschen. Wir laden Sie herzlich ein, Teil der Gemeinschaft zu werden.",
+      "location": {
+        "name": "VHS",
+        "address": "Ludwigstra\u00dfe 7, 95028 Hof",
+        "lat": 50.3167,
+        "lon": 11.9167,
+        "address_hidden": false,
+        "needs_review": false,
+        "resolution_method": null
+      },
+      "start_time": "2026-09-02T15:00:00",
+      "end_time": null,
+      "category": "education",
+      "status": "pending",
+      "source": "https://www.vhshoferland.de/p/last-minute-kurse/vhs-lese-stammtisch-646-C-31AA904101",
+      "url": "https://www.vhshoferland.de/p/last-minute-kurse/vhs-lese-stammtisch-646-C-31AA904101",
+      "tags": []
+    },
+    {
+      "id": "vhs_172ceeb01982",
+      "title": "MakerSpace",
+      "teaser": "Sie sind Unternehmer oder Do-It-Yourself-Aktiver, Modellbauer oder Bastler? \nIhnen fehlt jedoch das Equipment, um Ihre Ideen umzusetzen? Oder Sie w\u00fcnschen sich inhaltliche Unterst\u00fctzung und Zugang zu",
+      "description": "Sie sind Unternehmer oder Do-It-Yourself-Aktiver, Modellbauer oder Bastler? \nIhnen fehlt jedoch das Equipment, um Ihre Ideen umzusetzen? Oder Sie w\u00fcnschen sich inhaltliche Unterst\u00fctzung und Zugang zu Expertenwissen?\t\nDann nutzen Sie unseren MakerSpace. Eine Hightech-Werkstatt, die Ihnen den Zugang zu Maschinen, Werkzeugen, Software und dazugeh\u00f6rigem Fachwissen erm\u00f6glicht.\n\nDer MakerSpace bietet Ihnen einen Ort, an dem Ideen und Innovationen realisiert werden. Nach entsprechenden Einf\u00fchrungsworks",
+      "location": {
+        "name": "VHS",
+        "address": "Ludwigstra\u00dfe 7, 95028 Hof",
+        "lat": 50.3167,
+        "lon": 11.9167,
+        "address_hidden": false,
+        "needs_review": false,
+        "resolution_method": null
+      },
+      "start_time": "2026-09-02T17:30:00",
+      "end_time": null,
+      "category": "education",
+      "status": "pending",
+      "source": "https://www.vhshoferland.de/p/last-minute-kurse/makerspace-646-C-31AH319013",
+      "url": "https://www.vhshoferland.de/p/last-minute-kurse/makerspace-646-C-31AH319013",
+      "tags": []
+    },
+    {
+      "id": "vhs_05e87d1525c8",
+      "title": "VHS Stammtisch KIAustausch, Verstehen, L\u00f6sungen",
+      "teaser": "VHS Stammtisch KIAustausch, Verstehen, L\u00f6sungen am 30.09.",
+      "description": "VHS Stammtisch KIAustausch, Verstehen, L\u00f6sungen am 30.09.2026 15:45",
+      "location": {
+        "name": "VHS",
+        "address": "Ludwigstra\u00dfe 7, 95028 Hof",
+        "lat": 50.3167,
+        "lon": 11.9167,
+        "address_hidden": false,
+        "needs_review": false,
+        "resolution_method": null
+      },
+      "start_time": "2026-09-30T15:45:00",
+      "end_time": null,
+      "category": "education",
+      "status": "pending",
+      "source": "https://www.vhshoferland.de/p/last-minute-kurse/vhs-stammtisch-ki/austausch-verstehen-loesungen-646-C-31AA904229",
+      "url": "https://www.vhshoferland.de/p/last-minute-kurse/vhs-stammtisch-ki/austausch-verstehen-loesungen-646-C-31AA904229",
+      "tags": []
+    },
+    {
+      "id": "vhs_7993d0ac5f4b",
+      "title": "VHS Stammtisch KIAustausch, Verstehen, L\u00f6sungen",
+      "teaser": "VHS Stammtisch KIAustausch, Verstehen, L\u00f6sungen am 28.10.",
+      "description": "VHS Stammtisch KIAustausch, Verstehen, L\u00f6sungen am 28.10.2026 15:45",
+      "location": {
+        "name": "VHS",
+        "address": "Ludwigstra\u00dfe 7, 95028 Hof",
+        "lat": 50.3167,
+        "lon": 11.9167,
+        "address_hidden": false,
+        "needs_review": false,
+        "resolution_method": null
+      },
+      "start_time": "2026-10-28T15:45:00",
+      "end_time": null,
+      "category": "education",
+      "status": "pending",
+      "source": "https://www.vhshoferland.de/p/last-minute-kurse/vhs-stammtisch-ki/austausch-verstehen-loesungen-646-C-31AA904230",
+      "url": "https://www.vhshoferland.de/p/last-minute-kurse/vhs-stammtisch-ki/austausch-verstehen-loesungen-646-C-31AA904230",
+      "tags": []
+    },
+    {
+      "id": "vhs_f44515adf494",
+      "title": "VHS Stammtisch KIAustausch, Verstehen, L\u00f6sungen",
+      "teaser": "VHS Stammtisch KIAustausch, Verstehen, L\u00f6sungen am 25.11.",
+      "description": "VHS Stammtisch KIAustausch, Verstehen, L\u00f6sungen am 25.11.2026 15:45",
+      "location": {
+        "name": "VHS",
+        "address": "Ludwigstra\u00dfe 7, 95028 Hof",
+        "lat": 50.3167,
+        "lon": 11.9167,
+        "address_hidden": false,
+        "needs_review": false,
+        "resolution_method": null
+      },
+      "start_time": "2026-11-25T15:45:00",
+      "end_time": null,
+      "category": "education",
+      "status": "pending",
+      "source": "https://www.vhshoferland.de/p/last-minute-kurse/vhs-stammtisch-ki/austausch-verstehen-loesungen-646-C-31AA904231",
+      "url": "https://www.vhshoferland.de/p/last-minute-kurse/vhs-stammtisch-ki/austausch-verstehen-loesungen-646-C-31AA904231",
+      "tags": []
+    },
+    {
+      "id": "vhs_f3733033634e",
+      "title": "VHS Stammtisch KIAustausch, Verstehen, L\u00f6sungen",
+      "teaser": "VHS Stammtisch KIAustausch, Verstehen, L\u00f6sungen am 27.01.",
+      "description": "VHS Stammtisch KIAustausch, Verstehen, L\u00f6sungen am 27.01.2027 15:45",
+      "location": {
+        "name": "VHS",
+        "address": "Ludwigstra\u00dfe 7, 95028 Hof",
+        "lat": 50.3167,
+        "lon": 11.9167,
+        "address_hidden": false,
+        "needs_review": false,
+        "resolution_method": null
+      },
+      "start_time": "2027-01-27T15:45:00",
+      "end_time": null,
+      "category": "education",
+      "status": "pending",
+      "source": "https://www.vhshoferland.de/p/last-minute-kurse/vhs-stammtisch-ki/austausch-verstehen-loesungen-646-C-31AA904232",
+      "url": "https://www.vhshoferland.de/p/last-minute-kurse/vhs-stammtisch-ki/austausch-verstehen-loesungen-646-C-31AA904232",
+      "tags": []
+    },
+    {
+      "id": "vhs_63045567ac6b",
+      "title": "VHS Stammtisch KIAustausch, Verstehen, L\u00f6sungen",
+      "teaser": "VHS Stammtisch KIAustausch, Verstehen, L\u00f6sungen am 24.02.",
+      "description": "VHS Stammtisch KIAustausch, Verstehen, L\u00f6sungen am 24.02.2027 15:45",
+      "location": {
+        "name": "VHS",
+        "address": "Ludwigstra\u00dfe 7, 95028 Hof",
+        "lat": 50.3167,
+        "lon": 11.9167,
+        "address_hidden": false,
+        "needs_review": false,
+        "resolution_method": null
+      },
+      "start_time": "2027-02-24T15:45:00",
+      "end_time": null,
+      "category": "education",
+      "status": "pending",
+      "source": "https://www.vhshoferland.de/p/last-minute-kurse/vhs-stammtisch-ki/austausch-verstehen-loesungen-646-C-31AA904233",
+      "url": "https://www.vhshoferland.de/p/last-minute-kurse/vhs-stammtisch-ki/austausch-verstehen-loesungen-646-C-31AA904233",
+      "tags": []
     }
   ],
-  "last_scraped": "2026-08-10T15:20:24.917122"
+  "last_scraped": "2026-08-17T15:05:28.000856"
 }
