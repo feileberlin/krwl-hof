@@ -16741,7 +16741,29 @@
       "source": "https://www.vhshoferland.de/p/last-minute-kurse/rueckengymnastik-646-C-31MU502201",
       "url": "https://www.vhshoferland.de/p/last-minute-kurse/rueckengymnastik-646-C-31MU502201",
       "tags": []
+    },
+    {
+      "id": "vhs_805c0f60e0d4",
+      "title": "Bewegung f\u00fcr die grauen ZellenHof",
+      "teaser": "Ged\u00e4chtniskurse gibt es viele, Bewegungsangebote auch. Aber einen Kurs, der beides verbindet und zudem Ihrem Gehirn Aufschwung gibt, das finden Sie nur bei der vhs.",
+      "description": "Ged\u00e4chtniskurse gibt es viele, Bewegungsangebote auch. Aber einen Kurs, der beides verbindet und zudem Ihrem Gehirn Aufschwung gibt, das finden Sie nur bei der vhs. Sind Sie neugierig genug f\u00fcr drei Stunden voller neuer Erfahrungen? M\u00f6chten Sie klassischer Altersvergesslichkeit entgegensteuern und Ihre grauen Zellen fit und aktiv halten? Bewegung f\u00fcr die grauen Zellen verbessert Ihre k\u00f6rperliche und geistige Leistungsf\u00e4higkeit. Mit Methoden der Bewegungslehre, dem Wissen des Yoga und Elementen a",
+      "location": {
+        "name": "VHS",
+        "address": "Ludwigstra\u00dfe 7, 95028 Hof",
+        "lat": 50.3167,
+        "lon": 11.9167,
+        "address_hidden": false,
+        "needs_review": false,
+        "resolution_method": null
+      },
+      "start_time": "2026-11-18T12:00:00",
+      "end_time": null,
+      "category": "education",
+      "status": "pending",
+      "source": "https://www.vhshoferland.de/p/last-minute-kurse/bewegung-fuer-die-grauen-zellen/hof-646-C-31AA904511",
+      "url": "https://www.vhshoferland.de/p/last-minute-kurse/bewegung-fuer-die-grauen-zellen/hof-646-C-31AA904511",
+      "tags": []
     }
   ],
-  "last_scraped": "2026-09-01T03:05:23.778934"
+  "last_scraped": "2026-09-02T03:06:40.250474"
 }
